@@ -24,6 +24,11 @@ function localized(record: { id: string }, field: string) {
   for (const lang of LANGUAGES) {
     requireValue(isText(value?.[lang]), `${record.id}: ${field}.${lang} is required`);
   }
+  // An unquoted comma in a YAML flow map splits the text into a stray key.
+  const stray = Object.keys(value!).filter(
+    (key) => !(LANGUAGES as readonly string[]).includes(key),
+  );
+  requireValue(!stray.length, `${record.id}: ${field} has text outside en and fr: ${stray}`);
 }
 
 function indexRecords<T extends { id: string }>(records: readonly T[], kind: string) {

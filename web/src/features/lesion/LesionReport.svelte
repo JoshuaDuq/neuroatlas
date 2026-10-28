@@ -10,7 +10,12 @@
   import { networkCss } from '../../lib/core/catalog/networks.ts';
   import { count, decimal, grouped, withUnit } from '../../lib/core/format.ts';
   import { t } from '../../lib/core/i18n/index.ts';
-  import { lesionSides, regionRows, tractRows } from '../../lib/core/lesion/report.ts';
+  import {
+    lesionSides,
+    regionRows,
+    territoryRows,
+    tractRows,
+  } from '../../lib/core/lesion/report.ts';
   import type { RegionRow } from '../../lib/core/lesion/report.ts';
   import type { LesionMode, LesionStore } from '../../lib/state/lesion.svelte.ts';
   import type { Language } from '../../lib/types/index.ts';
@@ -72,12 +77,14 @@
   let anatomyOpen = $state(false);
   let deepOpen = $state(false);
   let whiteOpen = $state(false);
+  let territoriesOpen = $state(false);
   let tractsOpen = $state(false);
   let detailOpen = $state(false);
 
   const cortex = $derived(measurement && regionRows(measurement.regions, shownAtlas));
   const deep = $derived(measurement && regionRows(measurement.regions, 'aseg'));
   const white = $derived(measurement && regionRows(measurement.regions, 'wmparc'));
+  const territories = $derived(measurement && territoryRows(measurement.regions));
   const counted = $derived(lesion.counted);
   const tracts = $derived(counted.status === 'ready' ? tractRows(counted.crossings) : null);
   const findings = $derived(lesion.findings);
@@ -111,6 +118,22 @@
         <span class="network-row-name">
           {label(row.id)}
           <span class="lesion-row-volume">{mm3(row.inside)} / {mm3(row.whole)}</span>
+        </span>
+        <Swatch kind="bar" share={row.share} />
+        <span class="network-share measure">{share(row.share)}</span>
+      </li>
+    {/each}
+  </ul>
+{/snippet}
+
+{#snippet territoryList(list: readonly RegionRow[])}
+  <!-- A territory row's share is of the lesion, not of the territory, so only the lesion's volume in it is shown. -->
+  <ul class="network-list">
+    {#each list as row (row.id)}
+      <li class="network-row lesion-row">
+        <span class="network-row-name">
+          {label(row.id)}
+          <span class="lesion-row-volume">{mm3(row.inside)}</span>
         </span>
         <Swatch kind="bar" share={row.share} />
         <span class="network-share measure">{share(row.share)}</span>
@@ -344,6 +367,24 @@
           <p class="detail-note">{copy.whiteNote}</p>
           {@render rows(white!.shown)}
           {@render folded(white!.slight)}
+        </Disclosure>
+      </div>
+    {/if}
+
+    {#if territories!.shown.length + territories!.slight.length}
+      <div class="evidence-section">
+        <Disclosure
+          variant="section"
+          summary={`${copy.territories} · ${count(territories!.shown.length + territories!.slight.length, 'region', lang)}`}
+          bind:open={territoriesOpen}
+        >
+          <p class="detail-note">{copy.territoryNote}</p>
+          {@render territoryList(territories!.shown)}
+          {#if territories!.slight.length}
+            <Disclosure summary={copy.slightRegions(grouped(territories!.slight.length))}>
+              {@render territoryList(territories!.slight)}
+            </Disclosure>
+          {/if}
         </Disclosure>
       </div>
     {/if}

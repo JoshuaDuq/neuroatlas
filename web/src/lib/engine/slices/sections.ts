@@ -41,7 +41,6 @@ interface SectionsStateRecord {
 /** The model as the sections drive it: the cut's own model plus the display commands it issues. */
 export interface SectionsModel extends CutModel {
   readonly clippingPlanes: readonly Plane[];
-  loadGlassSolids(baseUrl: string | URL): Promise<unknown>;
   setClippingPlanes(planes: Plane[]): void;
   setCutState(state: { atlas: string; active: boolean }): void;
   setMriAnatomy(anatomy: Anatomy | null): void;
@@ -133,7 +132,6 @@ export class BrainSections extends EventTarget {
         s.internalSystem,
         s.internalVisible,
         s.surfaceColor,
-        s.functionalLevel,
         s.paint?.id ?? null,
         s.detail,
         s.spinalCordVisible,
@@ -306,10 +304,6 @@ export class BrainSections extends EventTarget {
       if (!live()) return settle();
       if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
       this.model.setMriAnatomy(this.tissues.anatomy);
-    }
-    if (mode === 'functional') {
-      await this.model.loadGlassSolids(this.metadataUrl);
-      if (!live()) return settle();
     }
     this.model.setSurfaceColor(mode);
     this.state.status = 'ready';
@@ -560,6 +554,7 @@ export class BrainSections extends EventTarget {
   /** Pick the nearest visible surface or categorical cut-face label. */
   pick(raycaster: Raycaster): Region | null | undefined {
     const hit = this.intersect(raycaster);
+    console.log('[pick-debug]', hit && (hit.object?.name), hit && ('region' in hit ? hit.region?.id : hit.object?.userData), hit?.distance);
     if (!hit) return null;
     if ('region' in hit && hit.region !== undefined) return hit.region;
     return hit.object.userData['kind'] !== 'non-region'

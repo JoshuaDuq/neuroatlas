@@ -6,7 +6,6 @@ import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import manifestFile from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
-import functionalFile from '../../../../public/models/cdmd/functional-regions.json' with { type: 'json' };
 import domainsFile from '../../../../public/models/cdmd/neuropsych-domains.json' with { type: 'json' };
 import { validateNeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
@@ -438,21 +437,6 @@ describe('the dock and the keys', () => {
     row.click();
     expect(openFunction).toHaveBeenCalledOnce();
     expect(typeof openFunction.mock.calls[0]![0]).toBe('string');
-  });
-
-  test('the functional key’s level is set on the model', async () => {
-    engine = createFakeEngine({
-      manifest,
-      domains: domains as never,
-      functionalRegions: functionalFile as never,
-    });
-    boot();
-    await engine.model.setAtlas('hcp-mmp');
-    (engine.model as unknown as { loadGlassSolids(): void }).loadGlassSolids();
-    engine.model.setSurfaceColor('functional');
-    flushSync();
-    await userEvent.click(page.getByRole('radio', { name: 'Sections' }));
-    expect(call('model', 'setFunctionalLevel').at(-1)?.args).toEqual(['sections']);
   });
 
   test('streamlines drawn show the direction key', async () => {

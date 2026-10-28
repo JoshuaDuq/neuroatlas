@@ -323,11 +323,11 @@ def test_network_annotations_are_projected_exactly_when_declared(monkeypatch):
     )
     config = {"anatomy": {"id": "x", "project_hcp_from": "fsaverage", "layers": []}}
     prepare.transfer_annotations(config, {"sources": []})
-    assert projected == ["HCPMMP1"]
+    assert projected == ["HCPMMP1", "JulichBrain3.1"]
     projected.clear()
     config["anatomy"]["layers"] = ["networks"]
     prepare.transfer_annotations(config, {"sources": []})
-    assert projected == ["HCPMMP1", "Schaefer2018_400Parcels_7Networks_order"]
+    assert projected == ["HCPMMP1", "JulichBrain3.1", "Schaefer2018_400Parcels_7Networks_order"]
 
 
 def test_a_projection_whose_source_annotation_is_missing_is_refused(tmp_path):

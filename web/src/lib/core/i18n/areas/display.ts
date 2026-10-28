@@ -19,7 +19,7 @@ export const en = {
     atlas: 'Regions',
     network: 'Yeo 7 networks',
     'cab-np': 'CAB-NP networks',
-    functional: 'Functional divisions',
+    territory: 'Arterial territories',
   },
   // The Colour field's value while a tab paints the brain; it is never offered as a choice.
   paints: { function: 'Functions', deficit: 'Deficit', lesion: 'Lesion' },
@@ -37,8 +37,8 @@ export const en = {
     atlas: 'Atlas region colours',
     network: 'Functional networks (Yeo 7)',
     'cab-np': 'Functional networks (CAB-NP, 12) on HCP-MMP areas',
-    functional:
-      'Functional divisions on HCP-MMP areas: Glasser 2016 sections and named regions from Glasser 2016 and Rolls 2022, 2023',
+    territory:
+      'Typical arterial territories from 1,298 stroke patients (Liu et al. 2023), registered onto this brain; not its own vessels',
   },
   resetView: 'Reset view',
 };
@@ -64,7 +64,7 @@ export const fr: typeof en = {
     atlas: 'Régions',
     network: 'Réseaux Yeo 7',
     'cab-np': 'Réseaux CAB-NP',
-    functional: 'Divisions fonctionnelles',
+    territory: 'Territoires artériels',
   },
   paints: { function: 'Fonctions', deficit: 'Déficit', lesion: 'Lésion' },
   paintTitles: {
@@ -81,8 +81,8 @@ export const fr: typeof en = {
     atlas: 'Couleurs des régions de l’atlas',
     network: 'Réseaux fonctionnels (Yeo 7)',
     'cab-np': 'Réseaux fonctionnels (CAB-NP, 12) sur les aires HCP-MMP',
-    functional:
-      'Divisions fonctionnelles sur les aires HCP-MMP : sections de Glasser 2016 et régions nommées de Glasser 2016 et Rolls 2022, 2023',
+    territory:
+      'Territoires artériels typiques, issus de 1\u202f298 patients victimes d’AVC (Liu et al. 2023), recalés sur ce cerveau\u202f; pas ses propres vaisseaux',
   },
   resetView: 'Réinitialiser la vue',
 };

@@ -3,6 +3,7 @@ import { nextbrainSystem } from './nextbrain-systems.ts';
 import { DESTRIEUX_LABELS } from './destrieux-labels.ts';
 import { dominantNetwork, networkName } from './networks.ts';
 import { DESTRIEUX_LABELS_FR } from './destrieux-labels.fr.ts';
+import { julichLabel } from './julich-labels.ts';
 import { NEXTBRAIN_LABELS_FR } from './nextbrain-labels.fr.ts';
 import { STRUCTURE_LABELS } from './structure-groups.ts';
 import { STRUCTURE_LABELS_FR } from './structure-groups.fr.ts';
@@ -61,13 +62,14 @@ export const beneathCortex = (region: Region) =>
  * HCP-MMP's 360 codes group by the network they mostly fall in. Alphabetical
  * buckets ordered them without telling a reader anything, and the network is
  * measured on this surface rather than asserted. Destrieux keeps its lobes:
- * those name where a fold is, which is what that atlas is for.
+ * those name where a fold is, which is what that atlas is for. Julich-Brain's
+ * areas join the same lobes through the location each of its names gives.
  */
 export function labelOf(region: Region, lang: Language = 'en'): RegionLabel | null {
   const isFr = lang === 'fr';
   if (region.kind === 'non-region') return isFr ? UNLABELLED.fr : UNLABELLED.en;
 
-  if (region.atlas === 'learning' || region.supplemental) {
+  if (region.atlas === 'learning' || region.atlas === 'arterial' || region.supplemental) {
     return {
       name: region.display_names![lang],
       code: null,
@@ -118,6 +120,8 @@ export function labelOf(region: Region, lang: Language = 'en'): RegionLabel | nu
       aliases: [],
     };
   }
+
+  if (region.atlas === 'julich') return julichLabel(sourceName, lang);
 
   const key = canonicalSourceName(sourceName);
   const table = isFr ? DESTRIEUX_LABELS_FR : DESTRIEUX_LABELS;

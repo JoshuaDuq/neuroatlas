@@ -309,10 +309,6 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
         }
         model.attachMri();
       }
-      if (mode === 'functional') {
-        model.loadGlassSolids();
-        if (!current()) return;
-      }
       model.applySurfaceColor(mode);
       state.status = 'ready';
       state.error = null;

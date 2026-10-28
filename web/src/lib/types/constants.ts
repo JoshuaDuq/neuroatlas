@@ -16,14 +16,7 @@ export const CUTS = ['off', 'sagittal', 'coronal', 'axial', 'oblique'] as const;
  * What the cortical surface is coloured by (model/brain-atlas.js:68, state/url-state.js:36).
  * The legacy code declares this list twice; there is one here.
  */
-export const SURFACE_COLORS = [
-  'tissue',
-  'mri',
-  'atlas',
-  'network',
-  'cab-np',
-  'functional',
-] as const;
+export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'territory'] as const;
 
 export const FUNCTIONAL_LEVELS = ['named', 'sections'] as const;
 

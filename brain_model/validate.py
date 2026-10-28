@@ -22,11 +22,13 @@ from .gltf.export import compact_region
 from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
 from .labels.volumes import conformed_grid
 from .layers import (
+    arterial_territories,
     cab_np,
     functional_regions,
     networks,
     neuropsych_domains,
     neurosynth_terms,
+    receptor_fingerprints,
     spinal_cord,
 )
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
@@ -227,6 +229,13 @@ def read_network_field(config, prefix, faces, labels):
     return partition_vertex_labels(faces, labels, indices), indices
 
 
+def read_territory_field(config, territory_grid, vertices, white, faces, labels):
+    if territory_grid is None:
+        return None, None
+    indices = arterial_territories.vertex_indices(*territory_grid, vertices, white)
+    return partition_vertex_labels(faces, labels, indices), indices
+
+
 def validate_atlas(config, atlas, records):
     path = config["output_directory"] / f"cortex-{atlas['id']}.glb"
     meshes = read_meshes(path)
@@ -243,6 +252,12 @@ def validate_atlas(config, atlas, records):
     intensity_error = 0.0
     mri = nib.load(config["source_directory"] / "mri/orig.mgz")
     mri_data = np.asarray(mri.dataobj).astype(float)
+    territories = (
+        arterial_territories.read_definition() if arterial_territories.is_declared(config) else None
+    )
+    territory_grid = (
+        arterial_territories.territory_index(config, territories) if territories else None
+    )
     expected_ids = set()
     for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
         vertices, faces = read_geometry(
@@ -269,6 +284,9 @@ def validate_atlas(config, atlas, records):
             mri_data, coordinates.T, order=1, prefilter=False
         ))
         network_field, network_ids = read_network_field(config, prefix, faces, labels)
+        territory_field, territory_ids = read_territory_field(
+            config, territory_grid, vertices, white, faces, labels
+        )
         reports[hemisphere] = validate_partition(vertices, faces, labels, partition)
         for label in np.unique(labels):
             region_id = f"{atlas['id']}:{hemisphere}:{label}"
@@ -299,6 +317,23 @@ def validate_atlas(config, atlas, records):
                 expected = networks.composition(network_ids[labels == label])
                 if published[region_id].get("networks", []) != expected:
                     raise ValueError(f"Network composition changed: {region_id}")
+            if territory_field is not None:
+                carried = actual.vertex_attributes.get("_TERRITORY")
+                if carried is None or carried.size != len(points):
+                    raise ValueError(f"Missing territory field: {region_id}")
+                if not np.array_equal(carried.ravel(), territory_field[indices]):
+                    raise ValueError(f"Territory field changed: {region_id}")
+                composed = (
+                    arterial_territories.composition_of_counts(
+                        arterial_territories.counts_of(territory_ids[labels == label], territories),
+                        territories,
+                    )
+                    if published[region_id]["kind"] == "cortex" else None
+                ) or {}
+                record = published[region_id]
+                if any(record.get(field) != composed.get(field)
+                       for field in ("territories", "territory_unassigned")):
+                    raise ValueError(f"Territory composition changed: {region_id}")
             depth = actual.vertex_attributes.get("_SULC")
             if depth is None or depth.size != len(points) or not np.isfinite(depth).all():
                 raise ValueError(f"Missing or invalid sulcal depth: {region_id}")
@@ -547,7 +582,8 @@ def expected_cortical_metadata(config, atlas):
                 "source_name": name,
                 "label": f"{name.replace('_', ' ')} · {hemisphere}",
                 "kind": "non-region"
-                if name in {"Unknown", "unknown", "???", "Medial_wall"}
+                if name in {"Unknown", "unknown", "???", "Medial_wall", "CorpusCallosumMask",
+                            "BrainStemMask"} or name.startswith("GapMap-")
                 else "cortex",
                 "source_annotation_value": 0 if label == -1 else int(colors[label, 4]),
                 "source_vertex_count": int(count),
@@ -642,7 +678,8 @@ def validate_cut_only_regions(config, regions, nextbrain_source):
     for region_id, region in regions.items():
         if region["kind"] == "tissue-region":
             by_source.setdefault(region["atlas"], {})[region_id] = region
-    unknown = sorted(set(by_source) - {nextbrain.ATLAS_ID, white_matter.ATLAS_ID})
+    # Arterial territory regions are checked against their volume by arterial_territories.validate.
+    unknown = sorted(set(by_source) - {nextbrain.ATLAS_ID, white_matter.ATLAS_ID, arterial_territories.ATLAS_ID})
     if unknown:
         raise ValueError(f"Cut-only regions from an unknown source: {unknown}")
     white_matter.validate_regions(config, by_source.get(white_matter.ATLAS_ID, {}))
@@ -785,6 +822,7 @@ def validate_layers(config, manifest, tissues):
     declared = config["anatomy"]["layers"]
     cut = [atlas["id"] for atlas in config["atlases"]]
     fine = [nextbrain.ATLAS_ID] if "nextbrain" in declared else []
+    fine += [arterial_territories.ATLAS_ID] if arterial_territories.LAYER in declared else []
     expected = {
         "networks": networks.metadata() if "networks" in declared else None,
         "cut_atlases": cut + fine,
@@ -795,6 +833,10 @@ def validate_layers(config, manifest, tissues):
         "neurosynth_terms": neurosynth_terms.metadata() if "neurosynth_terms" in declared else None,
         "boundary_certainty": (
             boundary_certainty.metadata(config) if boundary_certainty.is_published(config) else None
+        ),
+        "arterial_territories": (
+            arterial_territories.metadata(config, arterial_territories.read_definition())
+            if arterial_territories.LAYER in declared else None
         ),
     }
     published = {
@@ -808,6 +850,7 @@ def validate_layers(config, manifest, tissues):
         "supplemental_layers": [layer["id"] for layer in manifest["supplemental_layers"]],
         "neurosynth_terms": manifest["neurosynth_terms"],
         "boundary_certainty": manifest.get("boundary_certainty"),
+        "arterial_territories": manifest.get("arterial_territories"),
     }
     differ = [key for key in expected if published[key] != expected[key]]
     if differ:
@@ -892,7 +935,10 @@ def main():
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         "cab_np": cab_np.validate(config, manifest),
         "functional_regions": functional_regions.validate(config, manifest),
+        **({"arterial_territories": arterial_territories.validate(config, manifest)}
+           if arterial_territories.is_declared(config) else {}),
         "neuropsych_domains": neuropsych_domains.validate(config, manifest),
+        "receptor_fingerprints": receptor_fingerprints.validate(config, manifest),
         **({"neurosynth_terms": neurosynth_terms.validate(config, manifest)}
            if neurosynth_terms.is_declared(config) else {}),
         **(

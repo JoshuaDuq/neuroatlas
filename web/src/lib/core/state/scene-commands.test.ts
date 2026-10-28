@@ -40,7 +40,6 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
     ]),
     regions: new Map(REGIONS.map((region) => [region.id, region])),
     cabNp: { atlas: 'hcp-mmp' },
-    functionalRegions: { atlas: 'hcp-mmp' },
     atlasId: atlas,
     detailId: detail,
     surfaceColor: 'atlas' as SurfaceColor,
@@ -138,7 +137,6 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
       const request = ++this.appearanceRequest;
       if (value === 'cab-np' && model.atlasId !== model.cabNp.atlas)
         throw new Error('CAB-NP needs HCP-MMP first');
-      if (value === 'functional') await model.ensureEnvelopes();
       if (value === 'mri') await model.loadLayer('mri');
       if (request !== this.appearanceRequest || !current()) return;
       model.surfaceColor = value;
@@ -266,30 +264,6 @@ test('CAB-NP, chosen or restored from a link, first shows the atlas it colours',
   await linked.finish('hcp-mmp');
   assert.equal(await restoring, true);
   assert.deepEqual([linked.model.atlasId, linked.model.surfaceColor], ['hcp-mmp', 'cab-np']);
-});
-
-test('entering the glass brain hides the internal anatomy and says how to show it; restoring it does not', async () => {
-  const scene = fixture();
-  scene.model.envelopes = [];
-  await scene.commands.chooseSurfaceColor('functional');
-  assert.equal(scene.model.internalVisible, false);
-  assert.match(scene.session.assemble({}).notice!.text, /^Internal anatomy is hidden/);
-  const linked = fixture();
-  linked.model.envelopes = [];
-  await linked.commands.applySurfaceColor('functional', linked.commands.begin());
-  assert.equal(linked.model.internalVisible, true);
-});
-
-test('the glass brain’s envelope download reports its bytes like a layer switch', async () => {
-  const scene = fixture();
-  const choosing = scene.commands.chooseSurfaceColor('functional');
-  await scene.settle();
-  scene.tick('envelopes', 5, 15);
-  assert.deepEqual(scene.session.assemble({}).progress, { loaded: 5, total: 15 });
-  await scene.finish('envelopes');
-  await choosing;
-  assert.equal(scene.model.surfaceColor, 'functional');
-  assert.equal(scene.session.assemble({}).status, 'ready');
 });
 
 test('the first showing of the cord is a download with progress; an anatomy without one refuses', async () => {

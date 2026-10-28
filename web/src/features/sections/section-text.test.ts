@@ -13,7 +13,7 @@ const input = (extra: Partial<SentenceInput> = {}): SentenceInput => ({
   surfaceColor: 'atlas',
   paint: null,
   nextbrainSegmented: true,
-  colourAtlases: { cabNp: 'hcp-mmp', functional: 'hcp-mmp', domains: 'hcp-mmp' },
+  colourAtlases: { cabNp: 'hcp-mmp', domains: 'hcp-mmp' },
   failure: null,
   ...extra,
 });
@@ -84,12 +84,6 @@ describe('the status sentence', () => {
     const hcp = { status: 'ready', error: null, cutAtlas: 'hcp-mmp' } as const;
     expect(note({ surfaceColor: 'cab-np', state: hcp })).toBe(
       'CAB-NP network of each HCP-MMP area',
-    );
-    expect(note({ surfaceColor: 'functional', state: hcp })).toBe(
-      'functional division of each HCP-MMP area',
-    );
-    expect(note({ surfaceColor: 'functional' })).toBe(
-      'functional divisions colour HCP-MMP labels only',
     );
     expect(note({ surfaceColor: 'atlas' })).toBeUndefined();
   });

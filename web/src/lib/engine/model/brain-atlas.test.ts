@@ -17,7 +17,6 @@ import { readRepoYaml } from '../../../../test/repo.ts';
 import type { Region } from '../../types/index.ts';
 import { visibilityOf } from '../../core/catalog/visibility.ts';
 import { TissueSections } from '../tissues/gpu-sections.ts';
-import { createGlassSolids } from '../tissues/glass-solids.ts';
 import { Volume } from '../slices/volume.ts';
 import type { Appearance } from '../render/materials.ts';
 import { BrainAtlas, SURFACE_COLORS } from './brain-atlas.ts';
@@ -827,127 +826,14 @@ const functional = {
   },
 };
 
-/** Ribbon solids for each area, as the glass brain cuts them from the envelopes. */
-function withGlassSolids(atlas: BrainAtlas) {
-  const wedges = ['a-left', 'a-right'].map((id) => {
-    const wedge = new Mesh(new BoxGeometry(0.01, 0.01, 0.01));
-    wedge.userData = { region_id: id, atlas: 'a', kind: 'ribbon' };
-    return wedge;
-  });
-  atlas.glassSolids = createGlassSolids(wedges, appearance);
-  atlas.group.add(atlas.glassSolids.group);
-  return atlas.glassSolids;
-}
-
 const meshOf = (atlas: BrainAtlas, id: string) =>
   atlas.layers.get('a')!.meshes.find((mesh) => mesh.userData['region_id'] === id)!;
-
-test('functional divisions are solid in their colour and the rest of the cortex is glass', async () => {
-  const { atlas } = fixture(null, functional);
-  await atlas.initialize('a');
-  withGlassSolids(atlas);
-  atlas.setSurfaceColor('functional');
-  const red = new Color().setRGB(1, 0, 0, SRGBColorSpace);
-  assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), red.getHex());
-  assert.equal(meshOf(atlas, 'a-left').material.opacity, 1);
-  for (const id of ['a-right', 'a-wall']) {
-    assert.equal(meshOf(atlas, id).material.opacity, appearance.glass_opacity);
-    assert.equal(meshOf(atlas, id).material.transparent, true);
-    assert.equal(meshOf(atlas, id).material.userData['tissueVariation'].value, 0);
-  }
-  assert.equal(
-    meshOf(atlas, 'a-right').material.color.getHex(),
-    new Color(appearance.tissue.cortex).getHex(),
-  );
-  atlas.setFunctionalLevel('sections');
-  assert.equal(
-    meshOf(atlas, 'a-right').material.color.getHex(),
-    new Color().setRGB(0, 1, 0, SRGBColorSpace).getHex(),
-  );
-  assert.equal(meshOf(atlas, 'a-right').material.opacity, 1);
-  // The medial wall is in no section, so it stays glass at every level.
-  assert.equal(meshOf(atlas, 'a-wall').material.opacity, appearance.glass_opacity);
-  atlas.setCortexOpacity(0.5);
-  assert.equal(meshOf(atlas, 'a-right').material.opacity, 0.5);
-  assert.equal(meshOf(atlas, 'a-wall').material.opacity, 0.5 * appearance.glass_opacity);
-  assert.throws(
-    () => atlas.setFunctionalLevel('lobes' as never),
-    /Unknown functional level: lobes/,
-  );
-  atlas.dispose();
-});
-
-test('only an opaque named division is closed by its ribbon solid, and only while its patch is drawn', async () => {
-  const { atlas } = fixture(null, functional);
-  await atlas.initialize('a');
-  const solids = withGlassSolids(atlas);
-  const wedge = (id: string) => solids.meshes.find((mesh) => mesh.userData['region_id'] === id)!;
-  atlas.setSurfaceColor('functional');
-  atlas.update();
-  assert.equal(wedge('a-left').visible, true);
-  assert.equal(wedge('a-right').visible, false);
-  assert.equal(
-    wedge('a-left').material.color.getHex(),
-    new Color().setRGB(1, 0, 0, SRGBColorSpace).getHex(),
-  );
-  atlas.setHemisphere('right');
-  assert.equal(wedge('a-left').visible, false);
-  atlas.setHemisphere('both');
-  atlas.setCortexOpacity(0.6);
-  assert.equal(wedge('a-left').visible, false);
-  atlas.setCortexOpacity(1);
-  atlas.setFunctionalLevel('sections');
-  assert.equal(wedge('a-left').visible, false);
-  atlas.setFunctionalLevel('named');
-  atlas.setSurfaceColor('atlas');
-  assert.equal(solids.group.visible, false);
-  atlas.dispose();
-});
-
-test('a division behind the glass is picked through it', async () => {
-  const { atlas } = fixture(null, functional);
-  await atlas.initialize('a');
-  withGlassSolids(atlas);
-  atlas.setInternalVisible(false);
-  // The glass area sits in front of the division, on the same ray.
-  const front = meshOf(atlas, 'a-right');
-  front.position.set(0, 0, 0.02);
-  front.updateMatrix();
-  const ray = new Raycaster(new Vector3(0, 0, 0.1), new Vector3(0, 0, -1));
-  assert.equal(atlas.pick(ray)!.id, 'a-right');
-  atlas.setSurfaceColor('functional');
-  assert.equal(atlas.pick(ray)!.id, 'a-left');
-  // Where only the division's ribbon solid lies on the ray, the solid answers for it.
-  const patch = meshOf(atlas, 'a-left');
-  patch.position.set(0.5, 0, 0);
-  patch.updateMatrix();
-  assert.equal(atlas.pick(ray)!.id, 'a-left');
-  atlas.setFunctionalLevel('sections');
-  assert.equal(atlas.pick(ray)!.id, 'a-right');
-  atlas.dispose();
-});
-
-test('functional divisions need their atlas and their solids, and leaving the atlas leaves them', async () => {
-  const { atlas } = fixture(null, functional);
-  await atlas.initialize('b');
-  assert.throws(() => atlas.setSurfaceColor('functional'), /colour a areas; show that atlas first/);
-  await atlas.setAtlas('a');
-  assert.throws(() => atlas.setSurfaceColor('functional'), /solids must load/);
-  withGlassSolids(atlas);
-  atlas.setSurfaceColor('functional');
-  atlas.setFunctionalLevel('sections');
-  await atlas.setAtlas('b');
-  assert.equal(atlas.state.surfaceColor, 'atlas');
-  atlas.reset();
-  assert.equal(atlas.state.functionalLevel, 'named');
-  atlas.dispose();
-});
 
 test('a paint colours the regions it names over any surface colour, every other region in tissue colour', async () => {
   const { atlas } = fixture(null, functional);
   await atlas.initialize('a');
-  withGlassSolids(atlas);
-  atlas.setSurfaceColor('functional');
+  atlas.setSurfaceColor('tissue');
+  atlas.setCortexOpacity(0.5);
   const red = new Color().setRGB(1, 0, 0, SRGBColorSpace).getHex();
   const tissue = new Color(appearance.tissue.cortex).getHex();
   const changes = [];
@@ -955,31 +841,25 @@ test('a paint colours the regions it names over any surface colour, every other 
   atlas.setPaint({ id: 'deficit:aphasia', colors: new Map([['a-left', [255, 0, 0]]]) });
   assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), red);
   assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), tissue);
-  // Paint is opaque: the functional glass does not show through it.
-  for (const id of ['a-left', 'a-right', 'a-wall']) {
-    assert.equal(meshOf(atlas, id).material.opacity, 1);
-    assert.equal(meshOf(atlas, id).material.userData['glass'], false);
-  }
+  // A see-through cortex leaves the painted area opaque, the cortex around it see-through.
+  assert.equal(meshOf(atlas, 'a-left').material.opacity, 1);
+  assert.equal(meshOf(atlas, 'a-right').material.opacity, 0.5);
   assert.equal(atlas.state.paint!.id, 'deficit:aphasia');
   // The same paint again changes nothing; the surface colour underneath is kept.
   atlas.setPaint({ id: 'deficit:aphasia', colors: new Map() });
   assert.equal(changes.length, 1);
-  assert.equal(atlas.state.surfaceColor, 'functional');
+  assert.equal(atlas.state.surfaceColor, 'tissue');
   atlas.setPaint(null);
-  assert.equal(meshOf(atlas, 'a-wall').material.userData['glass'], true);
+  assert.equal(meshOf(atlas, 'a-left').material.opacity, 0.5);
   assert.throws(() => atlas.setPaint({ id: 'x', colors: {} } as never), /Map of region colours/);
   atlas.dispose();
 });
 
-test('a model without the divisions refuses them', async () => {
-  const { atlas } = fixture();
+test('the functional divisions are not a surface colour, even where they are published', async () => {
+  const { atlas } = fixture(null, functional);
   await atlas.initialize('a');
-  assert.throws(() => atlas.setSurfaceColor('functional'), /no functional divisions/);
+  assert.throws(() => atlas.setSurfaceColor('functional'), /Unknown surface colour: functional/);
   assert.throws(() => atlas.setSurfaceColor('domains'), /Unknown surface colour: domains/);
-  await assert.rejects(
-    atlas.loadGlassSolids('https://example.invalid/'),
-    /no functional divisions/,
-  );
   atlas.dispose();
 });
 
@@ -1085,7 +965,6 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
     internalVisible: true,
     spinalCordVisible: false,
     surfaceColor: 'atlas',
-    functionalLevel: 'named',
     paint: null,
     isolatedRegion: null,
     hiddenRegions: new Set(),

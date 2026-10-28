@@ -37,7 +37,6 @@ function barProps(overrides: Record<string, unknown> = {}) {
     colourings: {
       networks: {},
       cabNp: { atlas: 'hcp-mmp' },
-      functionalRegions: { atlas: 'hcp-mmp' },
     } as never,
     anatomy: subjects[0],
     anatomies: subjects,
@@ -169,7 +168,6 @@ describe('DataBar on the bar', () => {
       'Regions',
       'Yeo 7 networks',
       'CAB-NP networks (atlas becomes HCP-MMP)',
-      'Functional divisions (atlas becomes HCP-MMP)',
     ]);
     expect(
       [...el(field('Colour')).querySelectorAll('optgroup')].map((group) => group.label),

@@ -8,11 +8,11 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 
 ### ATLAS-01 · A stale or malformed manifest is refused, naming what is missing
 
-- **Rule:** The model refuses a manifest that is not schema 1 or lacks atlases, regions, detail levels, the appearance, the native envelopes, the glass and see-through opacities its sidecars need, or the anatomy's subject, display name and `individual` flag. The message lists every missing field and says that a stale cached copy causes this. Region metadata must be complete and unique.
+- **Rule:** The model refuses a manifest that is not schema 1 or lacks atlases, regions, detail levels, the appearance, the native envelopes, the see-through opacity its sidecars need, or the anatomy's subject, display name and `individual` flag. The message lists every missing field and says that a stale cached copy causes this. Region metadata must be complete and unique.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:70-103`
-- **Expected:** No `detail_levels` → Error matching `/detail_levels/` and `/cache/i` ("… A stale cached copy will do this; reload ignoring the cache."). `atlases: []` → `/atlases/`. `schema_version: 2` → `/schema_version 1/`. `anatomy: { id: 'bert' }` or no `individual` → `/anatomy/`. With `functional_regions`, `glass_opacity` must lie in (0, 1); with `neuropsych_domains`, `see_through_opacity` must. A region with a duplicate id, no label, a hemisphere other than left/right/midline or an unknown kind → "Invalid or duplicate region metadata: <id>".
+- **Expected:** No `detail_levels` → Error matching `/detail_levels/` and `/cache/i` ("… A stale cached copy will do this; reload ignoring the cache."). `atlases: []` → `/atlases/`. `schema_version: 2` → `/schema_version 1/`. `anatomy: { id: 'bert' }` or no `individual` → `/anatomy/`. With `neuropsych_domains`, `see_through_opacity` must lie in (0, 1). A region with a duplicate id, no label, a hemisphere other than left/right/midline or an unknown kind → "Invalid or duplicate region metadata: <id>".
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); the opacity and region-metadata checks are uncovered
 
 ### ATLAS-02 · Published sidecars must fit the model's regions
@@ -118,11 +118,11 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 
 ### ATLAS-13 · Changing the atlas drops the selection and the isolation, and colours that need the old atlas
 
-- **Rule:** A new atlas clears the selection and the isolation. CAB-NP and functional colours belong to one atlas, so leaving it returns to atlas colours.
+- **Rule:** A new atlas clears the selection and the isolation. CAB-NP colours belong to one atlas, so leaving it returns to atlas colours.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:431-450`
-- **Expected:** Fixture `select('a-right')`, `isolate()`, `setAtlas('b')` → `selectedRegion === null`, `isolatedRegion === null`, one `selectionchange` with `null`. CAB-NP on `a`, then `setAtlas('b')` → `surfaceColor === 'atlas'`; the same for `functional`.
+- **Expected:** Fixture `select('a-right')`, `isolate()`, `setAtlas('b')` → `selectedRegion === null`, `isolatedRegion === null`, one `selectionchange` with `null`. CAB-NP on `a`, then `setAtlas('b')` → `surfaceColor === 'atlas'`.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, colours), the contract suite (R, "drops the selection and the isolation when the atlas changes", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-14 · The latest atlas or detail request wins, and the two do not cancel each other
@@ -203,8 +203,8 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:695-850`
-- **Expected:** `setSurfaceColor('bogus')` → TypeError "Unknown surface colour: bogus". `setFunctionalLevel('lobes')` → TypeError "Unknown functional level: lobes". `setPaint({ id: 5, colors: new Map() })` or `{ id: 'x', colors: {} }` → TypeError "A paint needs an id and a Map of region colours.". `setClippingPlanes([plane with normal (2, 0, 0)])` → Error "Clipping requires normalized, finite Three.js planes.". `setSpinalCordVisible('yes')` rejects with TypeError "Spinal cord visibility must be boolean.". `isolate()` with nothing selected → "Select a region before isolating.". After each, `settings`, every material and the event log are unchanged.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, functional level and paint messages), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
+- **Expected:** `setSurfaceColor('bogus')` → TypeError "Unknown surface colour: bogus". `setPaint({ id: 5, colors: new Map() })` or `{ id: 'x', colors: {} }` → TypeError "A paint needs an id and a Map of region colours.". `setClippingPlanes([plane with normal (2, 0, 0)])` → Error "Clipping requires normalized, finite Three.js planes.". `setSpinalCordVisible('yes')` rejects with TypeError "Spinal cord visibility must be boolean.". `isolate()` with nothing selected → "Select a region before isolating.". After each, `settings`, every material and the event log are unchanged.
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, paint message), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-23 · The model reports its whole display state, and every change
 
@@ -212,18 +212,18 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:480-508,597-603,719-730`
-- **Expected:** Fixture after `initialize('a')`: `settings` equals `{ atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: Set{}, cutAtlas: null, cutActive: false, hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', paint: null, isolatedRegion: null, hiddenRegions: Set{}, dissectionCanUndo: false }`; `state.visibleMeshCount === 4`. `select('a-left')` → events `['change', 'selectionchange:a-left']`; the event's region has `source_label_id === 1`.
+- **Expected:** Fixture after `initialize('a')`: `settings` equals `{ atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: Set{}, cutAtlas: null, cutActive: false, hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false, surfaceColor: 'atlas', paint: null, isolatedRegion: null, hiddenRegions: Set{}, dissectionCanUndo: false }`; `state.visibleMeshCount === 4`. `select('a-left')` → events `['change', 'selectionchange:a-left']`; the event's region has `source_label_id === 1`.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, settings and selection payload; I, the "does not walk the scene" claim it cannot observe)
 
 ## Colour
 
 ### ATLAS-24 · Surface colours and what each one needs
 
-- **Rule:** The surface can be coloured as tissue, MRI, atlas, network, CAB-NP or functional divisions. A colour is refused when what it draws is missing: the scan for MRI, the network layer for network, the partition and its atlas for CAB-NP, the divisions, their atlas and the glass solids for functional.
+- **Rule:** The surface can be coloured as tissue, MRI, atlas, network or CAB-NP. A colour is refused when what it draws is missing: the scan for MRI, the network layer for network, the partition and its atlas for CAB-NP. The functional divisions are not a surface colour, even where they are published.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:68,789-813`
-- **Expected:** `SURFACE_COLORS` = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional']. Errors: "MRI must load before selecting MRI appearance."; "This model carries no network layer."; "This model carries no CAB-NP partition."; on atlas `b` "CAB-NP colours a areas; show that atlas first."; "This model carries no functional divisions."; "Functional divisions colour a areas; show that atlas first."; "Glass-brain solids must load before selecting functional divisions.". `'domains'` → "Unknown surface colour: domains".
+- **Expected:** `SURFACE_COLORS` = ['tissue', 'mri', 'atlas', 'network', 'cab-np']. Errors: "MRI must load before selecting MRI appearance."; "This model carries no network layer."; "This model carries no CAB-NP partition."; on atlas `b` "CAB-NP colours a areas; show that atlas first.". `'functional'` (with the divisions published) → "Unknown surface colour: functional"; `'domains'` → "Unknown surface colour: domains".
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, all but the network error)
 
 ### ATLAS-25 · Atlas colour shows the published colours; tissue colour shows tissue with its T1 relief
@@ -253,31 +253,13 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Expected:** Fixture partition {a-left: Default [255, 0, 0], a-right: Visual1 [0, 0, 255]} → a-left 0xff0000, a-right 0x0000ff, a-wall 0xc4a897 (`tissue.unlabelled`), `tissueVariation` 0 on every mesh.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
-### ATLAS-28 · Functional divisions are solid in their colour, the rest of the cortex is glass
-
-- **Rule:** Under functional colour each area in a division of the chosen level takes the division's colour and is opaque. The rest of the cortex, the medial wall included, is glass at the published glass opacity, scaled by the cortex opacity.
-- **Kind:** behaviour
-- **Level:** unit
-- **Source:** `viewer/model/brain-atlas.js:536-539,569-580,814-823`
-- **Expected:** Fixture named level: a-left 0xff0000, opacity 1; a-right and a-wall opacity 0.1 (`glass_opacity`), transparent, colour 0xc4a897, `tissueVariation` 0. Sections level: a-right 0x00ff00 opacity 1, a-wall 0.1. `setCortexOpacity(0.5)` → a-right 0.5, a-wall 0.05.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
-
-### ATLAS-29 · A glass solid closes only an opaque named division, while its patch is drawn
-
-- **Rule:** Behind the glass, a named division's ribbon solid closes it so it reads as a volume. It shows only under functional colour at the named level with the cortex fully opaque, and only while the division's own patch is drawn. Otherwise the solids are hidden.
-- **Kind:** behaviour
-- **Level:** unit
-- **Source:** `viewer/model/brain-atlas.js:590-596`
-- **Expected:** Fixture functional/named: solid a-left visible, colour 0xff0000; a-right (no named division) hidden. Hemisphere right → a-left hidden. Opacity 0.6 → hidden. Sections → hidden. Atlas colour → solids group hidden.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
-
 ### ATLAS-30 · A paint colours its regions over any surface colour
 
-- **Rule:** A paint (a panel's colours for named regions) draws each named region in its sRGB colour and every other region in its tissue colour, over whatever surface colour is set, which is kept underneath. Under a paint no cortex is glass. A painted area stays opaque when the cortex is see-through, and the unpainted cortex takes the cortex opacity. A paint is replaced whole by id; the same id again changes nothing; null lifts it.
+- **Rule:** A paint (a panel's colours for named regions) draws each named region in its sRGB colour and every other region in its tissue colour, over whatever surface colour is set, which is kept underneath. A painted area stays opaque when the cortex is see-through, and the unpainted cortex takes the cortex opacity. A paint is replaced whole by id; the same id again changes nothing; null lifts it.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:560-580,824-832`
-- **Expected:** Fixture functional, `setPaint({ id: 'deficit:aphasia', colors: Map{a-left: [255, 0, 0]} })` → a-left 0xff0000, a-right 0xc4a897, opacity 1 and `glass === false` on a-left, a-right and a-wall; `state.paint.id === 'deficit:aphasia'`. The same id with other colours → no `change` event, colours unchanged. `surfaceColor` stays `functional`. `setPaint(null)` → a-wall glass again. With `setCortexOpacity(0.5)` and a paint: a-left opacity 1, a-right 0.5.
+- **Expected:** Fixture tissue, `setCortexOpacity(0.5)`, `setPaint({ id: 'deficit:aphasia', colors: Map{a-left: [255, 0, 0]} })` → a-left 0xff0000 opacity 1, a-right 0xc4a897 opacity 0.5; `state.paint.id === 'deficit:aphasia'`. The same id with other colours → no `change` event, colours unchanged. `surfaceColor` stays `tissue`. `setPaint(null)` → a-left opacity 0.5.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "keeps the surface colour under a paint, replaces it by id and lifts it with null", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-31 · Selection never changes a region's colour
@@ -309,11 +291,11 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 
 ### ATLAS-34 · Clipping planes reach every surface the model draws
 
-- **Rule:** The cut's planes apply to every layer, to the exposed white matter and to the glass solids, including layers loaded later. Only normalized, finite planes are accepted. Reset removes them.
+- **Rule:** The cut's planes apply to every layer, and to the exposed white matter, including layers loaded later. Only normalized, finite planes are accepted. Reset removes them.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:553-556,592-596,695-713`
-- **Expected:** `setClippingPlanes([p])` → white matter `material.clippingPlanes` equals [p]; after `setAtlas('b')` the visible material has 1 plane; glass-solid materials carry [p]. `reset()` → `clippingPlanes.length === 0`.
+- **Expected:** `setClippingPlanes([p])` → white matter `material.clippingPlanes` equals [p]; after `setAtlas('b')` the visible material has 1 plane. `reset()` → `clippingPlanes.length === 0`.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ## Selection, isolation and dissection
@@ -365,7 +347,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 
 ### ATLAS-40 · Reset restores the default view and keeps what was loaded and painted
 
-- **Rule:** Reset returns every display setting to its default: no dissection, no planes, no internal system, both hemispheres, cortex and internal anatomy shown and opaque, the cord hidden (cancelling a pending show), atlas colour, the named functional level, no isolation, no selection. It keeps the current atlas, the detail level, the loaded layers and the paint, which belongs to the panel.
+- **Rule:** Reset returns every display setting to its default: no dissection, no planes, no internal system, both hemispheres, cortex and internal anatomy shown and opaque, the cord hidden (cancelling a pending show), atlas colour, no isolation, no selection. It keeps the current atlas, the detail level, the loaded layers and the paint, which belongs to the panel.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:890-905`
@@ -401,22 +383,13 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Expected:** Fixture a-right ray with plane ((0, 0, −1), 0) → `a-right` (its kept back face); plane ((0, 0, −1), −0.02) → null. Ray from (−0.1, 0, 0) along +x with plane ((1, 0, 0), −0.02) → `a-right`. Every hit point lies on the kept side of every plane (distance ≥ −1e-9).
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
-### ATLAS-44 · A division behind the glass is picked through it
-
-- **Rule:** Under functional colour the glass cortex does not catch the pointer: a division behind it, its patch or its ribbon solid, is what the reader is pointing at. Glass answers only when nothing else is on the ray.
-- **Kind:** behaviour
-- **Level:** unit
-- **Source:** `viewer/model/brain-atlas.js:613-622`
-- **Expected:** Fixture, internal anatomy hidden, glass a-right in front of a-left: atlas colour → `a-right`; functional → `a-left`; with a-left's patch moved off the ray its solid still answers `a-left`; sections level (a-right is a division) → `a-right`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
-
 ### ATLAS-45 · Picks on the published model land on drawn regions of the right side
 
 - **Rule:** On the published model, picks agree with what is drawn: the region is drawn and selectable, it is on a shown hemisphere, it is not cortex while the cortex is hidden, it is the isolated region when one is isolated, and it is never a hidden region.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:613-675`; `scripts/benchmark-picking.mjs` (ray layout)
-- **Expected:** CDMD destrieux: the ray from (0.25, 0, 0) along −x picks a destrieux cortex region with hemisphere `right`; from (−0.25, 0, 0) along +x, one with hemisphere `left`. Over 100 Fibonacci-sphere rays at 0.25 m aimed at the centre (fixed seed), more than 30 % hit, and for every pick: `canSelect(region)`, `kind !== 'non-region'`; with hemisphere left none is `right`; with the cortex hidden none is cortex; with region r isolated every pick is r or null; after `hideRegions([r])` none is r. Under functional colour on hcp-mmp with glass solids, picks are divisions or glass.
+- **Expected:** CDMD destrieux: the ray from (0.25, 0, 0) along −x picks a destrieux cortex region with hemisphere `right`; from (−0.25, 0, 0) along +x, one with hemisphere `left`. Over 100 Fibonacci-sphere rays at 0.25 m aimed at the centre (fixed seed), more than 30 % hit, and for every pick: `canSelect(region)`, `kind !== 'non-region'`; with hemisphere left none is `right`; with the cortex hidden none is cortex; with region r isolated every pick is r or null; after `hideRegions([r])` none is r.
 - **Covered by:** `src/lib/engine/model/assets.test.ts` (R)
 
 ### ATLAS-46 · A region's centroid is its box centre in surface RAS millimetres, to 0.1 mm
@@ -477,20 +450,20 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 
 ## Solids the model holds, and disposal
 
-### ATLAS-52 · Ribbon solids are cut once per atlas and shared; glass solids need the divisions
+### ATLAS-52 · Ribbon solids are cut once per atlas and kept
 
-- **Rule:** The ribbon solid of each parcel is cut from the envelopes once per atlas and kept, so the glass brain and the cut share it. The glass solids are built once from the functional atlas's ribbons, for the named divisions only. A model without functional divisions refuses them.
+- **Rule:** The ribbon solid of each parcel is cut from the envelopes once per atlas and kept for the cut.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:318-363`
-- **Expected:** CDMD `ensureRibbonWedges('destrieux', base)` twice → the same array and no second `ribbon-destrieux.labels` fetch; envelopes are loaded first. `loadGlassSolids(base)` → solids only for regions in `functional_regions.regions.named` of hcp-mmp; a second call adds nothing. Fixture without divisions → rejects "This model carries no functional divisions.".
-- **Covered by:** `src/lib/engine/model/brain-atlas.cut.test.ts` (R, wedges kept), `src/lib/engine/model/brain-atlas.test.ts` (R, refusal); the named-only and load-once parts are uncovered
+- **Expected:** CDMD `ensureRibbonWedges('destrieux', base)` twice → the same array and no second `ribbon-destrieux.labels` fetch; envelopes are loaded first.
+- **Covered by:** `src/lib/engine/model/brain-atlas.cut.test.ts` (R)
 
 ### ATLAS-53 · Disposal releases everything and refuses later work
 
-- **Rule:** Disposing removes the model from the scene and frees every layer, the white matter, the ribbon solids and the glass materials. A download that finishes later is released at once. Later loads are refused. The model reports that it is disposed.
+- **Rule:** Disposing removes the model from the scene and frees every layer, the white matter and the ribbon solids. A download that finishes later is released at once. Later loads are refused. The model reports that it is disposed.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:907-931`
-- **Expected:** `dispose()` → `group.children.length === 0`, `disposed === true`, `layers.size === 0`. A layer download resolving after `dispose` rejects "BrainAtlas was disposed during loading." and its geometry is disposed. `ensureEnvelopes()`, `ensureSpinalCord()`, `ensureRibbonWedges()`, `loadGlassSolids()`, `loadLayer()` and `setSpinalCordVisible(true)` after dispose reject "BrainAtlas has been disposed.".
+- **Expected:** `dispose()` → `group.children.length === 0`, `disposed === true`, `layers.size === 0`. A layer download resolving after `dispose` rejects "BrainAtlas was disposed during loading." and its geometry is disposed. `ensureEnvelopes()`, `ensureSpinalCord()`, `ensureRibbonWedges()`, `loadLayer()` and `setSpinalCordVisible(true)` after dispose reject "BrainAtlas has been disposed.".
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, children and flag); the late-arrival and refusal parts are uncovered

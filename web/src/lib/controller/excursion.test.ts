@@ -303,6 +303,31 @@ describe('the offer to see through the cortex', () => {
     assert.match(scene.session.state.notice!.text, /\b3 other mapped/);
   });
 
+  for (const [detail, drawnOn] of [
+    ['learning', 'learning'],
+    ['nextbrain', 'learning'],
+    ['aseg', 'aseg'],
+  ]) {
+    test(`from the ${detail} detail, draws its FreeSurfer structures on ${drawnOn}`, async () => {
+      const scene = createScene();
+      const { model } = scene.engine;
+      await model.setDetail(detail);
+      await scene.excursions.openDeficit('dystonia');
+      assert.equal(model.settings.detail, drawnOn);
+      const framed = scene.engine.calls.findLast((call) => call.method === 'frameRegions')!;
+      const regions = framed.args[0] as string[];
+      assert.ok(regions.every((id) => id.startsWith(`${drawnOn}:`) && model.isRegionDrawn(id)));
+      assert.equal(regions.includes('learning:left:pallidum-internal'), drawnOn === 'learning');
+    });
+  }
+
+  test('a structure with no teaching-set stand-in is still drawn on FreeSurfer’s segmentation', async () => {
+    const scene = createScene();
+    await scene.engine.model.setDetail('learning');
+    await scene.excursions.openDeficit('alien-hand');
+    assert.equal(scene.engine.model.settings.detail, 'aseg');
+  });
+
   test('a deficit mapped on structures alone hides the cortex and offers nothing', async () => {
     const scene = createScene();
     await scene.excursions.openDeficit('abulia');

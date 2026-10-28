@@ -28,10 +28,17 @@ export function networkColors(
   indices: ArrayLike<number>,
   { networks, colors }: NetworkMetadata,
 ): Float32Array {
-  const palette = networks.map((name) => {
-    const [red, green, blue] = colors[name]!;
-    return new Color().setRGB(red / 255, green / 255, blue / 255, SRGBColorSpace);
-  });
+  return paletteColors(
+    indices,
+    networks.map((name) => colors[name]!),
+  );
+}
+
+/** Per-vertex colour from a 1-based index into `colors`; index 0, or one past the end, carries none. */
+export function paletteColors(indices: ArrayLike<number>, colors: readonly Rgb[]): Float32Array {
+  const palette = colors.map(([red, green, blue]) =>
+    new Color().setRGB(red / 255, green / 255, blue / 255, SRGBColorSpace),
+  );
   const values = new Float32Array(indices.length * NETWORK_COLOR_ITEM_SIZE);
   for (let vertex = 0; vertex < indices.length; vertex += 1) {
     const color = palette[Math.round(indices[vertex]!) - 1];
@@ -52,6 +59,34 @@ export function attachNetworkColors(geometry: BufferGeometry, metadata: NetworkM
   geometry.setAttribute(
     '_networkColor',
     new BufferAttribute(networkColors(field.array, metadata), NETWORK_COLOR_ITEM_SIZE),
+  );
+  return true;
+}
+
+/** Bind the territory palette to one geometry's `_TERRITORY` field, as `_territoryColor`. */
+export function attachTerritoryColors(
+  geometry: BufferGeometry,
+  territories: readonly { color: Rgb }[],
+): boolean {
+  const field = geometry.getAttribute('_territory');
+  if (!field) return false;
+  // The build writes one index per published territory; a larger one means the mesh and the
+  // manifest disagree, which drawing it as "no territory" would hide.
+  for (let vertex = 0; vertex < field.count; vertex += 1) {
+    const index = field.getX(vertex);
+    if (!Number.isInteger(index) || index < 0 || index > territories.length) {
+      throw new Error(`Vertex index ${index} has no published territory.`);
+    }
+  }
+  geometry.setAttribute(
+    '_territoryColor',
+    new BufferAttribute(
+      paletteColors(
+        field.array,
+        territories.map((territory) => territory.color),
+      ),
+      NETWORK_COLOR_ITEM_SIZE,
+    ),
   );
   return true;
 }

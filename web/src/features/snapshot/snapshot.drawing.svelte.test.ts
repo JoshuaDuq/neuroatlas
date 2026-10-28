@@ -67,9 +67,7 @@ async function drawFixture() {
     lang: 'en' as const,
     status: 'ready' as const,
     surfaceColor: 'atlas' as const,
-    functionalLevel: 'named' as const,
     networks: null,
-    functionalRegions: null,
     legend: DEFICIT as Legend | null,
   });
   const handle: { keys?: StageKeysModel } = {};

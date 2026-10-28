@@ -214,7 +214,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:203-239`
 - **Expected:** `mri` pending, then `tissue` → colour `tissue`; `mri` pending, then the command ends → colour stays `atlas`, status `ready`.
-- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, an overtaken `functional` download lands without a colour change)
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, an overtaken `mri` download lands without a colour change)
 
 ### SLICE-23 · Setting the MRI window
 
@@ -263,7 +263,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 ### SLICE-28 · An open cut follows the display
 
-- **Rule:** An open cut redraws when hemisphere, cortex visibility or opacity, isolation, internal system or visibility, surface colour, functional level, paint, detail, cord visibility or the hidden set changes. If the cut atlas or the detail level's caps are not loaded, it hides and reloads first.
+- **Rule:** An open cut redraws when hemisphere, cortex visibility or opacity, isolation, internal system or visibility, surface colour, paint, detail, cord visibility or the hidden set changes. If the cut atlas or the detail level's caps are not loaded, it hides and reloads first.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:57-93`
@@ -301,7 +301,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 ### SLICE-31 · Published colours are not shaded
 
-- **Rule:** The T1 brightness modulation of the cut applies only under tissue colour. Under atlas, network, CAB-NP, functional or paint colours it is 0, so the cut matches its key.
+- **Rule:** The T1 brightness modulation of the cut applies only under tissue colour. Under atlas, network, CAB-NP or paint colours it is 0, so the cut matches its key.
 - **Kind:** scientific/data
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:339-345`

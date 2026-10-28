@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { lesionSides, regionRows, tractRows } from './report.ts';
+import { lesionSides, regionRows, territoryRows, tractRows } from './report.ts';
 
 const regions = new Map([
   ['destrieux:left:41', { inside: 964, whole: 1181 }],
@@ -44,4 +44,29 @@ test('lists the bundles the lesion crosses by share, and the ones it misses apar
     ['af-left', 'ilf-left'],
   );
   assert.deepEqual(missed, ['uf-left']);
+});
+
+test('a lesion’s territories share out the lesion, not the territory, and slivers fold', () => {
+  const reached = new Map([
+    ['arterial:left:mca-frontal', { inside: 600, whole: 200_000 }],
+    ['arterial:left:aca', { inside: 395, whole: 150_000 }],
+    ['arterial:left:mca-insular', { inside: 5, whole: 12_000 }],
+    ['aseg:left:12', { inside: 900, whole: 5_000 }],
+  ]);
+  const { shown, slight } = territoryRows(reached);
+  assert.deepEqual(
+    shown.map((row) => [row.id, row.share]),
+    [
+      ['arterial:left:mca-frontal', 0.6],
+      ['arterial:left:aca', 0.395],
+    ],
+  );
+  assert.deepEqual(
+    slight.map((row) => [row.id, row.share]),
+    [['arterial:left:mca-insular', 0.005]],
+  );
+  assert.deepEqual(territoryRows(new Map([['aseg:left:12', { inside: 1, whole: 2 }]])), {
+    shown: [],
+    slight: [],
+  });
 });

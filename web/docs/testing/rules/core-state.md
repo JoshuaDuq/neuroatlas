@@ -21,7 +21,7 @@ is the English interface text.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:8-33,201-218`
-- **Expected:** Defaults: hemisphere `both`, cortex shown, opacity 1, internal anatomy shown, cord hidden, colour `atlas`, level `named`, view `oblique`, cut `off`, position 0, not reversed, tilt 30, azimuth 30, no region, no isolation, no system, no anatomy, tab `anatomy`, no function, deficit or circuit, step 0, no camera, no MRI window. `encodeState` of all those plus `atlas: 'destrieux'` → `atlas=destrieux`. `{ atlas: 'destrieux', spinalCordVisible: false }` → `atlas=destrieux`. `{ cut: 'off' }` writes no `cut=`.
+- **Expected:** Defaults: hemisphere `both`, cortex shown, opacity 1, internal anatomy shown, cord hidden, colour `atlas`, view `oblique`, cut `off`, position 0, not reversed, tilt 30, azimuth 30, no region, no isolation, no system, no anatomy, tab `anatomy`, no function, deficit or circuit, step 0, no camera, no MRI window. `encodeState` of all those plus `atlas: 'destrieux'` → `atlas=destrieux`. `{ atlas: 'destrieux', spinalCordVisible: false }` → `atlas=destrieux`. `{ cut: 'off' }` writes no `cut=`.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `src/lib/core/state/reader-state.test.ts` (R, "the defaults are exactly what a link leaves out")
 
 ### STATE-02 · Each field travels under one short parameter, in a fixed order
@@ -30,7 +30,7 @@ is the English interface text.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:145-218`
-- **Expected:** Order and names: `hidden`, `anatomy`, `atlas`, `cuts` (cut atlas), `system`, `detail`, `region`, `isolate`, `view`, `cam`, `cut`, `pos`, `rev`, `tilt`, `az`, `hemi`, `cortex`, `internal`, `cord`, `colors`, `level`, `opacity`, `mri`, `tab`, `function`, `deficit`, `circuit`, `step`, `lang`. `{ explorer: 'circuits', selectedDeficit: 'aphasia', circuit: 'visual', circuitStep: 2 }` → `tab=circuits&deficit=aphasia&circuit=visual&step=3`. `{ surfaceColor: 'functional', functionalLevel: 'sections' }` → `colors=functional&level=sections`.
+- **Expected:** Order and names: `hidden`, `anatomy`, `atlas`, `cuts` (cut atlas), `system`, `detail`, `region`, `isolate`, `view`, `cam`, `cut`, `pos`, `rev`, `tilt`, `az`, `hemi`, `cortex`, `internal`, `cord`, `colors`, `opacity`, `mri`, `tab`, `function`, `deficit`, `circuit`, `step`, `lang`. `{ explorer: 'circuits', selectedDeficit: 'aphasia', circuit: 'visual', circuitStep: 2 }` → `tab=circuits&deficit=aphasia&circuit=visual&step=3`.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R, by examples; `STATE-02`: the whole name table and order)
 
 ### STATE-03 · Names pass through as readable, opaque strings
@@ -80,11 +80,11 @@ is the English interface text.
 
 ### STATE-08 · Closed lists take only their own values
 
-- **Rule:** Colour, hemisphere, cut, functional level, tab and language accept only the values the app has.
+- **Rule:** Colour, hemisphere, cut, tab and language accept only the values the app has.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:150-195`
-- **Expected:** `colors` ∈ tissue, mri, atlas, network, cab-np, functional; `hemi` ∈ both, left, right; `cut` ∈ off, sagittal, coronal, axial, oblique; `level` ∈ named, sections; `tab` ∈ anatomy, functions, deficits, circuits, diffusion; `lang` ∈ en, fr. `hemi=banana`, `cut=sideways`, `level=lobes`, `tab=tracts`, `lang=es`, `lang=unknown` rejected. `colors=mri`, `colors=cab-np` and `colors=tissue` round trip.
+- **Expected:** `colors` ∈ tissue, mri, atlas, network, cab-np; `hemi` ∈ both, left, right; `cut` ∈ off, sagittal, coronal, axial, oblique; `tab` ∈ anatomy, functions, deficits, circuits, diffusion; `lang` ∈ en, fr. `hemi=banana`, `cut=sideways`, `tab=tracts`, `lang=es`, `lang=unknown` rejected. `colors=mri`, `colors=cab-np` and `colors=tissue` round trip. A link from the removed functional colouring, `colors=functional&level=sections&opacity=0.5` → state `{ cortexOpacity: 0.5 }`, rejected `['colors']`; `level` is no longer read.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-09 · A cut position is read to a tenth and written toward zero
@@ -349,7 +349,7 @@ is the English interface text.
 
 ### STATE-37 · A scene is applied layers first, the camera last
 
-- **Rule:** Restoring applies the atlas and detail level first, then system, hemisphere, cortex, internal anatomy, cord, opacity, hidden parts, functional level and colour, then the cut atlas and the cut (angles, plane, side, then position), then isolation, selection (opening its tree branch), the MRI window, the named view, and last the exact camera. A setting already as wanted is not touched, except the cord and the colour, which are always asked so a showing still downloading is overtaken. The cord is awaited before selection and framing. Hidden parts compare by membership.
+- **Rule:** Restoring applies the atlas and detail level first, then system, hemisphere, cortex, internal anatomy, cord, opacity, hidden parts and colour, then the cut atlas and the cut (angles, plane, side, then position), then isolation, selection (opening its tree branch), the MRI window, the named view, and last the exact camera. A setting already as wanted is not touched, except the cord and the colour, which are always asked so a showing still downloading is overtaken. The cord is awaited before selection and framing. Hidden parts compare by membership.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/reader-state.js:42-128`
@@ -362,7 +362,7 @@ is the English interface text.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/reader-state.js:44-55`
-- **Expected:** atlas, detail and cut atlas failures → `[{ fields: ['atlas'] }]`, `['detail']`, `['cuts']` with the thrown error, and the camera is still framed last. Selection → `['region']`; system → `['system']`; framing → `['view']`. Step fields: atlas `atlas`, detail `detail`, system, hemi, cortex, internal, cord, opacity, hidden, level, colors, cuts, cut `cut, tilt, az, rev, pos`, position `pos`, isolate, region, mri, view, cam.
+- **Expected:** atlas, detail and cut atlas failures → `[{ fields: ['atlas'] }]`, `['detail']`, `['cuts']` with the thrown error, and the camera is still framed last. Selection → `['region']`; system → `['system']`; framing → `['view']`. Step fields: atlas `atlas`, detail `detail`, system, hemi, cortex, internal, cord, opacity, hidden, colors, cuts, cut `cut, tilt, az, rev, pos`, position `pos`, isolate, region, mri, view, cam.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-39 · A cut position the plane cannot hold is the one field lost; a plane that cannot be cut takes its settings with it
@@ -423,20 +423,11 @@ is the English interface text.
 
 ### STATE-45 · A colouring defined on one atlas first shows that atlas
 
-- **Rule:** CAB-NP colours HCP-MMP areas and the functional divisions colour their own atlas's areas, so choosing or restoring them first shows that atlas. A colour chosen later overtakes one still waiting or downloading: keeping the colour shown, a reset and an applied link all win.
+- **Rule:** CAB-NP colours HCP-MMP areas, so choosing or restoring it first shows that atlas. A colour chosen later overtakes one still waiting or downloading: keeping the colour shown, a reset and an applied link all win.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/scene-commands.js:9-16,106-122`
-- **Expected:** `requiredAtlas(model, 'cab-np')` = `model.cabNp.atlas` (hcp-mmp on cdmd), `'functional'` = `model.functionalRegions.atlas`, others null; with no CAB-NP or functional data → undefined. Destrieux, choose CAB-NP, HCP-MMP lands → atlas hcp-mmp, colour cab-np (also through `applySurfaceColor`, returning true). CAB-NP waiting, then Tissue → Tissue stays. MRI downloading, then Regions by any of the three routes → Regions stays, status ready.
-- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
-
-### STATE-46 · Entering the glass brain hides the internal anatomy and says how to show it
-
-- **Rule:** Choosing the functional divisions from the masthead, when they were not shown, hides the internal anatomy and says how to bring it back. Restoring them from a link or scene does not.
-- **Kind:** behaviour
-- **Level:** unit
-- **Source:** `viewer/state/scene-commands.js:195-218`
-- **Expected:** `chooseSurfaceColor('functional')` → internal anatomy hidden, notice "Internal anatomy is hidden; Display shows it again." (fr "L’anatomie interne est masquée ; Affichage la montre à nouveau."). `applySurfaceColor('functional', current)` → internal anatomy still shown.
+- **Expected:** `requiredAtlas(model, 'cab-np')` = `model.cabNp.atlas` (hcp-mmp on cdmd), others null; with no CAB-NP data → undefined. Destrieux, choose CAB-NP, HCP-MMP lands → atlas hcp-mmp, colour cab-np (also through `applySurfaceColor`, returning true). CAB-NP waiting, then Tissue → Tissue stays. MRI downloading, then Regions by any of the three routes → Regions stays, status ready.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-47 · The cord's first showing is a download; an anatomy without one refuses
@@ -579,7 +570,7 @@ is the English interface text.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/internal-mode.js:35-46`
-- **Expected:** required `{ 'cab-np': 'hcp-mmp', functional: 'hcp-mmp' }`: entered with cab-np on hcp-mmp, left on destrieux → colour `atlas`, `colourLost: 'cab-np'`; left on hcp-mmp → colour `cab-np`, `colourLost: null`. The same for `functional`.
+- **Expected:** required `{ 'cab-np': 'hcp-mmp' }`: entered with cab-np on hcp-mmp, left on destrieux → colour `atlas`, `colourLost: 'cab-np'`; left on hcp-mmp → colour `cab-np`, `colourLost: null`.
 - **Covered by:** `src/lib/core/state/internal-mode.test.ts` (R)
 
 ## Boot decision

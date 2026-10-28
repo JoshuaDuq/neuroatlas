@@ -31,6 +31,8 @@ export interface Tracts extends EngineTracts {
     ): Promise<TractCrossing[]>;
   } | null;
   setClippingPlanes(planes: Plane[]): void;
+  /** Whether the camera is moving, so the lines it draws are the coarser ones. */
+  setMotion(moving: boolean): void;
   dispose(): void;
 }
 
@@ -162,6 +164,7 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
     createMriNavigator: (canvas, onLocation) =>
       createMriNavigationViewer(catalog, canvas, onLocation, loadTract),
     setClippingPlanes: engine.setClippingPlanes,
+    setMotion: engine.setMotion,
     scannerToSurface: (point) => engine.scannerToSurface(point) as Vec3,
     surfaceToScanner: (point) => engine.surfaceToScanner(point) as Vec3,
     dispose: engine.dispose,

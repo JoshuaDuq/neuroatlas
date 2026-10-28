@@ -81,7 +81,3 @@ export function functionalRegionOf(
 
 export const functionalName = (record: FunctionalRegion, lang: Language = 'en') =>
   lang === 'fr' ? record.name_fr : record.name;
-
-/** What the colour key prints: a published abbreviation, or the name without "cortex". */
-export const functionalShortName = (record: FunctionalRegion, lang: Language = 'en') =>
-  lang === 'fr' ? record.short_fr : record.short;

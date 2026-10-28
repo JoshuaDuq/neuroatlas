@@ -18,6 +18,7 @@
   import { createLatestRunner } from '../../lib/core/async/latest.ts';
   import { labelOf } from '../../lib/core/catalog/labels.ts';
   import {
+    comparedWith,
     createComparisonCatalog,
     type ComparisonCatalog,
     type ComparisonData,
@@ -76,7 +77,11 @@
   let justLoaded = $state(false);
 
   const copy = $derived(t(lang, 'comparison'));
-  const shown = $derived(Boolean(manifest.atlas_comparison) && region?.kind === 'cortex');
+  // Only the compared atlases have overlaps; another cortical atlas has no section.
+  const partner = $derived(comparedWith(region?.atlas));
+  const shown = $derived(
+    Boolean(manifest.atlas_comparison) && region?.kind === 'cortex' && partner !== null,
+  );
   const sourceId = $derived(shown ? region!.id : null);
 
   const comparison = $derived.by(() => {
@@ -87,14 +92,7 @@
   });
   const regionById = $derived(new Map(manifest.regions.map((entry) => [entry.id, entry])));
   const rowName = (id: string) => labelOf(regionById.get(id)!, lang)!.name;
-  // The comparison pairs the two cortical atlases, so the other one is the manifest's other atlas.
-  const heading = $derived(
-    shown
-      ? copy.heading(
-          atlasSwitchLabel(manifest.atlases.find((atlas) => atlas.id !== region!.atlas)!.id, lang),
-        )
-      : '',
-  );
+  const heading = $derived(shown ? copy.heading(atlasSwitchLabel(partner!, lang)) : '');
 
   const status = $derived(
     failure

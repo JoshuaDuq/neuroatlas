@@ -32,20 +32,20 @@ the expected values change with them in the same commit.
 
 ### CAT-02 · Section modes, hemispheres and functional levels
 
-- **Rule:** The section modes, the hemisphere choices and the functional levels are fixed lists. A link accepts exactly these values (the decoding rule is STATE-08 in `core-state.md`).
+- **Rule:** The section modes, the hemisphere choices and the functional levels are fixed lists. A link accepts exactly the section modes and hemispheres (the decoding rule is STATE-08 in `core-state.md`); the functional levels are the two levels of the published functional-regions file (CAT-33).
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:7`; `viewer/state/url-state.js:55`; `viewer/catalog/functional-regions.js:5`
-- **Expected:** `CUTS` = `['off','sagittal','coronal','axial','oblique']`; `HEMISPHERES` = `['both','left','right']`; `FUNCTIONAL_LEVELS` = `['named','sections']`. Probed with off, sagittal, coronal, axial, oblique, both, left, right, named, sections, anatomy, functions, deficits, circuits, diffusion, bogus and "", `cut=` accepts exactly `CUTS`, `hemi=` exactly `HEMISPHERES`, `level=` exactly `FUNCTIONAL_LEVELS`.
+- **Expected:** `CUTS` = `['off','sagittal','coronal','axial','oblique']`; `HEMISPHERES` = `['both','left','right']`; `FUNCTIONAL_LEVELS` = `['named','sections']`. Probed with off, sagittal, coronal, axial, oblique, both, left, right, named, sections, anatomy, functions, deficits, circuits, diffusion, bogus and "", `cut=` accepts exactly `CUTS`, `hemi=` exactly `HEMISPHERES`.
 - **Covered by:** `src/lib/types/constants.test.ts` (R, the lists); `src/lib/core/state/url-state.test.ts` (R, some values; the decoder's acceptance is STATE-08)
 
-### CAT-03 · Six surface colourings, declared once
+### CAT-03 · Five surface colourings, declared once
 
-- **Rule:** The cortex can be coloured by tissue, MRI, atlas, network, CAB-NP or functional division. There is one list, and a link accepts each of them and nothing else.
+- **Rule:** The cortex can be coloured by tissue, MRI, atlas, network or CAB-NP. There is one list, and a link accepts each of them and nothing else.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:68`; `viewer/state/url-state.js:36`
-- **Expected:** `SURFACE_COLORS` = `['tissue','mri','atlas','network','cab-np','functional']`; `colors=bogus` and `colors=rgb` are rejected.
+- **Expected:** `SURFACE_COLORS` = `['tissue','mri','atlas','network','cab-np']`; `colors=bogus`, `colors=rgb` and `colors=functional` are rejected.
 - **Covered by:** `src/lib/types/constants.test.ts` (R); `src/lib/engine/model/brain-atlas.test.ts` (W, `includes('mri')` only)
 
 ### CAT-04 · Five explorers, which are the workspace modes
@@ -83,7 +83,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/labels.js:55-117`; `viewer/catalog/catalog.js:37-60`
-- **Expected:** all 1266 regions of `cdmd/manifest.json` resolve in `en` and `fr`. `createCatalog` of a manifest holding a region with no label throws "Region has no label: <id>".
+- **Expected:** all 1562 regions of `cdmd/manifest.json` resolve in `en` and `fr`. `createCatalog` of a manifest holding a region with no label throws "Region has no label: <id>".
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (S), `src/lib/core/catalog/labels.fr.test.ts` (S); `src/lib/core/catalog/published-catalog.test.ts` (S, and the throw)
 
 ### CAT-08 · The published regions are all there
@@ -92,7 +92,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/labels.test.js`
-- **Expected:** cortex: destrieux 148, hcp-mmp 360; structures: aseg 32, nextbrain 292, learning 106; the supplemental pam50 layer 34; tissue regions 290 (nextbrain 222, wmparc 68); non-regions 4 (`destrieux:left:-1`, `destrieux:right:-1`, `hcp-mmp:left:0`, `hcp-mmp:right:0`). Total 1266.
+- **Expected:** cortex: destrieux 148, hcp-mmp 360, julich 278; structures: aseg 32, nextbrain 292, learning 106; the supplemental pam50 layer 34; tissue regions 290 (nextbrain 222, wmparc 68); non-regions 22 (`destrieux:left:-1`, `destrieux:right:-1`, `hcp-mmp:left:0`, `hcp-mmp:right:0`, and Julich-Brain's 7 gap maps and 2 medial masks on each side). Total 1562.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (S, declared vs listed, not the fixed numbers), `labels.fr.test.ts` (S, same), `functional-regions.test.ts` (S, hcp-mmp 360)
 
 ### CAT-09 · Destrieux parcels read their curated anatomical names, grouped by lobe
@@ -240,7 +240,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/catalog.js:111-136`
-- **Expected:** published, English, destrieux surface, aseg detail: `search('s', settings, 50)` → 50 rows, total 752. Default cap 50.
+- **Expected:** published, English, destrieux surface, aseg detail: `search('s', settings, 50)` → 50 rows, total 918. Default cap 50.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (W, asserts `total > 50`); `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ### CAT-25 · The list shows the active atlas's groups, then structures, then the cut's regions
@@ -314,7 +314,7 @@ the expected values change with them in the same commit.
 - **Kind:** scientific
 - **Level:** unit
 - **Source:** `viewer/catalog/networks.js:80-85`
-- **Expected:** destrieux or hcp-mmp → 'vertices'; nextbrain tissue-region → 'voxels'; other → throws /basis/. All 580 published regions with networks have a basis.
+- **Expected:** destrieux, hcp-mmp or julich → 'vertices'; nextbrain tissue-region → 'voxels'; other → throws /basis/. All 871 published regions with networks have a basis.
 - **Covered by:** `src/lib/core/catalog/network-basis.test.ts` (R, S); `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ## Functional regions
@@ -330,7 +330,7 @@ the expected values change with them in the same commit.
 
 ### CAT-34 · Every HCP-MMP area has a section, and a named region only where one is published
 
-- **Rule:** An area belongs to one of Glasser's 22 sections and, where a source names one, to a named region. Names and key labels are read in the reader's language.
+- **Rule:** An area belongs to one of Glasser's 22 sections and, where a source names one, to a named region. Names and short names are read in the reader's language.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/functional-regions.js:35-43`
@@ -428,7 +428,7 @@ the expected values change with them in the same commit.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/clinical/validate.js`
-- **Expected:** messages start "Invalid clinical catalog: ". Revision date not `YYYY-MM-DD` → "revision date is required". Groups, deficits, references, associations or manifest regions missing or empty → "<kind> records are required"; a blank, null or numeric id → "<kind> id is required"; a repeated id → "Duplicate <kind>: <id>". A group, deficit (name, domain, summary), reference (population), association (title, finding, limitation, network, mapping_note) or correction (summary) text missing or blank in either language → "<id>: <field>.<lang> is required". Deficit: unknown group → "unknown group"; aliases not a list of non-empty terms in each language → "aliases.<lang> must be a list of terms"; a group with no deficit → "<group>: group has no deficits". Reference: title, authors, journal blank → "<field> is required"; year not an integer ≥ 1800 (1799, 2020.5, "1990") → "year must be a publication year"; DOI not `10.NNNN/…` (e.g. "javascript:alert(1)", "10.12/x", "10.1234/") → "invalid doi"; PMID not digits → "invalid pmid"; method not lesion-mapping, meta-analysis, case-report or case-series → "unknown method"; scope not abstract or full-text → "source scope is required"; corrections not a list → "corrections must be a list"; a correction DOI invalid → "invalid correction doi". Association: unknown deficit → "unknown deficit"; laterality not left, right or bilateral → "invalid laterality"; no supporting evidence → "supporting evidence is required"; unknown reference → "unknown reference <id>"; role not supporting or qualifying → "invalid evidence role"; mappings not a list → "mappings must be a list"; a mapped region unknown or a non-region → "unknown region <id>"; its source name different (after `&` = `_and_`) → "source_name disagrees with <id>"; a side other than the association's laterality → "hemisphere mismatch"; a region twice → "duplicate region <id>". A source name spelled with `&` where the manifest has `_and_` is accepted.
+- **Expected:** messages start "Invalid clinical catalog: ". Revision date not `YYYY-MM-DD` → "revision date is required". Groups, deficits, references, associations or manifest regions missing or empty → "<kind> records are required"; a blank, null or numeric id → "<kind> id is required"; a repeated id → "Duplicate <kind>: <id>". A group, deficit (name, domain, summary), reference (population), association (title, finding, limitation, network, mapping_note) or correction (summary) text missing or blank in either language → "<id>: <field>.<lang> is required". Any such text with a key other than en and fr, as an unquoted comma in a YAML flow map leaves → "<id>: <field> has text outside en and fr: <keys>". Deficit: unknown group → "unknown group"; aliases not a list of non-empty terms in each language → "aliases.<lang> must be a list of terms"; a group with no deficit → "<group>: group has no deficits". Reference: title, authors, journal blank → "<field> is required"; year not an integer ≥ 1800 (1799, 2020.5, "1990") → "year must be a publication year"; DOI not `10.NNNN/…` (e.g. "javascript:alert(1)", "10.12/x", "10.1234/") → "invalid doi"; PMID not digits → "invalid pmid"; method not lesion-mapping, meta-analysis, case-report or case-series → "unknown method"; scope not abstract or full-text → "source scope is required"; corrections not a list → "corrections must be a list"; a correction DOI invalid → "invalid correction doi". Association: unknown deficit → "unknown deficit"; laterality not left, right or bilateral → "invalid laterality"; no supporting evidence → "supporting evidence is required"; unknown reference → "unknown reference <id>"; role not supporting or qualifying → "invalid evidence role"; mappings not a list → "mappings must be a list"; a mapped region unknown or a non-region → "unknown region <id>"; its source name different (after `&` = `_and_`) → "source_name disagrees with <id>"; a side other than the association's laterality → "hemisphere mismatch"; a region twice → "duplicate region <id>". A source name spelled with `&` where the manifest has `_and_` is accepted.
 - **Covered by:** `src/lib/core/clinical/validate.test.ts` (R, one fixture per message, exact text); `src/lib/core/clinical/catalog.test.ts` (R, 14 of these)
 
 ### CAT-45 · Deficit search finds names, domains, synonyms and findings in the reader's language
@@ -482,7 +482,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `data/neuropsychology.yaml`; `viewer/clinical/data.test.js`
-- **Expected:** revised "2026-10-27"; 6 groups, 70 deficits (abulia … word-deafness, the list in `data.test.ts`), 131 references, 108 associations; every deficit has a finding. The amusia connectivity finding has no parcel, while the profile retains its direct right temporal landmarks (33, 34). The focal coma finding maps only `learning:left:pons`, leaving connected cortical nodes uncoloured. The alien-hand map contains only the two anterior callosal subdivisions (254, 255), leaving posterior callosum uncoloured; akinetopsia cites the unilateral Otsuka-Hirota case as qualifying evidence. The posterior-parietal motor-neglect case has no parcel; the motor-neglect profile maps only right putamen (`aseg:right:51`) from the separate stroke cohort. `forRegion`: `destrieux:left:38` deficits aphasia, aphasia, aphasia, akinetopsia; `destrieux:right:21` agnosia; `aseg:left:17` and `aseg:right:53` amnesia; `destrieux:left:16` none; `destrieux:right:38` neglect-allocentric, akinetopsia-lateral; `destrieux:right:26` aprosodia-frontal-parietal, extinction-temporoparietal, neglect-egocentric, neglect-perceptual, sound-localization-right-network, tactile-agnosia-persistence; `destrieux:left:12` agraphia-orthographic-long-term, apraxia-finger, dysphagia-insula, emotion-prosody, emotional-empathy-inferior-frontal, speech-apraxia-frontal, stuttering-cortico-striatal; `aseg:left:18` emotion-recognition; `learning:right:dentate` ataxia; `nextbrain:left:458` central-pain, central-pain, lateropulsion; `aseg:right:47` ataxia, cerebellar-cognitive, dysarthria. `forDeficit('amnesia')` hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic; `speech-apraxia` 3 findings, each with qualifying evidence; every apraxia finding and the first hemichorea finding have qualifying evidence; a meta-analysis is cited.
+- **Expected:** revised "2026-10-28"; 6 groups, 70 deficits (abulia … word-deafness, the list in `data.test.ts`), 131 references, 108 associations; every deficit has a finding. The amusia connectivity finding has no parcel, while the profile retains its direct right temporal landmarks (33, 34). The focal coma finding maps only `learning:left:pons`, leaving connected cortical nodes uncoloured. The alien-hand map contains only the two anterior callosal subdivisions (254, 255), leaving posterior callosum uncoloured; akinetopsia cites the unilateral Otsuka-Hirota case as qualifying evidence. The posterior-parietal motor-neglect case has no parcel; the motor-neglect profile maps only right putamen (`aseg:right:51`) from the separate stroke cohort. `forRegion`: `destrieux:left:38` deficits aphasia, aphasia, aphasia, akinetopsia; `destrieux:right:21` agnosia; `aseg:left:17` and `aseg:right:53` amnesia; `destrieux:left:16` none; `destrieux:right:38` neglect-allocentric, akinetopsia-lateral; `destrieux:right:26` aprosodia-frontal-parietal, extinction-temporoparietal, neglect-egocentric, neglect-perceptual, sound-localization-right-network, tactile-agnosia-persistence; `destrieux:left:12` agraphia-orthographic-long-term, apraxia-finger, dysphagia-insula, emotion-prosody, emotional-empathy-inferior-frontal, speech-apraxia-frontal, stuttering-cortico-striatal; `aseg:left:18` emotion-recognition; `learning:right:dentate` ataxia; `nextbrain:left:458` central-pain, central-pain, lateropulsion; `learning:lobule-vi-right` ataxia, cerebellar-cognitive, dysarthria; `learning:lobule-v-right` ataxia, dysarthria. `forDeficit('amnesia')` hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic; `speech-apraxia` 3 findings, each with qualifying evidence; every apraxia finding and the first hemichorea finding have qualifying evidence; a meta-analysis is cited.
 - **Covered by:** `src/lib/core/clinical/data.test.ts` (S, counts and revision added)
 
 ## Circuits and lessons
@@ -534,7 +534,7 @@ the expected values change with them in the same commit.
 
 ### CAT-56 · Every citation names the work its identifiers point to
 
-- **Rule:** Each clinical, circuit, functional-region, domain and bibliography citation matches the record its PMID, DOI or Bookshelf id resolves to: title, authors, PubMed issue year and published corrections. The records file holds exactly the cited works.
+- **Rule:** Each clinical, circuit, functional-region, domain, receptor-fingerprint and bibliography citation matches the record its PMID, DOI or Bookshelf id resolves to: title, authors, PubMed issue year and published corrections. The records file holds exactly the cited works.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/learning/references.test.js`; `data/reference-records.json` (written by `scripts/fetch_references.py`)
@@ -616,3 +616,24 @@ the expected values change with them in the same commit.
 - **Source:** `viewer/diffusion/presentation.js`
 - **Expected:** explorer anatomy (or any but diffusion) → false, whatever the subjects; diffusion, cdmd / cdmd → false; aomic / cdmd → true; diffusion with anatomy or reference missing, "" or null → throws "Tract exploration must identify the anatomy and reference subject.".
 - **Covered by:** `src/lib/core/diffusion/validation.test.ts` (R, every non-diffusion explorer and each missing subject)
+
+## Arterial territories
+
+### CAT-65 · A lesion reports the territories it lies in as shares of itself
+
+- **Rule:** The lesion's arterial-territory rows are the territories it reaches, each with the share of the lesion's territory-labelled volume inside it (not the share of the territory), largest first; rows under 1% fold away. A lesion that reaches no territory has no rows.
+- **Kind:** scientific
+- **Level:** unit (`territoryRows`)
+- **Source:** arterial territories phase 1, 2026-10-28
+- **Expected:** 600 / 395 / 5 mm³ in MCA frontal, ACA and MCA insular, with 900 mm³ of putamen → shown `[mca-frontal 0.6, aca 0.395]`, slight `[mca-insular 0.005]`; only putamen → no rows.
+- **Covered by:** `src/lib/core/lesion/report.test.ts` (R)
+
+### CAT-66 · A territory index paints its branch colour; none paints nothing
+
+- **Rule:** A cortical vertex's `_TERRITORY` index takes the published colour of that branch, 1-based, with full weight; index 0 carries no colour, so the vertex keeps its region colour, and an index past the palette is an error rather than a silent "none". A geometry without the field gains no colour attribute. On a cut, the arterial cut labels keep their own colour and, while they are the cut labels, nothing else is recoloured; with other cut labels a region takes the colour of the territory holding a majority of it, and keeps its tissue colour without one.
+- **Kind:** scientific
+- **Level:** unit
+- **Source:** arterial territories phase 1, 2026-10-28
+- **Expected:** indices [1, 0, 2, 0] with palette red, blue → red, none, blue, none; [1, 3] → "Vertex index 3 has no published territory". Cut: 70% ACA → ACA blue; 45% is no majority → tissue; with arterial cut labels a Destrieux label keeps its tissue colour.
+- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R); `src/lib/engine/tissues/palette.test.ts` (R)
+

@@ -45,6 +45,7 @@ SUBJECT_FILES = [
 # the layer, if any, that must be declared for it to be projected.
 PROJECTED_ANNOTATIONS = [
     ("HCPMMP1", "hcp-registration.json", None),
+    ("JulichBrain3.1", "julich-registration.json", None),
     (networks.ANNOTATION, "network-registration.json", "networks"),
 ]
 

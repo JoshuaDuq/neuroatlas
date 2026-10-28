@@ -300,10 +300,19 @@ export function createExcursions(
     render();
   }
 
-  /** The profile opens at once; the mapped regions are then drawn together and framed once. */
+  /**
+   * The profile opens at once; the mapped regions are then drawn together and framed once, each
+   * FreeSurfer structure by its teaching-set stand-ins unless FreeSurfer's segmentation is shown.
+   */
   async function openDeficit(id: string): Promise<boolean> {
     const current = commands.begin();
-    const regions = clinical.mappedRegions(id);
+    const regions = [
+      ...new Set(
+        clinical
+          .mappedRegions(id)
+          .flatMap((region) => clinical.drawnAs(region, model.settings.detail)),
+      ),
+    ];
     // Before the detail opens: on a phone, raising the sheet reframes the camera. A lesson it is
     // opened from ends here and hands over the scene from before it, for Restore to return to.
     const fromLesson = lessons.takeBeforeLesson();
@@ -354,9 +363,11 @@ export function createExcursions(
     const current = commands.begin();
     beforeExcursion ??= reader.capture();
     const before = revealSettings();
-    // A function's structure is drawn where its paint is.
+    // A function's or deficit's structure is drawn where its paint is.
     const shown =
-      session.state.explorer === 'functions' ? drawnAs(domains, id, model.settings.detail) : [id];
+      session.state.explorer === 'functions'
+        ? drawnAs(domains, id, model.settings.detail)
+        : clinical.drawnAs(id, model.settings.detail);
     if (!(await commands.revealRegions(shown, current))) return false;
     model.select(shown[0]!);
     sayRevealed(before);

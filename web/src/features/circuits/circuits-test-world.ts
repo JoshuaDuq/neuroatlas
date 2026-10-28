@@ -62,7 +62,7 @@ export function createWorld() {
   });
   const engineSync = createEngineSync(engine);
   const session = createSessionStore({ views: VIEW_NAMES });
-  const clinical = loadClinicalCatalog(manifest);
+  const clinical = loadClinicalCatalog(manifest, domains.units);
   const circuits = loadCircuitCatalog(manifest, clinical);
   const lesson = createLessonStore(circuits);
   const view = createView({

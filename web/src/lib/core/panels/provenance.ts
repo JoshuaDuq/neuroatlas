@@ -131,7 +131,8 @@ export function provenanceRows(
       {
         text: names[atlas.id] ?? atlas.label,
         note:
-          atlas.id === 'hcp-mmp' && anatomy?.hcp_projected_from
+          // Destrieux is the subject's own parcellation; every other surface atlas is projected.
+          atlas.id !== 'destrieux' && anatomy?.hcp_projected_from
             ? copy.projectedFrom(anatomy.hcp_projected_from)
             : null,
         link: link(atlas.citation),
@@ -153,6 +154,16 @@ export function provenanceRows(
       ? [
           { text: functional.label },
           ...functional.citations!.map((citation) => ({ link: link(citation) })),
+        ]
+      : [],
+  );
+  const receptors = manifest.receptor_fingerprints as Described | undefined;
+  add(
+    copy.receptors,
+    receptors
+      ? [
+          { text: receptors.label, note: receptors.license },
+          ...receptors.citations!.map((citation) => ({ link: link(citation) })),
         ]
       : [],
   );

@@ -1,4 +1,4 @@
-import type { CutMode, FunctionalLevel, Hemisphere, SurfaceColor } from './display.ts';
+import type { CutMode, Hemisphere, SurfaceColor } from './display.ts';
 import type { Region } from './region.ts';
 import type { Explorer, Language } from './session.ts';
 
@@ -27,7 +27,6 @@ export interface LinkState {
   internalVisible: boolean;
   spinalCordVisible: boolean;
   surfaceColor: SurfaceColor;
-  functionalLevel: FunctionalLevel;
   view: string;
   cut: CutMode;
   cutOffset: number;

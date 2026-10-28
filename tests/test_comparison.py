@@ -270,7 +270,7 @@ def quantization_area_bounds(vertices, faces):
 
 
 def test_real_source_marginals_match_published_float32_surface_areas():
-    from brain_model.layers.comparison import compare_surface
+    from brain_model.layers.comparison import compare_surface, comparison_atlases
 
     config = read_config("cdmd")
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
@@ -285,12 +285,12 @@ def test_real_source_marginals_match_published_float32_surface_areas():
                 / "label"
                 / f"{prefix}.{atlas['annotation']}.annot"
             )[0]
-            for atlas in manifest["atlases"]
+            for atlas in comparison_atlases(config, manifest)
         ]
         result = compare_surface(vertices, faces, np.column_stack(annotations))
         original_area = trimesh.Trimesh(vertices, faces, process=False).area
         assert result.areas_mm2.sum() == pytest.approx(original_area, rel=1e-12)
-        for column, atlas in enumerate(manifest["atlases"]):
+        for column, atlas in enumerate(comparison_atlases(config, manifest)):
             partition = partition_surface(vertices, faces, annotations[column])
             bounds = quantization_area_bounds(partition.vertices, partition.faces)
             for label in np.unique(annotations[column]):
@@ -308,7 +308,7 @@ def test_the_published_individuals_are_configured_for_comparison():
 
 
 def test_published_geometry_contains_only_the_exact_joint_cells():
-    from brain_model.layers.comparison import compare_surface
+    from brain_model.layers.comparison import compare_surface, comparison_atlases
 
     config = read_config("cdmd")
     output = config["output_directory"]
@@ -331,7 +331,7 @@ def test_published_geometry_contains_only_the_exact_joint_cells():
                 / "label"
                 / f"{prefix}.{atlas['annotation']}.annot"
             )[0]
-            for atlas in manifest["atlases"]
+            for atlas in comparison_atlases(config, manifest)
         ]
         result = compare_surface(vertices, faces, np.column_stack(annotations))
         bounds = quantization_area_bounds(

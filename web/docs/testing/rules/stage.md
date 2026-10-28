@@ -2,12 +2,12 @@
 
 Scope: chunks G1 (#44, the stage overlays: hints, orientation letters, scale bar, hover chip, focus ring),
 G2 (#46, the stage dock, the View popover with its presets and turn buttons, the Display popover), G3
-(#47, the network, functional, paint and direction keys) and the full-screen part of G6 (#50). Legacy
+(#47, the network, paint and direction keys) and the full-screen part of G6 (#50). Legacy
 sources: `viewer/ui/chrome/viewport-chrome.js`, `viewer/ui/chrome/stage-tools.js` (+ `stage-tools.test.js`),
 `viewer/ui/chrome/display.js`, `viewer/app.js` (hover words 1694-1717). New code: `web/src/features/stage/`.
 Deviations: `g1-hover-chip-dismiss.md`, `g1-measurements-follow-text.md`, `g1-touch-hints.md`,
 `g1-viewport-host-size.md`, `g2-dock-toolbar.md`, `g2-focus-when-tool-hidden.md`, `g2-orbit-step-buttons.md`,
-`g2-text-reflow.md`, `g3-absent-text.md`, `g3-focus-handoff.md`, `g3-level-radio-group.md`, `g3-list-role.md`,
+`g2-text-reflow.md`, `g3-absent-text.md`, `g3-focus-handoff.md`, `g3-list-role.md`,
 `g3-paint-toolbar.md`, `g6-fullscreen-exit.md`, `g6-fullscreen-failure.md`, `g6-fullscreen-focus.md`,
 `u3-segmented-controls.md`. The stage status screens (`StageStatus`) are BOOT-12 to BOOT-29 in
 `boot-and-assets.md`. Which letter faces each edge, the scale bar's 1-2-5 length and the 5 degree arrow
@@ -132,13 +132,13 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 
 ## Hover chip
 
-### STAGE-13 · The hover chip names the region, its division or network, the functions and the side
+### STAGE-13 · The hover chip names the region, its network, the functions and the side
 
-- **Rule:** Over a region the model lets the reader select, the chip names it by the catalog's label (else its own label), then, joined by " · ": the functional division of the level on show while the surface is coloured by divisions (glass belongs to a section), the network while the surface is coloured by networks (every CAB-NP area; a Yeo 7 region only when one network holds all of it), the functions the area reaches while functions are painted (the overview's domains, the one domain shown, or a searched term only on the areas it carries; a teaching unit as the structure it carries), and the capitalised side. A region that cannot be selected has no chip. A function painted with no published domains is an error.
+- **Rule:** Over a region the model lets the reader select, the chip names it by the catalog's label (else its own label), then, joined by " · ": the network while the surface is coloured by networks (every CAB-NP area; a Yeo 7 region only when one network holds all of it), the functions the area reaches while functions are painted (the overview's domains, the one domain shown, or a searched term only on the areas it carries; a teaching unit as the structure it carries), and the capitalised side. A region that cannot be selected has no chip. A function painted with no published domains is an error.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:1694-1717`; `web/src/features/stage/hover-text.ts`
-- **Expected:** With catalog name "Area A" for `a`: atlas colouring → "Area A · Left"; midline → "Area A · Midline"; French → "Area A · Gauche"; uncatalogued `x` → "raw x · Left"; `canSelect` false → `null`. Functional (named level `a`→"Frontal") → "Area A · Frontal · Left", French "Area A · Frontal fr · Gauche"; `glass` → "raw glass · Section · Left". CAB-NP `a`→Visual1 → "Area A · Primary visual · Left"; unmapped `zz` → "raw zz · Left". Yeo 7 `[{Vis, 1}]` → "Area A · Visual · Left"; `[{Vis, .5}, {Default, .5}]` → "Area A · Left". Function paint, overview: `a` (attention overview, memory not) → "Area A · Attention · Left", `b` → "raw b · Left"; memory alone: `b` → "raw b · Memory · Left", French `a` → "Area A · Mémoire · Gauche"; term `reading` on `a` only → "Area A · reading · Left", `b` → "raw b · Left"; unit `u` carrying `a` → "raw u · Attention · Left" in the overview, "raw u · reading · Left" for the term; deficit paint → "Area A · Left"; function paint without domains → throws "no domains".
+- **Expected:** With catalog name "Area A" for `a`: atlas colouring → "Area A · Left"; midline → "Area A · Midline"; French → "Area A · Gauche"; uncatalogued `x` → "raw x · Left"; `canSelect` false → `null`. CAB-NP `a`→Visual1 → "Area A · Primary visual · Left"; unmapped `zz` → "raw zz · Left". Yeo 7 `[{Vis, 1}]` → "Area A · Visual · Left"; `[{Vis, .5}, {Default, .5}]` → "Area A · Left". Function paint, overview: `a` (attention overview, memory not) → "Area A · Attention · Left", `b` → "raw b · Left"; memory alone: `b` → "raw b · Memory · Left", French `a` → "Area A · Mémoire · Gauche"; term `reading` on `a` only → "Area A · reading · Left", `b` → "raw b · Left"; unit `u` carrying `a` → "raw u · Attention · Left" in the overview, "raw u · reading · Left" for the term; deficit paint → "Area A · Left"; function paint without domains → throws "no domains".
 - **Covered by:** `src/features/stage/hover-text.test.ts` (R); `src/features/stage/StageOverlay.svelte.test.ts` (R, plain and French chip)
 
 ### STAGE-14 · The chip sits beside the pointer and inside the stage
@@ -362,12 +362,13 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 
 ### STAGE-37 · The stage shows the key of what is painted, titled as the masthead names it
 
-- **Rule:** While the anatomy is ready (or switching): a network colouring keys its networks (Yeo 7 or CAB-NP); the functional colouring keys the divisions of the chosen level, numbered where they have a number; a paint's key replaces the colouring's, which it covers; the direction key, with its three directions, follows the shown streamlines and comes after the others. A colouring with no key, or with no published data, shows none, and nothing shows while loading, after an error or a lost context.
+- **Rule:** While the anatomy is ready (or switching): a network colouring keys its networks (Yeo 7 or CAB-NP); a paint's key replaces the colouring's, which it covers; the direction key, with its three directions, follows the shown streamlines and comes after the others. A colouring with no key, or with no published data, shows none, and nothing shows while loading, after an error or a lost context.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:272-387`; `web/src/features/stage/stage-keys.ts`
-- **Expected:** Network → plate `network`, title "Yeo 7 networks", rows "Visual", "Default mode", first swatch [120, 18, 134]. CAB-NP French → "Visuel primaire", "Langage". Functional named → "3 · Primary", "Insula"; sections → "1 · Early"; level `named`/`sections`, `null` for others. Paint legend over network → plates `['paint']`, map `deficit`, title "Aphasia", note "A note.", rows `[f1, pressed, present]`, `[f2, not pressed, absent]`. Network + direction → `['network', 'direction']`, rows "Left–right", "Anterior–posterior", "Superior–inferior". Status `loading`/`error`/`context-lost` → `[]`; `switching` → one plate; `atlas` → `[]`; network with no networks → `[]`; functional with no regions → `[]`. Built site: `colors=network` → 7 rows incl. "Default mode"; French "Réseaux Yeo 7", "Visuel".
+- **Expected:** Network → plate `network`, title "Yeo 7 networks", rows "Visual", "Default mode", first swatch [120, 18, 134]. CAB-NP French → "Visuel primaire", "Langage". Paint legend over network → plates `['paint']`, map `deficit`, title "Aphasia", note "A note.", rows `[f1, pressed, present]`, `[f2, not pressed, absent]`. Network + direction → `['network', 'direction']`, rows "Left–right", "Anterior–posterior", "Superior–inferior". Status `loading`/`error`/`context-lost` → `[]`; `switching` → one plate; `atlas` → `[]`; network with no networks → `[]`. Built site: `colors=network` → 7 rows incl. "Default mode"; French "Réseaux Yeo 7", "Visuel".
 - **Covered by:** `src/features/stage/stage-keys.test.ts` (R); `src/features/stage/StageKeys.svelte.test.ts` (R)
+- **Territories:** the Blood supply colouring keys every branch territory in the atlas's order, its colour and its name in the reader's language: French `territory` → title "Territoires artériels", rows "Artère cérébrale antérieure" [59, 111, 182], "Basilaire"; no published territories → no plate (`stage-keys.test.ts`, R).
 
 ### STAGE-38 · A key is a named disclosure over a list with a swatch per row
 
@@ -395,15 +396,6 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:28-45, 304-320`
 - **Expected:** Room 1200×800, gutter 20, dock 40 (desktop): 8 rows on 500×200 → open; 9 rows → open; width 999 → folded; width 1000 → open; height 300 (258 > 200) → folded; height 358 → open; stage null (phone, coarse, 30 rows) → open. Phone: 4 rows on 390×500 → open; 10 rows on 390×320 (162 > 110) → folded. Phone + coarse on 390×400 (half room 150): 8 toggle rows → folded (218), 8 plain → open (138), 6 deficit rows → folded (186), 6 plain → open, 6 direction rows → folded. App: CAB-NP 12 rows unsized → open; stage set to 900 → folded; 1200 → open; drawn open at 1200, resized to 800 → stays open; 9 toggle rows on a 400 px stage → open, coarse pointer → folded. Built site phone: CAB-NP starts folded.
 - **Covered by:** `src/features/stage/stage-keys.test.ts` (R); `src/features/stage/StageKeys.svelte.test.ts` (R; the three crowd-fold cases duplicate the unit cases)
-
-### STAGE-41 · The functional level is a radio group in the title row
-
-- **Rule:** The functional key's level, Named or Sections, is a radio group "Functional division level": the checked radio follows the state, the arrows move and choose, a click on the level shown chooses nothing, and the rows follow the level.
-- **Kind:** behaviour
-- **Level:** browser: keyboard (decision 6 on #4)
-- **Source:** `viewer/ui/chrome/viewport-chrome.js:338-349, 397-402`; deviation `g3-level-radio-group.md`
-- **Expected:** "Named" checked; → → `onFunctionalLevel('sections')` once. State `sections` → "Sections" checked, "1 · Early" shown, "3 · Primary" gone. Click "Named" → nothing; click "Sections" → once with `'sections'`. French: "Nommées" checked, toggle "Divisions fonctionnelles". Built site (HCP-MMP, functional): Sections → link `level=sections`, rows change.
-- **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R)
 
 ### STAGE-42 · A paint key's rows are toggles that show one row alone
 
@@ -450,13 +442,13 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Expected:** `keyBand(0×0, 1000×600, 20)` → `{0, 0}`; `(200×100, null)` and `(200×100, 0×0)` → `{0, 0}`. `(350×100, 390×500, 20)` → `{ top: 120, right: 0 }`. `(100×500, 1000×600, 20)` → `{ top: 0, right: 120 }`. Square 600×600: `80×80` → `{ top: 100, right: 0 }`; `80×81` → `{ top: 0, right: 100 }`. `(350.4×100.6, 390×500)` → `{ top: 121, right: 0 }`; `(100.4×500.6, 1000×600)` → `{ top: 0, right: 120 }`. In the app: folding a key on a 390×700 stage shrinks `keyInset.top` and calls `onDock` once; no plate → `{0, 0}` and key size 0×0. Built site: `--key-top + --key-right > 0` with `colors=network`, 0 with `colors=tissue`.
 - **Covered by:** `src/features/stage/stage-keys.test.ts` (R); `src/features/stage/StageKeys.svelte.test.ts` (R; "the fitting runs on every framing without forcing layout" and "the fitter is let go with the keys" are I: layout-read and `setKeys` spies)
 
-### STAGE-47 · Key targets are 24 px, the level radios keep the spacing exception, touch rows are 44 px
+### STAGE-47 · Key targets are 24 px, touch rows are 44 px
 
-- **Rule:** On a desktop the title toggle and the paint rows are at least 24 px tall; the two 20 px level radios are allowed because a 24 px circle on each centre meets no other target. On a coarse pointer the level radios and paint rows are 44 px; on a phone the title row is 44 px, a deficit's findings run one to a line and networks two.
+- **Rule:** On a desktop the title toggle and the paint rows are at least 24 px tall. On a coarse pointer the paint rows are 44 px; on a phone the title row is 44 px, a deficit's findings run one to a line and networks two.
 - **Kind:** accessibility
 - **Level:** browser: layout (WCAG 2.5.8)
 - **Source:** `viewer/styles/stage.css:186-285`; `viewer/ui/chrome/viewport-chrome.js:299-303`
-- **Expected:** Toggle and rows height ≥ 24; both radios < 24 tall; radio centres ≥ 24 apart; each centre ≥ 12 px from the toggle and from the other radio. Coarse: rows and radios ≥ 44. Phone 390: toggle ≥ 44; `#paint-key .stage-key-list` 1 grid column; `#network-key .stage-key-list` 2.
+- **Expected:** Toggle and rows height ≥ 24. Coarse: rows ≥ 44. Phone 390: toggle ≥ 44; `#paint-key .stage-key-list` 1 grid column; `#network-key .stage-key-list` 2.
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R)
 
 ### STAGE-48 · Keys reflow, ring their focus in teal and keep their colours in forced colours
@@ -465,7 +457,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Kind:** accessibility
 - **Level:** browser: layout, computed style, axe
 - **Source:** `viewer/styles/stage.css:186-285`; `viewer/styles/a11y.css`
-- **Expected:** Toggle font ≥ 24 px at 200 %; every row and button `scroll ≤ client + 1`; plate `scrollWidth ≤ clientWidth + 1`. Tab from the canvas → the toggle, `outline-color: rgb(127, 208, 204)`, width ≥ 2, offset < 0. Forced colours: Broca swatch background unchanged, plate `border-top-color` = body `color`, Wernicke `box-shadow` contains `inset`. axe clean for the functional plate with the direction key and for a picked paint key with an absent row and its note; built-site phone run.
+- **Expected:** Toggle font ≥ 24 px at 200 %; every row and button `scroll ≤ client + 1`; plate `scrollWidth ≤ clientWidth + 1`. Tab from the canvas → the toggle, `outline-color: rgb(127, 208, 204)`, width ≥ 2, offset < 0. Forced colours: Broca swatch background unchanged, plate `border-top-color` = body `color`, Wernicke `box-shadow` contains `inset`. axe clean for a CAB-NP plate with the direction key and for a picked paint key with an absent row and its note; built-site phone run.
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R)
 
 ## Full screen

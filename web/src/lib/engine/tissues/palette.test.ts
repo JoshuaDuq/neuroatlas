@@ -4,7 +4,6 @@ import { test } from 'vitest';
 import { Color, SRGBColorSpace } from 'three';
 import { parse } from 'yaml';
 import type { Region } from '../../types/index.ts';
-import type { FunctionalRegions } from '../../core/catalog/functional-regions.ts';
 import type { CabNpPartition } from '../../core/catalog/networks.ts';
 import {
   anatomies,
@@ -148,6 +147,67 @@ test('a cut carries the same network colour the surface carries', () => {
   );
 });
 
+test('a cut carries a territory by majority, keeps the arterial labels exact, and recolours nothing else beside them', () => {
+  const territories = [
+    { id: 'aca', color: [59, 111, 182] },
+    { id: 'mca-frontal', color: [47, 143, 91] },
+  ];
+  const cut = [
+    ...labels,
+    asLabel({
+      source_label_id: 7,
+      region_id: 'arterial:left:mca-frontal',
+      kind: 'tissue',
+      hemisphere: 'left',
+      color: [47, 143, 91],
+    }),
+    asLabel({
+      source_label_id: 12,
+      region_id: 'aseg:left:12',
+      kind: 'tissue',
+      hemisphere: 'left',
+      color: [236, 13, 176],
+    }),
+  ];
+  const regions = new Map([
+    ['destrieux:left:1', asRegion({ territories: [{ territory: 'aca', fraction: 0.7 }] })],
+    ['arterial:left:mca-frontal', asRegion({ atlas: 'arterial' })],
+    [
+      'aseg:left:12',
+      asRegion({
+        territories: [
+          { territory: 'mca-frontal', fraction: 0.45 },
+          { territory: 'aca', fraction: 0.4 },
+        ],
+      }),
+    ],
+  ]);
+  const lookup = asLookup({ regions, territories });
+  const blue = new Color().setRGB(59 / 255, 111 / 255, 182 / 255, SRGBColorSpace);
+  const green = new Color().setRGB(47 / 255, 143 / 255, 91 / 255, SRGBColorSpace);
+  const tissue = (code: number) =>
+    new Color(tissueColor({ ...cut[code]!, source_name: undefined }, appearance.tissue));
+
+  const other = createPalette(
+    cut,
+    asDisplaySettings({ ...state, surfaceColor: 'territory', cutAtlas: 'destrieux' }),
+    appearance.tissue,
+    lookup,
+  );
+  assertColor(other, 1, blue); // 70% ACA: a majority
+  assertColor(other, 3, green); // a territory label keeps its own colour
+  assertColor(other, 4, tissue(4)); // 45% is no majority
+
+  const arterial = createPalette(
+    cut,
+    asDisplaySettings({ ...state, surfaceColor: 'territory', cutAtlas: 'arterial' }),
+    appearance.tissue,
+    lookup,
+  );
+  assertColor(arterial, 1, tissue(1)); // left out by the atlas: its tissue, not its region's majority
+  assertColor(arterial, 3, green);
+});
+
 test('a cut carries CAB-NP colours for the areas it assigns and tissue colour elsewhere', () => {
   const cabNp = { colors: { Default: [255, 0, 0] }, regions: { 'destrieux:left:1': 'Default' } };
   const palette = createPalette(
@@ -162,28 +222,6 @@ test('a cut carries CAB-NP colours for the areas it assigns and tissue colour el
     2,
     new Color(tissueColor({ ...labels[2]!, source_name: undefined }, appearance.tissue)),
   );
-});
-
-test('a cut carries the functional division of the level on show, and glass keeps tissue colour', () => {
-  const functional = {
-    levels: {
-      named: [],
-      sections: [{ id: 'section-22', color: [0, 0, 255] }],
-    },
-    regions: { named: {}, sections: { 'destrieux:left:1': 'section-22' } },
-  } as unknown as FunctionalRegions;
-  const cortex = new Color(
-    tissueColor({ ...labels[1]!, source_name: undefined }, appearance.tissue),
-  );
-  const at = (level: string) =>
-    createPalette(
-      labels,
-      asDisplaySettings({ ...state, surfaceColor: 'functional', functionalLevel: level }),
-      appearance.tissue,
-      asLookup({ regions: new Map(), functional }),
-    );
-  assertColor(at('sections'), 1, new Color().setRGB(0, 0, 1, SRGBColorSpace));
-  assertColor(at('named'), 1, cortex);
 });
 
 test('a paint colours a cut as it colours the surface, over the atlas colours, and tissue elsewhere', () => {

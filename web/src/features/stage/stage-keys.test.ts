@@ -1,7 +1,6 @@
 // Which plates the stage shows, how crowded a stage folds them and where they take their band
 // (viewport-chrome.js:304-320, 326-387, 403-415).
 import { describe, expect, test } from 'vitest';
-import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import type { Legend } from '../../lib/core/state/paint.ts';
 import { defaultOpen, keyBand, keyPlates } from './stage-keys.ts';
 import type { ColoredNetworks, KeySources, StageRoom } from './stage-keys.ts';
@@ -14,15 +13,6 @@ const cabNp: ColoredNetworks = {
   networks: ['Visual1', 'Language'],
   colors: { Visual1: [1, 2, 3], Language: [4, 5, 6] },
 };
-const functionalRegions = {
-  levels: {
-    named: [
-      { id: 'a', number: 3, short: 'Primary', short_fr: 'Primaire', color: [9, 8, 7] },
-      { id: 'b', short: 'Insula', short_fr: 'Insula', color: [6, 5, 4] },
-    ],
-    sections: [{ id: 's', number: 1, short: 'Early', short_fr: 'Précoce', color: [1, 1, 1] }],
-  },
-} as unknown as FunctionalRegions;
 const legend: Legend = {
   map: 'deficit',
   title: 'Aphasia',
@@ -37,10 +27,8 @@ const sources = (extra: Partial<KeySources> = {}): KeySources => ({
   lang: 'en',
   status: 'ready',
   surfaceColor: 'atlas',
-  functionalLevel: 'named',
   networks,
   cabNp,
-  functionalRegions,
   legend: null,
   directionShown: false,
   ...extra,
@@ -56,21 +44,40 @@ describe('keyPlates', () => {
     expect(plate!.rows[0]!.color).toEqual([120, 18, 134]);
   });
 
+  test('territories key every branch in its hue, in the atlas order, named in the reader’s language', () => {
+    const territories = [
+      {
+        id: 'aca',
+        major: 'aca',
+        name: 'Anterior cerebral artery',
+        name_fr: 'Artère cérébrale antérieure',
+        color: [59, 111, 182] as const,
+      },
+      {
+        id: 'basilar',
+        major: 'vb',
+        name: 'Basilar',
+        name_fr: 'Basilaire',
+        color: [126, 87, 166] as const,
+      },
+    ];
+    const [plate] = keyPlates(sources({ surfaceColor: 'territory', territories, lang: 'fr' }));
+    expect(plate).toMatchObject({
+      name: 'network',
+      map: 'territory',
+      title: 'Territoires artériels',
+    });
+    expect(plate!.rows.map((row) => [row.id, row.label, row.color])).toEqual([
+      ['aca', 'Artère cérébrale antérieure', [59, 111, 182]],
+      ['basilar', 'Basilaire', [126, 87, 166]],
+    ]);
+    expect(keyPlates(sources({ surfaceColor: 'territory' }))).toEqual([]);
+  });
+
   test('CAB-NP names its own networks, and French words them', () => {
     const [plate] = keyPlates(sources({ surfaceColor: 'cab-np', lang: 'fr' }));
     expect(plate).toMatchObject({ name: 'network', map: 'cab-np' });
     expect(plate!.rows.map((row) => row.label)).toEqual(['Visuel primaire', 'Langage']);
-  });
-
-  test('a functional plate lists the chosen level, numbering the rows that have a number', () => {
-    const named = keyPlates(sources({ surfaceColor: 'functional' }))[0]!;
-    expect(named.rows.map((row) => row.label)).toEqual(['3 · Primary', 'Insula']);
-    const sections = keyPlates(
-      sources({ surfaceColor: 'functional', functionalLevel: 'sections' }),
-    );
-    expect(sections[0]!.rows.map((row) => row.label)).toEqual(['1 · Early']);
-    expect([named.level, sections[0]!.level]).toEqual(['named', 'sections']);
-    expect(keyPlates(sources({ surfaceColor: 'network' }))[0]!.level).toBeNull();
   });
 
   test('a paint covers the colour under it: its plate stands alone and carries the legend', () => {
@@ -110,7 +117,6 @@ describe('keyPlates', () => {
     expect(keyPlates(sources({ status: 'switching', surfaceColor: 'network' }))).toHaveLength(1);
     expect(keyPlates(sources({ surfaceColor: 'atlas' }))).toEqual([]);
     expect(keyPlates(sources({ surfaceColor: 'network', networks: null }))).toEqual([]);
-    expect(keyPlates(sources({ surfaceColor: 'functional', functionalRegions: null }))).toEqual([]);
   });
 });
 

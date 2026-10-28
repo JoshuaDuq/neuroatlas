@@ -24,6 +24,10 @@ export interface Region {
   source_published_name?: string;
   source_atlas?: string;
   networks?: { network: string; fraction: number }[];
+  /** Typical arterial territory shares of the region's voxels or vertices, largest first. */
+  territories?: { territory: string; fraction: number }[];
+  /** The share of the region in no territory, counted, so slivers left out of `territories` are not in it. */
+  territory_unassigned?: number;
   vertex_count?: number;
   triangle_count?: number;
   surface_area_mm2?: number;

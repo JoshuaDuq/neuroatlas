@@ -11,22 +11,19 @@
   "cabNpAtlasOnly": [
    "[\"Alpha\"] → \"CAB-NP ne colore que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\"",
    "[\"\"] → \"CAB-NP ne colore que les aires HCP-MMP :  affiche donc les couleurs de ses régions.\""
-  ],
-  "functionalAtlasOnly": [
-   "[\"Alpha\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\"",
-   "[\"\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP :  affiche donc les couleurs de ses régions.\""
-  ],
-  "functionalHidesInternal": "L’anatomie interne est masquée ; Affichage la montre à nouveau."
+  ]
  },
  "atlases": {
   "destrieux": "Atlas anatomique de Destrieux",
   "hcp-mmp": "Atlas multimodal HCP-MMP1.0",
+  "julich": "Atlas cytoarchitectonique Julich-Brain",
   "learning": "Ensemble pédagogique : grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés",
   "aseg": "Segmentation sous-corticale FreeSurfer",
   "nextbrain": "Atlas histologique NextBrain",
   "cerebnet": "Lobules cérébelleux FastSurfer CerebNet",
   "wmparc": "Parcellisation de la substance blanche FreeSurfer",
-  "pam50": "Atlas médullaire PAM50 sur cette moelle"
+  "pam50": "Atlas médullaire PAM50 sur cette moelle",
+  "arterial": "Atlas des territoires artériels (Liu et al. 2023)"
  },
  "boundary": {
   "heading": "Certitude des limites",
@@ -304,16 +301,17 @@
    "oblique": "Coupe oblique"
   },
   "networkByRegion": "réseaux par part dominante de chaque région",
+  "territoryByRegion": "territoire qui contient la majorité de chaque région",
   "cabNpByArea": "réseau CAB-NP de chaque aire HCP-MMP",
   "cabNpOtherLabels": "CAB-NP ne colore que les étiquettes HCP-MMP",
-  "functionalByArea": "division fonctionnelle de chaque aire HCP-MMP",
-  "functionalOtherLabels": "les divisions fonctionnelles ne colorent que les étiquettes HCP-MMP",
   "domainsByArea": "fonctions neuropsychologiques de chaque aire HCP-MMP",
   "domainsOtherLabels": "les fonctions neuropsychologiques ne colorent que les étiquettes HCP-MMP",
   "hcpDerived": "HCP dérivées",
+  "julichDerived": "Julich-Brain dérivées",
   "destrieuxNative": "Destrieux natives",
   "nextbrainWarped": "NextBrain recalées",
   "nextbrainSegmented": "NextBrain segmentées sur ce cerveau",
+  "arterialRegistered": "territoires artériels typiques recalés sur ce cerveau",
   "cutLabels": "Étiquettes de coupe"
  },
  "deficitKey": {
@@ -408,7 +406,7 @@
    "atlas": "Régions",
    "network": "Réseaux Yeo 7",
    "cab-np": "Réseaux CAB-NP",
-   "functional": "Divisions fonctionnelles"
+   "territory": "Territoires artériels"
   },
   "paints": {
    "function": "Fonctions",
@@ -426,7 +424,7 @@
    "atlas": "Couleurs des régions de l’atlas",
    "network": "Réseaux fonctionnels (Yeo 7)",
    "cab-np": "Réseaux fonctionnels (CAB-NP, 12) sur les aires HCP-MMP",
-   "functional": "Divisions fonctionnelles sur les aires HCP-MMP : sections de Glasser 2016 et régions nommées de Glasser 2016 et Rolls 2022, 2023"
+   "territory": "Territoires artériels typiques, issus de 1<NNBSP>298 patients victimes d’AVC (Liu et al. 2023), recalés sur ce cerveau<NNBSP>; pas ses propres vaisseaux"
   },
   "resetView": "Réinitialiser la vue"
  },
@@ -580,6 +578,7 @@
   ],
   "networks": "Réseaux fonctionnels",
   "functional": "Divisions fonctionnelles",
+  "receptors": "Empreintes de récepteurs",
   "domains": "Domaines neuropsychologiques",
   "supplemental": "Couches complémentaires",
   "files": "Fichiers publiés",
@@ -617,12 +616,7 @@
    "[183,12345] → \"La table 1 de Glasser donne la section 183 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 12345.\"",
    "[12345,0] → \"La table 1 de Glasser donne la section 12345 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 0.\""
   ],
-  "note": "Regroupements publiés d’aires HCP-MMP entières, portés sur ce cerveau par sa projection HCP-MMP<NNBSP>; sans mesure fonctionnelle de ce cerveau.",
-  "keyAria": "Niveau des divisions fonctionnelles",
-  "levels": {
-   "named": "Nommées",
-   "sections": "Sections"
-  }
+  "note": "Regroupements publiés d’aires HCP-MMP entières, portés sur ce cerveau par sa projection HCP-MMP<NNBSP>; sans mesure fonctionnelle de ce cerveau."
  },
  "functions": {
   "search": "Rechercher une fonction",
@@ -726,12 +720,14 @@
   "atlasShort": {
    "destrieux": "Destrieux",
    "hcp-mmp": "HCP-MMP",
+   "julich": "Julich-Brain",
    "learning": "Ensemble pédagogique",
    "aseg": "FreeSurfer aseg",
    "nextbrain": "NextBrain",
    "cerebnet": "CerebNet",
    "wmparc": "wmparc",
-   "pam50": "PAM50"
+   "pam50": "PAM50",
+   "arterial": "Territoires artériels"
   },
   "subject": "Sujet",
   "atlas": "Atlas",
@@ -739,7 +735,8 @@
   "colourGroups": {
    "appearance": "Apparence",
    "parcellation": "Parcellisation",
-   "networks": "Réseaux"
+   "networks": "Réseaux",
+   "vascular": "Vascularisation"
   },
   "atlasBecomes": [
    "[\"Alpha\",\"\"] → \"Alpha (l’atlas devient )\"",
@@ -753,6 +750,7 @@
   "notes": {
    "destrieux": "Régions des sillons et des gyrus, 74 par hémisphère",
    "hcp-mmp": "Aires multimodales, 180 par hémisphère (Glasser 2016)",
+   "julich": "Aires cytoarchitectoniques issues de l’histologie, 139 par hémisphère (Amunts 2020)<NNBSP>; environ un quart du cortex n’est pas encore cartographié",
    "learning": "Grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés",
    "aseg": "Segmentation sous-corticale automatique standard de FreeSurfer",
    "nextbrain": "Atlas d’origine histologique, segmenté sur ce sujet à 0,4<NNBSP>mm"
@@ -828,6 +826,8 @@
   "deep": "Structures profondes",
   "white": "Substance blanche gyrale",
   "whiteNote": "À moins de 5 mm du cortex, nommée d’après le gyrus au-dessus",
+  "territories": "Territoires artériels",
+  "territoryNote": "Part de chaque territoire typique dans le volume de la lésion situé dans un territoire, avec ce volume en mm³ (Liu et al. 2023, recalé sur ce cerveau)<NNBSP>; pas les propres vaisseaux de ce cerveau",
   "slightRegions": [
    "[\"Alpha\"] → \"Alpha de plus sous 1<NNBSP>%\"",
    "[\"\"] → \" de plus sous 1<NNBSP>%\""
@@ -929,7 +929,6 @@
    "internal": "affichage de l’anatomie interne",
    "cord": "moelle épinière",
    "colors": "coloration",
-   "level": "niveau fonctionnel",
    "function": "fonction",
    "opacity": "opacité du cortex",
    "mri": "fenêtre IRM",
@@ -1138,6 +1137,37 @@
   "other-system": "Dans un autre système",
   "fallback": "Masqué"
  },
+ "receptors": {
+  "heading": "Densités de récepteurs",
+  "parts": "Partie échantillonnée",
+  "dorsal": "Dorsale",
+  "ventral": "Ventrale",
+  "noSd": "sans écart-type",
+  "notMeasured": [
+   "[\"Alpha\"] → \"Non mesurés<NNBSP>: Alpha.\"",
+   "[\"\"] → \"Non mesurés<NNBSP>: .\""
+  ],
+  "noSdPublished": [
+   "[\"Alpha\"] → \"Aucun écart-type publié pour Alpha.\"",
+   "[\"\"] → \"Aucun écart-type publié pour .\""
+  ],
+  "withheld": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Écart-type de Alpha retenu (publié à )<NNBSP>: Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \"Écart-type de  retenu (publié à Alpha)<NNBSP>: \""
+  ],
+  "note": [
+   "[\"Alpha\",1,2,\"\",12345] → \"Moyenne ± écart-type en Alpha, par autoradiographie quantitative in vitro des récepteurs de 1 hémisphères issus de 2 cerveaux post mortem âgés de <NNBSP>; certains récepteurs ont pu être mesurés dans moins d’hémisphères. Chaque barre est la part de la moyenne la plus élevée de ce récepteur parmi les 12345 empreintes publiées.\"",
+   "[\"\",2,183,\"Alpha\",0] → \"Moyenne ± écart-type en , par autoradiographie quantitative in vitro des récepteurs de 2 hémisphères issus de 183 cerveaux post mortem âgés de Alpha<NNBSP>; certains récepteurs ont pu être mesurés dans moins d’hémisphères. Chaque barre est la part de la moyenne la plus élevée de ce récepteur parmi les 0 empreintes publiées.\"",
+   "[\"Alpha\",183,12345,\"\",1] → \"Moyenne ± écart-type en Alpha, par autoradiographie quantitative in vitro des récepteurs de 183 hémisphères issus de 12345 cerveaux post mortem âgés de <NNBSP>; certains récepteurs ont pu être mesurés dans moins d’hémisphères. Chaque barre est la part de la moyenne la plus élevée de ce récepteur parmi les 1 empreintes publiées.\"",
+   "[\"\",12345,0,\"Alpha\",2] → \"Moyenne ± écart-type en , par autoradiographie quantitative in vitro des récepteurs de 12345 hémisphères issus de 0 cerveaux post mortem âgés de Alpha<NNBSP>; certains récepteurs ont pu être mesurés dans moins d’hémisphères. Chaque barre est la part de la moyenne la plus élevée de ce récepteur parmi les 2 empreintes publiées.\"",
+   "[\"Alpha\",0,1,\"\",183] → \"Moyenne ± écart-type en Alpha, par autoradiographie quantitative in vitro des récepteurs de 0 hémisphères issus de 1 cerveaux post mortem âgés de <NNBSP>; certains récepteurs ont pu être mesurés dans moins d’hémisphères. Chaque barre est la part de la moyenne la plus élevée de ce récepteur parmi les 183 empreintes publiées.\""
+  ],
+  "measuredIn": [
+   "[\"Alpha\"] → \"Mesuré dans<NNBSP>: Alpha. Porté sur ce cerveau par son nom, sans mesure dans ce cerveau<NNBSP>; les deux hémisphères montrent les mêmes valeurs.\"",
+   "[\"\"] → \"Mesuré dans<NNBSP>: . Porté sur ce cerveau par son nom, sans mesure dans ce cerveau<NNBSP>; les deux hémisphères montrent les mêmes valeurs.\""
+  ],
+  "dataset": "Jeu de données EBRAINS"
+ },
  "sheet": {
   "expand": "Déplier le panneau",
   "collapse": "Replier le panneau",
@@ -1146,6 +1176,18 @@
    "half": "Panneau à moitié ouvert",
    "full": "Panneau entièrement ouvert"
   }
+ },
+ "territories": {
+  "heading": "Vascularisation artérielle typique",
+  "basis": {
+   "vertices": "Part des sommets piaux de cette région dans chaque territoire.",
+   "voxels": "Part des voxels de cette région dans chaque territoire."
+  },
+  "unassigned": [
+   "[\"Alpha\"] → \"Alpha ne se trouve dans aucun territoire de l’atlas.\"",
+   "[\"\"] → \" ne se trouve dans aucun territoire de l’atlas.\""
+  ],
+  "caveat": "Territoires typiques, d’après la localisation des infarctus de 1<NNBSP>298 patients victimes d’AVC (Liu et al. 2023), recalés sur ce cerveau<NNBSP>: pas ses propres vaisseaux. La circulation collatérale et les variantes anatomiques déplacent les territoires réels de plusieurs centimètres."
  },
  "shortcuts": {
   "title": "Raccourcis clavier",

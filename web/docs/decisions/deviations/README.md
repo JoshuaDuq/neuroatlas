@@ -136,7 +136,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | g2-text-reflow.md                             | fix (standard cited)                                           |
 | g3-absent-text.md                             | fix (standard cited)                                           |
 | g3-focus-handoff.md                           | fix (standard cited)                                           |
-| g3-level-radio-group.md                       | approved (decision 6 on #4)                                    |
+| g3-level-radio-group.md                       | retired 2026-10-28 (functional colour removed)                 |
 | g3-list-role.md                               | fix (standard cited)                                           |
 | g3-paint-toolbar.md                           | approved (decision 6 on #4)                                    |
 | g4-angle-held-while-focused.md                | fix (bug)                                                      |

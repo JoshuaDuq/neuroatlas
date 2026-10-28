@@ -77,13 +77,13 @@ test('the status bar keeps the not-clinical statement in every state', () => {
   }
 });
 
-test('Colour groups appearance, the atlas regions and networks, with the functional divisions last', () => {
-  const all = { networks: {}, cabNp: {}, functionalRegions: {} };
+test('Colour groups appearance, the atlas regions, networks and blood supply', () => {
+  const all = { networks: {}, cabNp: {}, territories: {} };
   assert.deepEqual(colourGroups(all), [
     ['appearance', ['tissue', 'mri']],
     ['parcellation', ['atlas']],
     ['networks', ['network', 'cab-np']],
-    [null, ['functional']],
+    ['vascular', ['territory']],
   ]);
   assert.deepEqual(
     colourGroups({ networks: {} }),
@@ -127,10 +127,9 @@ test('MAST-28 a name loses its quotation marks and doubled spaces, and may end u
 });
 
 test('MAST-29 Colour offers each published colouring under its name, in both languages', () => {
-  const required = (mode: string) =>
-    mode === 'cab-np' || mode === 'functional' ? 'hcp-mmp' : null;
+  const required = (mode: string) => (mode === 'cab-np' ? 'hcp-mmp' : null);
   const names = (lang: 'en' | 'fr') =>
-    (['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'] as const).map((mode) =>
+    (['tissue', 'mri', 'atlas', 'network', 'cab-np'] as const).map((mode) =>
       colourOption(lang, mode, { atlas: 'destrieux', required: required(mode) }),
     );
   assert.deepEqual(names('en'), [
@@ -139,7 +138,6 @@ test('MAST-29 Colour offers each published colouring under its name, in both lan
     'Regions',
     'Yeo 7 networks',
     'CAB-NP networks (atlas becomes HCP-MMP)',
-    'Functional divisions (atlas becomes HCP-MMP)',
   ]);
   assert.deepEqual(names('fr'), [
     'Tissu',
@@ -147,16 +145,12 @@ test('MAST-29 Colour offers each published colouring under its name, in both lan
     'Régions',
     'Réseaux Yeo 7',
     'Réseaux CAB-NP (l’atlas devient HCP-MMP)',
-    'Divisions fonctionnelles (l’atlas devient HCP-MMP)',
   ]);
   assert.deepEqual(colourGroups({}), [
     ['appearance', ['tissue', 'mri']],
     ['parcellation', ['atlas']],
   ]);
-  assert.deepEqual(colourGroups({ cabNp: {}, functionalRegions: {} }).slice(2), [
-    ['networks', ['cab-np']],
-    [null, ['functional']],
-  ]);
+  assert.deepEqual(colourGroups({ cabNp: {} }).slice(2), [['networks', ['cab-np']]]);
 });
 
 test('MAST-30 an atlas option names the colouring it falls back to, in both languages', () => {

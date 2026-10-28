@@ -35,14 +35,16 @@
   /** Counted from what is drawn now, so the meta line stays true as the reader hides, cuts or isolates. */
   const meta = $derived.by(() => {
     if (!deficit) return '';
-    const ids = view.paint ? [...view.paint.colors.keys()] : clinical.mappedRegions(deficit.id);
+    const mapped = clinical.mappedRegions(deficit.id);
+    const ids = view.paint ? mapped.filter((id) => view.paint!.colors.has(id)) : mapped;
     const counts = stageCounts(
       ids,
-      (id) => {
-        const entry = anatomy.get(id);
-        if (!entry) throw new Error(`Unknown region: ${id}`);
-        return entry.region;
-      },
+      (id) =>
+        clinical.drawnAs(id, view.detail).map((drawn) => {
+          const entry = anatomy.get(drawn);
+          if (!entry) throw new Error(`Unknown region: ${drawn}`);
+          return entry.region;
+        }),
       view,
       Boolean(view.paint),
     );

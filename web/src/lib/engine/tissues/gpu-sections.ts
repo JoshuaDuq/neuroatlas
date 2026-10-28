@@ -34,7 +34,7 @@ import {
   labelVisible,
   usesAtlasColors,
   usesCabNpColors,
-  usesFunctionalColors,
+  usesTerritoryColors,
   usesNetworkColors,
   usesPaint,
 } from './palette.ts';
@@ -144,11 +144,11 @@ export interface CutModel extends EventTarget {
   readonly manifest: {
     appearance: Appearance;
     networks?: PaletteLookup['networks'];
+    arterial_territories?: { territories: NonNullable<PaletteLookup['territories']> };
     supplemental_layers?: { id: string; bounds_ras_mm?: readonly (readonly number[])[] }[];
   };
   readonly regions: ReadonlyMap<string, Region>;
   readonly cabNp: PaletteLookup['cabNp'] | null;
-  readonly functionalRegions: PaletteLookup['functional'] | null;
   readonly boundaryCertainty: BoundaryCertainty | null;
   readonly layers: ReadonlyMap<string, { meshes: Mesh[] }>;
   readonly sourceColors: Pick<ReadonlyMap<Mesh, Color>, 'get'>;
@@ -210,12 +210,14 @@ export class TissueSections {
 
   /** What a cut label's colour is looked up in: its region and each published network palette. */
   get paletteLookup(): PaletteLookup {
-    const { regions, manifest, cabNp, functionalRegions } = this.model;
+    const { regions, manifest, cabNp } = this.model;
     return {
       regions,
       networks: manifest.networks,
       ...(cabNp && { cabNp }),
-      ...(functionalRegions && { functional: functionalRegions }),
+      ...(manifest.arterial_territories && {
+        territories: manifest.arterial_territories.territories,
+      }),
     };
   }
 
@@ -518,7 +520,6 @@ export class TissueSections {
         : '';
       const paintKey = [
         state.surfaceColor,
-        state.functionalLevel,
         state.paint?.id,
         state.atlas,
         state.hemisphere,
@@ -566,15 +567,14 @@ export class TissueSections {
     const published =
       usesAtlasColors(state) ||
       usesNetworkColors(state) ||
+      usesTerritoryColors(state) ||
       usesCabNpColors(state) ||
-      usesFunctionalColors(state) ||
       usesPaint(state);
     layer.uniforms.tissueVariation.value = published
       ? 0
       : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
       state.surfaceColor,
-      state.functionalLevel,
       state.paint?.id ?? null,
       state.hemisphere,
       state.cortexVisible,

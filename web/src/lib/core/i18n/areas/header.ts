@@ -2,17 +2,24 @@ export const en = {
   atlasShort: {
     destrieux: 'Destrieux',
     'hcp-mmp': 'HCP-MMP',
+    julich: 'Julich-Brain',
     learning: 'Teaching set',
     aseg: 'FreeSurfer aseg',
     nextbrain: 'NextBrain',
     cerebnet: 'CerebNet',
     wmparc: 'wmparc',
     pam50: 'PAM50',
+    arterial: 'Arterial territories',
   },
   subject: 'Subject',
   atlas: 'Atlas',
   colour: 'Colour',
-  colourGroups: { appearance: 'Appearance', parcellation: 'Parcellation', networks: 'Networks' },
+  colourGroups: {
+    appearance: 'Appearance',
+    parcellation: 'Parcellation',
+    networks: 'Networks',
+    vascular: 'Blood supply',
+  },
   // Said in the option, before it is chosen: what else choosing it changes.
   atlasBecomes: (colour: string, atlas: string) => `${colour} (atlas becomes ${atlas})`,
   colourBecomes: (atlas: string, colour: string) => `${atlas} (colour becomes ${colour})`,
@@ -21,6 +28,8 @@ export const en = {
   notes: {
     destrieux: 'Sulcal and gyral regions, 74 per hemisphere',
     'hcp-mmp': 'Multimodal areas, 180 per hemisphere (Glasser 2016)',
+    julich:
+      'Cytoarchitectonic areas from histology, 139 per hemisphere (Amunts 2020); about a quarter of the cortex is not yet mapped',
     learning:
       'Overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published',
     aseg: 'FreeSurfer’s standard automatic subcortical segmentation',
@@ -45,23 +54,32 @@ export const fr: typeof en = {
   atlasShort: {
     destrieux: 'Destrieux',
     'hcp-mmp': 'HCP-MMP',
+    julich: 'Julich-Brain',
     learning: 'Ensemble pédagogique',
     aseg: 'FreeSurfer aseg',
     nextbrain: 'NextBrain',
     cerebnet: 'CerebNet',
     wmparc: 'wmparc',
     pam50: 'PAM50',
+    arterial: 'Territoires artériels',
   },
   subject: 'Sujet',
   atlas: 'Atlas',
   colour: 'Couleur',
-  colourGroups: { appearance: 'Apparence', parcellation: 'Parcellisation', networks: 'Réseaux' },
+  colourGroups: {
+    appearance: 'Apparence',
+    parcellation: 'Parcellisation',
+    networks: 'Réseaux',
+    vascular: 'Vascularisation',
+  },
   atlasBecomes: (colour: string, atlas: string) => `${colour} (l’atlas devient ${atlas})`,
   colourBecomes: (atlas: string, colour: string) => `${atlas} (la couleur devient ${colour})`,
   dataSummary: 'Réglages de l’atlas et de l’affichage',
   notes: {
     destrieux: 'Régions des sillons et des gyrus, 74 par hémisphère',
     'hcp-mmp': 'Aires multimodales, 180 par hémisphère (Glasser 2016)',
+    julich:
+      'Aires cytoarchitectoniques issues de l’histologie, 139 par hémisphère (Amunts 2020)\u202f; environ un quart du cortex n’est pas encore cartographié',
     learning:
       'Grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés',
     aseg: 'Segmentation sous-corticale automatique standard de FreeSurfer',

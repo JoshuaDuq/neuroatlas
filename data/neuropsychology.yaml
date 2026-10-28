@@ -1,4 +1,4 @@
-revised: '2026-10-27'
+revised: '2026-10-28'
 
 groups:
   - id: attention-executive
@@ -2786,7 +2786,7 @@ associations:
 
   - id: ataxia-nuclei
     deficit: ataxia
-    title: {en: Limb, posture and gait ataxia from the deep nuclei, fr: Ataxie des membres, de la posture et de la marche par les noyaux profonds}
+    title: {en: 'Limb, posture and gait ataxia from the deep nuclei', fr: 'Ataxie des membres, de la posture et de la marche par les noyaux profonds'}
     network: {en: Cerebellar output nuclei, fr: Noyaux de sortie du cervelet}
     laterality: bilateral
     finding:
@@ -2815,14 +2815,19 @@ associations:
       en: Cortical correlations were weaker and confined to the superior cerebellum. Upper limb ataxia followed lobules IV–VI, lower limb lobules III and VI, dysarthria paravermal and hemispheral lobules V–VI, and posture and gait vermal lobules II–IV.
       fr: Les corrélations corticales étaient plus faibles et limitées au cervelet supérieur. L’ataxie du membre supérieur suivait les lobules IV–VI, celle du membre inférieur les lobules III et VI, la dysarthrie les lobules paravermiens et hémisphériques V–VI, et la posture et la marche les lobules vermiens II–IV.
     limitation:
-      en: Chronic lesions showed far fewer cortical correlations, consistent with compensation. Lobule-level results cannot be verified against a whole-cortex solid.
-      fr: Les lésions chroniques montraient beaucoup moins de corrélations corticales, ce qui suggère une compensation. Les résultats par lobule ne peuvent pas être vérifiés sur un solide cortical entier.
+      en: Chronic lesions showed far fewer cortical correlations, consistent with compensation. CerebNet’s lobules are drawn whole, so the somatotopy within them is not.
+      fr: Les lésions chroniques montraient beaucoup moins de corrélations corticales, ce qui suggère une compensation. Les lobules CerebNet sont affichés entiers, sans la somatotopie qu’ils contiennent.
     mapping_note:
-      en: The whole cerebellar cortex is shown on each side. It is not subdivided into lobules or vermis, so the reported somatotopy is not visible.
-      fr: Le cortex cérébelleux entier est affiché de chaque côté. Il n’est pas subdivisé en lobules ni en vermis, de sorte que la somatotopie rapportée n’est pas visible.
+      en: CerebNet lobules I–VI on each side and vermis VI mark the superior cerebellum. Lobules I–V include their vermis, and the paravermal zone is not delineated.
+      fr: Les lobules CerebNet I–VI de chaque côté et le vermis VI repèrent le cervelet supérieur. Les lobules I–V incluent leur vermis, et la zone paravermienne n’est pas délimitée.
     mappings:
-      - {region: 'aseg:left:8', source_name: Left-Cerebellum-Cortex}
-      - {region: 'aseg:right:47', source_name: Right-Cerebellum-Cortex}
+      - {region: 'learning:lobules-i-iv-left', source_name: Lobules I–IV}
+      - {region: 'learning:lobules-i-iv-right', source_name: Lobules I–IV}
+      - {region: 'learning:lobule-v-left', source_name: Lobule V}
+      - {region: 'learning:lobule-v-right', source_name: Lobule V}
+      - {region: 'learning:lobule-vi-left', source_name: Lobule VI}
+      - {region: 'learning:lobule-vi-right', source_name: Lobule VI}
+      - {region: 'learning:vermis-vi', source_name: Vermis VI (declive)}
     evidence:
       - {reference: schoch-2006, role: supporting}
 
@@ -3086,7 +3091,7 @@ associations:
   - id: anosognosia-disconnection
     deficit: anosognosia
     title: {en: Direct injury and disconnection in motor unawareness, fr: Lésion directe et déconnexion dans la méconnaissance motrice}
-    network: {en: Right motor, limbic and ventral attention systems, fr: Systèmes moteurs, limbiques et attentionnels ventraux droits}
+    network: {en: 'Right motor, limbic and ventral attention systems', fr: 'Systèmes moteurs, limbiques et attentionnels ventraux droits'}
     laterality: right
     finding:
       en: In 174 stroke patients, anosognosia was associated with a combination of insular, striatal and temporal-pole injury and disconnection of cingulum, frontostriatal, frontal aslant and superior longitudinal III pathways. A combined model fit the study data better than isolated grey-matter lesions.
@@ -3347,7 +3352,7 @@ associations:
   - id: dysphagia-insula
     deficit: dysphagia
     title: {en: Aspiration risk after supratentorial stroke, fr: Risque d’aspiration après AVC supratentoriel}
-    network: {en: Insula, frontal operculum and internal capsule, fr: Insula, opercule frontal et capsule interne}
+    network: {en: 'Insula, frontal operculum and internal capsule', fr: 'Insula, opercule frontal et capsule interne'}
     laterality: bilateral
     finding:
       en: In 94 first supratentorial strokes, acute aspiration risk was independently associated with lesions of the internal capsule (odds ratio 6.2) and insular cortex (4.8). Combined frontal operculum and insula lesions were the only predictor of risk lasting beyond a week (odds ratio 33.8).
@@ -3555,18 +3560,35 @@ associations:
       en: The abstract does not break down the cerebellar diseases. Assessment relied on neurological examination, bedside mental state tests, neuropsychological studies and anatomical imaging rather than voxelwise mapping.
       fr: Le résumé ne détaille pas les maladies cérébelleuses. L’évaluation reposait sur l’examen neurologique, des tests de l’état mental au lit du malade, des études neuropsychologiques et l’imagerie anatomique plutôt que sur une cartographie voxel par voxel.
     mapping_note:
-      en: The whole cerebellar cortex is shown on each side; it is not divided into anterior and posterior lobes or vermis.
-      fr: Le cortex cérébelleux entier est affiché de chaque côté; il n’est pas divisé en lobes antérieur et postérieur ni en vermis.
+      en: CerebNet’s posterior lobe (lobules VI–IX on each side) and vermis VI–X are shown. The anterior vermis is part of lobules I–V there, so it is not shown, and the flocculus is left out.
+      fr: Le lobe postérieur CerebNet (lobules VI–IX de chaque côté) et le vermis VI–X sont affichés. Le vermis antérieur y fait partie des lobules I–V et n’est donc pas affiché, et le flocculus est exclu.
     mappings:
-      - {region: 'aseg:left:8', source_name: Left-Cerebellum-Cortex}
-      - {region: 'aseg:right:47', source_name: Right-Cerebellum-Cortex}
+      - {region: 'learning:lobule-vi-left', source_name: Lobule VI}
+      - {region: 'learning:lobule-vi-right', source_name: Lobule VI}
+      - {region: 'learning:crus-i-left', source_name: Crus I}
+      - {region: 'learning:crus-i-right', source_name: Crus I}
+      - {region: 'learning:crus-ii-left', source_name: Crus II}
+      - {region: 'learning:crus-ii-right', source_name: Crus II}
+      - {region: 'learning:lobule-viib-left', source_name: Lobule VIIb}
+      - {region: 'learning:lobule-viib-right', source_name: Lobule VIIb}
+      - {region: 'learning:lobule-viiia-left', source_name: Lobule VIIIa}
+      - {region: 'learning:lobule-viiia-right', source_name: Lobule VIIIa}
+      - {region: 'learning:lobule-viiib-left', source_name: Lobule VIIIb}
+      - {region: 'learning:lobule-viiib-right', source_name: Lobule VIIIb}
+      - {region: 'learning:lobule-ix-left', source_name: Lobule IX (tonsil)}
+      - {region: 'learning:lobule-ix-right', source_name: Lobule IX (tonsil)}
+      - {region: 'learning:vermis-vi', source_name: Vermis VI (declive)}
+      - {region: 'learning:vermis-vii', source_name: Vermis VII (folium and tuber)}
+      - {region: 'learning:vermis-viii', source_name: Vermis VIII (pyramis)}
+      - {region: 'learning:vermis-ix', source_name: Vermis IX (uvula)}
+      - {region: 'learning:vermis-x', source_name: Vermis X (nodulus)}
     evidence:
       - {reference: schmahmann-1998, role: supporting}
 
   - id: dysarthria-corticobulbar
     deficit: dysarthria
     title: {en: Along the corticobulbar tract, fr: Le long du faisceau cortico-bulbaire}
-    network: {en: Lower motor cortex, striatocapsular region and pontine base, fr: Cortex moteur inférieur, région striato-capsulaire et base du pont}
+    network: {en: 'Lower motor cortex, striatocapsular region and pontine base', fr: 'Cortex moteur inférieur, région striato-capsulaire et base du pont'}
     laterality: bilateral
     finding:
       en: In 62 acute dysarthrias from a single infarct, extracerebellar lesions lay in the lower motor cortex (14.5%), striatocapsular region (46.8%) or base of the pons (24.2%), all along the corticobulbar fibres. Left-sided lesions produced more severe articulatory impairment regardless of site.
@@ -3599,11 +3621,15 @@ associations:
       en: Small numbers, and 11 of 18 patients also had brainstem involvement. All patients were right-handed, so the right-sided predominance may not generalise.
       fr: Petits effectifs, et 11 des 18 patients avaient aussi une atteinte du tronc cérébral. Tous les patients étaient droitiers; la prédominance droite pourrait donc ne pas se généraliser.
     mapping_note:
-      en: The whole cerebellar cortex is shown on each side; lobules and the paravermal zone are not delineated.
-      fr: Le cortex cérébelleux entier est affiché de chaque côté; les lobules et la zone paravermienne ne sont pas délimités.
+      en: CerebNet lobules I–V mark the anterior lobe and lobule VI the voxelwise site, on each side. The paravermal zone is not delineated, and lobules I–V include their vermis.
+      fr: Les lobules CerebNet I–V repèrent le lobe antérieur et le lobule VI le site voxel par voxel, de chaque côté. La zone paravermienne n’est pas délimitée, et les lobules I–V incluent leur vermis.
     mappings:
-      - {region: 'aseg:left:8', source_name: Left-Cerebellum-Cortex}
-      - {region: 'aseg:right:47', source_name: Right-Cerebellum-Cortex}
+      - {region: 'learning:lobules-i-iv-left', source_name: Lobules I–IV}
+      - {region: 'learning:lobules-i-iv-right', source_name: Lobules I–IV}
+      - {region: 'learning:lobule-v-left', source_name: Lobule V}
+      - {region: 'learning:lobule-v-right', source_name: Lobule V}
+      - {region: 'learning:lobule-vi-left', source_name: Lobule VI}
+      - {region: 'learning:lobule-vi-right', source_name: Lobule VI}
     evidence:
       - {reference: urban-2003, role: supporting}
       - {reference: schoch-2006, role: supporting}

@@ -35,6 +35,10 @@ const functional = readRepoYaml<{ sources: Record<string, Source> }>(
   'config/functional-regions.yaml',
 );
 const domains = readRepoYaml<{ sources: Record<string, Source> }>('config/neuropsych-domains.yaml');
+const receptors = readRepoYaml<{ sources: Record<string, Source> }>(
+  'config/receptor-fingerprints.yaml',
+);
+const territories = readRepoYaml<Source>('config/arterial-territories.yaml');
 const bibliography = readFileSync(resolve(repoRoot, 'docs/reference/references.md'), 'utf8');
 
 /** Case, accents and punctuation are ignored; any other difference is a different work. */
@@ -115,8 +119,13 @@ test('circuit references name the article or Bookshelf chapter their identifiers
   }
 });
 
-test('functional-region and domain sources cite their PMID’s DOI, title, first author and issue year', () => {
-  for (const [id, source] of Object.entries({ ...functional.sources, ...domains.sources })) {
+test('functional-region, domain and receptor sources cite their PMID’s DOI, title, first author and issue year', () => {
+  for (const [id, source] of Object.entries({
+    ...functional.sources,
+    ...domains.sources,
+    ...receptors.sources,
+    territories,
+  })) {
     const work = record(`pmid:${source.pmid}`);
     assert.equal(source.doi.toLowerCase(), `https://doi.org/${work.doi}`, `${id}: DOI`);
     assert.ok(plain(source.citation).includes(plain(work.title)), `${id}: title`);
@@ -156,6 +165,8 @@ test('the records file holds exactly the cited works', () => {
     ),
     ...Object.values(functional.sources).map((source) => `pmid:${source.pmid}`),
     ...Object.values(domains.sources).map((source) => `pmid:${source.pmid}`),
+    ...Object.values(receptors.sources).map((source) => `pmid:${source.pmid}`),
+    `pmid:${territories.pmid}`,
     ...bibliographyEntries.map((line) => `pmid:${line.match(/\bPMID (\d+)\b/)?.[1]}`),
   ]);
   assert.deepEqual([...cited].sort(), Object.keys(records).sort());

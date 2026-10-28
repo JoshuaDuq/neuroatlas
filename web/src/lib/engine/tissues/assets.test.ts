@@ -23,6 +23,7 @@ interface TissueLabels {
 }
 interface Manifest {
   regions: Region[];
+  atlases: { file: string }[];
   detail_levels: { file: string }[];
   appearance: { tissue: TissueAppearance };
 }
@@ -37,7 +38,7 @@ test('cut palettes match every corresponding exported surface material', async (
   );
   const materials = new Map<string, number[]>();
   // nextbrain.glb is optional: it exists only where the warped volume does.
-  const files = ['cortex-destrieux.glb', 'cortex-hcp-mmp.glb', 'structures.glb'];
+  const files = [...manifest.atlases.map((atlas) => atlas.file), 'structures.glb'];
   if (manifest.detail_levels.some((level) => level.file === 'nextbrain.glb')) {
     files.push('nextbrain.glb');
   }

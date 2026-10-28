@@ -29,7 +29,6 @@ export interface DisplaySettings {
   internalVisible: boolean;
   spinalCordVisible: boolean;
   surfaceColor: SurfaceColor;
-  functionalLevel: FunctionalLevel;
   paint: Paint | null;
   isolatedRegion: string | null;
   hiddenRegions: ReadonlySet<string>;

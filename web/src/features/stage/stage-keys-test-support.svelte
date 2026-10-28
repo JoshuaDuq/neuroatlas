@@ -3,16 +3,10 @@
   the overlay writes, and the keys. Not shipped.
 -->
 <script lang="ts">
-  import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { Legend } from '../../lib/core/state/paint.ts';
   import type { Media } from '../../lib/state/media.svelte.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
-  import type {
-    FunctionalLevel,
-    Language,
-    LoadStatus,
-    SurfaceColor,
-  } from '../../lib/types/index.ts';
+  import type { Language, LoadStatus, SurfaceColor } from '../../lib/types/index.ts';
   import StageKeys from './StageKeys.svelte';
   import type { ColoredNetworks } from './stage-keys.ts';
 
@@ -23,15 +17,12 @@
       lang: Language;
       status: LoadStatus;
       surfaceColor: SurfaceColor;
-      functionalLevel: FunctionalLevel;
       networks: ColoredNetworks | null;
       cabNp: ColoredNetworks | null;
-      functionalRegions: FunctionalRegions | null;
       legend: Legend | null;
       directionShown: boolean;
       media: Pick<Media, 'phone' | 'coarsePointer'>;
     };
-    onFunctionalLevel?: (level: FunctionalLevel) => void;
     onPaintPick?: (id: string | null) => void;
     /** The stage's size in CSS pixels. */
     width?: number;
@@ -42,15 +33,7 @@
 
   let keys: StageKeys;
 
-  let {
-    stage,
-    live,
-    onFunctionalLevel = () => {},
-    onPaintPick = () => {},
-    width = 1200,
-    height = 800,
-    handle,
-  }: Props = $props();
+  let { stage, live, onPaintPick = () => {}, width = 1200, height = 800, handle }: Props = $props();
 
   $effect(() => {
     if (handle) handle.model = () => keys.model();
@@ -77,13 +60,10 @@
     lang={live.lang}
     status={live.status}
     surfaceColor={live.surfaceColor}
-    functionalLevel={live.functionalLevel}
     networks={live.networks}
     cabNp={live.cabNp}
-    functionalRegions={live.functionalRegions}
     legend={live.legend}
     directionShown={live.directionShown}
-    {onFunctionalLevel}
     {onPaintPick}
   />
 </main>

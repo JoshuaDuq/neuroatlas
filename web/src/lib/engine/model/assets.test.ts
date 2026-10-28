@@ -271,51 +271,6 @@ describe('the published CDMD model', () => {
   });
 
   test(
-    'ATLAS-45 under functional colour on hcp-mmp with glass solids, a pick is a division or glass cortex',
-    { timeout: 120_000 },
-    async () => {
-      vi.spyOn(assetCache, 'fetchAsset').mockImplementation(async (url) => {
-        const bytes = await readFile(
-          new URL(String(url).split('/').pop()!, modelDirectory(published)),
-        );
-        return bytes.buffer.slice(
-          bytes.byteOffset,
-          bytes.byteOffset + bytes.byteLength,
-        ) as ArrayBuffer;
-      });
-      await model.setAtlas('hcp-mmp');
-      await model.loadGlassSolids(`https://example.invalid/models/${published}/`);
-      model.setSurfaceColor('functional');
-      assert.ok(
-        model.glassSolids!.meshes.some((mesh) => mesh.visible),
-        'a glass solid is drawn',
-      );
-      const found = picks().filter((region) => region !== null);
-      assert.ok(found.length > 30, `${found.length} picks`);
-      for (const region of found) {
-        assert.ok(model.canSelect(region) && region.kind !== 'non-region', region.id);
-      }
-      assert.ok(
-        found.some((region) => region.kind === 'cortex'),
-        'a division is picked',
-      );
-      // A division behind the glass is picked through it, not the glass in front.
-      const glassParcel = (id: string) =>
-        model.visibleMeshes.some(
-          (mesh) => mesh.userData['region_id'] === id && mesh.material.userData['glass'] === true,
-        );
-      let throughGlass = 0;
-      for (const ray of rays) {
-        const region = model.pick(ray);
-        const front = model.nearestHit(ray, model.visibleMeshes);
-        if (region && front?.object.material.userData['glass'] === true && !glassParcel(region.id))
-          throughGlass += 1;
-      }
-      assert.ok(throughGlass > 0, 'a division behind the glass is picked through it');
-    },
-  );
-
-  test(
     'ATLAS-11 loading from the published manifest reads its sidecars, reports progress and disposes a model that fails to open',
     { timeout: 120_000 },
     async () => {

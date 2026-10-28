@@ -1,10 +1,8 @@
 /* oxlint-disable typescript/no-explicit-any -- the sweep drives the model through one untyped command surface */
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { BoxGeometry, Matrix4, Mesh, Plane, Vector3 } from 'three';
+import { Matrix4, Plane, Vector3 } from 'three';
 import { visibilityOf } from '../../core/catalog/visibility.ts';
-import { readRepoYaml } from '../../../../test/repo.ts';
-import { createGlassSolids } from '../tissues/glass-solids.ts';
 import { createMriUniforms } from '../render/mri-material.ts';
 import { SURFACE_COLORS } from './brain-atlas.ts';
 import { syntheticAtlas } from './test-support.ts';
@@ -59,10 +57,6 @@ function drawCommand(random: Random): Command {
     [4, () => ({ name: 'setInternalVisible', args: [pick(random, [true, false, true, 0])] })],
     [4, () => ({ name: 'setInternalSystem', args: [pick(random, [null, 'Imaginary system'])] })],
     [12, () => ({ name: 'setSurfaceColor', args: [pick(random, MODES)] })],
-    [
-      4,
-      () => ({ name: 'setFunctionalLevel', args: [pick(random, ['named', 'sections', 'lobes'])] }),
-    ],
     [
       8,
       () => ({
@@ -176,15 +170,7 @@ test('ATLAS-21, ATLAS-22 and ATLAS-33 after each of 300 seeded commands, meshes 
   model.addEventListener('selectionchange', (event: Stub) =>
     events.push(`selectionchange:${event.detail?.id ?? null}`),
   );
-  // A glass brain and a scan, so the sweep reaches the states that need them.
-  const wedges = ['a-left', 'a-right'].map((id) => {
-    const wedge = new Mesh(new BoxGeometry(0.01, 0.01, 0.01));
-    wedge.userData = { region_id: id, atlas: 'a', kind: 'ribbon' };
-    return wedge;
-  });
-  const { appearance } = readRepoYaml<{ appearance: any }>('config/model.yaml');
-  model.glassSolids = createGlassSolids(wedges, appearance);
-  model.group.add(model.glassSolids.group);
+  // A scan, so the sweep reaches the states that need it.
   model.setMriAnatomy({
     mriUniforms: createMriUniforms({
       texture: null,
@@ -291,7 +277,6 @@ test('ATLAS-22 each refused command names its fault and changes nothing', async 
   const { model, events } = await opened();
   const refusals: [() => unknown, RegExp][] = [
     [() => model.setSurfaceColor('bogus'), /Unknown surface colour: bogus/],
-    [() => model.setFunctionalLevel('lobes' as never), /Unknown functional level: lobes/],
     [
       () => model.setPaint({ id: 5, colors: new Map() } as never),
       /A paint needs an id and a Map of region colours/,
@@ -492,24 +477,5 @@ test('ATLAS-32 a scan is attached once, another is refused, and a paint turns th
   assert.equal(first.mriUniforms.scanEnabled.value, true);
   model.setPaint({ id: 'function:a', colors: new Map([['a-left', [1, 2, 3]]]) });
   assert.equal(first.mriUniforms.scanEnabled.value, false);
-  model.dispose();
-});
-
-test('ATLAS-34 the cut planes reach the glass solids that are drawn', async () => {
-  const { model } = await opened();
-  const wedges = ['a-left', 'a-right'].map((id) => {
-    const wedge = new Mesh(new BoxGeometry(0.01, 0.01, 0.01));
-    wedge.userData = { region_id: id, atlas: 'a', kind: 'ribbon' };
-    return wedge;
-  });
-  const { appearance } = readRepoYaml<{ appearance: any }>('config/model.yaml');
-  model.glassSolids = createGlassSolids(wedges, appearance);
-  model.group.add(model.glassSolids.group);
-  model.setSurfaceColor('functional');
-  const plane = new Plane(new Vector3(0, 0, 1), 1);
-  model.setClippingPlanes([plane]);
-  const drawn = model.glassSolids.meshes.filter((mesh: Stub) => mesh.visible);
-  assert.ok(drawn.length > 0, 'a glass solid is drawn under functional colour');
-  for (const mesh of drawn) assert.deepEqual(mesh.material.clippingPlanes, [plane]);
   model.dispose();
 });

@@ -1,9 +1,6 @@
 // The stage's markings measured where they are drawn, for the snapshot (viewport-chrome.js:642-696).
-import { t } from '../../lib/core/i18n/index.ts';
 import type { Rect } from '../../lib/engine/api.ts';
 import type { Edge, StageLayout } from '../../lib/state/stage-layout.svelte.ts';
-import { FUNCTIONAL_LEVELS } from '../../lib/types/index.ts';
-import type { Language } from '../../lib/types/index.ts';
 import type { KeyPlate } from '../stage/stage-keys.ts';
 
 /** Stage geometry in CSS pixels, matching the stage styles: gutter, marking line height, caption gaps. */
@@ -61,11 +58,9 @@ export function snapshotMarkings(
   {
     stage,
     keys,
-    lang,
   }: {
     stage: Pick<StageLayout, 'keyInset' | 'dockTall'>;
     keys: StageKeysModel;
-    lang: Language;
   },
 ): Markings {
   const origin = host.getBoundingClientRect();
@@ -120,7 +115,6 @@ export function snapshotMarkings(
       font: `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`,
     };
   };
-  const levels = t(lang, 'functional').levels;
   const plates = find(host, '#stage-keys');
   const keyMarks = keys.model().map((plate): KeyMark => {
     const node = find(plates, `.stage-key[data-name="${plate.name}"]`);
@@ -129,14 +123,6 @@ export function snapshotMarkings(
     // Rows scrolled out of a long list stay out of the image too.
     const inside = (mark: { y: number }) => mark.y >= box.y && mark.y <= box.y + box.height;
     const texts = [words(find(node, `#${plate.name}-key-title`), plate.title)];
-    // The level shown shares the title row, so a fold keeps it.
-    if (plate.level) {
-      const radios = node.querySelectorAll<HTMLElement>('.stage-key-head [role="radio"]');
-      const radio = radios[FUNCTIONAL_LEVELS.indexOf(plate.level)];
-      if (!radio)
-        throw new Error(`The snapshot cannot find the ${plate.level} level on the stage.`);
-      texts.push(words(radio, levels[plate.level]));
-    }
     const swatches: KeySwatch[] = [];
     // A folded key draws what it shows, its title; unfolded on screen, so is it in the image.
     if (plate.open) {

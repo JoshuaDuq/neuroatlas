@@ -14,7 +14,7 @@ import type {
 import { createEngineModel, createEngineSections } from './adapters.ts';
 import { createComparisonOverlay } from './comparison/overlay.ts';
 import { createTracts } from './diffusion/tracts.ts';
-import type { TractsOptions } from './diffusion/tracts.ts';
+import type { Tracts, TractsOptions } from './diffusion/tracts.ts';
 import { createFraming } from './framing.ts';
 import type { Emit } from './framing.ts';
 import { createHeldView } from './held-view.ts';
@@ -73,10 +73,12 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
 
   // Declared before the scene: its resize observer can fire during the model download, which is long.
   let framing: ReturnType<typeof createFraming> | null = null;
+  let setTractsMotion: Tracts['setMotion'] | null = null;
   const scene = createScene(host, {
     onContextLost: () => events.emit('contextLost', undefined),
     onContextRestored: () => events.emit('contextRestored', undefined),
     onResize: (change) => framing?.onResize(change),
+    onMotion: (moving) => setTractsMotion?.(moving),
   });
   cleanups.push(() => scene.dispose());
 
@@ -109,6 +111,7 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
       emit: events.emit as TractsOptions['emit'],
     });
     cleanups.push(() => tracts.dispose());
+    setTractsMotion = tracts.setMotion;
     const lesion = createLesion({
       model: atlas,
       tissues: sections.tissues,

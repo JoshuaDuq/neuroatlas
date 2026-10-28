@@ -130,7 +130,7 @@
         colourings={{
           networks: model.manifest.networks,
           cabNp: model.cabNp,
-          functionalRegions: model.functionalRegions,
+          territories: model.manifest.arterial_territories,
         }}
         anatomy={model.manifest.anatomy}
         anatomies={[model.manifest.anatomy]}

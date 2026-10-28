@@ -224,7 +224,6 @@ export function createAnatomyCommands(
     const current = commands.begin();
     const changes = leaveInternal(beforeInternal, model.settings, {
       'cab-np': model.cabNp?.atlas,
-      functional: model.functionalRegions?.atlas,
     });
     beforeInternal = null;
     session.setQuery('');
@@ -241,9 +240,9 @@ export function createAnatomyCommands(
     if (!current()) return;
     if (changes.colourLost) {
       const { lang } = session.state;
-      const copy = t(lang, 'app');
-      const said = changes.colourLost === 'cab-np' ? copy.cabNpAtlasOnly : copy.functionalAtlasOnly;
-      session.notify({ text: said(atlasSwitchLabel(model.settings.atlas, lang)) });
+      session.notify({
+        text: t(lang, 'app').cabNpAtlasOnly(atlasSwitchLabel(model.settings.atlas, lang)),
+      });
     }
     camera.frameWhole();
   }

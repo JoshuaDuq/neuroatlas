@@ -3,7 +3,8 @@
   the commands that act on it, its measurements, then the collapsed sections that qualify it.
   Without a selection it is one hint line. The sections keep legacy's order (decision 35 on #4):
   the comparison slot (R2), constituents, functional division, domains, networks, with NextBrain's
-  boundary certainty after the comparison, both being about the labels' source; the deficits
+  boundary certainty after the comparison, both being about the labels' source, then the receptor
+  densities measured in the area the region is named after; the deficits
   and circuits the region takes part in (X2, X3) follow as slots of their own.
   - the name is the `region-title` focus target; the commands that hide the selection with it
     (Clear ×, Hide) hand focus on through S2's commands, not here;
@@ -14,12 +15,19 @@
 -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { Explorer, Language, Region, Rgb } from '../../lib/types/index.ts';
+  import type {
+    ArterialTerritories,
+    Explorer,
+    Language,
+    Region,
+    Rgb,
+  } from '../../lib/types/index.ts';
   import type { RegionLabel } from '../../lib/core/catalog/labels.ts';
   import type { CabNpPartition } from '../../lib/core/catalog/networks.ts';
   import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
   import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
+  import type { ReceptorFingerprints } from '../../lib/core/catalog/receptor-fingerprints.ts';
   import { ARIA_KEYSHORTCUTS } from '../../lib/controller/keymap.ts';
   import { t } from '../../lib/core/i18n/index.ts';
   import { inspectorEmptyChrome } from '../../lib/core/panels/inspector.ts';
@@ -31,6 +39,8 @@
   import DomainSection from './DomainSection.svelte';
   import FunctionalSection from './FunctionalSection.svelte';
   import NetworkSection from './NetworkSection.svelte';
+  import ReceptorSection from './ReceptorSection.svelte';
+  import SupplySection from './SupplySection.svelte';
   import RegionFacts from './RegionFacts.svelte';
   import './inspector.css';
 
@@ -56,6 +66,9 @@
     functionalRegions: FunctionalRegions | null;
     domains: NeuropsychDomains | null;
     boundaryCertainty: BoundaryCertainty | null;
+    receptors: ReceptorFingerprints | null;
+    /** The manifest's arterial territories, for each region's typical supply. */
+    territories?: ArterialTerritories | null;
     /** Takes no arguments: I1 wires `focusSelection()`, which frames with an animation (only the F key is immediate). */
     onfocus: () => void;
     /** Takes no arguments: I1 wires `isolateSelection`. */
@@ -90,6 +103,8 @@
     functionalRegions,
     domains,
     boundaryCertainty,
+    receptors,
+    territories = null,
     onfocus,
     onisolate,
     onhide,
@@ -169,10 +184,12 @@
   {/if}
   {@render comparison?.()}
   <BoundarySection {region} {lang} certainty={boundaryCertainty} label={catalog.label} {onselect} />
+  <ReceptorSection {region} {lang} {receptors} />
   <Constituents {region} {lang} get={catalog.get} label={catalog.label} {onregion} />
   <FunctionalSection {region} {lang} {functionalRegions} />
   <DomainSection {region} {lang} {domains} />
   <NetworkSection {region} {lang} colors={networkColors} {cabNp} />
+  <SupplySection {region} {lang} {territories} />
 </div>
 {@render relatedDeficits?.()}
 {@render relatedCircuits?.()}

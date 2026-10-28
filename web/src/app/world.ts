@@ -38,7 +38,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
     throw new Error('This build publishes no neuropsychological domains for the Functions tab.');
   }
   const regions = createCatalog(model.manifest, session.state.lang, model.cabNp);
-  const clinical = loadClinicalCatalog(model.manifest);
+  const clinical = loadClinicalCatalog(model.manifest, domains.units);
   const circuits = loadCircuitCatalog(model.manifest, clinical);
 
   // The scene commands read the session through `assemble`, which the store replaces with `state`.

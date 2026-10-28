@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { BufferAttribute, BufferGeometry, Color, SRGBColorSpace } from 'three';
 import type { Rgb } from '../../types/index.ts';
-import { NETWORK_COLOR_ITEM_SIZE, attachNetworkColors, networkColors } from './network-colors.ts';
+import {
+  NETWORK_COLOR_ITEM_SIZE,
+  attachNetworkColors,
+  attachTerritoryColors,
+  networkColors,
+} from './network-colors.ts';
 
 const METADATA = {
   networks: ['Vis', 'SomMot', 'DorsAttn', 'SalVentAttn', 'Limbic', 'Cont', 'Default'],
@@ -101,4 +106,25 @@ test('SHADER-09 an index is rounded to the nearest network, never wrapped, and o
   ] as const) {
     assertChannels(rgba(values, vertex), [...linear(name), 1]);
   }
+});
+
+test('a territory index takes its branch colour, none keeps the region colour, and one past the palette fails', () => {
+  const past = new BufferGeometry();
+  past.setAttribute('_territory', new BufferAttribute(new Float32Array([1, 3]), 1));
+  assert.throws(
+    () => attachTerritoryColors(past, [{ color: [255, 0, 0] }, { color: [0, 0, 255] }]),
+    /Vertex index 3 has no published territory/,
+  );
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('_territory', new BufferAttribute(new Float32Array([1, 0, 2, 0]), 1));
+  assert.equal(
+    attachTerritoryColors(geometry, [{ color: [255, 0, 0] }, { color: [0, 0, 255] }]),
+    true,
+  );
+  const values = geometry.getAttribute('_territoryColor')!.array as Float32Array;
+  assertChannels(rgba(values, 0), [1, 0, 0, 1]);
+  assert.deepEqual(rgba(values, 1), [0, 0, 0, 0]);
+  assertChannels(rgba(values, 2), [0, 0, 1, 1]);
+  assert.deepEqual(rgba(values, 3), [0, 0, 0, 0]);
+  assert.equal(attachTerritoryColors(new BufferGeometry(), [{ color: [1, 2, 3] }]), false);
 });

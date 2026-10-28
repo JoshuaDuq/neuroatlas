@@ -13,7 +13,7 @@ from brain_model.sources import ROOT, read_config
 @pytest.mark.parametrize("anatomy", ["cdmd"])
 def test_every_projected_annotation_is_its_rederivation_byte_for_byte(anatomy):
     report = validate_transforms.validate_projected_annotations(read_config(anatomy))
-    assert set(report) == {"HCPMMP1", "Schaefer2018_400Parcels_7Networks_order"}
+    assert set(report) == {"HCPMMP1", "JulichBrain3.1", "Schaefer2018_400Parcels_7Networks_order"}
     for hemispheres in report.values():
         assert all(h["byte_identical_to_rederivation"] for h in hemispheres.values())
 

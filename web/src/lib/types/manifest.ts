@@ -1,3 +1,4 @@
+import type { Rgb } from './paint.ts';
 import type { Region } from './region.ts';
 
 type Matrix4 = readonly (readonly number[])[];
@@ -65,7 +66,6 @@ export interface ManifestSupplementalLayer {
 export interface ManifestAppearance {
   tissue: Record<string, string | number>;
   folds: Record<string, unknown>;
-  glass_opacity?: number;
   see_through_opacity?: number;
   intensity?: Record<string, unknown>;
   lighting?: Record<string, unknown>;
@@ -105,10 +105,34 @@ export interface Manifest {
   neuropsych_domains?: ManifestFile & Record<string, unknown>;
   neurosynth_terms?: ManifestFile & Record<string, unknown>;
   boundary_certainty?: ManifestFile & Record<string, unknown>;
+  arterial_territories?: ArterialTerritories;
+  receptor_fingerprints?: ManifestFile & Record<string, unknown>;
   volumes?: ManifestFile;
   tissues?: ManifestFile;
   atlas_comparison?: ManifestFile;
   boundary_convention?: string;
   limitations?: string[];
   provenance?: Record<string, unknown>;
+}
+
+/** One branch territory of the arterial territory atlas. */
+export interface ArterialTerritory {
+  id: string;
+  major: string;
+  name: string;
+  name_fr: string;
+  color: Rgb;
+}
+
+/** `manifest.arterial_territories`: the registered Liu et al. (2023) atlas and its palette. */
+export interface ArterialTerritories {
+  id: 'arterial';
+  label: string;
+  citation: string;
+  license: string;
+  attribute: '_TERRITORY';
+  major: Record<string, { name: string; name_fr: string; short: string }>;
+  territories: ArterialTerritory[];
+  registration: Record<string, unknown>;
+  method: string;
 }

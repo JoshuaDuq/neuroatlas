@@ -35,7 +35,6 @@ const regionB = { id: 'b', label: 'Area B', hemisphere: 'right', kind: 'cortex' 
 
 const sources: HoverSources = {
   regions: new Map(),
-  functionalRegions: null,
   cabNp: null,
   domains: null,
   catalogName: () => undefined,
@@ -72,7 +71,6 @@ function liveState(overrides: Partial<Live>): Live {
     view: {
       lang: 'en',
       surfaceColor: 'atlas',
-      functionalLevel: 'named',
       paint: null,
       selectedFunction: null,
     },

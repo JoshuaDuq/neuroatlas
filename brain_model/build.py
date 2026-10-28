@@ -13,6 +13,7 @@ from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
 from .layers import (
+    arterial_territories,
     cab_np,
     comparison,
     functional_regions,
@@ -20,6 +21,7 @@ from .layers import (
     networks,
     neuropsych_domains,
     neurosynth_terms,
+    receptor_fingerprints,
     spinal_cord,
 )
 from .sources import (
@@ -43,7 +45,11 @@ from .surfaces.solids import export_solid_envelopes
 
 
 def cortical_region(atlas, hemisphere, label, name):
-    non_region = name in {"Unknown", "unknown", "???", "Medial_wall"}
+    # Julich-Brain marks its medial wall with two masks, and cortex it has not yet
+    # mapped with gap maps: neither is an area.
+    non_region = name in {
+        "Unknown", "unknown", "???", "Medial_wall", "CorpusCallosumMask", "BrainStemMask"
+    } or name.startswith("GapMap-")
     display = name.replace("_", " ")
     return {
         "id": f"{atlas}:{hemisphere}:{label}",
@@ -79,6 +85,11 @@ def require_layer_inputs(config):
         "white_matter": lambda: [white_matter.path(config)],
         "spinal_cord": lambda: list(spinal_cord.paths(config).values()),
         "neurosynth_terms": lambda: [neurosynth_terms.DEFINITION, neurosynth_terms.SCORES],
+        "arterial_territories": lambda: [
+            arterial_territories.DEFINITION,
+            arterial_territories.volume_path(config),
+            arterial_territories.report_path(config),
+        ],
     }
     missing = [
         str(path)
@@ -108,6 +119,11 @@ def build_cortex(config, atlas, field_ranges=None):
     regions = []
     source = config["source_directory"]
     mri = nib.load(source / "mri/orig.mgz")
+    territories = (
+        arterial_territories.read_definition() if arterial_territories.is_declared(config) else None
+    )
+    if territories:
+        territory_grid = arterial_territories.territory_index(config, territories)
     for prefix, hemisphere in HEMISPHERES.items():
         vertices, faces = read_native_surface(source, prefix)
         white, white_faces = read_geometry(source / "surf" / f"{prefix}.white")
@@ -131,6 +147,14 @@ def build_cortex(config, atlas, field_ranges=None):
             None if network_ids is None
             else partition_vertex_labels(faces, labels, network_ids)
         )
+        territory_ids = (
+            arterial_territories.vertex_indices(*territory_grid, vertices, white)
+            if territories else None
+        )
+        territory_field = (
+            None if territory_ids is None
+            else partition_vertex_labels(faces, labels, territory_ids)
+        )
         for label in np.unique(labels):
             name = "Unknown" if label == -1 else names[label].decode()
             color = [128, 128, 128] if label == -1 else colors[label, :3].tolist()
@@ -150,6 +174,17 @@ def build_cortex(config, atlas, field_ranges=None):
                     network_field[indices].astype(np.float32)
                 )
                 region["networks"] = networks.composition(network_ids[labels == label])
+            if territory_field is not None:
+                mesh.vertex_attributes["_TERRITORY"] = (
+                    territory_field[indices].astype(np.float32)
+                )
+                composed = arterial_territories.composition_of_counts(
+                    arterial_territories.counts_of(territory_ids[labels == label], territories),
+                    territories,
+                )
+                # The medial wall and unmapped cortex are not regions; their supply says nothing.
+                if composed and region["kind"] == "cortex":
+                    region.update(composed)
             region.update(
                 vertex_count=len(mesh.vertices),
                 triangle_count=len(mesh.faces),
@@ -300,7 +335,30 @@ def cut_atlases(config):
                 "procedure": settings["procedure"],
             }
         )
+    if arterial_territories.is_declared(config):
+        atlases.append(arterial_territories.cut_atlas(arterial_territories.read_definition()))
     return atlases
+
+
+def territory_grids(config):
+    """The label grids whose regions take territory shares: by atlas, and the teaching set's own.
+
+    The teaching set clips some aseg units below a NextBrain floor, so its units are counted on
+    the grids it builds from, not on aseg's whole labels.
+    """
+    grids = {"aseg": conformed_grid(nib.load(config["source_directory"] / "mri/aseg.mgz"))}
+    units = {}
+    if white_matter.is_declared(config):
+        grids["wmparc"] = conformed_grid(nib.load(white_matter.path(config)))
+    if nextbrain.is_declared(config):
+        source = nextbrain.load(config)
+        grids["nextbrain"] = source[0]
+        units = {name: grid for name, grid, _, _ in learning.source_groups(config, source)}
+    if cerebellum.is_declared(config):
+        grids["cerebnet"] = cerebellum.load(config)
+    pair = lambda grid: (grid.labels.astype(np.int64), grid.voxel_to_surface)
+    return ({atlas: pair(grid) for atlas, grid in grids.items()},
+            {source: pair(grid) for source, grid in units.items()})
 
 
 def anatomy_record(config):
@@ -476,6 +534,10 @@ def main():
         path = config["output_directory"] / built["file"]
         cord_layers = [spinal_cord.layer(config, built, cord_regions, path)]
         regions.extend(cord_regions)
+    if arterial_territories.is_declared(config):
+        territories = arterial_territories.read_definition()
+        regions.extend(arterial_territories.build_regions(config, territories))
+        arterial_territories.compose(config, territories, regions, *territory_grids(config))
     manifest = {
         "supplemental_layers": cord_layers,
         "volumes": {"file": "volumes.json"},
@@ -503,9 +565,15 @@ def main():
         "functional_regions": functional_regions.export(config, regions),
         "neuropsych_domains": neuropsych_domains.export(config, regions),
         "neurosynth_terms": neurosynth_terms.export(config, regions),
+        "receptor_fingerprints": receptor_fingerprints.export(config, regions),
         **(
             {"boundary_certainty": boundary_certainty.export(config, regions)}
             if boundary_certainty.is_published(config)
+            else {}
+        ),
+        **(
+            {"arterial_territories": arterial_territories.metadata(config, territories)}
+            if arterial_territories.is_declared(config)
             else {}
         ),
         "cut_atlases": cut_atlases(config),
@@ -534,7 +602,9 @@ def main():
             *functional_regions.limitations(),
             *neuropsych_domains.limitations(),
             *neurosynth_terms.limitations(config),
+            *receptor_fingerprints.limitations(),
             *white_matter.limitations(config),
+            *(arterial_territories.limitations() if arterial_territories.is_declared(config) else []),
         ],
         "provenance": provenance,
     }

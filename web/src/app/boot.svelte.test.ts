@@ -479,7 +479,8 @@ describe('the link hooks', () => {
   });
 
   test('leaving a lesson a link opened returns to the scene the link found', async () => {
-    const circuit = loadCircuitCatalog(manifest, loadClinicalCatalog(manifest)).all[0]!.id;
+    const circuit = loadCircuitCatalog(manifest, loadClinicalCatalog(manifest, domains.units))
+      .all[0]!.id;
     const { app } = await boot(`#tab=circuits&circuit=${circuit}`);
     expect(engine.model.state.selectedRegion).not.toBeNull();
     await app.world!.excursions.leaveLesson();

@@ -15,10 +15,10 @@ import type { CabNpPartition } from '../core/catalog/networks.ts';
 import type { FunctionalRegions } from '../core/catalog/functional-regions.ts';
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { BoundaryCertainty } from '../core/catalog/boundary-certainty.ts';
+import type { ReceptorFingerprints } from '../core/catalog/receptor-fingerprints.ts';
 import type {
   CutMode,
   DisplaySettings,
-  FunctionalLevel,
   Hemisphere,
   Language,
   LoadProgress,
@@ -142,6 +142,9 @@ export type DomainsData = NeuropsychDomains;
 /** NextBrain's near ties per pair of touching labels (`manifest.boundary_certainty` file). */
 export type BoundaryCertaintyData = BoundaryCertainty;
 
+/** Receptor densities carried to regions by name (`manifest.receptor_fingerprints` file). */
+export type ReceptorFingerprintsData = ReceptorFingerprints;
+
 // ---------------------------------------------------------------------------
 // Model (BrainAtlas, model/brain-atlas.js)
 // ---------------------------------------------------------------------------
@@ -158,6 +161,7 @@ export interface EngineModel {
   readonly functionalRegions: FunctionalRegionsData | null;
   readonly domains: DomainsData | null;
   readonly boundaryCertainty: BoundaryCertaintyData | null;
+  readonly receptors: ReceptorFingerprintsData | null;
   /** The grouped learning overview when published, else the first level (brain-atlas.js:212). */
   readonly defaultDetail: string;
   /** Display settings: cheap, never walks the meshes (brain-atlas.js:480). */
@@ -188,7 +192,6 @@ export interface EngineModel {
   setInternalVisible(visible: boolean): void;
   /** Downloads the cord on first showing (brain-atlas.js:776). */
   setSpinalCordVisible(visible: boolean, onProgress?: OnProgress): Promise<void>;
-  setFunctionalLevel(level: FunctionalLevel): void;
   /**
    * Colour the surface at once, leaving the cut's state alone; the sections' `setSurfaceColor` is the
    * one that downloads and reports (brain-atlas.js:789). Throws for a colour the model cannot show.

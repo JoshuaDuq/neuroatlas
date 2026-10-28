@@ -5,13 +5,7 @@
  * checks what is checkable without that knowledge and passes the rest through
  * as opaque strings; `link-check.ts` judges those against the loaded anatomy.
  */
-import {
-  CUTS,
-  EXPLORERS,
-  FUNCTIONAL_LEVELS,
-  HEMISPHERES,
-  SURFACE_COLORS,
-} from '../../types/constants.ts';
+import { CUTS, EXPLORERS, HEMISPHERES, SURFACE_COLORS } from '../../types/constants.ts';
 import type { LinkInput, LinkState, Orbit } from '../../types/index.ts';
 
 type Defaults = Pick<
@@ -22,7 +16,6 @@ type Defaults = Pick<
   | 'internalVisible'
   | 'spinalCordVisible'
   | 'surfaceColor'
-  | 'functionalLevel'
   | 'view'
   | 'cut'
   | 'cutOffset'
@@ -49,7 +42,6 @@ export const DEFAULTS: Defaults = {
   internalVisible: true,
   spinalCordVisible: false,
   surfaceColor: 'atlas',
-  functionalLevel: 'named',
   view: 'oblique',
   cut: 'off',
   cutOffset: 0,
@@ -235,7 +227,6 @@ const FIELDS: Field[] = [
   field('internalVisible', 'internal', flag, writeFlag),
   field('spinalCordVisible', 'cord', flag, writeFlag),
   field('surfaceColor', 'colors', surfaceColor),
-  field('functionalLevel', 'level', oneOf(FUNCTIONAL_LEVELS)),
   field(
     'cortexOpacity',
     'opacity',

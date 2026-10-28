@@ -1,6 +1,5 @@
-// The chip's words (app.js:1694-1717): the region, the division, the network, the functions and the side.
+// The chip's words (app.js:1694-1717): the region, the network, the functions and the side.
 import { describe, expect, test } from 'vitest';
-import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import type { CabNpPartition } from '../../lib/core/catalog/networks.ts';
 import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
 import type { Paint, Region } from '../../lib/types/index.ts';
@@ -15,22 +14,10 @@ const functionPaint = { id: 'function:all', colors: new Map() } as Paint;
 const view = (extra: Partial<HoverView> = {}): HoverView => ({
   lang: 'en',
   surfaceColor: 'atlas',
-  functionalLevel: 'named',
   paint: null,
   selectedFunction: null,
   ...extra,
 });
-
-const functionalRegions = {
-  id: 'functional-regions',
-  atlas: 'a',
-  sources: {},
-  levels: {
-    named: [{ id: 'f1', name: 'Frontal', name_fr: 'Frontal fr' }],
-    sections: [{ id: 's1', name: 'Section', name_fr: 'Section fr' }],
-  },
-  regions: { named: { a: 'f1' }, sections: { a: 's1', glass: 's1' } },
-} as unknown as FunctionalRegions;
 
 const cabNp = { regions: { a: 'Visual1' } } as unknown as CabNpPartition;
 
@@ -57,7 +44,6 @@ const domains = {
 
 const sources = (extra: Partial<HoverSources> = {}): HoverSources => ({
   regions: new Map(),
-  functionalRegions,
   cabNp,
   domains,
   catalogName: (id) => ({ a: 'Area A' })[id],
@@ -83,20 +69,6 @@ describe('hoverText', () => {
 
   test('a region the model will not select has no chip', () => {
     expect(hoverText(region('a'), view(), sources({ canSelect: () => false }))).toBeNull();
-  });
-
-  test('the functional division only while the surface is coloured by it', () => {
-    const functional = view({ surfaceColor: 'functional' });
-    expect(hoverText(region('a'), functional, sources())).toBe('Area A · Frontal · Left');
-    expect(hoverText(region('a'), view({ ...functional, lang: 'fr' }), sources())).toBe(
-      'Area A · Frontal fr · Gauche',
-    );
-  });
-
-  test('glass belongs to no division of the level on show, but always to a section', () => {
-    expect(hoverText(region('glass'), view({ surfaceColor: 'functional' }), sources())).toBe(
-      'raw glass · Section · Left',
-    );
   });
 
   test('CAB-NP names its network for every area', () => {

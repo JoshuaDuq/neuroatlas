@@ -1,10 +1,9 @@
 <!--
   The colour keys, beside the picture they explain (index.html:533-580; viewport-chrome.js:269-430;
   stage.css:186-290). Each is one plate whose title row names its map and folds its rows: networks,
-  functional divisions (with its level), the paint a tab draws (rows are toggles that show one alone)
-  and the streamline direction.
+  the paint a tab draws (rows are toggles that show one alone) and the streamline direction.
 
-  Folds are APG Disclosures, the level is an APG Radio Group, the paint rows an APG Toolbar of toggle
+  Folds are APG Disclosures, the paint rows an APG Toolbar of toggle
   buttons (decision 6 on #4). The keys are interactive, so they are not inside the `aria-hidden`
   overlay layer. They take a band off the framing rectangle, which the stage-layout store reads
   through the key fitter registered here: built from the sizes the observer caches, so it forces no layout.
@@ -13,18 +12,15 @@
   import { tick, untrack } from 'svelte';
   import { SvelteMap } from 'svelte/reactivity';
   import { t } from '../../lib/core/i18n/index.ts';
-  import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { Legend } from '../../lib/core/state/paint.ts';
   import type { Media } from '../../lib/state/media.svelte.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
-  import { FUNCTIONAL_LEVELS } from '../../lib/types/index.ts';
   import type {
-    FunctionalLevel,
+    ArterialTerritory,
     Language,
     LoadStatus,
     SurfaceColor,
   } from '../../lib/types/index.ts';
-  import ChoiceGroup from '../../lib/ui/ChoiceGroup.svelte';
   import { roving } from '../../lib/ui/Toolbar.svelte';
   import Swatch from '../../lib/ui/Swatch.svelte';
   import {
@@ -43,14 +39,13 @@
     lang: Language;
     status: LoadStatus;
     surfaceColor: SurfaceColor;
-    functionalLevel: FunctionalLevel;
     networks: ColoredNetworks | null;
     cabNp: ColoredNetworks | null;
-    functionalRegions: FunctionalRegions | null;
+    /** The arterial territories' palette, when the build publishes them. */
+    territories?: readonly ArterialTerritory[] | null;
     /** The key of the paint on show (`legendFor`), or null. */
     legend: Legend | null;
     directionShown: boolean;
-    onFunctionalLevel: (level: FunctionalLevel) => void;
     /** A row alone, or null for every row (`excursions.pickPaint`). */
     onPaintPick: (id: string | null) => void;
   }
@@ -61,13 +56,11 @@
     lang,
     status,
     surfaceColor,
-    functionalLevel,
     networks,
     cabNp,
-    functionalRegions,
+    territories = null,
     legend,
     directionShown,
-    onFunctionalLevel,
     onPaintPick,
   }: Props = $props();
 
@@ -76,17 +69,12 @@
       lang,
       status,
       surfaceColor,
-      functionalLevel,
       networks,
       cabNp,
-      functionalRegions,
+      territories,
       legend,
       directionShown,
     }),
-  );
-  const copy = $derived(t(lang, 'functional'));
-  const levelOptions = $derived(
-    FUNCTIONAL_LEVELS.map((level) => ({ value: level, label: copy.levels[level] })),
   );
 
   // The reader's fold of a map is kept for the visit; a map never folded follows the crowd default.
@@ -246,14 +234,6 @@
           <span id="{plate.name}-key-title">{plate.title}</span>
           <span class="stage-tool-chevron" aria-hidden="true"></span>
         </button>
-        {#if plate.name === 'functional'}
-          <ChoiceGroup
-            class="functional-level"
-            label={copy.keyAria}
-            options={levelOptions}
-            bind:value={() => functionalLevel, (level) => onFunctionalLevel(level)}
-          />
-        {/if}
       </div>
       <div class="stage-key-body" id="{plate.name}-key-body" hidden={!open}>
         {#if plate.pickable}
@@ -361,19 +341,6 @@
       transform: translateY(4px) rotate(-135deg);
     }
 
-    /* The level shares the title row: a track in the key's own type; 20 px buttons, as legacy, whose 24 px circles touch no other target (WCAG 2.5.8). */
-    .stage-key :global(.functional-level) {
-      flex: none;
-      margin-right: calc(-1 * var(--space-2));
-    }
-    .stage-key :global(.functional-level [role='radio']) {
-      min-height: 20px;
-      height: auto;
-      padding: 0 var(--space-2);
-      font-size: var(--text-caption);
-      line-height: var(--lh-caption);
-    }
-
     .stage-key-body,
     .stage-key-rows {
       display: flex;
@@ -465,10 +432,6 @@
     }
     /* Touch targets follow the stage, never the compact legend. */
     @media (pointer: coarse), (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
-      .stage-key-head:has(:global(.functional-level)) {
-        min-height: 48px;
-      }
-      .stage-key :global(.functional-level [role='radio']),
       .stage-key-list button {
         min-height: 44px;
       }

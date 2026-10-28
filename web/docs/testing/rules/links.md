@@ -98,11 +98,11 @@ on the cdmd manifest; "the corpus" below was the fixed scenario table of the del
 
 ### LINK-09 · A link may name only what this build publishes
 
-- **Rule:** A restore judges the link against what this anatomy and build publish (STATE-18): its atlases, detail levels and cut atlases, the seven views, the explorer tabs, the colourings it publishes (tissue, mri and atlas always; network, cab-np and functional only when published), the functions (all, each domain and each Neurosynth term), the deficits of the clinical catalogue, the circuits with their step counts, and the cord when published. A build without neuropsychological domains cannot restore links at all.
+- **Rule:** A restore judges the link against what this anatomy and build publish (STATE-18): its atlases, detail levels and cut atlases, the seven views, the explorer tabs, the colourings it publishes (tissue, mri and atlas always; network and cab-np only when published), the functions (all, each domain and each Neurosynth term), the deficits of the clinical catalogue, the circuits with their step counts, and the cord when published. A build without neuropsychological domains cannot restore links at all.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:1992-2006`
-- **Expected:** cdmd: `colors=functional` passes; with no functional regions published → `colors` not applied. `function=term-a` passes when `term-a` is a published term. `deficit=bogus` → `deficit` not applied. Creating links with `model.domains` null throws "This build publishes no neuropsychological domains for the Functions tab."
+- **Expected:** cdmd: `colors=tissue&function=language&tab=functions` passes; `colors=functional`, no longer a colouring → `colors` not applied. `function=term-a` passes when `term-a` is a published term. `deficit=bogus` → `deficit` not applied. Creating links with `model.domains` null throws "This build publishes no neuropsychological domains for the Functions tab."
 - **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-10 · The notice names first what did not read, then what this anatomy lacks, then what failed

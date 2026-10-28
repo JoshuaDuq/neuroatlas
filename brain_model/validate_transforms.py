@@ -15,8 +15,8 @@ from .sources import HEMISPHERES, ROOT, sha256, tract_catalog
 
 
 def projected_annotation_names(config):
-    hcp = next(atlas for atlas in config["atlases"] if atlas["id"] == "hcp-mmp")
-    return [hcp["annotation"]] + (
+    """Every surface atlas but Destrieux, the subject's own parcellation, then the networks."""
+    return [atlas["annotation"] for atlas in config["atlases"] if atlas["id"] != "destrieux"] + (
         [networks.ANNOTATION] if networks.is_declared(config) else []
     )
 

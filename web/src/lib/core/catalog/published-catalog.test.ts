@@ -6,7 +6,6 @@ import {
   FUNCTIONAL_LEVELS,
   functionalName,
   functionalRegionOf,
-  functionalShortName,
   validateFunctionalRegions,
   type FunctionalRegions,
 } from './functional-regions.ts';
@@ -79,8 +78,8 @@ test('CAT-07: a region without a label stops the catalogue from building', () =>
 });
 
 describe('the published cdmd anatomy', () => {
-  test('CAT-07: all 1266 regions have a non-empty name and group in English and French', () => {
-    assert.equal(manifest.regions.length, 1266);
+  test('CAT-07: all 1592 regions have a non-empty name and group in English and French', () => {
+    assert.equal(manifest.regions.length, 1592);
     for (const region of manifest.regions) {
       for (const lang of ['en', 'fr'] as const) {
         const label = labelOf(region, lang);
@@ -125,7 +124,7 @@ describe('the published cdmd anatomy', () => {
     assert.deepEqual(ids('cunéus', 'fr'), ids('cuneus', 'fr'));
     assert.ok(catalogs.fr.search('cuneus', french).rows.some((r) => r.label.name === 'Cunéus'));
     const english = catalogs.en.search('cuneus', settings());
-    assert.equal(english.total, 12);
+    assert.equal(english.total, 16);
     assert.deepEqual(
       english.rows.slice(0, 5).map((row) => row.region.id),
       [
@@ -133,7 +132,7 @@ describe('the published cdmd anatomy', () => {
         'nextbrain:right:12005',
         'destrieux:left:11',
         'destrieux:right:11',
-        'wmparc:left:3005',
+        'julich:left:46',
       ],
     );
     assert.equal(catalogs.en.search('V1', settings({ atlas: 'hcp-mmp' })).rows[0].label.code, 'V1');
@@ -142,16 +141,16 @@ describe('the published cdmd anatomy', () => {
   test('CAT-22: the published search totals are fixed', () => {
     const total = (query: string, lang: Language) =>
       catalogs[lang].search(query, settings({ lang })).total;
-    assert.equal(total('s', 'en'), 752);
+    assert.equal(total('s', 'en'), 934);
     assert.equal(total('noyau', 'fr'), 235);
     assert.equal(total('zzz', 'en'), 0);
     assert.equal(total('', 'en'), 0);
   });
 
-  test('CAT-24: a search for "s" is capped at 50 rows of 752', () => {
+  test('CAT-24: a search for "s" is capped at 50 rows of 934', () => {
     const found = catalogs.en.search('s', settings());
     assert.equal(found.rows.length, 50);
-    assert.equal(found.total, 752);
+    assert.equal(found.total, 934);
     assert.equal(catalogs.en.search('s', settings(), 5).rows.length, 5);
   });
 
@@ -293,9 +292,9 @@ describe('the published cdmd anatomy', () => {
     assert.equal(validateCabNp(structuredClone(cabNp), regionsById).id, 'cab-np');
   });
 
-  test('CAT-32: all 580 regions with network shares have a counting basis', () => {
+  test('CAT-32: all 871 regions with network shares have a counting basis', () => {
     const withNetworks = manifest.regions.filter((region) => networksOf(region).length > 0);
-    assert.equal(withNetworks.length, 580);
+    assert.equal(withNetworks.length, 871);
     for (const region of withNetworks) assert.ok(networkBasis(region), region.id);
   });
 
@@ -349,8 +348,6 @@ describe('the published cdmd anatomy', () => {
     assert.equal(functionalRegionOf(functional, 'named', 'hcp-mmp:left:84'), null);
     const section = functionalRegionOf(functional, 'sections', 'hcp-mmp:left:84')!;
     assert.equal(section.id, 'section-22');
-    assert.equal(functionalShortName(section, 'en'), 'Dorsolateral prefrontal');
-    assert.equal(functionalShortName(section, 'fr'), 'Préfrontal dorsolatéral');
   });
 
   test('CAT-37: the empty Functions query lists the six groups with 14, 8, 13, 14, 10 and 11 domains', () => {

@@ -1,7 +1,8 @@
 """Fetch identity metadata for every cited reference into data/reference-records.json.
 
 The identifiers come from data/neuropsychology.yaml, data/circuits.yaml,
-config/functional-regions.yaml, config/neuropsych-domains.yaml and
+config/functional-regions.yaml, config/neuropsych-domains.yaml,
+config/receptor-fingerprints.yaml, config/arterial-territories.yaml and
 docs/reference/references.md. PubMed gives each
 PMID's title, authors, issue year, DOI and erratum links; Bookshelf gives each NBK
 chapter's; Crossref supplies a DOI that PubMed lacks and the DOI of each correction
@@ -86,12 +87,15 @@ def cited_identifiers():
             books.add(reference["nbk"])
         else:
             pmids.add(reference["pmid"])
-    for config in ("functional-regions", "neuropsych-domains"):
+    for config in ("functional-regions", "neuropsych-domains", "receptor-fingerprints"):
         sources = yaml.safe_load((ROOT / f"config/{config}.yaml").read_text())["sources"]
         for source in sources.values():
             pmid = str(source["pmid"])
             pmids.add(pmid)
             dois[pmid] = source["doi"].removeprefix("https://doi.org/")
+    territories = yaml.safe_load((ROOT / "config/arterial-territories.yaml").read_text())
+    pmids.add(str(territories["pmid"]))
+    dois[str(territories["pmid"])] = territories["doi"].removeprefix("https://doi.org/")
     for line in (ROOT / "docs/reference/references.md").read_text().splitlines():
         doi, pmid = DOI_IN_MARKDOWN.search(line), PMID_IN_MARKDOWN.search(line)
         if doi and not pmid:

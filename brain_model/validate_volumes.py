@@ -111,14 +111,15 @@ def published_codes(config, record, image, name):
     return restored
 
 
-def hcp_labels(annotation, hemisphere, regions):
-    """The label table rows the HCP cut appends for one hemisphere's annotation."""
+def surface_labels(annotation, atlas, hemisphere, regions):
+    """The label table rows a projected atlas's cut appends for one hemisphere's annotation."""
     _, colors, names = annotation
     published = {
         region["source_label_id"]: region
         for region in regions
-        if region["atlas"] == "hcp-mmp" and region["hemisphere"] == hemisphere
+        if region["atlas"] == atlas and region["hemisphere"] == hemisphere
     }
+    absent = {"kind": "non-region"}
     return [
         {
             "source_label_id": label,
@@ -127,7 +128,7 @@ def hcp_labels(annotation, hemisphere, regions):
             "hemisphere": hemisphere,
             "kind": "cortex",
             "region_id": published[label]["id"]
-            if published[label]["kind"] == "cortex"
+            if published.get(label, absent)["kind"] == "cortex"
             else None,
         }
         for label, name in enumerate(names)
@@ -137,10 +138,10 @@ def hcp_labels(annotation, hemisphere, regions):
 def validate_tissue_volumes(config, manifest, tissues):
     """The published cut-label grids, decoded and recomputed from their sources.
 
-    Destrieux must be aparc.a2009s+aseg itself. HCP-MMP must equal it off the
-    cortex, and on each hemisphere's cortex hold the projection the build
-    documents: the HCP label of the nearest pial or white vertex inside the
-    native gray ribbon, and the hemisphere's unlabelled code elsewhere.
+    Destrieux must be aparc.a2009s+aseg itself. Every projected surface atlas
+    must equal it off the cortex, and on each hemisphere's cortex hold the
+    projection the build documents: the label of the nearest pial or white
+    vertex inside the native gray ribbon, and its unlabelled entry elsewhere.
     """
     directory = config["source_directory"]
     source_path = directory / "mri/aparc.a2009s+aseg.mgz"
@@ -159,44 +160,18 @@ def validate_tissue_volumes(config, manifest, tissues):
     if not np.array_equal(published_codes(config, destrieux, image, "destrieux"), codes):
         raise ValueError("Destrieux cut volume differs from aparc.a2009s+aseg.mgz")
 
-    hcp = tissues["atlases"]["hcp-mmp"]
     ribbon_image = nib.load(directory / "mri/ribbon.mgz")
     validate_same_grid(ribbon_image, image)
     ribbon = np.asarray(ribbon_image.dataobj)
     tkr = image.header.get_vox2ras_tkr()
-    expected = codes.copy()
-    cortex = np.zeros(source.shape, bool)
-    counts = {}
-    for prefix, hemisphere in HEMISPHERES.items():
-        lower, ribbon_label = CORTEX[prefix]
-        annotation = read_annot(directory / "label" / f"{prefix}.HCPMMP1.annot")
-        first = len(labels)
-        labels += hcp_labels(annotation, hemisphere, manifest["regions"])
-        unlabelled = first + next(
-            i for i, row in enumerate(labels[first:]) if row["region_id"] is None
+    projected = {}
+    for atlas in config["atlases"]:
+        if atlas["id"] == "destrieux":
+            continue
+        projected[atlas["id"]] = validate_projected_volume(
+            config, atlas, tissues["atlases"][atlas["id"]], image, codes, list(labels),
+            manifest["regions"], ribbon, tkr,
         )
-        mask = (source > lower) & (source < lower + 100)
-        inside = mask & (ribbon == ribbon_label)
-        voxels = np.argwhere(inside)
-        pial, _ = read_geometry(directory / "surf" / f"{prefix}.pial")
-        white, _ = read_geometry(directory / "surf" / f"{prefix}.white")
-        nearest = cKDTree(np.vstack([pial, white])).query(
-            nib.affines.apply_affine(tkr, voxels)
-        )[1] % len(pial)
-        expected[mask] = unlabelled
-        expected[tuple(voxels.T)] = first + annotation[0][nearest]
-        cortex |= mask
-        counts[hemisphere] = {
-            "ribbon_voxels": len(voxels),
-            "cortical_voxels_outside_ribbon": int(np.count_nonzero(mask & ~inside)),
-        }
-    if hcp["labels"] != labels:
-        raise ValueError("HCP-MMP cut labels differ from the source label tables")
-    published = published_codes(config, hcp, image, "hcp-mmp")
-    if not np.array_equal(published[~cortex], codes[~cortex]):
-        raise ValueError("HCP-MMP cut volume relabels voxels outside the cortex")
-    if not np.array_equal(published[cortex], expected[cortex]):
-        raise ValueError("HCP-MMP cortical voxels differ from their nearest-vertex labels")
     return {
         "source_sha256": tissues["source_sha256"],
         "destrieux": {
@@ -206,13 +181,52 @@ def validate_tissue_volumes(config, manifest, tissues):
             "identical_to_source_labels": True,
             "label_count": len(destrieux["labels"]),
         },
-        "hcp-mmp": {
-            "file": hcp["file"],
-            "sha256": hcp["sha256"],
-            "decoded_sha256": hcp["decoded_sha256"],
-            "non_cortical_voxels_identical_to_destrieux": True,
-            "cortical_voxels_match_nearest_vertex_labels": True,
-            "hemispheres": counts,
-            "label_count": len(hcp["labels"]),
-        },
+        **projected,
+    }
+
+def validate_projected_volume(config, atlas, record, image, codes, labels, regions, ribbon, tkr):
+    directory = config["source_directory"]
+    source = np.asarray(image.dataobj)
+    expected = codes.copy()
+    cortex = np.zeros(source.shape, bool)
+    counts = {}
+    for prefix, hemisphere in HEMISPHERES.items():
+        lower, ribbon_label = CORTEX[prefix]
+        annotation = read_annot(directory / "label" / f"{prefix}.{atlas['annotation']}.annot")
+        first = len(labels)
+        labels += surface_labels(annotation, atlas["id"], hemisphere, regions)
+        if labels[first]["region_id"] is not None:
+            raise ValueError(f"{atlas['id']}: annotation entry 0 must be its unlabelled one")
+        mask = (source > lower) & (source < lower + 100)
+        inside = mask & (ribbon == ribbon_label)
+        voxels = np.argwhere(inside)
+        pial, _ = read_geometry(directory / "surf" / f"{prefix}.pial")
+        white, _ = read_geometry(directory / "surf" / f"{prefix}.white")
+        nearest = cKDTree(np.vstack([pial, white])).query(
+            nib.affines.apply_affine(tkr, voxels)
+        )[1] % len(pial)
+        if np.any(annotation[0][nearest] < 0):
+            raise ValueError(f"{atlas['id']}: a ribbon voxel's nearest vertex is unlabelled")
+        expected[mask] = first
+        expected[tuple(voxels.T)] = first + annotation[0][nearest]
+        cortex |= mask
+        counts[hemisphere] = {
+            "ribbon_voxels": len(voxels),
+            "cortical_voxels_outside_ribbon": int(np.count_nonzero(mask & ~inside)),
+        }
+    if record["labels"] != labels:
+        raise ValueError(f"{atlas['id']} cut labels differ from the source label tables")
+    published = published_codes(config, record, image, atlas["id"])
+    if not np.array_equal(published[~cortex], codes[~cortex]):
+        raise ValueError(f"{atlas['id']} cut volume relabels voxels outside the cortex")
+    if not np.array_equal(published[cortex], expected[cortex]):
+        raise ValueError(f"{atlas['id']} cortical voxels differ from their nearest-vertex labels")
+    return {
+        "file": record["file"],
+        "sha256": record["sha256"],
+        "decoded_sha256": record["decoded_sha256"],
+        "non_cortical_voxels_identical_to_destrieux": True,
+        "cortical_voxels_match_nearest_vertex_labels": True,
+        "hemispheres": counts,
+        "label_count": len(record["labels"]),
     }

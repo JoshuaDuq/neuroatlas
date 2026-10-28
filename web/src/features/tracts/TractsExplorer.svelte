@@ -134,8 +134,10 @@
     destroyed = true;
   });
 
+  // Untracked: the engine's synchronous tractsVisibility event lets listeners write state they read.
   $effect(() => {
-    tracts.setOverlay(overlay);
+    const next = overlay;
+    untrack(() => tracts.setOverlay(next));
   });
 
   let wasActive = false;

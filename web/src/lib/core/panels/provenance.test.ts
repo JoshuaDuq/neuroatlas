@@ -110,6 +110,7 @@ test('PROV-01 the published cdmd manifest gives one row per record, in order', (
       'Cortical atlases',
       'Functional networks',
       'Functional divisions',
+      'Receptor fingerprints',
       'Neuropsychological domains',
       'Supplemental layers',
       'Published files',
@@ -142,6 +143,7 @@ test('PROV-01 the published cdmd manifest gives one row per record, in order', (
     .map((item) => item.link!.href);
   assert.deepEqual(licences, [
     '/neuroatlas/models/cdmd/../licenses/HCP-Data-Use-Terms.txt',
+    '/neuroatlas/models/cdmd/../licenses/Julich-Brain-CC-BY-NC-SA-4.0.pdf',
     '/neuroatlas/models/cdmd/../licenses/CAB-NP.txt',
     '/neuroatlas/models/cdmd/../licenses/PAM50.txt',
   ]);
@@ -158,7 +160,7 @@ test('PROV-03 the subject, its reconstruction and the source files are named in 
   assert.deepEqual(
     rowOf(en, 'Published files').items.map((item) => [item.link!.text, item.note]),
     [
-      ['manifest.json', '42 source files, each with a SHA-256 checksum'],
+      ['manifest.json', '48 source files, each with a SHA-256 checksum'],
       ['anatomies.json', 'Index of the published anatomies'],
     ],
   );
@@ -167,7 +169,7 @@ test('PROV-03 the subject, its reconstruction and the source files are named in 
   assert.equal(rowOf(fr, 'Fichiers publiés').items[1].note, 'Index des anatomies publiées');
 });
 
-test('PROV-04 HCP-MMP says it was projected from fsaverage, and Destrieux says nothing', () => {
+test('PROV-04 HCP-MMP and Julich-Brain say they were projected from fsaverage, and Destrieux says nothing', () => {
   const atlases = (lang: 'en' | 'fr') =>
     rowOf(published(lang), lang === 'en' ? 'Cortical atlases' : 'Atlas corticaux').items;
   assert.equal(atlases('en')[0].text, 'Destrieux anatomical atlas');
@@ -175,6 +177,11 @@ test('PROV-04 HCP-MMP says it was projected from fsaverage, and Destrieux says n
   assert.equal(atlases('en')[1].text, 'HCP-MMP1.0 multimodal atlas');
   assert.equal(atlases('en')[1].note, 'Projected from fsaverage');
   assert.equal(atlases('fr')[1].note, 'Projeté depuis fsaverage');
+  const julich = atlases('en').find(
+    (item) => item.text === 'Julich-Brain cytoarchitectonic atlas',
+  )!;
+  assert.equal(julich.note, 'Projected from fsaverage');
+  assert.equal(julich.link?.href, 'https://doi.org/10.1126/science.abb4588');
 });
 
 test('PROV-05 each domain lists how much of every lesion-mapped parcel its areas colour', () => {

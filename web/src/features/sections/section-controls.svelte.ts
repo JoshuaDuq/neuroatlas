@@ -32,10 +32,7 @@ export interface SectionControlsDeps {
       | 'setDisplay'
       | 'cutSpacingMm'
     >;
-    model: Pick<
-      EngineModel,
-      'state' | 'centroidOf' | 'manifest' | 'cabNp' | 'functionalRegions' | 'domains'
-    >;
+    model: Pick<EngineModel, 'state' | 'centroidOf' | 'manifest' | 'cabNp' | 'domains'>;
     camera: Pick<EngineCamera, 'faceCut'>;
   };
   /** The sections' display snapshot, replaced on every engine `change` (S1's engine sync). */
@@ -167,7 +164,6 @@ export function createSectionControls({
       cutAtlases.find((atlas) => atlas.id === 'nextbrain')?.procedure === 'subject-segmentation',
     colourAtlases: {
       cabNp: model.cabNp?.atlas,
-      functional: model.functionalRegions?.atlas,
       domains: model.domains?.atlas,
     },
 

@@ -18,14 +18,14 @@ text:
   en:
     dataset: MGH CDMD · sub_013
     otherAnatomy: The selected anatomical atlas uses a different subject from these MGH CDMD tracts.
-    files: "Files: each tract is one TRK streamline file, resampled to 0.5 mm steps; the MRI is sub_013_t1w.nii.gz and FA is fa.nii.gz."
+    files: "Files: each tract is one TRK streamline file, its ends trimmed where they left the brain and resampled to 0.5 mm steps; the MRI is sub_013_t1w.nii.gz and FA is fa.nii.gz."
     mriTitle: MRI with tracts · MGH CDMD sub_013
     mriCanvas: Linked MGH CDMD MRI slices and tracts. Click to position the crosshair; arrows move one voxel.
     mriScope: Scanner RAS millimetres · R/L marked. Tracts were tracked in this scan’s own diffusion data and are drawn at 0.5 mm steps with the current length filter; SLF I–III and the callosal segments are TractSeg’s, the others RecoBundles’. Cortical atlas parcels remain surface labels.
   fr:
     dataset: MGH CDMD · sub_013
     otherAnatomy: L’atlas anatomique sélectionné utilise un autre sujet que ces faisceaux MGH CDMD.
-    files: "Fichiers : chaque faisceau est un fichier de trajectoires TRK, rééchantillonné à des pas de 0,5 mm ; l’IRM est sub_013_t1w.nii.gz et la FA est fa.nii.gz."
+    files: "Fichiers : chaque faisceau est un fichier de trajectoires TRK, ses extrémités coupées là où elles sortaient du cerveau puis rééchantillonné à des pas de 0,5 mm ; l’IRM est sub_013_t1w.nii.gz et la FA est fa.nii.gz."
     mriTitle: IRM avec faisceaux · MGH CDMD sub_013
     mriCanvas: Coupes IRM MGH CDMD liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.
     mriScope: Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux ont été suivis dans les données de diffusion de cette même image et sont tracés à des pas de 0,5 mm avec le filtre de longueur courant ; le FLS I–III et les segments calleux viennent de TractSeg, les autres de RecoBundles. Les régions corticales restent des étiquettes de surface.

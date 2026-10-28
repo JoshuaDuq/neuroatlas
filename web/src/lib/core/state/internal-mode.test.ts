@@ -77,15 +77,13 @@ test("leaving speaks only for what entering took: the rest stays the reader's", 
 });
 
 test('an atlas switched inside wins over a colouring defined on the atlas left behind', () => {
-  const required = { 'cab-np': 'hcp-mmp', functional: 'hcp-mmp' };
-  for (const colour of ['cab-np', 'functional'] as const) {
-    const entered: Shown = { ...whole, surfaceColor: colour, atlas: 'hcp-mmp' };
-    const before = captureBeforeInternal(entered, 'learning');
-    const switched = leaveInternal(before, { ...inside, atlas: 'destrieux' }, required);
-    assert.equal(switched.surfaceColor, 'atlas');
-    assert.equal(switched.colourLost, colour);
-    const kept = leaveInternal(before, { ...inside, atlas: 'hcp-mmp' }, required);
-    assert.equal(kept.surfaceColor, colour);
-    assert.equal(kept.colourLost, null);
-  }
+  const required = { 'cab-np': 'hcp-mmp' };
+  const entered: Shown = { ...whole, surfaceColor: 'cab-np', atlas: 'hcp-mmp' };
+  const before = captureBeforeInternal(entered, 'learning');
+  const switched = leaveInternal(before, { ...inside, atlas: 'destrieux' }, required);
+  assert.equal(switched.surfaceColor, 'atlas');
+  assert.equal(switched.colourLost, 'cab-np');
+  const kept = leaveInternal(before, { ...inside, atlas: 'hcp-mmp' }, required);
+  assert.equal(kept.surfaceColor, 'cab-np');
+  assert.equal(kept.colourLost, null);
 });

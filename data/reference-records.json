@@ -1,5 +1,5 @@
 {
- "fetched": "2026-10-27",
+ "fetched": "2026-10-28",
  "sources": "PubMed efetch, Bookshelf esummary and Crossref; no abstracts",
  "year": "PubMed's journal-issue publication year (PubDate, or the first year of a MedlineDate range), not the online-first year; for a Bookshelf chapter, the book's publication year",
  "records": {
@@ -2288,6 +2288,27 @@
    "pages": null,
    "corrections": []
   },
+  "pmid:25243991": {
+   "pmid": "25243991",
+   "pmcid": "PMC4317196",
+   "doi": "10.1016/j.cortex.2014.07.007",
+   "doi_source": "pubmed",
+   "title": "Common molecular basis of the sentence comprehension network revealed by neurotransmitter receptor fingerprints",
+   "authors": [
+    "Zilles K",
+    "Bacha-Trams M",
+    "Palomero-Gallagher N",
+    "Amunts K",
+    "Friederici AD"
+   ],
+   "year": 2015,
+   "pubdate": "2015 Feb",
+   "journal": "Cortex",
+   "volume": "63",
+   "issue": null,
+   "pages": "79-89",
+   "corrections": []
+  },
   "pmid:25726260": {
    "pmid": "25726260",
    "pmcid": null,
@@ -2786,23 +2807,6 @@
    "pages": "170-179",
    "corrections": []
   },
-  "pmid:29074767": {
-   "pmid": "29074767",
-   "pmcid": null,
-   "doi": "10.1126/science.aan8868",
-   "doi_source": "pubmed",
-   "title": "What constitutes the prefrontal cortex?",
-   "authors": [
-    "Carlén M"
-   ],
-   "year": 2017,
-   "pubdate": "2017 Oct 27",
-   "journal": "Science",
-   "volume": "358",
-   "issue": "6362",
-   "pages": "478-482",
-   "corrections": []
-  },
   "pmid:29157937": {
    "pmid": "29157937",
    "pmcid": null,
@@ -2865,6 +2869,24 @@
    "volume": "10",
    "issue": null,
    "pages": "19-21",
+   "corrections": []
+  },
+  "pmid:29496153": {
+   "pmid": "29496153",
+   "pmcid": null,
+   "doi": "10.1016/b978-0-444-63639-3.00024-4",
+   "doi_source": "pubmed",
+   "title": "Cyto- and receptor architectonic mapping of the human brain",
+   "authors": [
+    "Palomero-Gallagher N",
+    "Zilles K"
+   ],
+   "year": 2018,
+   "pubdate": "2018",
+   "journal": "Handb Clin Neurol",
+   "volume": "150",
+   "issue": null,
+   "pages": "355-387",
    "corrections": []
   },
   "pmid:29519468": {
@@ -3189,6 +3211,26 @@
    "pages": "495-504",
    "corrections": []
   },
+  "pmid:32732281": {
+   "pmid": "32732281",
+   "pmcid": null,
+   "doi": "10.1126/science.abb4588",
+   "doi_source": "pubmed",
+   "title": "Julich-Brain: A 3D probabilistic atlas of the human brain's cytoarchitecture",
+   "authors": [
+    "Amunts K",
+    "Mohlberg H",
+    "Bludau S",
+    "Zilles K"
+   ],
+   "year": 2020,
+   "pubdate": "2020 Aug 21",
+   "journal": "Science",
+   "volume": "369",
+   "issue": "6506",
+   "pages": "988-992",
+   "corrections": []
+  },
   "pmid:33327707": {
    "pmid": "33327707",
    "pmcid": "PMC8311059",
@@ -3500,6 +3542,31 @@
    "volume": "264",
    "issue": null,
    "pages": "119703",
+   "corrections": []
+  },
+  "pmid:36739282": {
+   "pmid": "36739282",
+   "pmcid": "PMC9899211",
+   "doi": "10.1038/s41597-022-01923-0",
+   "doi_source": "pubmed",
+   "title": "Digital 3D Brain MRI Arterial Territories Atlas",
+   "authors": [
+    "Liu CF",
+    "Hsu J",
+    "Xu X",
+    "Kim G",
+    "Sheppard SM",
+    "Meier EL",
+    "Miller MI",
+    "Hillis AE",
+    "Faria AV"
+   ],
+   "year": 2023,
+   "pubdate": "2023 Feb 04",
+   "journal": "Sci Data",
+   "volume": "10",
+   "issue": "1",
+   "pages": "74",
    "corrections": []
   },
   "pmid:36794351": {

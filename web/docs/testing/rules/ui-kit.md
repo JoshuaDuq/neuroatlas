@@ -311,7 +311,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 
 ### UI-33 · A cheap exclusive setting is an APG radio group: arrows move and select
 
-- **Rule:** Language, theme, single keys, hemisphere, functional level, MPR planes and tree scope are radio groups named by their label or a visible label. The checked radio is the one Tab stop; all four arrows move and select, wrapping; Tab leaves from the checked radio and Shift+Tab re-enters on it; Space and a click select; a disabled option is skipped.
+- **Rule:** Language, theme, single keys, hemisphere, MPR planes and tree scope are radio groups named by their label or a visible label. The checked radio is the one Tab stop; all four arrows move and select, wrapping; Tab leaves from the checked radio and Shift+Tab re-enters on it; Space and a click select; a disabled option is skipped.
 - **Kind:** accessibility
 - **Level:** browser: keyboard and focus
 - **Source:** decision 0003; deviation `u3-segmented-controls.md`; APG Radio Group

@@ -1,0 +1,57 @@
+# Typical arterial territories (Liu et al. 2023): where acute infarcts of each
+# artery fell in 1,298 stroke patients, drawn on the JHU single-subject template.
+# scripts/register_arterial_territories.py registers that template's b0 to this
+# brain with SynthMorph and carries the atlas across by nearest neighbour; the
+# build reads the result. They are typical territories, not this brain's: no
+# vessel of it was imaged.
+label: Arterial territories (Liu et al. 2023)
+citation: Liu CF, Hsu J, Xu X, Kim G, Sheppard SM, Meier EL, Miller MI, Hillis AE, Faria AV (2023) Digital 3D Brain MRI Arterial Territories Atlas. Sci Data 10:74
+doi: https://doi.org/10.1038/s41597-022-01923-0
+pmid: 36739282
+# The atlas's own label file names CC BY-SA 4.0 and links the CC BY legal code;
+# the stricter reading is taken. The repository's code is GPL-3.0.
+license: CC BY-SA 4.0
+source:
+  repository: https://github.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation
+  commit: 159df3a34a769f804d22790752013d4e5ed04944
+  files:
+    atlas: [data/template/ArterialAtlas_padding.nii.gz, 3659447397867b18f2404406173cc13f5fe221aa30c9275d506272d367485ba0]
+    labels: [data/template/ArterialAtlasLables.txt, 480ffc17764ecf35a5c12bf08165a9733eb0c7d23f7b6d1a2cc104d93627b048]
+    template: [data/template/JHU_SS_b0_ss_padding.nii.gz, 445c077024e40e327109b366b02119852aa676bbf7395e325fb80f62fdda3dda]
+# The registration is accepted only if this brain's own anatomy agrees. The
+# atlas's ventricle label is a coarse mask that spills into periventricular
+# white matter, so its overlap with aseg's ventricles is a floor, not a target.
+acceptance:
+  ventricle_dice_min: 0.6
+  cerebellar_cortex_in_cerebellar_territories_min: 0.95
+  cerebral_tissue_unassigned_max: 0.02
+  hemisphere_agreement_min: 0.98
+# Level 2 groups the branches under the four major arteries, as the atlas does.
+# The atlas places the anterior choroidal and thalamoperforating territory under
+# the posterior circulation; it is kept there, as published.
+major:
+  aca: {name: "Anterior cerebral artery", name_fr: Artère cérébrale antérieure, short: ACA}
+  mca: {name: "Middle cerebral artery", name_fr: Artère cérébrale moyenne, short: MCA}
+  pca: {name: "Posterior cerebral artery", name_fr: Artère cérébrale postérieure, short: PCA}
+  vb: {name: "Vertebro-basilar", name_fr: Vertébro-basilaire, short: VB}
+# One entry per branch: the atlas's left and right values (odd left, even
+# right, checked by position), its name as the label file gives it, and a colour.
+# Colours keep each major artery in one hue family, lighter for deep branches.
+territories:
+  - {id: aca, values: [1, 2], major: aca, name: "Anterior cerebral artery", name_fr: "Artère cérébrale antérieure", color: [59, 111, 182]}
+  - {id: medial-lenticulostriate, values: [3, 4], major: aca, name: "Medial lenticulostriate", name_fr: "Lenticulo-striées médiales", color: [150, 184, 226]}
+  - {id: lateral-lenticulostriate, values: [5, 6], major: mca, name: "Lateral lenticulostriate", name_fr: "Lenticulo-striées latérales", color: [176, 224, 190]}
+  - {id: mca-frontal, values: [7, 8], major: mca, name: "Middle cerebral artery, frontal", name_fr: "Artère cérébrale moyenne, partie frontale", color: [47, 143, 91]}
+  - {id: mca-parietal, values: [9, 10], major: mca, name: "Middle cerebral artery, parietal", name_fr: "Artère cérébrale moyenne, partie pariétale", color: [123, 196, 127]}
+  - {id: mca-temporal, values: [11, 12], major: mca, name: "Middle cerebral artery, temporal", name_fr: "Artère cérébrale moyenne, partie temporale", color: [30, 110, 110]}
+  - {id: mca-occipital, values: [13, 14], major: mca, name: "Middle cerebral artery, occipital", name_fr: "Artère cérébrale moyenne, partie occipitale", color: [166, 206, 57]}
+  - {id: mca-insular, values: [15, 16], major: mca, name: "Middle cerebral artery, insular", name_fr: "Artère cérébrale moyenne, partie insulaire", color: [79, 179, 169]}
+  - {id: pca-temporal, values: [17, 18], major: pca, name: "Posterior cerebral artery, temporal", name_fr: "Artère cérébrale postérieure, partie temporale", color: [217, 130, 43]}
+  - {id: pca-occipital, values: [19, 20], major: pca, name: "Posterior cerebral artery, occipital", name_fr: "Artère cérébrale postérieure, partie occipitale", color: [242, 179, 107]}
+  - {id: posterior-choroidal-thalamoperforating, values: [21, 22], major: pca, name: "Posterior choroidal and thalamoperforating", name_fr: "Choroïdiennes postérieures et thalamo-perforantes", color: [181, 101, 29]}
+  - {id: anterior-choroidal-thalamoperforating, values: [23, 24], major: pca, name: "Anterior choroidal and thalamoperforating", name_fr: "Choroïdienne antérieure et thalamo-perforantes", color: [247, 207, 156]}
+  - {id: basilar, values: [25, 26], major: vb, name: "Basilar", name_fr: "Basilaire", color: [126, 87, 166]}
+  - {id: superior-cerebellar, values: [27, 28], major: vb, name: "Superior cerebellar", name_fr: "Cérébelleuse supérieure", color: [179, 157, 219]}
+  - {id: inferior-cerebellar, values: [29, 30], major: vb, name: "Inferior cerebellar", name_fr: "Cérébelleuse inférieure", color: [94, 60, 138]}
+# The atlas's lateral ventricle labels: used to check the registration, never published.
+ventricles: [31, 32]

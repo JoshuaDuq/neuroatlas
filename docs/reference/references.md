@@ -18,8 +18,6 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
   Rolls, E. T., Deco, G., Huang, C.-C., & Feng, J. (2022). The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. *Cerebral Cortex*, 33(2), 330–356. [doi:10.1093/cercor/bhac070](https://doi.org/10.1093/cercor/bhac070). PMID 35233615.
 - **Posterior and midcingulate groupings of HCP-MMP areas.**
   Rolls, E. T., Wirth, S., Deco, G., Huang, C.-C., & Feng, J. (2023). The human posterior cingulate, retrosplenial, and medial parietal cortex effective connectome, and implications for memory and navigation. *Human Brain Mapping*, 44(2), 629–655. [doi:10.1002/hbm.26089](https://doi.org/10.1002/hbm.26089). PMID 36178249.
-- **Glass-brain display of functional divisions.**
-  Carlén, M. (2017). What constitutes the prefrontal cortex? *Science*, 358(6362), 478–482. [doi:10.1126/science.aan8868](https://doi.org/10.1126/science.aan8868). PMID 29074767. The display follows its Fig. 1 in concept only; none of its borders are used.
 - **Neurosynth meta-analytic database (neuropsychological domains).**
   Yarkoni, T., Poldrack, R. A., Nichols, T. E., Van Essen, D. C., & Wager, T. D. (2011). Large-scale automated synthesis of human functional neuroimaging data. *Nature Methods*, 8(8), 665–670. [doi:10.1038/nmeth.1635](https://doi.org/10.1038/nmeth.1635). PMID 21706013. Database version 7, with consistency maps computed by NiMARE 0.22.1.
 - **Schaefer multi-scale parcellation.**
@@ -47,6 +45,8 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
   Tournier, J.-D., Smith, R., Raffelt, D., Tabbara, R., Dhollander, T., Pietsch, M., Christiaens, D., Jeurissen, B., Yeh, C.-H., & Connelly, A. (2019). MRtrix3: A fast, flexible and open software framework for medical image processing and visualisation. *NeuroImage*, 202, 116137. [doi:10.1016/j.neuroimage.2019.116137](https://doi.org/10.1016/j.neuroimage.2019.116137). PMID 31473352. Version 3.0.8 (MPL-2.0) fits the CSD peaks TractSeg reads, aligns them to its template and fits CDMD's tensor FA.
 - **CerebNet.**
   Faber, J., Kügler, D., Bahrami, E., Heinz, L.-S., Timmann, D., Ernst, T. M., … Diedrichsen, J., & Reuter, M. (2022). CerebNet: A fast and reliable deep-learning pipeline for detailed cerebellum sub-segmentation. *NeuroImage*, 264, 119703. [doi:10.1016/j.neuroimage.2022.119703](https://doi.org/10.1016/j.neuroimage.2022.119703). PMID 36349595. CDMD's cerebellar lobules are FastSurfer v2.6.0's CerebNet segmentation (Apache-2.0) of its own T1.
+- **Julich-Brain.**
+  Amunts, K., Mohlberg, H., Bludau, S., & Zilles, K. (2020). Julich-Brain: A 3D probabilistic atlas of the human brain's cytoarchitecture. *Science*, 369(6506), 988–992. [doi:10.1126/science.abb4588](https://doi.org/10.1126/science.abb4588). PMID 32732281. The maps are version 3.1 (Amunts, Mohlberg, Bludau, Caspers, Lewis, Eickhoff & Pieperhoff, EBRAINS, [doi:10.25493/KNSN-XB4](https://doi.org/10.25493/KNSN-XB4)), on `fsaverage`.
 - **Spinal Cord Toolbox.**
   De Leener, B., Lévy, S., Dupont, S. M., Fonov, V. S., Stikov, N., Collins, D. L., Callot, V., & Cohen-Adad, J. (2017). SCT: Spinal Cord Toolbox, an open-source software for processing spinal cord MRI data. *NeuroImage*, 145, 24–43. [doi:10.1016/j.neuroimage.2016.10.009](https://doi.org/10.1016/j.neuroimage.2016.10.009). PMID 27720818. Version 7.3 (LGPL-3.0) segments CDMD's cord, labels its vertebrae and registers PAM50 to it.
 - **Contrast-agnostic cord segmentation.**
@@ -65,6 +65,7 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 | `cdmd` SLF I–III and callosal segments | TractSeg pretrained weights | CC BY 4.0 (attribution) |
 | HCP-MMP-derived files | Human Connectome Project | WU-Minn HCP Open Access Data Use Terms |
 | `cab-np.json` | CAB-NP (Rutgers, Yale) | Non-commercial |
+| `cortex-julich.glb`, `ribbon-julich.labels`, `tissues-julich.volume` | Julich-Brain 3.1 (EBRAINS) | CC BY-NC-SA 4.0 |
 | `neuropsych-domains.json`, area scores | Neurosynth | ODbL 1.0 |
 | NextBrain-derived files | FreeSurfer 8.2 | None named beyond FreeSurfer's |
 | `spinal-cord.glb` | PAM50 (Spinal Cord Toolbox) on CDMD's cord | MIT |
@@ -86,7 +87,7 @@ The complete agreement is in [`public/models/licenses/FreeSurfer.html`](https://
 
 ### CC0 1.0 (CDMD)
 
-CDMD is dedicated to the public domain. Its T1 in `public/diffusion/cdmd-sub-013/` is the file its reconstruction imported, byte for byte; its 30 TRK bundles were tracked here from its own diffusion data (17 by RecoBundles, 13 by TractSeg) and resampled to 0.5 mm steps, and its FA map is the tensor FA of that diffusion data resampled onto the T1, as `provenance.json` records.
+CDMD is dedicated to the public domain. Its T1 in `public/diffusion/cdmd-sub-013/` is the file its reconstruction imported, byte for byte; its 30 TRK bundles were tracked here from its own diffusion data (17 by RecoBundles, 13 by TractSeg) had their ends trimmed back inside the brain and were resampled to 0.5 mm steps, and its FA map is the tensor FA of that diffusion data resampled onto the T1, as `provenance.json` records.
 
 ### NextBrain
 
@@ -101,6 +102,10 @@ The atlas and SuperSynth model come from FreeSurfer's distribution server; the s
 ### CAB-NP licence
 
 Non-commercial only. Redistribution is allowed without permission when no financial return is made, the conditions pass on, and the original files are included. Each `cab-np.json` therefore holds only the assignments, apart from the meshes, beside the unmodified [licence](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/CAB-NP.txt) and [label key](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/CAB-NP-LabelKey.txt). Commercial use needs a licence from the universities.
+
+### CC BY-NC-SA 4.0 (Julich-Brain)
+
+Non-commercial, and shared alike: the Julich-Brain files derived for each brain stay under CC BY-NC-SA 4.0, with the dataset and Amunts et al. (2020) credited and the changes stated (projection to the subject; gap maps and medial masks left unassigned). Full terms: [`Julich-Brain-CC-BY-NC-SA-4.0.pdf`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/Julich-Brain-CC-BY-NC-SA-4.0.pdf).
 
 ### Open Database License (`neuropsych-domains.json`)
 

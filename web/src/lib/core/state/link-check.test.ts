@@ -12,7 +12,8 @@ const known: KnownLinkIds = {
   cutAtlases: new Set(['destrieux', 'hcp-mmp', 'nextbrain']),
   views: new Set(['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior']),
   explorers: new Set(['anatomy', 'functions', 'deficits', 'circuits', 'diffusion']),
-  surfaceColors: new Set(['tissue', 'mri', 'atlas', 'network', 'cab-np']),
+  // A build without Yeo 7 networks: `network` decodes but is not published.
+  surfaceColors: new Set(['tissue', 'mri', 'atlas', 'cab-np']),
   regions: new Map([
     ['destrieux:left:29', { kind: 'cortex' }],
     ['aseg:left:17', { kind: 'structure' }],
@@ -37,7 +38,7 @@ test('a link naming only what this anatomy publishes passes whole', () => {
 
 test('each unknown name is dropped and reported under its link parameter', () => {
   const { state, rejected } = check(
-    '#atlas=yeo&detail=fine&cuts=x&view=Left&colors=functional&region=nope' +
+    '#atlas=yeo&detail=fine&cuts=x&view=Left&colors=network&region=nope' +
       '&isolate=destrieux:left:medial-wall&hidden=aseg:left:17,nope&tab=diffusion&function=praxis&deficit=x&circuit=y&step=2&hemi=left',
   );
   assert.deepEqual(rejected, [

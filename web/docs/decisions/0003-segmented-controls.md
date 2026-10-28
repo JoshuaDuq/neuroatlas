@@ -6,11 +6,11 @@ Legacy builds every `.segmented` as a `role=group` of `aria-pressed` buttons wit
 
 Rule: mutually exclusive and cheap to apply = APG **Radio Group**; an action, or an expensive choice = APG **Toolbar** of `aria-pressed` buttons.
 
-| Group (legacy id)                                                                                                  | Pattern                           | Building block                                                  |
-| ------------------------------------------------------------------------------------------------------------------ | --------------------------------- | --------------------------------------------------------------- |
-| Language `#lang-switch`, theme `#theme-switch`, single-key shortcuts `#single-keys-switch`                         | Radio Group                       | Bits RadioGroup (verified)                                      |
-| Tree scope `#tree-scope`, hemisphere `#hemisphere`, functional level `#functional-level`, MPR planes `#mpr-planes` | Radio Group                       | Bits RadioGroup                                                 |
-| View presets `#views` (camera moves), cut mode `#cut-mode` (rebuilds sections), paint picks                        | Toolbar of `aria-pressed` buttons | Bits Toolbar.Root + Toolbar.Button with explicit `aria-pressed` |
+| Group (legacy id)                                                                           | Pattern                           | Building block                                                  |
+| ------------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------- |
+| Language `#lang-switch`, theme `#theme-switch`, single-key shortcuts `#single-keys-switch`  | Radio Group                       | Bits RadioGroup (verified)                                      |
+| Tree scope `#tree-scope`, hemisphere `#hemisphere`, MPR planes `#mpr-planes`                | Radio Group                       | Bits RadioGroup                                                 |
+| View presets `#views` (camera moves), cut mode `#cut-mode` (rebuilds sections), paint picks | Toolbar of `aria-pressed` buttons | Bits Toolbar.Root + Toolbar.Button with explicit `aria-pressed` |
 
 - Not Bits ToggleGroup (single mode gives radio roles without APG arrow selection). Not `Toolbar.GroupItem type=single` (emits `role=radio` in a toolbar).
 - Radio groups always hold a value, so Bits' arrow-selects behaviour (which needs a value) applies.

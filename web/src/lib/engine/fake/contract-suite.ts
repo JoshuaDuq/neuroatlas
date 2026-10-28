@@ -216,7 +216,7 @@ function freshEngine(create: () => Promise<Engine> | Engine) {
  * The behaviour every implementation of `Engine` must show: the in-memory fake (`contract.test.ts`) and
  * the real engine (`index.contract.test.ts`, on the real scene with a renderer that draws nothing). It
  * reads everything it needs from the engine's own manifest, so it holds for any published anatomy that has
- * two cortical atlases, the learning detail level, CAB-NP and the functional divisions.
+ * two cortical atlases, the learning detail level and CAB-NP.
  *
  * The cases of a group share one engine and have their model and cut put back to their opening state after each; the cases that
  * assert what has not been downloaded yet ("first use") run in order on one engine, and the few that
@@ -414,11 +414,6 @@ export function defineEngineContract(
           TypeError,
           'Unknown surface colour: bogus',
         );
-        refuses(
-          () => model.setFunctionalLevel('lobes' as never),
-          TypeError,
-          'Unknown functional level: lobes',
-        );
         for (const paint of [
           { id: 5, colors: new Map() },
           { id: 'x', colors: {} },
@@ -469,7 +464,6 @@ export function defineEngineContract(
         assert.throws(() => model.setCortexOpacity(Number.NaN), RangeError);
         assert.throws(() => model.setCortexVisible('yes' as never), TypeError);
         assert.throws(() => model.setInternalVisible(1 as never), TypeError);
-        assert.throws(() => model.setFunctionalLevel('deep' as never), TypeError);
         assert.throws(
           () => model.setInternalSystem('No such system'),
           /Unknown internal anatomy system/,
@@ -740,7 +734,6 @@ export function defineEngineContract(
         model.setInternalVisible(false);
         model.setInternalSystem(system);
         model.setSurfaceColor('tissue');
-        model.setFunctionalLevel('sections');
         model.select(cortex('left', otherAtlas).id);
         model.hideRegions([left.id]);
         // A show of the cord still on its way is cancelled.
@@ -759,7 +752,6 @@ export function defineEngineContract(
         assert.equal(settings.internalConstituents.size, 0);
         assert.equal(settings.spinalCordVisible, false);
         assert.equal(settings.surfaceColor, 'atlas');
-        assert.equal(settings.functionalLevel, 'named');
         assert.equal(settings.isolatedRegion, null);
         assert.equal(settings.hiddenRegions.size, 0);
         assert.equal(settings.dissectionCanUndo, false);
@@ -1085,11 +1077,8 @@ export function defineEngineContract(
 
       it('refuses a colour whose atlas is not on screen', async () => {
         const { engine } = world();
-        const { cabNp, functionalRegions } = engine.model;
-        assert.ok(
-          cabNp && functionalRegions,
-          'the contract needs an anatomy with CAB-NP and functional divisions',
-        );
+        const { cabNp } = engine.model;
+        assert.ok(cabNp, 'the contract needs an anatomy with CAB-NP');
         await assert.rejects(engine.sections.setSurfaceColor('cab-np'), /show that atlas first/);
         await engine.model.setAtlas(cabNp.atlas);
         await engine.sections.setSurfaceColor('cab-np');
@@ -1117,7 +1106,7 @@ export function defineEngineContract(
         assert.equal(sections.display, null);
         await sections.setSurfaceColor('atlas');
         assert.equal(model.settings.surfaceColor, 'atlas');
-        await sections.setSurfaceColor('functional', () => false);
+        await sections.setSurfaceColor('mri', () => false);
         assert.equal(
           model.settings.surfaceColor,
           'atlas',

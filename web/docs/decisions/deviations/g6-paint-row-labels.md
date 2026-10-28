@@ -9,7 +9,7 @@ The snapshot redraws each key from the DOM. It picks the words with `.stage-key-
 
 ## New behaviour
 
-What a key says comes from `keys.model()` (G3), so every row's label is drawn where it is on screen. The picked row is bold and the others muted, read from the computed style as on screen. The title, the functional level, the swatches, the plate and the rows clipped by scrolling are drawn as legacy drew them. The paint key's note is still not drawn (legacy; flagged on #4).
+What a key says comes from `keys.model()` (G3), so every row's label is drawn where it is on screen. The picked row is bold and the others muted, read from the computed style as on screen. The title, the swatches, the plate and the rows clipped by scrolling are drawn as legacy drew them. The paint key's note is still not drawn (legacy; flagged on #4).
 
 ## Standard cited
 

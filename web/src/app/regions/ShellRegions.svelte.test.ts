@@ -159,6 +159,18 @@ describe('the ports', () => {
     await vi.waitFor(() => expect(ports.mprOpen()).toBe(true));
   });
 
+  test('the tracts overlay turns on and off with the stage listening to the engine', async () => {
+    await shell.open();
+    await page.getByRole('tab', { name: 'Tracts' }).click();
+    await page.getByText('Tract display').click();
+    const overlay = page.getByRole('checkbox', { name: 'Show tracts with anatomy' });
+    await expect.element(overlay).not.toBeChecked();
+    await overlay.click();
+    await expect.element(overlay).toBeChecked();
+    await overlay.click();
+    await expect.element(overlay).not.toBeChecked();
+  });
+
   test('focusInDetail answers true in a region’s detail', async () => {
     await shell.open();
     expect(shell.app.ports.focusInDetail()).toBe(false);

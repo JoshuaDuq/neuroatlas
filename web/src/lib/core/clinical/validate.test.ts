@@ -86,7 +86,7 @@ function fixture(): Fixture {
 }
 
 const create = ({ data, regions }: Fixture) =>
-  createClinicalCatalog(data as ClinicalData, { regions } as never);
+  createClinicalCatalog(data as ClinicalData, { regions } as never, {});
 
 const prefix = 'Invalid clinical catalog: ';
 const [association, reference, deficit, group] = [
@@ -280,6 +280,16 @@ describe('CAT-44 · the clinical records are checked before use', () => {
       });
     }
   }
+  test('CAT-44 · refuses translated text an unquoted comma split into a stray key', () => {
+    for (const [field, record, id] of translated) {
+      const f = fixture();
+      record(f)[field]['posture and gait'] = null;
+      assert.throws(() => create(f), {
+        message: `${prefix}${id}: ${field} has text outside en and fr: posture and gait`,
+      });
+    }
+  });
+
   test('CAT-44 · refuses a missing deficit text object', () => {
     const f = fixture();
     delete deficit(f).summary;

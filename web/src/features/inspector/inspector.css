@@ -293,6 +293,10 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
+  /* No swatch: the receptor's symbol, the bar, and a value wide enough for "3545 ± 913". */
+  .region-detail .receptor-row {
+    grid-template-columns: minmax(0, 1fr) minmax(32px, 56px) 6.5rem;
+  }
   .region-detail .functional-row {
     grid-template-columns: 10px minmax(0, 1fr);
   }

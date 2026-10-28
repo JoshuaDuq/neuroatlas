@@ -91,6 +91,8 @@ export interface SceneCallbacks {
   onContextLost?: () => void;
   onContextRestored?: () => void;
   onResize?: (change: { canvasChanged: boolean }) => void;
+  /** Before the first frame of a camera move and the full-resolution frame at rest. */
+  onMotion?: (moving: boolean) => void;
 }
 
 export interface Outlined {
@@ -292,7 +294,7 @@ export interface EngineScene {
  */
 export function createScene(
   host: HTMLElement,
-  { onContextLost, onContextRestored, onResize }: SceneCallbacks = {},
+  { onContextLost, onContextRestored, onResize, onMotion }: SceneCallbacks = {},
 ): EngineScene {
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
@@ -593,6 +595,7 @@ export function createScene(
       return;
     }
     if (!dirty) return;
+    if (inMotion !== showingMotion) onMotion?.(inMotion);
     (inMotion ? moving : settled).composer.render();
     showingMotion = inMotion;
     dirty = false;

@@ -2,6 +2,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { View } from '../../lib/state/view.svelte.ts';
+  import domains from '../../../../public/models/cdmd/neuropsych-domains.json' with { type: 'json' };
   import { createCatalog } from '../../lib/core/catalog/catalog.ts';
   import { loadClinicalCatalog } from '../../lib/core/clinical/load.ts';
   import { createInvolvement } from '../../lib/core/panels/related.ts';
@@ -45,7 +46,7 @@
   // svelte-ignore state_referenced_locally
   const catalog = createCatalog(manifest, 'en');
   // svelte-ignore state_referenced_locally
-  const clinical = loadClinicalCatalog(manifest);
+  const clinical = loadClinicalCatalog(manifest, domains.units);
   // svelte-ignore state_referenced_locally
   const regions = new Map<string, Region>(manifest.regions.map((region) => [region.id, region]));
   const calls: string[] = [];
@@ -70,7 +71,6 @@
     internalVisible: true,
     spinalCordVisible: true,
     surfaceColor: 'tissue',
-    functionalLevel: 'named',
     isolatedRegion: null,
     hiddenRegions: new Set(),
     dissectionCanUndo: false,

@@ -2,8 +2,6 @@ import { Color, SRGBColorSpace } from 'three';
 import type { DisplaySettings, Region, RegionHemisphere, Rgb } from '../../types/index.ts';
 import { dominantNetwork } from '../../core/catalog/networks.ts';
 import type { CabNpPartition } from '../../core/catalog/networks.ts';
-import { functionalRegionOf } from '../../core/catalog/functional-regions.ts';
-import type { FunctionalRegions } from '../../core/catalog/functional-regions.ts';
 import { internalSystemAllows } from '../../core/catalog/visibility.ts';
 import { tissueColor } from '../render/materials.ts';
 import type { TissuePalette } from '../render/materials.ts';
@@ -27,7 +25,8 @@ export interface PaletteLookup {
   regions?: ReadonlyMap<string, Region>;
   networks?: Pick<NetworkMetadata, 'colors'>;
   cabNp?: CabNpPartition;
-  functional?: FunctionalRegions;
+  /** The arterial territories' palette, by territory id. */
+  territories?: readonly { id: string; color: Rgb }[];
 }
 
 export function labelVisible(label: Label, state: PaletteState, lookup?: PaletteLookup): boolean {
@@ -56,13 +55,13 @@ export const usesAtlasColors = (state: Pick<PaletteState, 'surfaceColor'>) =>
 export const usesNetworkColors = (state: Pick<PaletteState, 'surfaceColor'>) =>
   state.surfaceColor === 'network';
 
+/** Whether a cut face carries the arterial territory colours the surface is carrying. */
+export const usesTerritoryColors = (state: Pick<PaletteState, 'surfaceColor'>) =>
+  state.surfaceColor === 'territory';
+
 /** Whether a cut face carries CAB-NP's colours, which only HCP-MMP's areas have. */
 export const usesCabNpColors = (state: Pick<PaletteState, 'surfaceColor'>) =>
   state.surfaceColor === 'cab-np';
-
-/** Whether a cut face carries the functional divisions' colours, which only HCP-MMP's areas have. */
-export const usesFunctionalColors = (state: Pick<PaletteState, 'surfaceColor'>) =>
-  state.surfaceColor === 'functional';
 
 /** Whether a panel's paint is drawn over the surface colour, on a cut face as on the surface. */
 export const usesPaint = (state: Pick<PaletteState, 'paint'>) => Boolean(state.paint);
@@ -90,6 +89,30 @@ function networkColor(label: Label, { regions, networks }: PaletteLookup = {}): 
   return name ? (networks?.colors?.[name] ?? null) : null;
 }
 
+/*
+ * The territory a cut voxel is painted with. The arterial cut labels are territories themselves
+ * and keep their own colour, and with them on the cut nothing else is recoloured: a voxel the atlas
+ * leaves out, or a fluid space, shows its tissue. With other cut labels a region is painted, like
+ * networks, with the territory holding most of it, and only when one holds a majority.
+ */
+const TERRITORY_MAJORITY = 0.5;
+
+function territoryColor(
+  label: Label,
+  state: PaletteState,
+  { regions, territories }: PaletteLookup = {},
+): Rgb | null {
+  if (!label.region_id || !territories) return null;
+  const region = regions?.get(label.region_id);
+  if (region?.atlas === 'arterial') return label.color;
+  if (state.cutAtlas === 'arterial') return null;
+  const largest = region?.territories?.[0];
+  if (!largest || largest.fraction < TERRITORY_MAJORITY) return null;
+  const entry = territories.find((candidate) => candidate.id === largest.territory);
+  if (!entry) throw new Error(`No arterial territory ${largest.territory} is published.`);
+  return entry.color;
+}
+
 /**
  * What one label looks like, whether a voxel cut or a solid cap paints it.
  *
@@ -114,17 +137,15 @@ export function labelAppearance(
     // parcel reads as one colour whether it is met on the cut or the surface.
     if (channels) setPublished(color, channels);
   }
+  if (usesTerritoryColors(state)) {
+    const channels = territoryColor(label, state, lookup);
+    if (channels) setPublished(color, channels);
+  }
   const cabNpNetwork =
     usesCabNpColors(state) && label.region_id ? lookup?.cabNp?.regions[label.region_id] : null;
   if (cabNpNetwork) {
     setPublished(color, lookup!.cabNp!.colors[cabNpNetwork]!);
   }
-  // Glass keeps its tissue colour on a cut, as on the surface.
-  const division =
-    usesFunctionalColors(state) && label.region_id
-      ? functionalRegionOf(lookup?.functional, state.functionalLevel, label.region_id)
-      : null;
-  if (division) setPublished(color, division.color);
   if (state.paint) {
     const painted = label.region_id ? state.paint.colors.get(label.region_id) : undefined;
     if (painted) setPublished(color, painted);

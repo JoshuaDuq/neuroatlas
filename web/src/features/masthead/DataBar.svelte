@@ -52,7 +52,7 @@
     atlases: readonly string[];
     detailLevels: readonly string[];
     /** What this build publishes: the Colour field offers only these colourings. */
-    colourings: { networks?: unknown } & Pick<ModelPort, 'cabNp' | 'functionalRegions'>;
+    colourings: { networks?: unknown; territories?: unknown } & Pick<ModelPort, 'cabNp'>;
     anatomy: ManifestAnatomy;
     anatomies: readonly ManifestAnatomy[];
     /** The tract reference, another subject with nothing to choose. */

@@ -11,7 +11,8 @@ anatomy: cdmd
 freesurfer_build: freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45
 
 # Every anatomy lists the optional layers it publishes, out of networks,
-# nextbrain, cerebellar_lobules, white_matter, spinal_cord and neurosynth_terms. Build and
+# nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms and
+# arterial_territories. Build and
 # validate fail when a declared layer's input is missing and publish no layer
 # that is undeclared.
 anatomies:
@@ -42,7 +43,7 @@ anatomies:
     # fewest surface defect holes (14); its own diffusion scan gives the tracts
     # their frame.
     source_url: https://doi.org/10.6084/m9.figshare.c.5315474.v1
-    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms]
+    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms, arterial_territories]
     # Reconstructed here with FreeSurfer 8.2 from the T1 the
     # published FreeSurfer 6 run imported (voxel for voxel). With that run's
     # aseg, NextBrain's left amygdala met it at Dice 0.793, below the floor.
@@ -221,9 +222,6 @@ appearance:
     clearcoat_roughness: 0.45
     ior: 1.38
     specular_intensity: 0.55
-  # Opacity, as a fraction of the cortex's, of the cortex outside the functional
-  # divisions on show: the glass of the glass brain.
-  glass_opacity: 0.1
   # Cortex opacity the notice's "See through the cortex" sets when an opened
   # function's strongest region is a structure the cortex hides. At 0.3 the
   # painted amygdala of Fear was still veiled; at 0.15 it reads, near the 0.16
@@ -267,6 +265,14 @@ atlases:
     citation: https://doi.org/10.1038/nature18933
     # Redistributed only under these terms; relative to the manifest, like CAB-NP's.
     license_file: ../licenses/HCP-Data-Use-Terms.txt
+  # Julich-Brain 3.1's maximum-probability map on fsaverage (scripts/fetch_julich_brain.py),
+  # projected like HCP-MMP1.0. Its gap maps, cortex not yet mapped, and its medial
+  # masks are not areas. CC BY-NC-SA 4.0: non-commercial, shared alike.
+  - id: julich
+    label: Julich-Brain cytoarchitectonic atlas
+    annotation: JulichBrain3.1
+    citation: https://doi.org/10.1126/science.abb4588
+    license_file: ../licenses/Julich-Brain-CC-BY-NC-SA-4.0.pdf
 # A cut-label atlas with no cortical surface counterpart, published by the
 # anatomies that declare the `nextbrain` layer. The volume is produced once per
 # brain by scripts/segment_nextbrain.py, which needs FreeSurfer 8.2.

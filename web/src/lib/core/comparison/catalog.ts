@@ -2,6 +2,10 @@ import type { Language, Manifest, Region } from '../../types/index.ts';
 import { labelOf } from '../catalog/labels.ts';
 
 const ATLASES = ['destrieux', 'hcp-mmp'] as const;
+
+/** The atlas a region of one compared atlas is measured against; null for an atlas not compared. */
+export const comparedWith = (atlas: string | undefined): string | null =>
+  atlas === ATLASES[0] ? ATLASES[1] : atlas === ATLASES[1] ? ATLASES[0] : null;
 const HEMISPHERES = ['left', 'right'];
 const MARGINAL_TOLERANCE = 1e-10;
 const isRecord = (value: unknown) =>

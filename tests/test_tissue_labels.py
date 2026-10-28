@@ -62,6 +62,10 @@ def small_ribbon_subject(tmp_path):
         "source_directory": directory,
         "output_directory": tmp_path / "published",
         "anatomy": {"individual": True, "layers": []},
+        "atlases": [
+            {"id": "destrieux", "annotation": "aparc.a2009s"},
+            {"id": "hcp-mmp", "annotation": "HCPMMP1"},
+        ],
     }
     return config, {"regions": regions}
 

@@ -99,7 +99,7 @@ export function networkBasis(region: {
   atlas?: string;
   kind?: string;
 }): 'vertices' | 'voxels' {
-  if (['destrieux', 'hcp-mmp'].includes(region.atlas ?? '')) return 'vertices';
+  if (['destrieux', 'hcp-mmp', 'julich'].includes(region.atlas ?? '')) return 'vertices';
   if (region.atlas === 'nextbrain' && region.kind === 'tissue-region') return 'voxels';
   throw new Error(`Unknown network composition basis for ${region.id ?? region.atlas}.`);
 }

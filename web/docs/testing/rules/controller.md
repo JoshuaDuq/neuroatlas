@@ -146,7 +146,7 @@ checks them in the browser today and could run in the unit project over the fake
 
 ### CTRL-15 · Leaving says when a colouring was lost to an atlas change
 
-- **Rule:** If the colouring from before entering needs an atlas (CAB-NP and functional divisions need HCP-MMP) and the reader switched atlas while inside, leaving colours by atlas and says why.
+- **Rule:** If the colouring from before entering needs an atlas (CAB-NP needs HCP-MMP) and the reader switched atlas while inside, leaving colours by atlas and says why.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:1178-1184`; `viewer/i18n/translations.js:494-495`

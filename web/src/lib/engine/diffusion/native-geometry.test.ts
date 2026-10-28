@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { Color, ColorManagement, LinearSRGBColorSpace, SRGBColorSpace, Vector3 } from 'three';
-import { RAS_MM_TO_WORLD, createTractGeometry, filterTractGeometry } from './native-geometry.ts';
+import {
+  MOTION_STRIDE,
+  RAS_MM_TO_WORLD,
+  createMotionGeometry,
+  createTractGeometry,
+  filterTractGeometry,
+} from './native-geometry.ts';
 
 const points = new Float32Array([
   100, 200, 300, 103, 204, 300, 100, 200, 300, -100, 0, 0, -100, 0, 20,
@@ -94,4 +100,23 @@ test('DIFF-06 the bounds of the lines are the bounds of the source points', () =
   assert.deepEqual(geometry.boundingBox!.min.toArray(), [-100, 0, 0]);
   assert.deepEqual(geometry.boundingBox!.max.toArray(), [103, 204, 300]);
   geometry.dispose();
+});
+
+test('the motion lines join every third point of the same buffers, ending on each streamline’s last', () => {
+  assert.equal(MOTION_STRIDE, 3);
+  // Seven points and two: strides of 3 end on point 6, and a two-point streamline keeps its one segment.
+  const long = new Float32Array(Array.from({ length: 9 }, (_, i) => [i, 0, 0]).flat());
+  const ends = new Uint32Array([0, 7, 9]);
+  const { geometry, lengths } = createTractGeometry(long, ends);
+  const motion = createMotionGeometry(geometry, ends, lengths, 1);
+  assert.deepEqual(Array.from(motion.index!.array.slice(0, motion.drawRange.count)), [0, 3, 3, 6, 7, 8]);
+  assert.equal(motion.getAttribute('position'), geometry.getAttribute('position'));
+  assert.equal(motion.getAttribute('color'), geometry.getAttribute('color'));
+  assert.ok(motion.boundingSphere!.equals(geometry.boundingSphere!));
+  filterTractGeometry(motion, ends, lengths, 2, MOTION_STRIDE);
+  assert.deepEqual(Array.from(motion.index!.array.slice(0, motion.drawRange.count)), [0, 3, 3, 6]);
+  // A stride the index was not sized for would write past it.
+  assert.throws(() => filterTractGeometry(motion, ends, lengths, 1), /index/);
+  geometry.dispose();
+  motion.dispose();
 });

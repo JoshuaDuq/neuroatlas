@@ -1,7 +1,7 @@
 # The functional level is an APG radio group
 
 Chunk: G3
-Status: approved (decision 6 on #4)
+Status: approved (decision 6 on #4); retired 2026-10-28 with the functional colour, which took the level control with it
 
 ## Legacy behaviour
 

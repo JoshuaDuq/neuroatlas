@@ -258,7 +258,9 @@ test('the cut labels are the manifest’s, and NextBrain is known to be segmente
   expect(controls.cutAtlases.map((atlas) => atlas.id)).toEqual([
     'destrieux',
     'hcp-mmp',
+    'julich',
     'nextbrain',
+    'arterial',
   ]);
   expect(controls.nextbrainSegmented).toBe(true);
 });

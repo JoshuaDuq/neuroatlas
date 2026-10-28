@@ -15,7 +15,7 @@ CI runs all three for `cdmd` on every pull request and deployment. A validation 
 1. **Volumes round-trip.** Each `.volume` decodes, matches both checksums, and placed by its affine equals `orig.mgz`, `aseg.mgz` or `aparc.a2009s+aseg.mgz`.
 2. **Grids register.** Native volumes share shape, scanner affine and the full tkregister transform before they are combined.
 3. **Manifest.** Every region id matches its mesh name and lookup-table entry.
-4. **HCP cut labels.** Equal to Destrieux outside cortex; inside, every ribbon voxel holds the HCP label of its nearest pial or white vertex.
+4. **Projected cut labels.** For HCP-MMP and Julich-Brain: equal to Destrieux outside cortex; inside, every ribbon voxel holds the label of its nearest pial or white vertex.
 5. **Solids.** No vertex beyond 0.6 mm, and re-voxelised by ray parity, `misclassified_voxel_centres` is 0 for every solid.
 6. **NextBrain cut blocks.** Every 0.8 mm block recounted from source.
 7. **Per-area layers.** `cab-np.json`, `functional-regions.json` and `neuropsych-domains.json` rebuilt from their sources must match exactly, with every area assigned and licences copied byte for byte.
@@ -58,7 +58,7 @@ Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, 
 
 1. **One individual.** Folds, depths and asymmetries belong to that person and are not normative.
 2. **1 mm scan.** The MRI and FreeSurfer labels are 1 mm. NextBrain's 0.4 mm grid is estimated from that same scan; where structures share T1 contrast, the atlas prior places the boundary. Cortical layers and fibres are not resolved.
-3. **HCP-MMP is projected**, two registrations from HCP space.
+3. **HCP-MMP and Julich-Brain are projected**: HCP-MMP is two registrations from HCP space; Julich-Brain was resampled from Colin27 to `fsaverage`, then to this brain, and leaves about a quarter of the cortex unassigned.
 4. **NextBrain is a model estimate.** Against each brain's own aseg, caudate, putamen, thalamus, hippocampus and amygdala score Dice 0.772–0.892 on `cdmd`, whose left amygdala (0.772) is a documented exception to the 0.8 floor. Agreement bounds how far two segmentations differ, not how far either is from the anatomy. The claustrum is still fragmented.
 5. **Cerebellar lobules are a model estimate.** CerebNet's lobules together score Dice 0.918 against `cdmd`'s aseg cerebellar cortex.
 6. **Cut faces are coarser** than NextBrain surfaces (0.8 mm blocks).

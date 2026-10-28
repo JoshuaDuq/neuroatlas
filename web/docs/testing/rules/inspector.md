@@ -371,3 +371,22 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Source:** design round 2026-10-27, option C
 - **Expected:** the pair table is symmetric, 0 for an unrated pair and 1 + share × 254 otherwise; a label with no cut code leaves no entry.
 - **Covered by:** `src/lib/engine/tissues/boundary-edges.test.ts` (W: the shader's ink is checked by render capture, not by a test)
+
+### INSP-41 · A region named after a measured area shows its receptor fingerprint
+
+- **Rule:** A region with a fingerprint in `receptor-fingerprints.json` has a collapsed Receptor densities section after the comparison slot. Measured receptors are grouped by transmitter in display order, each with its symbol (subscripts set), a decorative bar (share of that receptor's highest published mean) and its mean ± SD; a missing SD shows a dash and is named to a reader. Receptors not measured are listed once. A withheld SD gives its published value and reason; an unpublished one says so. The note gives the unit, hemispheres, brains and their ages, and the fingerprint count; the next line names what was measured and that it is carried by name. The EBRAINS dataset and any documenting paper are links. An area sampled in two parts offers Dorsal | Ventral. A region without a fingerprint has no section.
+- **Kind:** scientific
+- **Level:** unit (`fingerprintsOf`, `fingerprintGroups`, `unmeasured`, `validateReceptorFingerprints`) and browser
+- **Source:** EBRAINS Knowledge Graph survey, 2026-10-28
+- **Expected:** `julich:left:2` dorsal → groups Glutamate … Dopamine, "NMDA 964 ± 95", "Not measured: mGluR2/3, A1.", "autoradiography of 4 hemispheres from 3 post-mortem brains aged 72–77", links to 10.25493/yqcr-1dq and Zilles et al. (2015); Ventral → "NMDA 1129 ± 382", "mGluR2/3 3545 ± 913". `julich:left:75` → "D1 78 ± —, no SD" and the withheld reason; `julich:left:65` → "No SD published for α2.". `aseg:left:12` → 2 brains, no part choice. `julich:left:3` and `hcp-mmp:left:1` → no section. French "Densités de récepteurs", "Dorsale". Axe clean with the section open.
+- **Covered by:** `src/lib/core/catalog/receptor-fingerprints.test.ts`, `src/features/inspector/inspector.svelte.test.ts` (R)
+
+### INSP-42 · A region the territory atlas reaches lists its typical arterial supply
+
+- **Rule:** A region with territory shares in the manifest has a collapsed Typical arterial supply section after the networks. Each territory it reaches by 1% or more is a row with its colour, its name in the reader's language, a decorative bar and a whole percentage, largest first. The note says the shares are of the region's pial vertices for a cortical area and of its voxels otherwise, and gives the unassigned remainder when it is at least half a percent; the caveat says these are typical territories, not this brain's vessels. A territory itself, and a region the atlas does not reach, have no section.
+- **Kind:** scientific
+- **Level:** browser
+- **Source:** arterial territories phase 1, 2026-10-28
+- **Expected:** `aseg:left:12` → first row "Lateral lenticulostriate 87%", "Share of this region’s voxels in each territory.", "not this brain’s own vessels"; `julich:left:2` → "Share of this region’s pial vertices in each territory.", first row "Middle cerebral artery, frontal …%"; `arterial:left:aca` and `pam50:left:gracile-fasciculus` → no section; French "Vascularisation artérielle typique", "Lenticulo-striées latérales 87 %". Axe clean with the section open. A V1 Tab walk reaches it ninth, after Functional networks.
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
+

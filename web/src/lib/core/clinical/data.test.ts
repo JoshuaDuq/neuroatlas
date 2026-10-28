@@ -19,7 +19,7 @@ test('every published deficit has a colour for each of its findings', () => {
 
 describe('published clinical content resolves to the actual atlas and cited evidence', () => {
   for (const [anatomy, manifest] of manifests) {
-    test(anatomy, () => checkAnatomy(createClinicalCatalog(data, manifest)));
+    test(anatomy, () => checkAnatomy(createClinicalCatalog(data, manifest, {})));
   }
 });
 
@@ -186,14 +186,18 @@ function checkAnatomy(catalog: ClinicalCatalog) {
     catalog.forRegion('destrieux:left:38').map((a) => a.deficit),
     ['aphasia', 'aphasia', 'aphasia', 'akinetopsia'],
   );
-  // The cerebellar cortex now carries motor, speech and cognitive claims side by side.
-  assert.deepEqual(
+  // Lobule VI carries motor, speech and cognitive claims side by side; the anterior lobe no cognitive one.
+  const cited = (region: string) =>
     catalog
-      .forRegion('aseg:right:47')
+      .forRegion(region)
       .map((a) => a.deficit)
-      .sort(),
-    ['ataxia', 'cerebellar-cognitive', 'dysarthria'],
-  );
+      .sort();
+  assert.deepEqual(cited('learning:lobule-vi-right'), [
+    'ataxia',
+    'cerebellar-cognitive',
+    'dysarthria',
+  ]);
+  assert.deepEqual(cited('learning:lobule-v-right'), ['ataxia', 'dysarthria']);
   assert.equal(catalog.search('champ visuel', 'fr')[0].id, 'hemianopia');
   assert.equal(catalog.search('reading', 'en')[0].id, 'alexia');
   // Every deficit sits in one group, and the groups are what the list is read by.
@@ -220,10 +224,10 @@ function checkAnatomy(catalog: ClinicalCatalog) {
 
 describe('published clinical content: fixed values', () => {
   const [, manifest] = manifests[0];
-  const catalog = createClinicalCatalog(data, manifest);
+  const catalog = createClinicalCatalog(data, manifest, {});
 
-  test('CAT-50 · the published records are the revision of 2026-10-27: 6 groups, 70 deficits, 131 references, 108 associations', () => {
-    assert.equal(catalog.revised, '2026-10-27');
+  test('CAT-50 · the published records are the revision of 2026-10-28: 6 groups, 70 deficits, 131 references, 108 associations', () => {
+    assert.equal(catalog.revised, '2026-10-28');
     assert.equal(data.groups.length, 6);
     assert.equal(data.deficits.length, 70);
     assert.equal(data.references.length, 131);

@@ -71,15 +71,10 @@ test('CAB-NP colours survive a round trip', () => {
   assert.deepEqual(decoded(encodeState({ surfaceColor: 'cab-np' })), { surfaceColor: 'cab-np' });
 });
 
-test('the functional divisions and their level survive a round trip; the named level is the default', () => {
-  const state: Partial<LinkInput> = { surfaceColor: 'functional', functionalLevel: 'sections' };
-  assert.equal(encodeState(state), 'colors=functional&level=sections');
-  assert.deepEqual(decoded(encodeState(state)), state);
-  assert.equal(
-    encodeState({ surfaceColor: 'functional', functionalLevel: 'named' }),
-    'colors=functional',
-  );
-  assert.deepEqual(decodeState('level=lobes').rejected, ['level']);
+test('a link from the functional-division colouring keeps its other fields and names the colour it cannot show', () => {
+  const { state, rejected } = decodeState('colors=functional&level=sections&opacity=0.5');
+  assert.deepEqual(state, { cortexOpacity: 0.5 });
+  assert.deepEqual(rejected, ['colors']);
 });
 
 test('tissue colors explicitly survive reload over the region default', () => {
@@ -409,8 +404,7 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
     cortexVisible: false,
     internalVisible: false,
     spinalCordVisible: true,
-    surfaceColor: 'functional',
-    functionalLevel: 'sections',
+    surfaceColor: 'cab-np',
     cortexOpacity: 0.5,
     mriWindow: { center: 1, width: 2 },
     explorer: 'functions',
@@ -443,7 +437,6 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
       'internal',
       'cord',
       'colors',
-      'level',
       'opacity',
       'mri',
       'tab',
@@ -456,7 +449,7 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
   );
   assert.equal(
     written,
-    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=functional&level=sections&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr',
+    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=cab-np&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr',
   );
   assert.deepEqual(PARAMS, {
     anatomy: 'anatomy',
@@ -478,7 +471,6 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
     internalVisible: 'internal',
     spinalCordVisible: 'cord',
     surfaceColor: 'colors',
-    functionalLevel: 'level',
     cortexOpacity: 'opacity',
     mriWindow: 'mri',
     explorer: 'tab',
@@ -538,7 +530,7 @@ test('STATE-17 a fixed corpus of links reads back as the same scene once written
     'hidden=aseg:left:17,destrieux:left:29&cortex=0&internal=0&cord=1',
     'cut=oblique&pos=-12.3&rev=1&tilt=44&az=-45',
     'cut=sagittal&pos=512&tilt=0&az=-180',
-    'colors=functional&level=sections&opacity=0.46',
+    'colors=cab-np&opacity=0.46',
     'colors=tissue&tab=functions&function=language',
     'tab=circuits&deficit=aphasia&circuit=visual&step=4&lang=fr',
     'cam=10,-20,30,0,0,0&mri=128,256',

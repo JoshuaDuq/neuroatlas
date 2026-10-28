@@ -1,4 +1,4 @@
-"""Published volumetric anatomy and explicitly ribbon-restricted HCP projection."""
+"""Published volumetric anatomy and explicitly ribbon-restricted surface-atlas projections."""
 
 import json
 
@@ -8,6 +8,7 @@ from nibabel.freesurfer.io import read_annot, read_geometry
 from scipy.spatial import cKDTree
 
 from ..sources import read_color_table, read_config, sha256, verify_sources, write_json
+from ..layers import arterial_territories
 from . import nextbrain, white_matter
 from .volumes import encode_cropped_volume, validate_same_grid
 
@@ -53,7 +54,11 @@ def describe_source_label(value, table, regions):
     }
 
 
-def project_hcp(config, image, codes, labels, regions):
+def project_surface_atlas(config, atlas, image, codes, labels, regions):
+    """A surface atlas on the cut: each ribbon voxel takes its nearest pial or white vertex's label.
+
+    Cortex outside the ribbon takes the annotation's entry 0, its unlabelled one.
+    """
     ribbon_image = nib.load(config["source_directory"] / "mri/ribbon.mgz")
     validate_same_grid(ribbon_image, image)
     source = np.asarray(image.dataobj)
@@ -65,17 +70,17 @@ def project_hcp(config, image, codes, labels, regions):
         ("rh", "right", 12100, 42),
     ]:
         annotation, colors, names = read_annot(
-            config["source_directory"] / "label" / f"{prefix}.HCPMMP1.annot"
+            config["source_directory"] / "label" / f"{prefix}.{atlas['annotation']}.annot"
         )
+        published = {
+            region["source_label_id"]: region
+            for region in regions
+            if region["atlas"] == atlas["id"] and region["hemisphere"] == hemisphere
+        }
         lookup = {}
         for label_id, name in enumerate(names):
-            region = next(
-                region
-                for region in regions
-                if region["atlas"] == "hcp-mmp"
-                and region["hemisphere"] == hemisphere
-                and region["source_label_id"] == label_id
-            )
+            # A table entry no vertex of this brain carries has no region.
+            region = published.get(label_id, {"kind": "non-region"})
             lookup[label_id] = len(labels)
             labels.append(
                 {
@@ -88,9 +93,9 @@ def project_hcp(config, image, codes, labels, regions):
                 }
             )
         mask = (source > lower) & (source < lower + 100)
-        unknown = next(
-            code for code in lookup.values() if labels[code]["region_id"] is None
-        )
+        unknown = lookup[0]
+        if labels[unknown]["region_id"] is not None:
+            raise ValueError(f"{atlas['id']}: annotation entry 0 must be its unlabelled one")
         projected[mask] = unknown
         coordinates = np.argwhere(mask & (ribbon == ribbon_label))
         points = nib.affines.apply_affine(affine, coordinates)
@@ -147,12 +152,16 @@ def export_tissue_labels(config, manifest):
     ]
     codes = inverse.reshape(source.shape).astype(np.uint16)
     atlases = {}
-    for atlas in ["destrieux", "hcp-mmp"]:
+    # Destrieux is the source volume's own parcellation; every other surface atlas is projected.
+    for surface in config["atlases"]:
+        atlas = surface["id"]
         atlas_labels = [dict(label) for label in labels]
         data = (
             codes
             if atlas == "destrieux"
-            else project_hcp(config, image, codes, atlas_labels, manifest["regions"])
+            else project_surface_atlas(
+                config, surface, image, codes, atlas_labels, manifest["regions"]
+            )
         )
         encoded_image = nib.MGHImage(
             data.astype(np.int32), image.affine, header=image.header.copy()
@@ -173,6 +182,11 @@ def export_tissue_labels(config, manifest):
         atlases[nextbrain.ATLAS_ID] = nextbrain.export_atlas(
             config, manifest["regions"]
         )
+    if arterial_territories.is_declared(config):
+        atlases[arterial_territories.ATLAS_ID] = arterial_territories.export_cut_atlas(
+            config, arterial_territories.read_definition(), image, codes,
+            [dict(label) for label in labels], manifest["regions"],
+        )
     metadata = {
         "schema_version": 1,
         "source_sha256": sha256(source_path),
@@ -181,7 +195,7 @@ def export_tissue_labels(config, manifest):
             "Native 1 mm tissue labels from one individual's own segmentation; no claim of subvoxel anatomical accuracy."
             if config["anatomy"]["individual"]
             else "Native 1 mm tissue labels from an averaged segmentation; no claim of subvoxel anatomical accuracy.",
-            "HCP cortical volume labels are a derived ribbon-restricted projection, not a published native HCP volumetric atlas.",
+            "HCP-MMP and Julich-Brain cortical volume labels are derived ribbon-restricted projections of their surface labels, not published native volumetric atlases.",
             "Native voxel boundaries and high-resolution cortical surfaces may not coincide exactly.",
         ],
     }

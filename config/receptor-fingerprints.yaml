@@ -1,0 +1,276 @@
+# Neurotransmitter receptor densities measured by quantitative in vitro
+# autoradiography in post-mortem brains (Zilles and Palomero-Gallagher), as
+# published on EBRAINS: one fingerprint per dataset, the mean and SD over the
+# sampled hemispheres. Nothing here is measured in the anatomy shown. A
+# fingerprint reaches a region only through the name of the area or structure
+# it was measured in, so it is carried per region, never per vertex or voxel.
+# scripts/fetch_receptor_fingerprints.py reads the files below, pinned by
+# checksum, into data/receptor-fingerprints.json; the build reads that file.
+# Areas 9, 46 and 47 are also published but name no Julich-Brain area, so they
+# are left out rather than placed in one.
+label: Receptor fingerprints (Zilles and Palomero-Gallagher, EBRAINS)
+unit: fmol/mg
+bucket: https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-{key}_pub
+license: CC BY-NC-SA 4.0
+sources:
+  zilles-2015:
+    short: Zilles et al. (2015)
+    citation: Zilles K, Bacha-Trams M, Palomero-Gallagher N, Amunts K, Friederici AD (2015) Common molecular basis of the sentence comprehension network revealed by neurotransmitter receptor fingerprints. Cortex 63:79–89
+    doi: https://doi.org/10.1016/j.cortex.2014.07.007
+    pmid: 25243991
+  palomero-gallagher-2018:
+    short: Palomero-Gallagher & Zilles (2018)
+    citation: Palomero-Gallagher N, Zilles K (2018) Cyto- and receptor architectonic mapping of the human brain. Handb Clin Neurol 150:355–387
+    doi: https://doi.org/10.1016/B978-0-444-63639-3.00024-4
+    pmid: 29496153
+# Display order. A receptor's `display` is its symbol, with `{sub: …}` parts set
+# as subscripts. `aliases` are the other spellings the published files use.
+transmitters:
+  - id: glutamate
+    name: Glutamate
+    name_fr: Glutamate
+    receptors:
+      - {id: AMPA, display: [AMPA]}
+      - {id: kainate, display: [kainate]}
+      - {id: NMDA, display: [NMDA]}
+      - {id: mGluR2/3, display: [mGluR2/3], aliases: [mGluR2_3, mGlu2/3]}
+  - id: gaba
+    name: GABA
+    name_fr: GABA
+    receptors:
+      - {id: GABAA, display: [GABA, {sub: A}]}
+      - {id: GABAB, display: [GABA, {sub: B}]}
+      - {id: BZ, display: [GABA, {sub: A}, /BZ]}
+  - id: acetylcholine
+    name: Acetylcholine
+    name_fr: Acétylcholine
+    receptors:
+      - {id: M1, display: [M, {sub: "1"}]}
+      - {id: M2, display: [M, {sub: "2"}]}
+      - {id: M3, display: [M, {sub: "3"}]}
+      - {id: alpha4beta2, display: [α, {sub: "4"}, β, {sub: "2"}]}
+  - id: noradrenaline
+    name: Noradrenaline
+    name_fr: Noradrénaline
+    receptors:
+      - {id: alpha1, display: [α, {sub: "1"}]}
+      - {id: alpha2, display: [α, {sub: "2"}]}
+  - id: serotonin
+    name: Serotonin
+    name_fr: Sérotonine
+    receptors:
+      - {id: 5-HT1A, display: [5-HT, {sub: 1A}]}
+      - {id: 5-HT2, display: [5-HT, {sub: "2"}]}
+  - id: dopamine
+    name: Dopamine
+    name_fr: Dopamine
+    receptors:
+      - {id: D1, display: [D, {sub: "1"}]}
+  - id: adenosine
+    name: Adenosine
+    name_fr: Adénosine
+    receptors:
+      - {id: A1, display: [A, {sub: "1"}]}
+# A published value known to be wrong is withheld, with the evidence; the fetch
+# fails if the file no longer holds it, so the exception cannot outlive the error.
+withheld:
+  - dataset: ifs1
+    receptor: D1
+    field: sd
+    published: 863
+    reason: The published SD equals the same file's A1 mean, while D1's SD is 27–44 fmol/mg in the five neighbouring IFS and IFJ areas measured in the same brains.
+    reason_fr: L’écart-type publié est égal à la moyenne A1 du même fichier, alors que celui de D1 est de 27 à 44 fmol/mg dans les cinq aires voisines IFS et IFJ mesurées dans les mêmes cerveaux.
+# `key` is the EBRAINS bucket's name; `measured_in` is the dataset's own name
+# for what was sampled. `targets` name regions by their atlas and source name;
+# an aseg name is matched with its hemisphere prefix (Left-, Right-). Where an
+# area was sampled in two parts, each part's dataset names it in `part`.
+datasets:
+  - {key: 3b, measured_in: Area 3b (PostCG), doi: https://doi.org/10.25493/tzby-96w, documented_by: [zilles-2015],
+     fingerprint: [v1.0/3b_fp_20180321.tsv, 1eb068ad6edb94a45804c9424c476968606bbe405904913d7cf55694067ef36d],
+     subjects: [v1.0/subjects.tsv, f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3],
+     samples: [v1.0/tissue-samples.tsv, ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7],
+     targets: [{atlas: julich, name: Area 3b (PostCG)}]}
+  - {key: 44d, measured_in: Dorsal part of Area 44 (IFG), part: dorsal, doi: https://doi.org/10.25493/yqcr-1dq, documented_by: [zilles-2015],
+     fingerprint: [v1.0/44d_fp_20171202.tsv, 26f3f2e7788e3fa96e525e89e83bc83a513676a288dc03cc6949b7d7c1f15bd8],
+     subjects: [v1.0/subjects.tsv, 9773876d980f1c7ec49b5b754f1cd60c926ee2d8cc4b3eb3b416a416c391eb45],
+     samples: [v1.0/tissue-samples.tsv, 511e9d4b1c24a31067c8e7c59f11f828047eea562bc5c52fd542e5d7f79a2aaa],
+     targets: [{atlas: julich, name: Area 44 (IFG)}]}
+  - {key: 44v, measured_in: Ventral part of Area 44 (IFG), part: ventral, doi: https://doi.org/10.25493/p82m-pvm, documented_by: [zilles-2015],
+     fingerprint: [v1.0/44v_fp_20180405.tsv, a9f6f4b66db06f541952d21c86b85df620634b9545628d7573b320dbbc663275],
+     subjects: [v1.0/subjects.tsv, f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a],
+     samples: [v1.0/tissue-samples.tsv, 8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9],
+     targets: [{atlas: julich, name: Area 44 (IFG)}]}
+  - {key: "45", measured_in: Area 45 (IFG), doi: https://doi.org/10.25493/qfsy-ywc, documented_by: [zilles-2015],
+     fingerprint: [v1.0/45_fp_20171202.tsv, 19de569c55f530d5ed92bdfaf3b901bd58c89954ece26ff353d4fb64b7272154],
+     subjects: [v1.0/subjects.tsv, 9773876d980f1c7ec49b5b754f1cd60c926ee2d8cc4b3eb3b416a416c391eb45],
+     samples: [v1.0/tissue-samples.tsv, 511e9d4b1c24a31067c8e7c59f11f828047eea562bc5c52fd542e5d7f79a2aaa],
+     targets: [{atlas: julich, name: Area 45 (IFG)}]}
+  - {key: 4p, measured_in: Area 4p (PreCG), doi: https://doi.org/10.25493/j5jr-yh0, documented_by: [zilles-2015],
+     fingerprint: [v1.0/4p_fp_20171202.tsv, eab0cd7794ab1a943ce3fea516ee9a0109337618383dfe20a3616cef93531cdc],
+     subjects: [v1.0/subjects.tsv, 053df9f358f5e0341c39b625fd01894123b416a7aef8795c62385042be1a08c5],
+     samples: [v1.0/tissue-samples.tsv, a05ec28e869d820663cabe299cf17e96d5e2a498ddc4d3ebad14df70f99c9aea],
+     targets: [{atlas: julich, name: Area 4p (PreCG)}]}
+  - {key: 7A, measured_in: Area 7A (SPL), doi: https://doi.org/10.25493/dqj7-kc8, documented_by: [zilles-2015],
+     fingerprint: [v1.0/7A_fp_20180321.tsv, c27acd654d1b0f5ecbdcb3fb985fddbf755c5de521b385d498bd1fd4871f7521],
+     subjects: [v1.0/subjects.tsv, f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3],
+     samples: [v1.0/tissue-samples.tsv, ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7],
+     targets: [{atlas: julich, name: Area 7A (SPL)}]}
+  - {key: FG1, measured_in: Area FG1 (FusG), doi: https://doi.org/10.25493/qn6k-chn, documented_by: [zilles-2015],
+     fingerprint: [v1.0/FG1_fp_20180321.tsv, 240b0ded2adf1e8fcbc7a001f40046bb22dd0f9589eae68f2fa704a67876e824],
+     subjects: [v1.0/subjects.tsv, 3c4fd08bc281ef64f05bfb46f8829397735a2a3c252bdffa7eeb0b72f6039aa5],
+     samples: [v1.0/tissue-samples.tsv, f855ddaccb8918c759736ab857e94804b096067ae5f7dda3683355ecf359a904],
+     targets: [{atlas: julich, name: Area FG1 (FusG)}]}
+  - {key: FG2, measured_in: Area FG2 (FusG), doi: https://doi.org/10.25493/vfcw-hxz, documented_by: [zilles-2015],
+     fingerprint: [v1.0/FG2_fp_20180321.tsv, a38f44fca6c3ea7987eb25789cb779faa1a4d6df28fb1338c963e6655912be99],
+     subjects: [v1.0/subjects.tsv, 9d5c86613e66d755d453513de20738618b1adb72eadbd1cb29d266d9660e2849],
+     samples: [v1.0/tissue-samples.tsv, 6a18e54f764868d60ce2e3b6e201fc17c2e29a643833e278f1919d980b99e415],
+     targets: [{atlas: julich, name: Area FG2 (FusG)}]}
+  - {key: PF, measured_in: Area PF (IPL), doi: https://doi.org/10.25493/vsfy-eyf, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PF_fp_20180405.tsv, 2c4f618c29c2a6c5e32fcfadf17d0ed9f4b2e86398cfebd3ffec906519f11cc9],
+     subjects: [v1.0/subjects.tsv, f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a],
+     samples: [v1.0/tissue-samples.tsv, 8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9],
+     targets: [{atlas: julich, name: Area PF (IPL)}]}
+  - {key: PFcm, measured_in: Area PFcm (IPL), doi: https://doi.org/10.25493/5qdp-arh, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PFcm_fp_20180405.tsv, c764420718f1bef6a52e823feba7a17f26749f083abc4f5bc9bc3b17282d290c],
+     subjects: [v1.0/subjects.tsv, f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3],
+     samples: [v1.0/tissue-samples.tsv, ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7],
+     targets: [{atlas: julich, name: Area PFcm (IPL)}]}
+  - {key: PFm, measured_in: Area PFm (IPL), doi: https://doi.org/10.25493/fs3t-2r8, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PFm_fp_20171202.tsv, e2b3fd17aa8364636edae206f6561f2188b4d62cbfb60a0f3eac00596cf98b7f],
+     subjects: [v1.0/subjects.tsv, 053df9f358f5e0341c39b625fd01894123b416a7aef8795c62385042be1a08c5],
+     samples: [v1.0/tissue-samples.tsv, a05ec28e869d820663cabe299cf17e96d5e2a498ddc4d3ebad14df70f99c9aea],
+     targets: [{atlas: julich, name: Area PFm (IPL)}]}
+  - {key: PFop, measured_in: Area PFop (IPL), doi: https://doi.org/10.25493/9g1p-02s, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PFop_fp_20180405.tsv, 1504e7ab6e0140f6752292bb8057e676d45091d5616dad65ac83de50b3ede725],
+     subjects: [v1.0/subjects.tsv, f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3],
+     samples: [v1.0/tissue-samples.tsv, ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7],
+     targets: [{atlas: julich, name: Area PFop (IPL)}]}
+  - {key: PFt, measured_in: Area PFt (IPL), doi: https://doi.org/10.25493/e7pm-fdc, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PFt_fp_20180405.tsv, 797cb12c92d1733ea370ac747c40c901ef01aebe335176bf6e589d806473733d],
+     subjects: [v1.0/subjects.tsv, f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a],
+     samples: [v1.0/tissue-samples.tsv, 8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9],
+     targets: [{atlas: julich, name: Area PFt (IPL)}]}
+  - {key: PGa, measured_in: Area PGa (IPL), doi: https://doi.org/10.25493/62w8-ryf, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PGa_fp_20180405.tsv, c2abe63dbfc3c8612c7d65251d7fa50c388f55c92d10565d11bc40c81bb918c7],
+     subjects: [v1.0/subjects.tsv, f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3],
+     samples: [v1.0/tissue-samples.tsv, ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7],
+     targets: [{atlas: julich, name: Area PGa (IPL)}]}
+  - {key: PGp, measured_in: Area PGp (IPL), doi: https://doi.org/10.25493/x71t-hz, documented_by: [zilles-2015],
+     fingerprint: [v1.0/PGp_fp_20180405.tsv, dd4d34d715c94f6a93a2f7daba8ce9288fe3a2b7e2b6b878d3cbb4f97524a5f0],
+     subjects: [v1.0/subjects.tsv, f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a],
+     samples: [v1.0/tissue-samples.tsv, 8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9],
+     targets: [{atlas: julich, name: Area PGp (IPL)}]}
+  - {key: TE1_0, measured_in: Area TE 1.0 (HESCHL), doi: https://doi.org/10.25493/ahx0-9pu, documented_by: [zilles-2015],
+     fingerprint: [v1.0/TE1_0_fp_20180405.tsv, 47a00f492f80afaca10ee603bb36e7b328acf20017789f34f6139e5de8af40a8],
+     subjects: [v1.0/subjects.tsv, f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3],
+     samples: [v1.0/tissue-samples.tsv, ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7],
+     targets: [{atlas: julich, name: Area Te 1.0 (HESCHL)}]}
+  - {key: TE2_1, measured_in: Area TE 2.1 (STG), doi: https://doi.org/10.25493/c279-428, documented_by: [zilles-2015],
+     fingerprint: [v1.0/TE2_1_fp_20180405.tsv, 053143b8200d810afdb49d409fbd079fa63d8924812f952adf837e707328f636],
+     subjects: [v1.0/subjects.tsv, f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a],
+     samples: [v1.0/tissue-samples.tsv, 8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9],
+     targets: [{atlas: julich, name: Area Te 2.1 (STG)}]}
+  - {key: hOc1, measured_in: "Area hOc1 (V1, 17, CalcS)", doi: https://doi.org/10.25493/p8sd-jmh, documented_by: [zilles-2015],
+     fingerprint: [v1.0/hOc1_fp_20171202.tsv, b5f5f643ca031c482af9ce71661bbba3852c4bbcf397399369431c93cb463621],
+     subjects: [v1.0/subjects_all.csv, 053df9f358f5e0341c39b625fd01894123b416a7aef8795c62385042be1a08c5],
+     samples: [v1.0/tissue-samples_all.csv, a05ec28e869d820663cabe299cf17e96d5e2a498ddc4d3ebad14df70f99c9aea],
+     targets: [{atlas: julich, name: "Area hOc1 (V1, 17, CalcS)"}]}
+  - {key: hOc2d, measured_in: "Dorsal part of Area hOc2 (V2, 18)", part: dorsal, doi: https://doi.org/10.25493/zj7e-kxz,
+     fingerprint: [v1.0/hOc2d_fp_20200214.tsv, 3ebcd776d692f971f2b7938bbadc7130cf44979e87c3246f43d9906c8bf5eeff],
+     subjects: [v1.0/subjects.tsv, cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23],
+     samples: [v1.0/tissue-samples.tsv, de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0],
+     targets: [{atlas: julich, name: "Area hOc2 (V2, 18)"}]}
+  - {key: hOc2v, measured_in: "Ventral part of Area hOc2 (V2, 18)", part: ventral, doi: https://doi.org/10.25493/2e5c-pvm,
+     fingerprint: [v1.0/hOc2v_fp_20200214.tsv, a3e3d7fd5eedadd8047ee33935b41db92e8d775ea85e42944e705980813dbe37],
+     subjects: [v1.0/subjects.tsv, cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23],
+     samples: [v1.0/tissue-samples.tsv, de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0],
+     targets: [{atlas: julich, name: "Area hOc2 (V2, 18)"}]}
+  - {key: hOc3d, measured_in: Dorsal part of Area hOc3 (Cuneus), doi: https://doi.org/10.25493/4etw-9xb,
+     fingerprint: [v1.0/hOc3d_fp_20200214.tsv, d6392e277100095f062fd409d6bd008674daf8c7066a4e4e103cc2850f452382],
+     subjects: [v1.0/subjects.tsv, cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23],
+     samples: [v1.0/tissue-samples.tsv, de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0],
+     targets: [{atlas: julich, name: Area hOc3d (Cuneus)}]}
+  - {key: hOc3v, measured_in: Ventral part of Area hOc3 (LingG), doi: https://doi.org/10.25493/tbmx-bz9,
+     fingerprint: [v1.0/hOc3v_fp_20200214.tsv, 7c99badae8b2b6b9bf9a66de76ae2524633530f1d1d0617ac6f402c6e7657f80],
+     subjects: [v1.0/subjects.tsv, cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23],
+     samples: [v1.0/tissue-samples.tsv, de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0],
+     targets: [{atlas: julich, name: Area hOc3v (LingG)}]}
+  - {key: ifs1, measured_in: Area ifs1 (IFS), doi: https://doi.org/10.25493/shg2-7rs, documented_by: [palomero-gallagher-2018],
+     fingerprint: [v1.0/ifs1_fp/ifs1_fp.tsv, d273463c62dc82eb4f027c3fb30e3c1fabf0409e3bdfd98fe1bcb7af4ac6e6a3],
+     subjects: [v1.0/ifs1_fp/subjects_all.csv, 4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64],
+     samples: [v1.0/ifs1_fp/tissue-samples_all.csv, fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9],
+     targets: [{atlas: julich, name: Area IFS1 (IFS)}]}
+  - {key: ifs2, measured_in: Area ifs2 (IFS), doi: https://doi.org/10.25493/14m7-qjr, documented_by: [palomero-gallagher-2018],
+     fingerprint: [v1.0/ifs2_fp/ifs2_fp.tsv, 20351ea7dcb5e908bfbac95572c697c24c8c4968e21f2c639e30ff7da39738da],
+     subjects: [v1.0/ifs2_fp/subjects_all.csv, 4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64],
+     samples: [v1.0/ifs2_fp/tissue-samples_all.csv, fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9],
+     targets: [{atlas: julich, name: Area IFS2 (IFS)}]}
+  - {key: ifs3, measured_in: Area ifs3 (IFS), doi: https://doi.org/10.25493/z5jn-j28, documented_by: [palomero-gallagher-2018],
+     fingerprint: [v1.0/ifs3_fp/ifs3_fp.tsv, a2b7d0f8981e756828aa9cde24cc8d30630d8038a7cd3bcd8bfa6ed66cb77a83],
+     subjects: [v1.0/ifs3_fp/subjects_all.csv, 4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64],
+     samples: [v1.0/ifs3_fp/tissue-samples_all.csv, fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9],
+     targets: [{atlas: julich, name: Area IFS3 (IFS)}]}
+  - {key: ifs4, measured_in: Area ifs4 (IFS), doi: https://doi.org/10.25493/yf9r-j87, documented_by: [palomero-gallagher-2018],
+     fingerprint: [v1.0/ifs4_fp/ifs4_fp.tsv, 7a7c645c80bbd65e7a045dda5d6c18280e7bc35fd6e1cd695dffd741ea0be8c7],
+     subjects: [v1.0/ifs4_fp/subjects_all.csv, 4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64],
+     samples: [v1.0/ifs4_fp/tissue-samples_all.csv, fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9],
+     targets: [{atlas: julich, name: Area IFS4 (IFS)}]}
+  - {key: ifj1, measured_in: "Area ifj1 (IFS, PreCS)", doi: https://doi.org/10.25493/js85-vqd, documented_by: [palomero-gallagher-2018],
+     fingerprint: [v1.0/ifj1_fp/ifj1_fp.tsv, b36a4856d1acf4af0e18f00850ea2f4c07cb710652363ad42808d8bddcdf2768],
+     subjects: [v1.0/ifj1_fp/subjects_all.csv, 4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64],
+     samples: [v1.0/ifj1_fp/tissue-samples_all.csv, fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9],
+     targets: [{atlas: julich, name: "Area IFJ1 (IFS, PreCS)"}]}
+  - {key: ifj2, measured_in: "Area ifj2 (IFS, PreCS)", doi: https://doi.org/10.25493/vn1a-q2r, documented_by: [palomero-gallagher-2018],
+     fingerprint: [v1.0/ifj2_fp/ifj2_fp.tsv, 91b9242cf3d3ba788f52623958d9bc61bd78c7cd68c8dec2103773b2e34a671f],
+     subjects: [v1.0/ifj2_fp/subjects_all.csv, 4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64],
+     samples: [v1.0/ifj2_fp/tissue-samples_all.csv, fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9],
+     targets: [{atlas: julich, name: "Area IFJ2 (IFS, PreCS)"}]}
+  - {key: CA1, measured_in: CA1 (Hippocampus), doi: https://doi.org/10.25493/y7yv-6q6,
+     fingerprint: [v2.0/CA1_fp_20200214.tsv, 393efe2883bce5d08c132cd6a86dc7a91d47202015cea01538544fba7ffd9692],
+     subjects: [v2.0/subjects.tsv, 936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01],
+     samples: [v2.0/tissue-samples.tsv, 231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323],
+     targets: [{atlas: julich, name: CA1 (Hippocampus)}]}
+  - {key: CA2, measured_in: CA2 (Hippocampus), doi: https://doi.org/10.25493/4f4s-w5a,
+     fingerprint: [v2.0/CA2_fp_20200214.tsv, 8c2a415b3b2fc4affe39292c4fbb62627b392987f960fb39bedca527744025de],
+     subjects: [v2.0/subjects.tsv, 936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01],
+     samples: [v2.0/tissue-samples.tsv, 231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323],
+     targets: [{atlas: julich, name: CA2 (Hippocampus)}]}
+  - {key: CA3, measured_in: CA3 (Hippocampus), doi: https://doi.org/10.25493/xfhr-x41,
+     fingerprint: [v2.0/CA3_fp_20200214.tsv, 4b4e8547a08d0955af165f5a9a07df797cffedee1d86fbd04d243c8f22b90822],
+     subjects: [v2.0/subjects.tsv, 936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01],
+     samples: [v2.0/tissue-samples.tsv, 231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323],
+     targets: [{atlas: julich, name: CA3 (Hippocampus)}]}
+  - {key: DG, measured_in: DG (Hippocampus), doi: https://doi.org/10.25493/m8pk-c82,
+     fingerprint: [v2.0/DG_fp_20200214.tsv, 23f65a54b6229b7e15cbc019ca7983e18918eae8f96337085ce97aafb4eca3d0],
+     subjects: [v2.0/subjects.tsv, 936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01],
+     samples: [v2.0/tissue-samples.tsv, 231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323],
+     targets: [{atlas: julich, name: DG (Hippocampus)}]}
+  - {key: Pu, measured_in: Putamen, doi: https://doi.org/10.25493/4gz1-shh,
+     fingerprint: [v1.0/Pu_fp_20180405.tsv, 40bb81138232c6b07bc62a62d1ab66b948968b5189dc64d9fcbf2a3a95cca1cf],
+     subjects: [v1.0/subjects.tsv, bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7],
+     samples: [v1.0/tissue-samples.tsv, e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5],
+     targets: [{atlas: aseg, name: Putamen}, {atlas: nextbrain, name: putamen},
+               {atlas: nextbrain, name: posteroventral_putamen}, {atlas: learning, name: Putamen}]}
+  - {key: GP, measured_in: Globus pallidus, doi: https://doi.org/10.25493/tprg-5vh,
+     fingerprint: [v1.0/GP_fp_20180405.tsv, 47a0935a755566b213b43fa31c340b0842d9d15b5e8c988b37d6aa1488bdd82d],
+     subjects: [v1.0/subjects.tsv, bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7],
+     samples: [v1.0/tissue-samples.tsv, e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5],
+     targets: [{atlas: aseg, name: Pallidum}, {atlas: nextbrain, name: external_segment_of_globus_pallidus},
+               {atlas: nextbrain, name: internal_segment_of_globus_pallidus},
+               {atlas: learning, name: Globus pallidus — external}, {atlas: learning, name: Globus pallidus — internal}]}
+  - {key: ThMD, measured_in: Mediodorsal thalamic nucleus, doi: https://doi.org/10.25493/gky8-nzr,
+     fingerprint: [v1.0/ThMD_fp_20180405.tsv, db944876501b4cd0cacc90741b48149bf21e918d5a2a052e313d1b9caf268ea2],
+     subjects: [v1.0/subjects.tsv, bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7],
+     samples: [v1.0/tissue-samples.tsv, e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5],
+     targets: [{atlas: nextbrain, name: magnocellular_(medial)_division_of_md},
+               {atlas: nextbrain, name: central_part_of_medial_division_of_md},
+               {atlas: nextbrain, name: parvocellular_(central)_division_of_md},
+               {atlas: nextbrain, name: densocelllular_(paralamellar)_division_of_md},
+               {atlas: nextbrain, name: multiform_(lateral)_division_of_md}]}
+  - {key: ThA, measured_in: Anterior thalamic nucleus, doi: https://doi.org/10.25493/kktt-1tk,
+     fingerprint: [v1.0/ThA_fp_20180405.tsv, fa78dad29b73f3a7a6a5b540f5bbeaf2a88dd7863571f074195314044d5223ba],
+     subjects: [v1.0/subjects.tsv, bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7],
+     samples: [v1.0/tissue-samples.tsv, e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5],
+     targets: [{atlas: nextbrain, name: anteroventral_nucleus_of_thalamus},
+               {atlas: nextbrain, name: anteromedial_nucleus_of_thalamus},
+               {atlas: nextbrain, name: anterodorsal_nucleus_of_thalamus}]}

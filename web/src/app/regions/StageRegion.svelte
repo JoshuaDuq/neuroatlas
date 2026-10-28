@@ -125,7 +125,6 @@
     const { model } = world.engine;
     return {
       regions: model.regions,
-      functionalRegions: model.functionalRegions,
       cabNp: model.cabNp,
       domains: model.domains,
       catalogName: (id) => world.catalog.label(id).name,
@@ -266,10 +265,9 @@
       lang={current.lang}
       status={current.status}
       surfaceColor={tractReference ? 'tissue' : current.surfaceColor}
-      functionalLevel={current.functionalLevel}
       networks={(model.manifest.networks as ColoredNetworks | undefined) ?? null}
       cabNp={model.cabNp}
-      functionalRegions={model.functionalRegions}
+      territories={model.manifest.arterial_territories?.territories ?? null}
       legend={tractReference
         ? null
         : legendFor(
@@ -291,7 +289,6 @@
             },
           )}
       {directionShown}
-      onFunctionalLevel={model.setFunctionalLevel}
       onPaintPick={world.excursions.pickPaint}
     />
   {/if}

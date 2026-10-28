@@ -1,8 +1,11 @@
 """Package the CDMD sub_013 tracts and maps that scripts/cdmd_pilot.py and scripts/tractseg_cdmd.py made.
 
-Every streamline is kept and resampled along its own arc length to the
-catalog's step (linear interpolation, as DIPY's set_number_of_points); the
-tracking steps are integration settings, not measurements. The T1 map is the
+Every streamline is kept, its ends trimmed back into the brain, and resampled
+along its own arc length to the catalog's step (linear interpolation, as DIPY's
+set_number_of_points); the tracking steps are integration settings, not
+measurements. DIPY's CMC stopping criterion works on diffusion-resolution
+tissue maps, so RecoBundles ends can run up to ~5 mm past the pial surface into
+CSF; each end's run of points outside the reconstruction's brain is dropped. The T1 map is the
 pinned T1 the reconstruction imported and the FA map is already on its grid,
 so tracts, MRI and surfaces share one scanner frame.
 """
@@ -26,6 +29,9 @@ CATALOG = ROOT / "data/diffusion-cdmd.yaml"
 # Every this many streamlines, each original point's distance to the resampled
 # polyline is measured.
 DEVIATION_SAMPLE = 25
+# aseg labels left out of the brain beside ribbon.mgz, which bounds the cerebrum by its pial
+# surfaces: volumetric cortex (which aseg extends past the surfaces) and extracerebral CSF.
+OUTSIDE_LABELS = (3, 42, 24)
 
 
 def validate_image(path):
@@ -77,6 +83,28 @@ def geometry_record(bundle, points, lengths):
     }
 
 
+def brain_volume(directory):
+    """Voxels inside the pial surfaces, or non-cerebral tissue (cerebellum, brainstem) aseg labels."""
+    ribbon, aseg = nib.load(directory / "mri/ribbon.mgz"), nib.load(directory / "mri/aseg.mgz")
+    if ribbon.shape != aseg.shape or not np.allclose(ribbon.affine, aseg.affine, rtol=0, atol=1e-5):
+        raise ValueError("ribbon.mgz and aseg.mgz are not on one grid")
+    labels = np.asarray(aseg.dataobj)
+    inside = (np.asarray(ribbon.dataobj) > 0) | ((labels > 0) & ~np.isin(labels, OUTSIDE_LABELS))
+    return inside, aseg.affine
+
+
+def trim(line, inside, affine):
+    """`line` without the runs of points outside `inside` at either end."""
+    voxels = np.rint(nib.affines.apply_affine(np.linalg.inv(affine), line)).astype(int)
+    within = np.all((voxels >= 0) & (voxels < inside.shape), axis=1)
+    kept = np.zeros(len(line), bool)
+    kept[within] = inside[tuple(voxels[within].T)]
+    if kept.sum() < 2:
+        raise ValueError("A streamline lies outside the brain")
+    first, last = np.flatnonzero(kept)[[0, -1]]
+    return line[first:last + 1]
+
+
 def resample(line, step):
     """`line` at equal arc-length spacing as close to `step` as its length allows."""
     points = line.astype(np.float64)
@@ -102,7 +130,8 @@ def main():
     parser.add_argument("pilot", type=Path, help="scripts/cdmd_pilot.py's work directory")
     args = parser.parse_args()
     catalog = yaml.safe_load(CATALOG.read_text())
-    settings = read_config(catalog["anatomy"])["anatomy"]["reconstruction"]
+    config = read_config(catalog["anatomy"])
+    settings = config["anatomy"]["reconstruction"]
     derived = args.pilot / "derived"
     t1_source = args.pilot / "source/sub_013/anat/sub_013_t1w.nii.gz"
     if sha256(t1_source) != settings["input_sha256"]:
@@ -123,6 +152,8 @@ def main():
         raise ValueError("The FA map is not on the T1's grid")
     records.append({"file": fa_target.name, "source_sha256": sha256(fa_source),
                     "shape": list(fa.shape), "affine": fa.affine.tolist()})
+    reconstruction = config["source_directory"]
+    inside, inside_affine = brain_volume(reconstruction)
     tractseg = json.loads((derived / "tractseg.json").read_text())
     by_tractseg = set(tractseg["tractseg"]["bundles"].values())
 
@@ -132,8 +163,13 @@ def main():
             published = output / descriptor["file"]
             source = derived / "bundles" / published.name.removesuffix(".gz")
             original, _, original_lengths = validate_bundle(source, reference)
-            lines = [resample(line, step) for line in original.streamlines]
-            deviations = [deviation(original.streamlines[i], lines[i])
+            trimmed = [trim(line, inside, inside_affine) for line in original.streamlines]
+            removed = np.array([len(line) - len(kept) for line, kept in zip(original.streamlines, trimmed)])
+            trimmed_lengths = np.array([
+                np.linalg.norm(np.diff(line.astype(np.float64), axis=0), axis=1).sum() for line in trimmed
+            ])
+            lines = [resample(line, step) for line in trimmed]
+            deviations = [deviation(trimmed[i], lines[i])
                           for i in range(0, len(lines), DEVIATION_SAMPLE)]
             plain = Path(temporary) / source.name
             nib.streamlines.save(nib.streamlines.Tractogram(lines, affine_to_rasmm=np.eye(4)), str(plain),
@@ -154,20 +190,25 @@ def main():
                 "resampled_sha256": sha256(plain), "published_sha256": sha256(published),
                 "source_bytes": source.stat().st_size, "published_bytes": published.stat().st_size,
                 "source_points": len(original.streamlines.get_data()),
+                "end_trimming": {
+                    "points_removed": int(removed.sum()), "streamlines_trimmed": int((removed > 0).sum()),
+                    "length_removed_mm_max": float((original_lengths - trimmed_lengths).max()),
+                },
                 "resampling": {
                     "step_mm": {"median": float(np.median(steps)), "max": float(steps.max())},
                     "deviation_mm": {"sampled_streamlines": len(deviations),
                                      "median": float(np.median(deviations)), "max": float(np.max(deviations))},
                     # 0.5 mm chords cut across the tracker's 0.2 mm zig-zag, so polylines shorten.
-                    "length_change_mm_max": float(np.abs(lengths - original_lengths).max()),
+                    "length_change_mm_max": float(np.abs(lengths - trimmed_lengths).max()),
                     "relative_length_change": {
-                        "median": float(np.median((original_lengths - lengths) / original_lengths)),
-                        "max": float(np.max(np.abs(original_lengths - lengths) / original_lengths)),
+                        "median": float(np.median((trimmed_lengths - lengths) / trimmed_lengths)),
+                        "max": float(np.max(np.abs(trimmed_lengths - lengths) / trimmed_lengths)),
                     },
                 },
                 **geometry_record(bundle, points, lengths),
             })
-            print(f"{published.name}: {len(lines)} streamlines, max deviation {np.max(deviations):.4f} mm")
+            print(f"{published.name}: {len(lines)} streamlines, {(removed > 0).sum()} trimmed, "
+                  f"max deviation {np.max(deviations):.4f} mm")
 
     bundles = json.loads((derived / "bundles.json").read_text())
     provenance = {
@@ -184,8 +225,14 @@ def main():
         },
         # SLF I–III and the seven callosal segments, which HCP842 does not divide.
         "tractseg": tractseg,
-        "processing": f"Every streamline kept and resampled to {step} mm arc-length steps by linear "
-                      "interpolation; the T1 is the reconstruction's pinned input, unchanged, and FA is the "
+        "brain_volume": {
+            "ribbon_sha256": sha256(reconstruction / "mri/ribbon.mgz"),
+            "aseg_sha256": sha256(reconstruction / "mri/aseg.mgz"),
+            "outside_aseg_labels": list(OUTSIDE_LABELS),
+        },
+        "processing": f"Every streamline kept, the runs of points at its ends outside the brain volume "
+                      f"(ribbon.mgz, or aseg tissue other than {list(OUTSIDE_LABELS)}; nearest voxel) dropped, "
+                      f"and resampled to {step} mm arc-length steps by linear interpolation; the T1 is the reconstruction's pinned input, unchanged, and FA is the "
                       "tensor FA of the subject's own diffusion scan resampled onto it.",
         "spatial_validation": "Map shape and affine agree with every TRK header at absolute tolerance 1e-5.",
         "geometry_validation": "NiBabel RAS+ millimetre samples and float64 polyline lengths provide "

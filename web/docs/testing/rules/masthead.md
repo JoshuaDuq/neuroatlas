@@ -264,11 +264,11 @@ Copy quoted is the English interface text unless marked FR. The published build 
 
 ### MAST-29 · Colour offers only published colourings, in fixed groups
 
-- **Rule:** The Colour field offers only the colourings this build publishes, in the groups Appearance (Tissue, T1 MRI), Parcellation (Regions) and Networks (Yeo 7 networks, CAB-NP networks). Functional divisions comes last, on its own.
+- **Rule:** The Colour field offers only the colourings this build publishes, in the groups Appearance (Tissue, T1 MRI), Parcellation (Regions) and Networks (Yeo 7 networks, CAB-NP networks).
 - **Kind:** behaviour
 - **Level:** unit (view-model `colourGroups`); browser only for the optgroup labels in the DOM
 - **Source:** `header.js:9-15, 51-57`; `chrome.contract.test.js:317-331`
-- **Expected:** all published → `[['appearance',['tissue','mri']], ['parcellation',['atlas']], ['networks',['network','cab-np']], [null,['functional']]]`. Networks only → no `cab-np` and no functional group. Option texts on Destrieux: `''` (the hidden paint option), "Tissue", "T1 MRI", "Regions", "Yeo 7 networks", "CAB-NP networks (atlas becomes HCP-MMP)", "Functional divisions (atlas becomes HCP-MMP)". Optgroup labels "Appearance", "Parcellation", "Networks" (FR "Apparence", "Parcellisation", "Réseaux").
+- **Expected:** all published → `[['appearance',['tissue','mri']], ['parcellation',['atlas']], ['networks',['network','cab-np']]]`. Networks only → no `cab-np`. Option texts on Destrieux: `''` (the hidden paint option), "Tissue", "T1 MRI", "Regions", "Yeo 7 networks", "CAB-NP networks (atlas becomes HCP-MMP)". Optgroup labels "Appearance", "Parcellation", "Networks" (FR "Apparence", "Parcellisation", "Réseaux").
 - **Covered by:** `src/lib/core/panels/header.test.ts` (R, `MAST-29`); `src/features/masthead/DataBar.svelte.test.ts` (R, could move down)
 
 ### MAST-30 · An option says what else choosing it changes
@@ -331,7 +331,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Kind:** data
 - **Level:** unit (i18n tables)
 - **Source:** `chrome.contract.test.js:264-281`
-- **Expected:** `header.notes` has more than 10 characters for `destrieux`, `hcp-mmp`, `learning`, `aseg` and `nextbrain` in `en` and `fr`. `display.surfaceColorTitles` is set for `tissue`, `mri`, `atlas`, `network`, `cab-np` and `functional`. `header.subject` is "Subject" / "Sujet". No "Specimen" or "Spécimen" in the masthead.
+- **Expected:** `header.notes` has more than 10 characters for `destrieux`, `hcp-mmp`, `learning`, `aseg` and `nextbrain` in `en` and `fr`. `display.surfaceColorTitles` is set for `tissue`, `mri`, `atlas`, `network` and `cab-np`. `header.subject` is "Subject" / "Sujet". No "Specimen" or "Spécimen" in the masthead.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, MAST-36)
 
 ## Data bar: collapse and summary

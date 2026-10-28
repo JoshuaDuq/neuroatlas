@@ -435,7 +435,7 @@ export function snapshotPlan(
   return {
     crop,
     plan: {
-      ...snapshotMarkings(host, crop, { stage, keys, lang }),
+      ...snapshotMarkings(host, crop, { stage, keys }),
       width: crop.width,
       height: crop.height,
       caption,

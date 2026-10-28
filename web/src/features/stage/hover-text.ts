@@ -1,7 +1,5 @@
 import { cabNpName, networkName } from '../../lib/core/catalog/networks.ts';
 import type { CabNpPartition } from '../../lib/core/catalog/networks.ts';
-import { functionalName, functionalRegionOf } from '../../lib/core/catalog/functional-regions.ts';
-import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import {
   ALL_DOMAINS,
   domainAreas,
@@ -17,13 +15,12 @@ import { paintKind } from '../../lib/core/state/paint.ts';
 import type { Language, ModelState, Region, SessionState } from '../../lib/types/index.ts';
 
 /** What the hover chip reads from the reader's state. */
-export type HoverView = Pick<ModelState, 'surfaceColor' | 'functionalLevel' | 'paint'> &
+export type HoverView = Pick<ModelState, 'surfaceColor' | 'paint'> &
   Pick<SessionState, 'lang' | 'selectedFunction'>;
 
 /** The published partitions and the model rules the chip names a region by. */
 export interface HoverSources {
   regions: ReadonlyMap<string, Region>;
-  functionalRegions: FunctionalRegions | null;
   cabNp: CabNpPartition | null;
   domains: NeuropsychDomains | null;
   /** The catalog's label for a region in the view's language, where it has one. */
@@ -60,14 +57,8 @@ function domainNames(
  */
 export function hoverText(region: Region, view: HoverView, sources: HoverSources): string | null {
   if (!sources.canSelect(region)) return null;
-  const { lang, surfaceColor, functionalLevel, paint } = view;
+  const { lang, surfaceColor, paint } = view;
   const name = sources.catalogName(region.id) ?? region.label;
-  // Glass belongs to no division of the level on show, but always to a section.
-  const division =
-    surfaceColor === 'functional'
-      ? (functionalRegionOf(sources.functionalRegions, functionalLevel, region.id) ??
-        functionalRegionOf(sources.functionalRegions, 'sections', region.id))
-      : null;
   // The network a colour stands for, where one network holds the whole region: every CAB-NP area; a
   // Yeo 7 region only when all its assigned vertices share one network.
   const cabNp = surfaceColor === 'cab-np' ? sources.cabNp?.regions[region.id] : undefined;
@@ -84,7 +75,5 @@ export function hoverText(region: Region, view: HoverView, sources: HoverSources
     functions = domainNames(region, view, sources.domains);
   }
   const side = t(lang, 'sides').capitalized[region.hemisphere];
-  return [name, division && functionalName(division, lang), network, functions, side]
-    .filter(Boolean)
-    .join(' · ');
+  return [name, network, functions, side].filter(Boolean).join(' · ');
 }

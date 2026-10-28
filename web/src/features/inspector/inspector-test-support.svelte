@@ -5,12 +5,20 @@
   import functionalFile from '../../../../public/models/cdmd/functional-regions.json';
   import domainsFile from '../../../../public/models/cdmd/neuropsych-domains.json';
   import boundaryFile from '../../../../public/models/cdmd/boundary-certainty.json';
+  import receptorFile from '../../../../public/models/cdmd/receptor-fingerprints.json';
   import { createCatalog } from '../../lib/core/catalog/catalog.ts';
   import type { CabNpPartition } from '../../lib/core/catalog/networks.ts';
   import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
   import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
-  import type { Explorer, Language, Region, Rgb } from '../../lib/types/index.ts';
+  import type { ReceptorFingerprints } from '../../lib/core/catalog/receptor-fingerprints.ts';
+  import type {
+    ArterialTerritories,
+    Explorer,
+    Language,
+    Region,
+    Rgb,
+  } from '../../lib/types/index.ts';
   import Tooltip from '../../lib/ui/Tooltip.svelte';
   import RegionDetail from './RegionDetail.svelte';
 
@@ -61,6 +69,8 @@
   functionalRegions={functionalFile as unknown as FunctionalRegions}
   domains={domainsFile as unknown as NeuropsychDomains}
   boundaryCertainty={boundaryFile as unknown as BoundaryCertainty}
+  receptors={receptorFile as unknown as ReceptorFingerprints}
+  territories={manifest.arterial_territories as unknown as ArterialTerritories}
   onfocus={() => calls.push('focus')}
   onisolate={() => calls.push('isolate')}
   onhide={() => calls.push('hide')}

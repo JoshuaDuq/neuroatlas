@@ -117,11 +117,11 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 
 ### SNAP-12 · Each colour key is redrawn with every row named beside its swatch
 
-- **Rule:** Each shown key is redrawn as its plate, its swatches and its words: the title, the functional level shown beside it, and every row's label beside its own swatch. The picked row is bold and the others regular; a colour not shown in this view stays hollow. A folded key draws its title row only. Rows scrolled out of a long key stay out. The paint key's note is not drawn (legacy, flagged on #4).
+- **Rule:** Each shown key is redrawn as its plate, its swatches and its words: the title and every row's label beside its own swatch. The picked row is bold and the others regular; a colour not shown in this view stays hollow. A folded key draws its title row only. Rows scrolled out of a long key stay out. The paint key's note is not drawn (legacy, flagged on #4).
 - **Kind:** behaviour
 - **Level:** browser: measured text and computed style
 - **Source:** `viewer/ui/chrome/snapshot.js:172-196`; `viewer/ui/chrome/viewport-chrome.js:665-691`; deviation `g6-paint-row-labels.md`
-- **Expected:** Deficit "Aphasia" with Broca picked, Wernicke absent, Arcuate → texts `['Aphasia', 'Broca', 'Wernicke', 'Arcuate']`, each row's x = the left of its label on screen (±1e-3) and right of its swatch; weights `['600', '400', '400']`; swatches `['rgb(100, 120, 200)', 'rgba(0, 0, 0, 0)', 'rgb(160, 120, 200)']`; the note absent; plate box = the screen plate's size. Functional, Sections level → `['Functional divisions', 'Sections', '1 · Early', '2 · Late']`, level x = the checked radio's text left; folded → `['Functional divisions', 'Sections']`, no swatches. 40 rows on a 1100×420 stage, opened → fewer than 41 texts and 40 swatches, all with y inside the plate.
+- **Expected:** Deficit "Aphasia" with Broca picked, Wernicke absent, Arcuate → texts `['Aphasia', 'Broca', 'Wernicke', 'Arcuate']`, each row's x = the left of its label on screen (±1e-3) and right of its swatch; weights `['600', '400', '400']`; swatches `['rgb(100, 120, 200)', 'rgba(0, 0, 0, 0)', 'rgb(160, 120, 200)']`; the note absent; plate box = the screen plate's size. Folded → `['Aphasia']`, no swatches. 40 rows on a 1100×420 stage, opened → fewer than 41 texts and 40 swatches, all with y inside the plate.
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R), `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ### SNAP-13 · Only marks are added; the anatomy is not resampled

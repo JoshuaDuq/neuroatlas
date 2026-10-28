@@ -38,7 +38,7 @@ export function createScene() {
   const engine = createFakeEngine({ manifest, domains: domains as unknown as DomainsData });
   const engineState = createEngineSync(engine);
   const session = createSessionStore({ views: VIEW_NAMES });
-  const circuits = loadCircuitCatalog(manifest, loadClinicalCatalog(manifest));
+  const circuits = loadCircuitCatalog(manifest, loadClinicalCatalog(manifest, domains.units));
   const lesson = createLessonStore(circuits);
   const view = createView({
     engine: engineState,
@@ -47,7 +47,7 @@ export function createScene() {
     anatomy: manifest.anatomy.id,
     referenceAnatomy: engine.tracts.anatomy,
   });
-  const clinical = loadClinicalCatalog(manifest);
+  const clinical = loadClinicalCatalog(manifest, domains.units);
   const anatomy = createCatalog(manifest);
 
   // The collaborators' calls go into the engine's own call log, so one timeline orders them all.

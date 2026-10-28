@@ -143,6 +143,7 @@ test('SNAP-05: every colouring has its words in English and French', () => {
       network: 'Yeo 7 networks',
       'cab-np': 'CAB-NP networks',
       functional: 'Functional divisions',
+      territory: 'Arterial territories',
     },
     fr: {
       tissue: 'Tissu',
@@ -151,6 +152,7 @@ test('SNAP-05: every colouring has its words in English and French', () => {
       network: 'Réseaux Yeo 7',
       'cab-np': 'Réseaux CAB-NP',
       functional: 'Divisions fonctionnelles',
+      territory: 'Territoires artériels',
     },
   } as const;
   const teaching = { en: 'Teaching set', fr: 'Ensemble pédagogique' };

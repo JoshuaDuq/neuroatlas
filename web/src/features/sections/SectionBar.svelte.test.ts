@@ -222,7 +222,9 @@ describe('the Section popover', () => {
     expect([...element.options].map((option) => option.value)).toEqual([
       'destrieux',
       'hcp-mmp',
+      'julich',
       'nextbrain',
+      'arterial',
     ]);
     expect(element.value).toBe('destrieux');
     await select.selectOptions('hcp-mmp');

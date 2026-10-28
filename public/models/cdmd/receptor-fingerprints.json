@@ -1,0 +1,4033 @@
+{
+  "id": "receptor-fingerprints",
+  "unit": "fmol/mg",
+  "sources": {
+    "zilles-2015": {
+      "short": "Zilles et al. (2015)",
+      "citation": "Zilles K, Bacha-Trams M, Palomero-Gallagher N, Amunts K, Friederici AD (2015) Common molecular basis of the sentence comprehension network revealed by neurotransmitter receptor fingerprints. Cortex 63:79\u201389",
+      "doi": "https://doi.org/10.1016/j.cortex.2014.07.007",
+      "pmid": 25243991
+    },
+    "palomero-gallagher-2018": {
+      "short": "Palomero-Gallagher & Zilles (2018)",
+      "citation": "Palomero-Gallagher N, Zilles K (2018) Cyto- and receptor architectonic mapping of the human brain. Handb Clin Neurol 150:355\u2013387",
+      "doi": "https://doi.org/10.1016/B978-0-444-63639-3.00024-4",
+      "pmid": 29496153
+    }
+  },
+  "transmitters": [
+    {
+      "id": "glutamate",
+      "name": "Glutamate",
+      "name_fr": "Glutamate",
+      "receptors": [
+        {
+          "id": "AMPA",
+          "display": [
+            "AMPA"
+          ]
+        },
+        {
+          "id": "kainate",
+          "display": [
+            "kainate"
+          ]
+        },
+        {
+          "id": "NMDA",
+          "display": [
+            "NMDA"
+          ]
+        },
+        {
+          "id": "mGluR2/3",
+          "display": [
+            "mGluR2/3"
+          ],
+          "aliases": [
+            "mGluR2_3",
+            "mGlu2/3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gaba",
+      "name": "GABA",
+      "name_fr": "GABA",
+      "receptors": [
+        {
+          "id": "GABAA",
+          "display": [
+            "GABA",
+            {
+              "sub": "A"
+            }
+          ]
+        },
+        {
+          "id": "GABAB",
+          "display": [
+            "GABA",
+            {
+              "sub": "B"
+            }
+          ]
+        },
+        {
+          "id": "BZ",
+          "display": [
+            "GABA",
+            {
+              "sub": "A"
+            },
+            "/BZ"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "acetylcholine",
+      "name": "Acetylcholine",
+      "name_fr": "Ac\u00e9tylcholine",
+      "receptors": [
+        {
+          "id": "M1",
+          "display": [
+            "M",
+            {
+              "sub": "1"
+            }
+          ]
+        },
+        {
+          "id": "M2",
+          "display": [
+            "M",
+            {
+              "sub": "2"
+            }
+          ]
+        },
+        {
+          "id": "M3",
+          "display": [
+            "M",
+            {
+              "sub": "3"
+            }
+          ]
+        },
+        {
+          "id": "alpha4beta2",
+          "display": [
+            "\u03b1",
+            {
+              "sub": "4"
+            },
+            "\u03b2",
+            {
+              "sub": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "noradrenaline",
+      "name": "Noradrenaline",
+      "name_fr": "Noradr\u00e9naline",
+      "receptors": [
+        {
+          "id": "alpha1",
+          "display": [
+            "\u03b1",
+            {
+              "sub": "1"
+            }
+          ]
+        },
+        {
+          "id": "alpha2",
+          "display": [
+            "\u03b1",
+            {
+              "sub": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "serotonin",
+      "name": "Serotonin",
+      "name_fr": "S\u00e9rotonine",
+      "receptors": [
+        {
+          "id": "5-HT1A",
+          "display": [
+            "5-HT",
+            {
+              "sub": "1A"
+            }
+          ]
+        },
+        {
+          "id": "5-HT2",
+          "display": [
+            "5-HT",
+            {
+              "sub": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dopamine",
+      "name": "Dopamine",
+      "name_fr": "Dopamine",
+      "receptors": [
+        {
+          "id": "D1",
+          "display": [
+            "D",
+            {
+              "sub": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "adenosine",
+      "name": "Adenosine",
+      "name_fr": "Ad\u00e9nosine",
+      "receptors": [
+        {
+          "id": "A1",
+          "display": [
+            "A",
+            {
+              "sub": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "withheld": [
+    {
+      "dataset": "ifs1",
+      "receptor": "D1",
+      "field": "sd",
+      "published": 863,
+      "reason": "The published SD equals the same file's A1 mean, while D1's SD is 27\u201344 fmol/mg in the five neighbouring IFS and IFJ areas measured in the same brains.",
+      "reason_fr": "L\u2019\u00e9cart-type publi\u00e9 est \u00e9gal \u00e0 la moyenne A1 du m\u00eame fichier, alors que celui de D1 est de 27 \u00e0 44 fmol/mg dans les cinq aires voisines IFS et IFJ mesur\u00e9es dans les m\u00eames cerveaux."
+    }
+  ],
+  "datasets": [
+    {
+      "key": "3b",
+      "measured_in": "Area 3b (PostCG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/tzby-96w",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 327,
+          "sd": 162
+        },
+        "kainate": {
+          "mean": 387,
+          "sd": 180
+        },
+        "NMDA": {
+          "mean": 933,
+          "sd": 147
+        },
+        "mGluR2/3": {
+          "mean": 2040,
+          "sd": 541
+        },
+        "GABAA": {
+          "mean": 1490,
+          "sd": 352
+        },
+        "GABAB": {
+          "mean": 1738,
+          "sd": 623
+        },
+        "BZ": {
+          "mean": 2493,
+          "sd": 601
+        },
+        "M1": {
+          "mean": 471,
+          "sd": 121
+        },
+        "M2": {
+          "mean": 253,
+          "sd": 63
+        },
+        "M3": {
+          "mean": 739,
+          "sd": 283
+        },
+        "alpha4beta2": {
+          "mean": 55,
+          "sd": 20
+        },
+        "alpha1": {
+          "mean": 255,
+          "sd": 91
+        },
+        "alpha2": {
+          "mean": 730,
+          "sd": 291
+        },
+        "5-HT1A": {
+          "mean": 217,
+          "sd": 90
+        },
+        "5-HT2": {
+          "mean": 394,
+          "sd": 97
+        },
+        "D1": {
+          "mean": 88,
+          "sd": 31
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "44d",
+      "measured_in": "Dorsal part of Area 44 (IFG)",
+      "part": "dorsal",
+      "doi": "https://doi.org/10.25493/yqcr-1dq",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 492,
+          "sd": 70
+        },
+        "kainate": {
+          "mean": 498,
+          "sd": 84
+        },
+        "NMDA": {
+          "mean": 964,
+          "sd": 95
+        },
+        "GABAA": {
+          "mean": 1302,
+          "sd": 91
+        },
+        "GABAB": {
+          "mean": 1487,
+          "sd": 64
+        },
+        "BZ": {
+          "mean": 1797,
+          "sd": 105
+        },
+        "M1": {
+          "mean": 631,
+          "sd": 49
+        },
+        "M2": {
+          "mean": 247,
+          "sd": 20
+        },
+        "M3": {
+          "mean": 432,
+          "sd": 32
+        },
+        "alpha4beta2": {
+          "mean": 47,
+          "sd": 13
+        },
+        "alpha1": {
+          "mean": 126,
+          "sd": 9
+        },
+        "alpha2": {
+          "mean": 179,
+          "sd": 15
+        },
+        "5-HT1A": {
+          "mean": 284,
+          "sd": 38
+        },
+        "5-HT2": {
+          "mean": 271,
+          "sd": 11
+        },
+        "D1": {
+          "mean": 62,
+          "sd": 20
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 3
+      }
+    },
+    {
+      "key": "44v",
+      "measured_in": "Ventral part of Area 44 (IFG)",
+      "part": "ventral",
+      "doi": "https://doi.org/10.25493/p82m-pvm",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 295,
+          "sd": 112
+        },
+        "kainate": {
+          "mean": 490,
+          "sd": 205
+        },
+        "NMDA": {
+          "mean": 1129,
+          "sd": 382
+        },
+        "mGluR2/3": {
+          "mean": 3545,
+          "sd": 913
+        },
+        "GABAA": {
+          "mean": 1420,
+          "sd": 216
+        },
+        "GABAB": {
+          "mean": 1965,
+          "sd": 742
+        },
+        "BZ": {
+          "mean": 2135,
+          "sd": 641
+        },
+        "M1": {
+          "mean": 532,
+          "sd": 102
+        },
+        "M2": {
+          "mean": 143,
+          "sd": 59
+        },
+        "M3": {
+          "mean": 653,
+          "sd": 230
+        },
+        "alpha4beta2": {
+          "mean": 67,
+          "sd": 37
+        },
+        "alpha1": {
+          "mean": 320,
+          "sd": 157
+        },
+        "alpha2": {
+          "mean": 417,
+          "sd": 160
+        },
+        "5-HT1A": {
+          "mean": 268,
+          "sd": 100
+        },
+        "5-HT2": {
+          "mean": 387,
+          "sd": 157
+        },
+        "D1": {
+          "mean": 69,
+          "sd": 32
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "45",
+      "measured_in": "Area 45 (IFG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/qfsy-ywc",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 472,
+          "sd": 379
+        },
+        "kainate": {
+          "mean": 434,
+          "sd": 264
+        },
+        "NMDA": {
+          "mean": 1078,
+          "sd": 40
+        },
+        "GABAA": {
+          "mean": 1515,
+          "sd": 283
+        },
+        "GABAB": {
+          "mean": 1428,
+          "sd": 1197
+        },
+        "BZ": {
+          "mean": 2038,
+          "sd": 1372
+        },
+        "M1": {
+          "mean": 676,
+          "sd": 493
+        },
+        "M2": {
+          "mean": 215,
+          "sd": 162
+        },
+        "M3": {
+          "mean": 420,
+          "sd": 20
+        },
+        "alpha4beta2": {
+          "mean": 47,
+          "sd": 49
+        },
+        "alpha1": {
+          "mean": 200,
+          "sd": 143
+        },
+        "alpha2": {
+          "mean": 165,
+          "sd": 136
+        },
+        "5-HT1A": {
+          "mean": 404,
+          "sd": 346
+        },
+        "5-HT2": {
+          "mean": 266,
+          "sd": 192
+        },
+        "D1": {
+          "mean": 69,
+          "sd": 51
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 3
+      }
+    },
+    {
+      "key": "4p",
+      "measured_in": "Area 4p (PreCG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/j5jr-yh0",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 286,
+          "sd": 40
+        },
+        "kainate": {
+          "mean": 286,
+          "sd": 35
+        },
+        "NMDA": {
+          "mean": 739,
+          "sd": 1
+        },
+        "GABAA": {
+          "mean": 999,
+          "sd": 108
+        },
+        "GABAB": {
+          "mean": 1842,
+          "sd": 10
+        },
+        "BZ": {
+          "mean": 1337,
+          "sd": 65
+        },
+        "M1": {
+          "mean": 245,
+          "sd": 23
+        },
+        "M2": {
+          "mean": 141,
+          "sd": 27
+        },
+        "M3": {
+          "mean": 400,
+          "sd": 44
+        },
+        "alpha4beta2": {
+          "mean": 69,
+          "sd": 13
+        },
+        "alpha1": {
+          "mean": 193,
+          "sd": 7
+        },
+        "alpha2": {
+          "mean": 111,
+          "sd": 15
+        },
+        "5-HT1A": {
+          "mean": 162,
+          "sd": 31
+        },
+        "5-HT2": {
+          "mean": 234,
+          "sd": 2
+        },
+        "D1": {
+          "mean": 49,
+          "sd": 5
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 3
+      }
+    },
+    {
+      "key": "7A",
+      "measured_in": "Area 7A (SPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/dqj7-kc8",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 327,
+          "sd": 136
+        },
+        "kainate": {
+          "mean": 387,
+          "sd": 327
+        },
+        "NMDA": {
+          "mean": 933,
+          "sd": 315
+        },
+        "mGluR2/3": {
+          "mean": 2040,
+          "sd": 1327
+        },
+        "GABAA": {
+          "mean": 1490,
+          "sd": 549
+        },
+        "GABAB": {
+          "mean": 1738,
+          "sd": 634
+        },
+        "BZ": {
+          "mean": 2493,
+          "sd": 1007
+        },
+        "M1": {
+          "mean": 471,
+          "sd": 175
+        },
+        "M2": {
+          "mean": 253,
+          "sd": 70
+        },
+        "M3": {
+          "mean": 739,
+          "sd": 371
+        },
+        "alpha4beta2": {
+          "mean": 55,
+          "sd": 34
+        },
+        "alpha1": {
+          "mean": 255,
+          "sd": 165
+        },
+        "alpha2": {
+          "mean": 730,
+          "sd": 252
+        },
+        "5-HT1A": {
+          "mean": 217,
+          "sd": 87
+        },
+        "5-HT2": {
+          "mean": 394,
+          "sd": 224
+        },
+        "D1": {
+          "mean": 88,
+          "sd": 41
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "FG1",
+      "measured_in": "Area FG1 (FusG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/qn6k-chn",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 419,
+          "sd": 65
+        },
+        "kainate": {
+          "mean": 499,
+          "sd": 117
+        },
+        "NMDA": {
+          "mean": 1176,
+          "sd": 142
+        },
+        "GABAA": {
+          "mean": 1933,
+          "sd": 255
+        },
+        "GABAB": {
+          "mean": 2140,
+          "sd": 216
+        },
+        "BZ": {
+          "mean": 2731,
+          "sd": 421
+        },
+        "M1": {
+          "mean": 480,
+          "sd": 67
+        },
+        "M2": {
+          "mean": 219,
+          "sd": 34
+        },
+        "M3": {
+          "mean": 833,
+          "sd": 163
+        },
+        "alpha4beta2": {
+          "mean": 56,
+          "sd": 12
+        },
+        "alpha1": {
+          "mean": 343,
+          "sd": 45
+        },
+        "alpha2": {
+          "mean": 467,
+          "sd": 93
+        },
+        "5-HT1A": {
+          "mean": 317,
+          "sd": 60
+        },
+        "5-HT2": {
+          "mean": 441,
+          "sd": 82
+        },
+        "D1": {
+          "mean": 107,
+          "sd": 20
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 5,
+        "right": 4
+      }
+    },
+    {
+      "key": "FG2",
+      "measured_in": "Area FG2 (FusG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/vfcw-hxz",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 427,
+          "sd": 65
+        },
+        "kainate": {
+          "mean": 490,
+          "sd": 116
+        },
+        "NMDA": {
+          "mean": 1315,
+          "sd": 152
+        },
+        "GABAA": {
+          "mean": 1933,
+          "sd": 292
+        },
+        "GABAB": {
+          "mean": 2329,
+          "sd": 237
+        },
+        "BZ": {
+          "mean": 2918,
+          "sd": 422
+        },
+        "M1": {
+          "mean": 499,
+          "sd": 72
+        },
+        "M2": {
+          "mean": 213,
+          "sd": 35
+        },
+        "M3": {
+          "mean": 871,
+          "sd": 172
+        },
+        "alpha4beta2": {
+          "mean": 61,
+          "sd": 12
+        },
+        "alpha1": {
+          "mean": 368,
+          "sd": 57
+        },
+        "alpha2": {
+          "mean": 522,
+          "sd": 118
+        },
+        "5-HT1A": {
+          "mean": 396,
+          "sd": 74
+        },
+        "5-HT2": {
+          "mean": 476,
+          "sd": 97
+        },
+        "D1": {
+          "mean": 114,
+          "sd": 20
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 5,
+        "right": 4
+      }
+    },
+    {
+      "key": "PF",
+      "measured_in": "Area PF (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/vsfy-eyf",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 496,
+          "sd": 131
+        },
+        "kainate": {
+          "mean": 647,
+          "sd": 260
+        },
+        "NMDA": {
+          "mean": 1157,
+          "sd": 289
+        },
+        "mGluR2/3": {
+          "mean": 3398,
+          "sd": 1453
+        },
+        "GABAA": {
+          "mean": 1595,
+          "sd": 527
+        },
+        "GABAB": {
+          "mean": 2225,
+          "sd": 652
+        },
+        "BZ": {
+          "mean": 2706,
+          "sd": 830
+        },
+        "M1": {
+          "mean": 501,
+          "sd": 197
+        },
+        "M2": {
+          "mean": 185,
+          "sd": 63
+        },
+        "M3": {
+          "mean": 957,
+          "sd": 285
+        },
+        "alpha4beta2": {
+          "mean": 49,
+          "sd": 17
+        },
+        "alpha1": {
+          "mean": 409,
+          "sd": 163
+        },
+        "alpha2": {
+          "mean": 837,
+          "sd": null
+        },
+        "5-HT1A": {
+          "mean": 298,
+          "sd": 83
+        },
+        "5-HT2": {
+          "mean": 439,
+          "sd": 146
+        },
+        "D1": {
+          "mean": 113,
+          "sd": 40
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "PFcm",
+      "measured_in": "Area PFcm (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/5qdp-arh",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 412,
+          "sd": 149
+        },
+        "kainate": {
+          "mean": 602,
+          "sd": 303
+        },
+        "NMDA": {
+          "mean": 1237,
+          "sd": 230
+        },
+        "mGluR2/3": {
+          "mean": 3194,
+          "sd": 1582
+        },
+        "GABAA": {
+          "mean": 1598,
+          "sd": 389
+        },
+        "GABAB": {
+          "mean": 2188,
+          "sd": 768
+        },
+        "BZ": {
+          "mean": 2379,
+          "sd": 719
+        },
+        "M1": {
+          "mean": 536,
+          "sd": 198
+        },
+        "M2": {
+          "mean": 182,
+          "sd": 62
+        },
+        "M3": {
+          "mean": 866,
+          "sd": 393
+        },
+        "alpha4beta2": {
+          "mean": 63,
+          "sd": 33
+        },
+        "alpha1": {
+          "mean": 398,
+          "sd": 155
+        },
+        "alpha2": {
+          "mean": 831,
+          "sd": null
+        },
+        "5-HT1A": {
+          "mean": 300,
+          "sd": 82
+        },
+        "5-HT2": {
+          "mean": 444,
+          "sd": 204
+        },
+        "D1": {
+          "mean": 113,
+          "sd": 54
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "PFm",
+      "measured_in": "Area PFm (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/fs3t-2r8",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 513,
+          "sd": 134
+        },
+        "kainate": {
+          "mean": 532,
+          "sd": 373
+        },
+        "NMDA": {
+          "mean": 1244,
+          "sd": 311
+        },
+        "GABAA": {
+          "mean": 1649,
+          "sd": 229
+        },
+        "GABAB": {
+          "mean": 1881,
+          "sd": 914
+        },
+        "BZ": {
+          "mean": 3407,
+          "sd": 1481
+        },
+        "M1": {
+          "mean": 733,
+          "sd": 73
+        },
+        "M2": {
+          "mean": 187,
+          "sd": 36
+        },
+        "M3": {
+          "mean": 720,
+          "sd": 139
+        },
+        "alpha4beta2": {
+          "mean": 33,
+          "sd": 16
+        },
+        "alpha1": {
+          "mean": 321,
+          "sd": 106
+        },
+        "alpha2": {
+          "mean": 159,
+          "sd": 73
+        },
+        "5-HT1A": {
+          "mean": 488,
+          "sd": 194
+        },
+        "5-HT2": {
+          "mean": 368,
+          "sd": 155
+        },
+        "D1": {
+          "mean": 77,
+          "sd": 36
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 3
+      }
+    },
+    {
+      "key": "PFop",
+      "measured_in": "Area PFop (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/9g1p-02s",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 388,
+          "sd": 204
+        },
+        "kainate": {
+          "mean": 427,
+          "sd": 187
+        },
+        "NMDA": {
+          "mean": 1065,
+          "sd": 118
+        },
+        "mGluR2/3": {
+          "mean": 3008,
+          "sd": 1211
+        },
+        "GABAA": {
+          "mean": 1524,
+          "sd": 404
+        },
+        "GABAB": {
+          "mean": 2173,
+          "sd": 605
+        },
+        "BZ": {
+          "mean": 2744,
+          "sd": 658
+        },
+        "M1": {
+          "mean": 550,
+          "sd": 200
+        },
+        "M2": {
+          "mean": 159,
+          "sd": 41
+        },
+        "M3": {
+          "mean": 968,
+          "sd": 571
+        },
+        "alpha4beta2": {
+          "mean": 48,
+          "sd": 30
+        },
+        "alpha1": {
+          "mean": 374,
+          "sd": 118
+        },
+        "alpha2": {
+          "mean": 661,
+          "sd": null
+        },
+        "5-HT1A": {
+          "mean": 414,
+          "sd": 178
+        },
+        "5-HT2": {
+          "mean": 430,
+          "sd": 121
+        },
+        "D1": {
+          "mean": 92,
+          "sd": 32
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "PFt",
+      "measured_in": "Area PFt (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/e7pm-fdc",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 367,
+          "sd": 171
+        },
+        "kainate": {
+          "mean": 503,
+          "sd": 217
+        },
+        "NMDA": {
+          "mean": 1085,
+          "sd": 189
+        },
+        "mGluR2/3": {
+          "mean": 3044,
+          "sd": 985
+        },
+        "GABAA": {
+          "mean": 1555,
+          "sd": 454
+        },
+        "GABAB": {
+          "mean": 2140,
+          "sd": 519
+        },
+        "BZ": {
+          "mean": 2630,
+          "sd": 661
+        },
+        "M1": {
+          "mean": 499,
+          "sd": 154
+        },
+        "M2": {
+          "mean": 175,
+          "sd": 47
+        },
+        "M3": {
+          "mean": 872,
+          "sd": 431
+        },
+        "alpha4beta2": {
+          "mean": 47,
+          "sd": 25
+        },
+        "alpha1": {
+          "mean": 364,
+          "sd": 103
+        },
+        "alpha2": {
+          "mean": 429,
+          "sd": 237
+        },
+        "5-HT1A": {
+          "mean": 319,
+          "sd": 140
+        },
+        "5-HT2": {
+          "mean": 416,
+          "sd": 129
+        },
+        "D1": {
+          "mean": 82,
+          "sd": 32
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "PGa",
+      "measured_in": "Area PGa (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/62w8-ryf",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 463,
+          "sd": 187
+        },
+        "kainate": {
+          "mean": 635,
+          "sd": 405
+        },
+        "NMDA": {
+          "mean": 1259,
+          "sd": 278
+        },
+        "mGluR2/3": {
+          "mean": 3957,
+          "sd": 1655
+        },
+        "GABAA": {
+          "mean": 1998,
+          "sd": 577
+        },
+        "GABAB": {
+          "mean": 2742,
+          "sd": 291
+        },
+        "BZ": {
+          "mean": 2442,
+          "sd": 876
+        },
+        "M1": {
+          "mean": 479,
+          "sd": 192
+        },
+        "M2": {
+          "mean": 172,
+          "sd": 77
+        },
+        "M3": {
+          "mean": 827,
+          "sd": 348
+        },
+        "alpha4beta2": {
+          "mean": 70,
+          "sd": 34
+        },
+        "alpha1": {
+          "mean": 361,
+          "sd": 169
+        },
+        "alpha2": {
+          "mean": 698,
+          "sd": null
+        },
+        "5-HT1A": {
+          "mean": 303,
+          "sd": 123
+        },
+        "5-HT2": {
+          "mean": 441,
+          "sd": 238
+        },
+        "D1": {
+          "mean": 136,
+          "sd": 55
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "PGp",
+      "measured_in": "Area PGp (IPL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/x71t-hz",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 428,
+          "sd": 242
+        },
+        "kainate": {
+          "mean": 518,
+          "sd": 360
+        },
+        "NMDA": {
+          "mean": 1081,
+          "sd": 313
+        },
+        "mGluR2/3": {
+          "mean": 3416,
+          "sd": 1572
+        },
+        "GABAA": {
+          "mean": 1847,
+          "sd": 767
+        },
+        "GABAB": {
+          "mean": 2374,
+          "sd": 790
+        },
+        "BZ": {
+          "mean": 2294,
+          "sd": 830
+        },
+        "M1": {
+          "mean": 461,
+          "sd": 180
+        },
+        "M2": {
+          "mean": 202,
+          "sd": 74
+        },
+        "M3": {
+          "mean": 843,
+          "sd": 432
+        },
+        "alpha4beta2": {
+          "mean": 54,
+          "sd": 31
+        },
+        "alpha1": {
+          "mean": 386,
+          "sd": 165
+        },
+        "alpha2": {
+          "mean": 855,
+          "sd": null
+        },
+        "5-HT1A": {
+          "mean": 315,
+          "sd": 169
+        },
+        "5-HT2": {
+          "mean": 419,
+          "sd": 233
+        },
+        "D1": {
+          "mean": 130,
+          "sd": 58
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "TE1_0",
+      "measured_in": "Area TE 1.0 (HESCHL)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/ahx0-9pu",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 364,
+          "sd": 77
+        },
+        "kainate": {
+          "mean": 372,
+          "sd": 90
+        },
+        "NMDA": {
+          "mean": 856,
+          "sd": 200
+        },
+        "mGluR2/3": {
+          "mean": 2298,
+          "sd": 331
+        },
+        "GABAA": {
+          "mean": 1518,
+          "sd": 281
+        },
+        "GABAB": {
+          "mean": 1995,
+          "sd": 484
+        },
+        "BZ": {
+          "mean": 2404,
+          "sd": 658
+        },
+        "M1": {
+          "mean": 459,
+          "sd": 62
+        },
+        "M2": {
+          "mean": 216,
+          "sd": 38
+        },
+        "M3": {
+          "mean": 910,
+          "sd": 180
+        },
+        "alpha4beta2": {
+          "mean": 61,
+          "sd": 30
+        },
+        "alpha1": {
+          "mean": 256,
+          "sd": 90
+        },
+        "alpha2": {
+          "mean": 644,
+          "sd": 123
+        },
+        "5-HT1A": {
+          "mean": 197,
+          "sd": 49
+        },
+        "5-HT2": {
+          "mean": 344,
+          "sd": 77
+        },
+        "D1": {
+          "mean": 97,
+          "sd": 33
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "TE2_1",
+      "measured_in": "Area TE 2.1 (STG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/c279-428",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 300,
+          "sd": 96
+        },
+        "kainate": {
+          "mean": 402,
+          "sd": 93
+        },
+        "NMDA": {
+          "mean": 920,
+          "sd": 164
+        },
+        "mGluR2/3": {
+          "mean": 2615,
+          "sd": 250
+        },
+        "GABAA": {
+          "mean": 1344,
+          "sd": 396
+        },
+        "GABAB": {
+          "mean": 1931,
+          "sd": 466
+        },
+        "BZ": {
+          "mean": 2628,
+          "sd": 372
+        },
+        "M1": {
+          "mean": 549,
+          "sd": 148
+        },
+        "M2": {
+          "mean": 168,
+          "sd": 26
+        },
+        "M3": {
+          "mean": 962,
+          "sd": 192
+        },
+        "alpha4beta2": {
+          "mean": 58,
+          "sd": 23
+        },
+        "alpha1": {
+          "mean": 289,
+          "sd": 90
+        },
+        "alpha2": {
+          "mean": 455,
+          "sd": 124
+        },
+        "5-HT1A": {
+          "mean": 255,
+          "sd": 79
+        },
+        "5-HT2": {
+          "mean": 343,
+          "sd": 68
+        },
+        "D1": {
+          "mean": 100,
+          "sd": 34
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 4,
+        "right": 5
+      }
+    },
+    {
+      "key": "hOc1",
+      "measured_in": "Area hOc1 (V1, 17, CalcS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/p8sd-jmh",
+      "documented_by": [
+        "zilles-2015"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 500,
+          "sd": 223
+        },
+        "kainate": {
+          "mean": 260,
+          "sd": 239
+        },
+        "NMDA": {
+          "mean": 1348,
+          "sd": 320
+        },
+        "GABAA": {
+          "mean": 2508,
+          "sd": 828
+        },
+        "GABAB": {
+          "mean": 2187,
+          "sd": 274
+        },
+        "BZ": {
+          "mean": 3882,
+          "sd": 1761
+        },
+        "M1": {
+          "mean": 661,
+          "sd": 123
+        },
+        "M2": {
+          "mean": 390,
+          "sd": 35
+        },
+        "M3": {
+          "mean": 524,
+          "sd": 395
+        },
+        "alpha4beta2": {
+          "mean": 48,
+          "sd": 14
+        },
+        "alpha1": {
+          "mean": 264,
+          "sd": 59
+        },
+        "alpha2": {
+          "mean": 347,
+          "sd": 120
+        },
+        "5-HT1A": {
+          "mean": 192,
+          "sd": 145
+        },
+        "5-HT2": {
+          "mean": 408,
+          "sd": 198
+        },
+        "D1": {
+          "mean": 102,
+          "sd": 37
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        },
+        {
+          "id": "AR07",
+          "sex": "male",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 3
+      }
+    },
+    {
+      "key": "hOc2d",
+      "measured_in": "Dorsal part of Area hOc2 (V2, 18)",
+      "part": "dorsal",
+      "doi": "https://doi.org/10.25493/zj7e-kxz",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 451,
+          "sd": 206
+        },
+        "kainate": {
+          "mean": 318,
+          "sd": 346
+        },
+        "NMDA": {
+          "mean": 1450,
+          "sd": 280
+        },
+        "GABAA": {
+          "mean": 1826,
+          "sd": 502
+        },
+        "GABAB": {
+          "mean": 1964,
+          "sd": 649
+        },
+        "BZ": {
+          "mean": 3234,
+          "sd": 2879
+        },
+        "M1": {
+          "mean": 487,
+          "sd": 93
+        },
+        "M2": {
+          "mean": 392,
+          "sd": 168
+        },
+        "M3": {
+          "mean": 421,
+          "sd": 40
+        },
+        "alpha4beta2": {
+          "mean": 37,
+          "sd": 5
+        },
+        "alpha1": {
+          "mean": 322,
+          "sd": 113
+        },
+        "alpha2": {
+          "mean": 267,
+          "sd": 177
+        },
+        "5-HT1A": {
+          "mean": 306,
+          "sd": 131
+        },
+        "5-HT2": {
+          "mean": 393,
+          "sd": 74
+        },
+        "D1": {
+          "mean": 106,
+          "sd": 30
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 3
+      }
+    },
+    {
+      "key": "hOc2v",
+      "measured_in": "Ventral part of Area hOc2 (V2, 18)",
+      "part": "ventral",
+      "doi": "https://doi.org/10.25493/2e5c-pvm",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 472,
+          "sd": 58
+        },
+        "kainate": {
+          "mean": 366,
+          "sd": 425
+        },
+        "NMDA": {
+          "mean": 1449,
+          "sd": 81
+        },
+        "GABAA": {
+          "mean": 2342,
+          "sd": 255
+        },
+        "GABAB": {
+          "mean": 1920,
+          "sd": 40
+        },
+        "BZ": {
+          "mean": 3174,
+          "sd": 2349
+        },
+        "M1": {
+          "mean": 606,
+          "sd": 98
+        },
+        "M2": {
+          "mean": 347,
+          "sd": 41
+        },
+        "M3": {
+          "mean": 478,
+          "sd": 38
+        },
+        "alpha4beta2": {
+          "mean": 39,
+          "sd": 7
+        },
+        "alpha1": {
+          "mean": 323,
+          "sd": 39
+        },
+        "alpha2": {
+          "mean": 230,
+          "sd": 116
+        },
+        "5-HT1A": {
+          "mean": 341,
+          "sd": 3
+        },
+        "5-HT2": {
+          "mean": 451,
+          "sd": 78
+        },
+        "D1": {
+          "mean": 111,
+          "sd": 32
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 3
+      }
+    },
+    {
+      "key": "hOc3d",
+      "measured_in": "Dorsal part of Area hOc3 (Cuneus)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/4etw-9xb",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 478,
+          "sd": 198
+        },
+        "kainate": {
+          "mean": 369,
+          "sd": 424
+        },
+        "NMDA": {
+          "mean": 1361,
+          "sd": 411
+        },
+        "GABAA": {
+          "mean": 2091,
+          "sd": 629
+        },
+        "GABAB": {
+          "mean": 1617,
+          "sd": 119
+        },
+        "BZ": {
+          "mean": 2594,
+          "sd": 1894
+        },
+        "M1": {
+          "mean": 381,
+          "sd": 81
+        },
+        "M2": {
+          "mean": 229,
+          "sd": 19
+        },
+        "M3": {
+          "mean": 401,
+          "sd": 37
+        },
+        "alpha4beta2": {
+          "mean": 32,
+          "sd": 7
+        },
+        "alpha1": {
+          "mean": 277,
+          "sd": 36
+        },
+        "alpha2": {
+          "mean": 225,
+          "sd": 124
+        },
+        "5-HT1A": {
+          "mean": 342,
+          "sd": 143
+        },
+        "5-HT2": {
+          "mean": 357,
+          "sd": 21
+        },
+        "D1": {
+          "mean": 98,
+          "sd": 27
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 3
+      }
+    },
+    {
+      "key": "hOc3v",
+      "measured_in": "Ventral part of Area hOc3 (LingG)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/tbmx-bz9",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 477,
+          "sd": 118
+        },
+        "kainate": {
+          "mean": 391,
+          "sd": 448
+        },
+        "NMDA": {
+          "mean": 1496,
+          "sd": 215
+        },
+        "GABAA": {
+          "mean": 2338,
+          "sd": 570
+        },
+        "GABAB": {
+          "mean": 2119,
+          "sd": 103
+        },
+        "BZ": {
+          "mean": 2917,
+          "sd": 2139
+        },
+        "M1": {
+          "mean": 578,
+          "sd": 25
+        },
+        "M2": {
+          "mean": 299,
+          "sd": 68
+        },
+        "M3": {
+          "mean": 485,
+          "sd": 53
+        },
+        "alpha4beta2": {
+          "mean": 47,
+          "sd": 7
+        },
+        "alpha1": {
+          "mean": 301,
+          "sd": 28
+        },
+        "alpha2": {
+          "mean": 219,
+          "sd": 82
+        },
+        "5-HT1A": {
+          "mean": 366,
+          "sd": 14
+        },
+        "5-HT2": {
+          "mean": 404,
+          "sd": 56
+        },
+        "D1": {
+          "mean": 102,
+          "sd": 28
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 3
+      }
+    },
+    {
+      "key": "ifs1",
+      "measured_in": "Area ifs1 (IFS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/shg2-7rs",
+      "documented_by": [
+        "palomero-gallagher-2018"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 276,
+          "sd": 104
+        },
+        "kainate": {
+          "mean": 446,
+          "sd": 173
+        },
+        "NMDA": {
+          "mean": 1086,
+          "sd": 293
+        },
+        "mGluR2/3": {
+          "mean": 3333,
+          "sd": 358
+        },
+        "GABAA": {
+          "mean": 1574,
+          "sd": 242
+        },
+        "GABAB": {
+          "mean": 1950,
+          "sd": 645
+        },
+        "BZ": {
+          "mean": 2410,
+          "sd": 700
+        },
+        "M1": {
+          "mean": 458,
+          "sd": 91
+        },
+        "M2": {
+          "mean": 137,
+          "sd": 56
+        },
+        "M3": {
+          "mean": 694,
+          "sd": 282
+        },
+        "alpha4beta2": {
+          "mean": 68,
+          "sd": 35
+        },
+        "alpha1": {
+          "mean": 311,
+          "sd": 148
+        },
+        "alpha2": {
+          "mean": 469,
+          "sd": 224
+        },
+        "5-HT1A": {
+          "mean": 282,
+          "sd": 86
+        },
+        "5-HT2": {
+          "mean": 378,
+          "sd": 78
+        },
+        "D1": {
+          "mean": 78,
+          "sd": null
+        },
+        "A1": {
+          "mean": 863,
+          "sd": 435
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "key": "ifs2",
+      "measured_in": "Area ifs2 (IFS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/14m7-qjr",
+      "documented_by": [
+        "palomero-gallagher-2018"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 271,
+          "sd": 113
+        },
+        "kainate": {
+          "mean": 421,
+          "sd": 128
+        },
+        "NMDA": {
+          "mean": 1091,
+          "sd": 372
+        },
+        "mGluR2/3": {
+          "mean": 3273,
+          "sd": 358
+        },
+        "GABAA": {
+          "mean": 1468,
+          "sd": 216
+        },
+        "GABAB": {
+          "mean": 1857,
+          "sd": 637
+        },
+        "BZ": {
+          "mean": 2347,
+          "sd": 607
+        },
+        "M1": {
+          "mean": 448,
+          "sd": 76
+        },
+        "M2": {
+          "mean": 141,
+          "sd": 67
+        },
+        "M3": {
+          "mean": 674,
+          "sd": 293
+        },
+        "alpha4beta2": {
+          "mean": 63,
+          "sd": 33
+        },
+        "alpha1": {
+          "mean": 297,
+          "sd": 132
+        },
+        "alpha2": {
+          "mean": 475,
+          "sd": 214
+        },
+        "5-HT1A": {
+          "mean": 269,
+          "sd": 111
+        },
+        "5-HT2": {
+          "mean": 368,
+          "sd": 162
+        },
+        "D1": {
+          "mean": 74,
+          "sd": 28
+        },
+        "A1": {
+          "mean": 890,
+          "sd": 434
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "key": "ifs3",
+      "measured_in": "Area ifs3 (IFS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/z5jn-j28",
+      "documented_by": [
+        "palomero-gallagher-2018"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 297,
+          "sd": 96
+        },
+        "kainate": {
+          "mean": 480,
+          "sd": 157
+        },
+        "NMDA": {
+          "mean": 1166,
+          "sd": 426
+        },
+        "mGluR2/3": {
+          "mean": 3684,
+          "sd": 558
+        },
+        "GABAA": {
+          "mean": 1564,
+          "sd": 252
+        },
+        "GABAB": {
+          "mean": 1905,
+          "sd": 613
+        },
+        "BZ": {
+          "mean": 2525,
+          "sd": 682
+        },
+        "M1": {
+          "mean": 493,
+          "sd": 74
+        },
+        "M2": {
+          "mean": 153,
+          "sd": 76
+        },
+        "M3": {
+          "mean": 708,
+          "sd": 283
+        },
+        "alpha4beta2": {
+          "mean": 66,
+          "sd": 23
+        },
+        "alpha1": {
+          "mean": 321,
+          "sd": 127
+        },
+        "alpha2": {
+          "mean": 493,
+          "sd": 236
+        },
+        "5-HT1A": {
+          "mean": 290,
+          "sd": 82
+        },
+        "5-HT2": {
+          "mean": 401,
+          "sd": 170
+        },
+        "D1": {
+          "mean": 73,
+          "sd": 32
+        },
+        "A1": {
+          "mean": 900,
+          "sd": 517
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "key": "ifs4",
+      "measured_in": "Area ifs4 (IFS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/yf9r-j87",
+      "documented_by": [
+        "palomero-gallagher-2018"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 345,
+          "sd": 215
+        },
+        "kainate": {
+          "mean": 435,
+          "sd": 149
+        },
+        "NMDA": {
+          "mean": 1135,
+          "sd": 362
+        },
+        "mGluR2/3": {
+          "mean": 3568,
+          "sd": 421
+        },
+        "GABAA": {
+          "mean": 1533,
+          "sd": 224
+        },
+        "GABAB": {
+          "mean": 1834,
+          "sd": 548
+        },
+        "BZ": {
+          "mean": 2312,
+          "sd": 543
+        },
+        "M1": {
+          "mean": 448,
+          "sd": 87
+        },
+        "M2": {
+          "mean": 160,
+          "sd": 75
+        },
+        "M3": {
+          "mean": 730,
+          "sd": 255
+        },
+        "alpha4beta2": {
+          "mean": 80,
+          "sd": 27
+        },
+        "alpha1": {
+          "mean": 323,
+          "sd": 125
+        },
+        "alpha2": {
+          "mean": 559,
+          "sd": 176
+        },
+        "5-HT1A": {
+          "mean": 304,
+          "sd": 78
+        },
+        "5-HT2": {
+          "mean": 422,
+          "sd": 172
+        },
+        "D1": {
+          "mean": 73,
+          "sd": 27
+        },
+        "A1": {
+          "mean": 868,
+          "sd": 413
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "key": "ifj1",
+      "measured_in": "Area ifj1 (IFS, PreCS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/js85-vqd",
+      "documented_by": [
+        "palomero-gallagher-2018"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 316,
+          "sd": 138
+        },
+        "kainate": {
+          "mean": 408,
+          "sd": 173
+        },
+        "NMDA": {
+          "mean": 932,
+          "sd": 343
+        },
+        "mGluR2/3": {
+          "mean": 3404,
+          "sd": 354
+        },
+        "GABAA": {
+          "mean": 1353,
+          "sd": 218
+        },
+        "GABAB": {
+          "mean": 1976,
+          "sd": 422
+        },
+        "BZ": {
+          "mean": 2410,
+          "sd": 592
+        },
+        "M1": {
+          "mean": 433,
+          "sd": 77
+        },
+        "M2": {
+          "mean": 126,
+          "sd": 37
+        },
+        "M3": {
+          "mean": 748,
+          "sd": 367
+        },
+        "alpha4beta2": {
+          "mean": 72,
+          "sd": 29
+        },
+        "alpha1": {
+          "mean": 285,
+          "sd": 108
+        },
+        "alpha2": {
+          "mean": 502,
+          "sd": 138
+        },
+        "5-HT1A": {
+          "mean": 291,
+          "sd": 73
+        },
+        "5-HT2": {
+          "mean": 395,
+          "sd": 143
+        },
+        "D1": {
+          "mean": 76,
+          "sd": 37
+        },
+        "A1": {
+          "mean": 914,
+          "sd": 403
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "key": "ifj2",
+      "measured_in": "Area ifj2 (IFS, PreCS)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/vn1a-q2r",
+      "documented_by": [
+        "palomero-gallagher-2018"
+      ],
+      "receptors": {
+        "AMPA": {
+          "mean": 341,
+          "sd": 118
+        },
+        "kainate": {
+          "mean": 434,
+          "sd": 185
+        },
+        "NMDA": {
+          "mean": 911,
+          "sd": 313
+        },
+        "mGluR2/3": {
+          "mean": 3390,
+          "sd": 372
+        },
+        "GABAA": {
+          "mean": 1224,
+          "sd": 78
+        },
+        "GABAB": {
+          "mean": 2112,
+          "sd": 508
+        },
+        "BZ": {
+          "mean": 2343,
+          "sd": 456
+        },
+        "M1": {
+          "mean": 489,
+          "sd": 110
+        },
+        "M2": {
+          "mean": 126,
+          "sd": 45
+        },
+        "M3": {
+          "mean": 685,
+          "sd": 260
+        },
+        "alpha4beta2": {
+          "mean": 73,
+          "sd": 34
+        },
+        "alpha1": {
+          "mean": 328,
+          "sd": 120
+        },
+        "alpha2": {
+          "mean": 500,
+          "sd": 166
+        },
+        "5-HT1A": {
+          "mean": 331,
+          "sd": 69
+        },
+        "5-HT2": {
+          "mean": 384,
+          "sd": 138
+        },
+        "D1": {
+          "mean": 77,
+          "sd": 44
+        },
+        "A1": {
+          "mean": 973,
+          "sd": 524
+        }
+      },
+      "donors": [
+        {
+          "id": "AR01",
+          "sex": "male",
+          "age_years": 78
+        },
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        }
+      ],
+      "hemispheres": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "key": "CA1",
+      "measured_in": "CA1 (Hippocampus)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/y7yv-6q6",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 427,
+          "sd": 135
+        },
+        "kainate": {
+          "mean": 1413,
+          "sd": 155
+        },
+        "NMDA": {
+          "mean": 244,
+          "sd": 104
+        },
+        "GABAA": {
+          "mean": 1063,
+          "sd": 287
+        },
+        "GABAB": {
+          "mean": 1914,
+          "sd": 510
+        },
+        "M1": {
+          "mean": 426,
+          "sd": 265
+        },
+        "M2": {
+          "mean": 120,
+          "sd": 55
+        },
+        "M3": {
+          "mean": 724,
+          "sd": 377
+        },
+        "alpha4beta2": {
+          "mean": 35,
+          "sd": 10
+        },
+        "alpha1": {
+          "mean": 224,
+          "sd": 60
+        },
+        "alpha2": {
+          "mean": 565,
+          "sd": 427
+        },
+        "5-HT1A": {
+          "mean": 1296,
+          "sd": 595
+        },
+        "5-HT2": {
+          "mean": 330,
+          "sd": 77
+        },
+        "D1": {
+          "mean": 73,
+          "sd": 41
+        }
+      },
+      "donors": [
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR06",
+          "sex": "female",
+          "age_years": 61
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "CA2",
+      "measured_in": "CA2 (Hippocampus)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/4f4s-w5a",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 398,
+          "sd": 155
+        },
+        "kainate": {
+          "mean": 1049,
+          "sd": 84
+        },
+        "NMDA": {
+          "mean": 304,
+          "sd": 97
+        },
+        "GABAA": {
+          "mean": 561,
+          "sd": 181
+        },
+        "GABAB": {
+          "mean": 1680,
+          "sd": 415
+        },
+        "M1": {
+          "mean": 297,
+          "sd": 157
+        },
+        "M2": {
+          "mean": 83,
+          "sd": 28
+        },
+        "M3": {
+          "mean": 581,
+          "sd": 323
+        },
+        "alpha4beta2": {
+          "mean": 32,
+          "sd": 11
+        },
+        "alpha1": {
+          "mean": 271,
+          "sd": 97
+        },
+        "alpha2": {
+          "mean": 296,
+          "sd": 206
+        },
+        "5-HT1A": {
+          "mean": 446,
+          "sd": 134
+        },
+        "5-HT2": {
+          "mean": 303,
+          "sd": 86
+        },
+        "D1": {
+          "mean": 55,
+          "sd": 25
+        }
+      },
+      "donors": [
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR06",
+          "sex": "female",
+          "age_years": 61
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "CA3",
+      "measured_in": "CA3 (Hippocampus)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/xfhr-x41",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 426,
+          "sd": 76
+        },
+        "kainate": {
+          "mean": 1225,
+          "sd": 218
+        },
+        "NMDA": {
+          "mean": 399,
+          "sd": 118
+        },
+        "GABAA": {
+          "mean": 576,
+          "sd": 143
+        },
+        "GABAB": {
+          "mean": 1930,
+          "sd": 360
+        },
+        "M1": {
+          "mean": 350,
+          "sd": 217
+        },
+        "M2": {
+          "mean": 103,
+          "sd": 50
+        },
+        "M3": {
+          "mean": 662,
+          "sd": 345
+        },
+        "alpha4beta2": {
+          "mean": 33,
+          "sd": 10
+        },
+        "alpha1": {
+          "mean": 667,
+          "sd": 114
+        },
+        "alpha2": {
+          "mean": 415,
+          "sd": 275
+        },
+        "5-HT1A": {
+          "mean": 241,
+          "sd": 77
+        },
+        "5-HT2": {
+          "mean": 369,
+          "sd": 69
+        },
+        "D1": {
+          "mean": 75,
+          "sd": 45
+        }
+      },
+      "donors": [
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR06",
+          "sex": "female",
+          "age_years": 61
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "DG",
+      "measured_in": "DG (Hippocampus)",
+      "part": null,
+      "doi": "https://doi.org/10.25493/m8pk-c82",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 459,
+          "sd": 131
+        },
+        "kainate": {
+          "mean": 1360,
+          "sd": 152
+        },
+        "NMDA": {
+          "mean": 293,
+          "sd": 89
+        },
+        "GABAA": {
+          "mean": 1043,
+          "sd": 277
+        },
+        "GABAB": {
+          "mean": 2183,
+          "sd": 638
+        },
+        "M1": {
+          "mean": 391,
+          "sd": 243
+        },
+        "M2": {
+          "mean": 81,
+          "sd": 26
+        },
+        "M3": {
+          "mean": 672,
+          "sd": 355
+        },
+        "alpha4beta2": {
+          "mean": 37,
+          "sd": 8
+        },
+        "alpha1": {
+          "mean": 1137,
+          "sd": 110
+        },
+        "alpha2": {
+          "mean": 508,
+          "sd": 317
+        },
+        "5-HT1A": {
+          "mean": 435,
+          "sd": 271
+        },
+        "5-HT2": {
+          "mean": 433,
+          "sd": 96
+        },
+        "D1": {
+          "mean": 65,
+          "sd": 30
+        }
+      },
+      "donors": [
+        {
+          "id": "AR02",
+          "sex": "female",
+          "age_years": 75
+        },
+        {
+          "id": "AR03",
+          "sex": "male",
+          "age_years": 79
+        },
+        {
+          "id": "AR06",
+          "sex": "female",
+          "age_years": 61
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "Pu",
+      "measured_in": "Putamen",
+      "part": null,
+      "doi": "https://doi.org/10.25493/4gz1-shh",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 632,
+          "sd": 542
+        },
+        "kainate": {
+          "mean": 1332,
+          "sd": 1753
+        },
+        "NMDA": {
+          "mean": 869,
+          "sd": 398
+        },
+        "GABAA": {
+          "mean": 788,
+          "sd": 507
+        },
+        "GABAB": {
+          "mean": 1604,
+          "sd": 1524
+        },
+        "BZ": {
+          "mean": 647,
+          "sd": 352
+        },
+        "M1": {
+          "mean": 823,
+          "sd": 531
+        },
+        "M2": {
+          "mean": 734,
+          "sd": 658
+        },
+        "M3": {
+          "mean": 692,
+          "sd": 288
+        },
+        "alpha4beta2": {
+          "mean": 176,
+          "sd": 222
+        },
+        "alpha1": {
+          "mean": 442,
+          "sd": 321
+        },
+        "alpha2": {
+          "mean": 100,
+          "sd": 83
+        },
+        "5-HT1A": {
+          "mean": 422,
+          "sd": 830
+        },
+        "5-HT2": {
+          "mean": 450,
+          "sd": 324
+        },
+        "D1": {
+          "mean": 252,
+          "sd": 180
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "GP",
+      "measured_in": "Globus pallidus",
+      "part": null,
+      "doi": "https://doi.org/10.25493/tprg-5vh",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 98,
+          "sd": 57
+        },
+        "kainate": {
+          "mean": 115,
+          "sd": 108
+        },
+        "NMDA": {
+          "mean": 439,
+          "sd": 155
+        },
+        "GABAA": {
+          "mean": 92,
+          "sd": 14
+        },
+        "GABAB": {
+          "mean": 247,
+          "sd": 142
+        },
+        "BZ": {
+          "mean": 426,
+          "sd": 108
+        },
+        "M1": {
+          "mean": 119,
+          "sd": 62
+        },
+        "M2": {
+          "mean": 30,
+          "sd": 10
+        },
+        "M3": {
+          "mean": 175,
+          "sd": 93
+        },
+        "alpha4beta2": {
+          "mean": 17,
+          "sd": 7
+        },
+        "alpha1": {
+          "mean": 250,
+          "sd": 216
+        },
+        "alpha2": {
+          "mean": 55,
+          "sd": 37
+        },
+        "5-HT1A": {
+          "mean": 32,
+          "sd": 24
+        },
+        "5-HT2": {
+          "mean": 148,
+          "sd": 84
+        },
+        "D1": {
+          "mean": 53,
+          "sd": 38
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "ThMD",
+      "measured_in": "Mediodorsal thalamic nucleus",
+      "part": null,
+      "doi": "https://doi.org/10.25493/gky8-nzr",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 250,
+          "sd": 141
+        },
+        "kainate": {
+          "mean": 355,
+          "sd": 292
+        },
+        "NMDA": {
+          "mean": 959,
+          "sd": 229
+        },
+        "GABAA": {
+          "mean": 387,
+          "sd": 101
+        },
+        "GABAB": {
+          "mean": 1992,
+          "sd": 889
+        },
+        "BZ": {
+          "mean": 1015,
+          "sd": 47
+        },
+        "M1": {
+          "mean": 217,
+          "sd": 123
+        },
+        "M2": {
+          "mean": 588,
+          "sd": 228
+        },
+        "M3": {
+          "mean": 254,
+          "sd": 41
+        },
+        "alpha4beta2": {
+          "mean": 144,
+          "sd": 24
+        },
+        "alpha1": {
+          "mean": 933,
+          "sd": 764
+        },
+        "alpha2": {
+          "mean": 83,
+          "sd": 57
+        },
+        "5-HT1A": {
+          "mean": 64,
+          "sd": 40
+        },
+        "5-HT2": {
+          "mean": 217,
+          "sd": 129
+        },
+        "D1": {
+          "mean": 19,
+          "sd": 3
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "key": "ThA",
+      "measured_in": "Anterior thalamic nucleus",
+      "part": null,
+      "doi": "https://doi.org/10.25493/kktt-1tk",
+      "documented_by": [],
+      "receptors": {
+        "AMPA": {
+          "mean": 268,
+          "sd": 138
+        },
+        "kainate": {
+          "mean": 274,
+          "sd": 189
+        },
+        "NMDA": {
+          "mean": 1084,
+          "sd": 231
+        },
+        "GABAA": {
+          "mean": 539,
+          "sd": 133
+        },
+        "GABAB": {
+          "mean": 2042,
+          "sd": 531
+        },
+        "BZ": {
+          "mean": 1053,
+          "sd": 232
+        },
+        "M1": {
+          "mean": 179,
+          "sd": 50
+        },
+        "M2": {
+          "mean": 663,
+          "sd": 272
+        },
+        "M3": {
+          "mean": 271,
+          "sd": 54
+        },
+        "alpha4beta2": {
+          "mean": 192,
+          "sd": 9
+        },
+        "alpha1": {
+          "mean": 1213,
+          "sd": 1083
+        },
+        "alpha2": {
+          "mean": 77,
+          "sd": 60
+        },
+        "5-HT1A": {
+          "mean": 57,
+          "sd": 32
+        },
+        "5-HT2": {
+          "mean": 218,
+          "sd": 127
+        },
+        "D1": {
+          "mean": 23,
+          "sd": 8
+        }
+      },
+      "donors": [
+        {
+          "id": "AR04",
+          "sex": "female",
+          "age_years": 77
+        },
+        {
+          "id": "AR05",
+          "sex": "male",
+          "age_years": 72
+        }
+      ],
+      "hemispheres": {
+        "left": 1,
+        "right": 2
+      }
+    }
+  ],
+  "regions": {
+    "aseg:left:12": [
+      "Pu"
+    ],
+    "aseg:left:13": [
+      "GP"
+    ],
+    "aseg:right:51": [
+      "Pu"
+    ],
+    "aseg:right:52": [
+      "GP"
+    ],
+    "julich:left:1": [
+      "45"
+    ],
+    "julich:left:10": [
+      "hOc3v"
+    ],
+    "julich:left:11": [
+      "TE1_0"
+    ],
+    "julich:left:12": [
+      "TE2_1"
+    ],
+    "julich:left:2": [
+      "44d",
+      "44v"
+    ],
+    "julich:left:23": [
+      "CA2"
+    ],
+    "julich:left:24": [
+      "CA3"
+    ],
+    "julich:left:26": [
+      "DG"
+    ],
+    "julich:left:27": [
+      "CA1"
+    ],
+    "julich:left:32": [
+      "FG2"
+    ],
+    "julich:left:33": [
+      "FG1"
+    ],
+    "julich:left:34": [
+      "PGp"
+    ],
+    "julich:left:35": [
+      "PFt"
+    ],
+    "julich:left:36": [
+      "PGa"
+    ],
+    "julich:left:37": [
+      "PFop"
+    ],
+    "julich:left:38": [
+      "PFm"
+    ],
+    "julich:left:39": [
+      "PFcm"
+    ],
+    "julich:left:46": [
+      "hOc3d"
+    ],
+    "julich:left:47": [
+      "4p"
+    ],
+    "julich:left:51": [
+      "3b"
+    ],
+    "julich:left:58": [
+      "7A"
+    ],
+    "julich:left:65": [
+      "PF"
+    ],
+    "julich:left:7": [
+      "hOc2d",
+      "hOc2v"
+    ],
+    "julich:left:75": [
+      "ifs1"
+    ],
+    "julich:left:76": [
+      "ifs2"
+    ],
+    "julich:left:77": [
+      "ifs3"
+    ],
+    "julich:left:78": [
+      "ifs4"
+    ],
+    "julich:left:79": [
+      "ifj1"
+    ],
+    "julich:left:8": [
+      "hOc1"
+    ],
+    "julich:left:80": [
+      "ifj2"
+    ],
+    "julich:right:1": [
+      "45"
+    ],
+    "julich:right:10": [
+      "hOc3v"
+    ],
+    "julich:right:11": [
+      "TE1_0"
+    ],
+    "julich:right:12": [
+      "TE2_1"
+    ],
+    "julich:right:2": [
+      "44d",
+      "44v"
+    ],
+    "julich:right:23": [
+      "CA2"
+    ],
+    "julich:right:24": [
+      "CA3"
+    ],
+    "julich:right:26": [
+      "DG"
+    ],
+    "julich:right:27": [
+      "CA1"
+    ],
+    "julich:right:32": [
+      "FG2"
+    ],
+    "julich:right:33": [
+      "FG1"
+    ],
+    "julich:right:34": [
+      "PGp"
+    ],
+    "julich:right:35": [
+      "PFt"
+    ],
+    "julich:right:36": [
+      "PGa"
+    ],
+    "julich:right:37": [
+      "PFop"
+    ],
+    "julich:right:38": [
+      "PFm"
+    ],
+    "julich:right:39": [
+      "PFcm"
+    ],
+    "julich:right:46": [
+      "hOc3d"
+    ],
+    "julich:right:47": [
+      "4p"
+    ],
+    "julich:right:51": [
+      "3b"
+    ],
+    "julich:right:58": [
+      "7A"
+    ],
+    "julich:right:65": [
+      "PF"
+    ],
+    "julich:right:7": [
+      "hOc2d",
+      "hOc2v"
+    ],
+    "julich:right:75": [
+      "ifs1"
+    ],
+    "julich:right:76": [
+      "ifs2"
+    ],
+    "julich:right:77": [
+      "ifs3"
+    ],
+    "julich:right:78": [
+      "ifs4"
+    ],
+    "julich:right:79": [
+      "ifj1"
+    ],
+    "julich:right:8": [
+      "hOc1"
+    ],
+    "julich:right:80": [
+      "ifj2"
+    ],
+    "learning:left:pallidum-external": [
+      "GP"
+    ],
+    "learning:left:pallidum-internal": [
+      "GP"
+    ],
+    "learning:left:putamen": [
+      "Pu"
+    ],
+    "learning:right:pallidum-external": [
+      "GP"
+    ],
+    "learning:right:pallidum-internal": [
+      "GP"
+    ],
+    "learning:right:putamen": [
+      "Pu"
+    ],
+    "nextbrain:left:119": [
+      "GP"
+    ],
+    "nextbrain:left:206": [
+      "GP"
+    ],
+    "nextbrain:left:219": [
+      "ThA"
+    ],
+    "nextbrain:left:220": [
+      "ThA"
+    ],
+    "nextbrain:left:252": [
+      "ThA"
+    ],
+    "nextbrain:left:282": [
+      "ThMD"
+    ],
+    "nextbrain:left:312": [
+      "ThMD"
+    ],
+    "nextbrain:left:313": [
+      "ThMD"
+    ],
+    "nextbrain:left:349": [
+      "Pu"
+    ],
+    "nextbrain:left:379": [
+      "ThMD"
+    ],
+    "nextbrain:left:380": [
+      "ThMD"
+    ],
+    "nextbrain:left:79": [
+      "Pu"
+    ],
+    "nextbrain:right:10079": [
+      "Pu"
+    ],
+    "nextbrain:right:10119": [
+      "GP"
+    ],
+    "nextbrain:right:10206": [
+      "GP"
+    ],
+    "nextbrain:right:10219": [
+      "ThA"
+    ],
+    "nextbrain:right:10220": [
+      "ThA"
+    ],
+    "nextbrain:right:10252": [
+      "ThA"
+    ],
+    "nextbrain:right:10282": [
+      "ThMD"
+    ],
+    "nextbrain:right:10312": [
+      "ThMD"
+    ],
+    "nextbrain:right:10313": [
+      "ThMD"
+    ],
+    "nextbrain:right:10349": [
+      "Pu"
+    ],
+    "nextbrain:right:10379": [
+      "ThMD"
+    ],
+    "nextbrain:right:10380": [
+      "ThMD"
+    ]
+  }
+}

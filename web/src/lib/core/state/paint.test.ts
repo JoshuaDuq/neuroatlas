@@ -47,6 +47,7 @@ const associations = [
 const clinical = {
   paint: (id: string, finding: string | null = null) => findingPaint(id, associations, finding),
   get: () => ({ name: { en: 'Aphasia', fr: 'Aphasie' } }),
+  standIns: () => [],
 } as unknown as ClinicalCatalog;
 const drawn = new Set(['destrieux:left:1', 'destrieux:left:2']);
 const sources = { domains, clinical, drawn: (id: string) => drawn.has(id) };
@@ -166,7 +167,7 @@ describe('the published cdmd functions and deficits', () => {
       load<NeurosynthTerms>(manifest.neurosynth_terms!.file),
     );
     data = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
-    catalog = createClinicalCatalog(data, manifest);
+    catalog = createClinicalCatalog(data, manifest, published.units);
     both = { domains: published, clinical: catalog };
   });
   const functionState = (selectedFunction: string, lang: 'en' | 'fr' = 'en'): PaintState => ({
@@ -219,6 +220,31 @@ describe('the published cdmd functions and deficits', () => {
     assert.equal(overview.rows[0]!.id, 'executive');
     assert.equal(overview.rows[10]!.id, 'emotion');
     assert.ok(overview.rows.every((row) => row.pressed === false));
+  });
+
+  test('a deficit’s FreeSurfer structures are painted and keyed on their teaching-set stand-ins', () => {
+    const state: PaintState = {
+      explorer: 'deficits',
+      atlas: 'destrieux',
+      selectedFunction: null,
+      selectedDeficit: 'dystonia',
+      selectedFinding: null,
+      paintLifted: false,
+      lang: 'en',
+    };
+    const paint = paintFor(state, both)!;
+    for (const structure of catalog.mappedRegions('dystonia')) {
+      for (const id of catalog.standIns(structure)) {
+        assert.deepEqual(paint.colors.get(id), paint.colors.get(structure), id);
+      }
+    }
+    assert.ok(paint.colors.has('learning:left:pallidum-internal'));
+    const teachingOnly = (id: string) => id.startsWith('learning:');
+    const legend = legendFor({ ...state, paint }, { ...both, drawn: teachingOnly })!;
+    assert.deepEqual(
+      legend.rows.map((row) => row.absent),
+      legend.rows.map(() => false),
+    );
   });
 
   test('STATE-56 every function, term, deficit and finding has a paint and a key in both languages', () => {

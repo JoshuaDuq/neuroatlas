@@ -3,11 +3,11 @@
 Scope: chunk E3 (#26). It covers the face a plane cuts through a closed solid (`plane-section`,
 with the vendored earcut), the parcel solids closed from the cortical ribbon (`ribbon-wedges`), how
 the cut's solids are loaded, coloured, shown and named (`solid-assets`), how their caps are drawn,
-ordered, picked and lit (`solid-sections`), the off-thread cut (`section-worker`), the glass-brain
-ribbon solids (`glass-solids`) and the exposed native white matter (`white-matter-surfaces`).
+ordered, picked and lit (`solid-sections`), the off-thread cut (`section-worker`) and the exposed
+native white matter (`white-matter-surfaces`).
 Legacy sources: `viewer/tissues/plane-section.js`, `earcut.js`, `ribbon-wedges.js`,
-`solid-assets.js`, `solid-sections.js`, `section-worker.js`, `glass-solids.js`,
-`white-matter-surfaces.js`. New code: `web/src/lib/engine/tissues/{plane-section,earcut,ribbon-wedges,solid-assets,solid-sections,section-worker,glass-solids,white-matter-surfaces}.ts`
+`solid-assets.js`, `solid-sections.js`, `section-worker.js`,
+`white-matter-surfaces.js`. New code: `web/src/lib/engine/tissues/{plane-section,earcut,ribbon-wedges,solid-assets,solid-sections,section-worker,white-matter-surfaces}.ts`
 (`earcut.js`). Deviations: `e3-cap-buffers-disposed.md`, `e3-earcut-formatting.md`,
 `e3-exposed-white-matter-region.md`, `e3-ribbon-labels-length.md`, `e3-worker-errors.md`.
 `slices/volume.ts` moved to E3 by decision 11, but its rules are SLICE-06 to SLICE-10
@@ -190,11 +190,11 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 
 ### TISSUE-19 · Only tissue colour carries the T1 variation on a cap
 
-- **Rule:** A cap carries the T1 brightness variation only under tissue (and MRI) colour. Under atlas, network, CAB-NP, functional colours or a paint it carries none, so the cap matches its key. A solid not registered to the MRI never carries it. Relief is light, not colour, and stays.
+- **Rule:** A cap carries the T1 brightness variation only under tissue (and MRI) colour. Under atlas, network or CAB-NP colours or a paint it carries none, so the cap matches its key. A solid not registered to the MRI never carries it. Relief is light, not colour, and stays.
 - **Kind:** scientific
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:167-178`
-- **Expected:** `tissueVariation`: tissue → 0.5; atlas, network, cab-np, functional, paint → 0; `mri_registered: false` → 0 in every mode.
+- **Expected:** `tissueVariation`: tissue → 0.5; atlas, network, cab-np, paint → 0; `mri_registered: false` → 0 in every mode.
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, tissue, atlas, network)
 
 ### TISSUE-20 · Display controls hide the solids they describe
@@ -344,17 +344,6 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Source:** `viewer/tissues/solid-sections.js:250-257, 443-450`
 - **Expected:** `warm()`, `dispose()`, one tick → no `Worker` constructed. A pending `build` at dispose → resolves `null`.
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, the warm-up); the pending build is uncovered
-
-## Glass-brain ribbon solids
-
-### TISSUE-36 · A solid region of the glass brain is closed by its ribbon solid
-
-- **Rule:** Behind each region the glass brain draws solid, its ribbon wedge is drawn in the region's published colour while its patch is drawn, so the region does not read as a shell from behind. The wedge is pushed back in depth so the patch and its fold shading show on the shared pial face, and it is clipped by the cut. The group is visible only while one wedge is.
-- **Kind:** behaviour
-- **Level:** unit
-- **Source:** `viewer/tissues/glass-solids.js:12-52`
-- **Expected:** material DoubleSide, polygon offset factor 1 and units 1, clearcoat 0.08 (0 on a phone). `solidOf(id)` {color: [255, 0, 0]} and shown → visible, linear (1, 0, 0); not shown or no record → hidden. Clipping planes are the ones passed (or null). No visible wedge → group hidden.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, through the model), `src/lib/engine/tissues/glass-solids.test.ts` (R)
 
 ## Exposed native white matter
 

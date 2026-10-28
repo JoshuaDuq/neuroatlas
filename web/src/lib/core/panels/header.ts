@@ -7,7 +7,7 @@ const COLOUR_GROUPS: readonly (readonly [string | null, readonly SurfaceColor[]]
   ['appearance', ['tissue', 'mri']],
   ['parcellation', ['atlas']],
   ['networks', ['network', 'cab-np']],
-  [null, ['functional']],
+  ['vascular', ['territory']],
 ];
 
 interface NamedEntry {
@@ -55,16 +55,16 @@ export function dataSummary({
 export function colourGroups({
   networks,
   cabNp,
-  functionalRegions,
+  territories,
 }: {
   networks?: unknown;
   cabNp?: unknown;
-  functionalRegions?: unknown;
+  territories?: unknown;
 }): [string | null, SurfaceColor[]][] {
   const published: Partial<Record<SurfaceColor, boolean>> = {
     network: Boolean(networks),
     'cab-np': Boolean(cabNp),
-    functional: Boolean(functionalRegions),
+    territory: Boolean(territories),
   };
   return COLOUR_GROUPS.map((entry): [string | null, SurfaceColor[]] => [
     entry[0],

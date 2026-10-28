@@ -11,22 +11,19 @@
   "cabNpAtlasOnly": [
    "[\"Alpha\"] → \"CAB-NP colours HCP-MMP areas only, so Alpha shows its own region colours.\"",
    "[\"\"] → \"CAB-NP colours HCP-MMP areas only, so  shows its own region colours.\""
-  ],
-  "functionalAtlasOnly": [
-   "[\"Alpha\"] → \"Functional divisions colour HCP-MMP areas only, so Alpha shows its own region colours.\"",
-   "[\"\"] → \"Functional divisions colour HCP-MMP areas only, so  shows its own region colours.\""
-  ],
-  "functionalHidesInternal": "Internal anatomy is hidden; Display shows it again."
+  ]
  },
  "atlases": {
   "destrieux": "Destrieux anatomical atlas",
   "hcp-mmp": "HCP-MMP1.0 multimodal atlas",
+  "julich": "Julich-Brain cytoarchitectonic atlas",
   "learning": "Teaching set: overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published",
   "aseg": "FreeSurfer subcortical segmentation",
   "nextbrain": "NextBrain histological atlas",
   "cerebnet": "FastSurfer CerebNet cerebellar lobules",
   "wmparc": "FreeSurfer white-matter parcellation",
-  "pam50": "PAM50 cord atlas on this spinal cord"
+  "pam50": "PAM50 cord atlas on this spinal cord",
+  "arterial": "Arterial territory atlas (Liu et al. 2023)"
  },
  "boundary": {
   "heading": "Boundary certainty",
@@ -304,16 +301,17 @@
    "oblique": "Oblique section"
   },
   "networkByRegion": "networks by each region’s dominant share",
+  "territoryByRegion": "territory holding a majority of each region",
   "cabNpByArea": "CAB-NP network of each HCP-MMP area",
   "cabNpOtherLabels": "CAB-NP colours HCP-MMP labels only",
-  "functionalByArea": "functional division of each HCP-MMP area",
-  "functionalOtherLabels": "functional divisions colour HCP-MMP labels only",
   "domainsByArea": "neuropsychological functions of each HCP-MMP area",
   "domainsOtherLabels": "neuropsychological functions colour HCP-MMP labels only",
   "hcpDerived": "derived HCP labels",
+  "julichDerived": "derived Julich-Brain labels",
   "destrieuxNative": "native Destrieux labels",
   "nextbrainWarped": "warped NextBrain labels",
   "nextbrainSegmented": "NextBrain labels segmented on this brain",
+  "arterialRegistered": "typical arterial territories registered onto this brain",
   "cutLabels": "Cut labels"
  },
  "deficitKey": {
@@ -408,7 +406,7 @@
    "atlas": "Regions",
    "network": "Yeo 7 networks",
    "cab-np": "CAB-NP networks",
-   "functional": "Functional divisions"
+   "territory": "Arterial territories"
   },
   "paints": {
    "function": "Functions",
@@ -426,7 +424,7 @@
    "atlas": "Atlas region colours",
    "network": "Functional networks (Yeo 7)",
    "cab-np": "Functional networks (CAB-NP, 12) on HCP-MMP areas",
-   "functional": "Functional divisions on HCP-MMP areas: Glasser 2016 sections and named regions from Glasser 2016 and Rolls 2022, 2023"
+   "territory": "Typical arterial territories from 1,298 stroke patients (Liu et al. 2023), registered onto this brain; not its own vessels"
   },
   "resetView": "Reset view"
  },
@@ -580,6 +578,7 @@
   ],
   "networks": "Functional networks",
   "functional": "Functional divisions",
+  "receptors": "Receptor fingerprints",
   "domains": "Neuropsychological domains",
   "supplemental": "Supplemental layers",
   "files": "Published files",
@@ -617,12 +616,7 @@
    "[183,12345] → \"Glasser’s Table 1 gives section 183 as this area’s primary section; the supplement’s section text lists it under section 12345.\"",
    "[12345,0] → \"Glasser’s Table 1 gives section 12345 as this area’s primary section; the supplement’s section text lists it under section 0.\""
   ],
-  "note": "Published groupings of whole HCP-MMP areas, reaching this brain through its HCP-MMP projection; not measured function in this brain.",
-  "keyAria": "Functional division level",
-  "levels": {
-   "named": "Named",
-   "sections": "Sections"
-  }
+  "note": "Published groupings of whole HCP-MMP areas, reaching this brain through its HCP-MMP projection; not measured function in this brain."
  },
  "functions": {
   "search": "Search functions",
@@ -726,12 +720,14 @@
   "atlasShort": {
    "destrieux": "Destrieux",
    "hcp-mmp": "HCP-MMP",
+   "julich": "Julich-Brain",
    "learning": "Teaching set",
    "aseg": "FreeSurfer aseg",
    "nextbrain": "NextBrain",
    "cerebnet": "CerebNet",
    "wmparc": "wmparc",
-   "pam50": "PAM50"
+   "pam50": "PAM50",
+   "arterial": "Arterial territories"
   },
   "subject": "Subject",
   "atlas": "Atlas",
@@ -739,7 +735,8 @@
   "colourGroups": {
    "appearance": "Appearance",
    "parcellation": "Parcellation",
-   "networks": "Networks"
+   "networks": "Networks",
+   "vascular": "Blood supply"
   },
   "atlasBecomes": [
    "[\"Alpha\",\"\"] → \"Alpha (atlas becomes )\"",
@@ -753,6 +750,7 @@
   "notes": {
    "destrieux": "Sulcal and gyral regions, 74 per hemisphere",
    "hcp-mmp": "Multimodal areas, 180 per hemisphere (Glasser 2016)",
+   "julich": "Cytoarchitectonic areas from histology, 139 per hemisphere (Amunts 2020); about a quarter of the cortex is not yet mapped",
    "learning": "Overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published",
    "aseg": "FreeSurfer’s standard automatic subcortical segmentation",
    "nextbrain": "Histology-based atlas, segmented on this subject at 0.4<NNBSP>mm"
@@ -828,6 +826,8 @@
   "deep": "Deep structures",
   "white": "Gyral white matter",
   "whiteNote": "Within 5 mm of the cortex, named by the gyrus above",
+  "territories": "Arterial territories",
+  "territoryNote": "Each typical territory’s share of the lesion volume that lies in any territory, with that volume in mm³ (Liu et al. 2023, registered onto this brain); not this brain’s own vessels",
   "slightRegions": [
    "[\"Alpha\"] → \"Alpha more under 1%\"",
    "[\"\"] → \" more under 1%\""
@@ -929,7 +929,6 @@
    "internal": "internal anatomy shown",
    "cord": "spinal cord",
    "colors": "colour",
-   "level": "functional level",
    "function": "function",
    "opacity": "cortex opacity",
    "mri": "MRI window",
@@ -1138,6 +1137,37 @@
   "other-system": "In another system",
   "fallback": "Hidden"
  },
+ "receptors": {
+  "heading": "Receptor densities",
+  "parts": "Sampled part",
+  "dorsal": "Dorsal",
+  "ventral": "Ventral",
+  "noSd": "no SD",
+  "notMeasured": [
+   "[\"Alpha\"] → \"Not measured: Alpha.\"",
+   "[\"\"] → \"Not measured: .\""
+  ],
+  "noSdPublished": [
+   "[\"Alpha\"] → \"No SD published for Alpha.\"",
+   "[\"\"] → \"No SD published for .\""
+  ],
+  "withheld": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha SD withheld (published as ): Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \" SD withheld (published as Alpha): \""
+  ],
+  "note": [
+   "[\"Alpha\",1,2,\"\",12345] → \"Mean ± SD in Alpha, by in vitro receptor autoradiography of 1 hemispheres from 2 post-mortem brains aged ; some receptors may have been measured in fewer. Each bar is the share of that receptor’s highest mean among the 12345 published fingerprints.\"",
+   "[\"\",2,183,\"Alpha\",0] → \"Mean ± SD in , by in vitro receptor autoradiography of 2 hemispheres from 183 post-mortem brains aged Alpha; some receptors may have been measured in fewer. Each bar is the share of that receptor’s highest mean among the 0 published fingerprints.\"",
+   "[\"Alpha\",183,12345,\"\",1] → \"Mean ± SD in Alpha, by in vitro receptor autoradiography of 183 hemispheres from 12345 post-mortem brains aged ; some receptors may have been measured in fewer. Each bar is the share of that receptor’s highest mean among the 1 published fingerprints.\"",
+   "[\"\",12345,0,\"Alpha\",2] → \"Mean ± SD in , by in vitro receptor autoradiography of 12345 hemispheres from 0 post-mortem brains aged Alpha; some receptors may have been measured in fewer. Each bar is the share of that receptor’s highest mean among the 2 published fingerprints.\"",
+   "[\"Alpha\",0,1,\"\",183] → \"Mean ± SD in Alpha, by in vitro receptor autoradiography of 0 hemispheres from 1 post-mortem brains aged ; some receptors may have been measured in fewer. Each bar is the share of that receptor’s highest mean among the 183 published fingerprints.\""
+  ],
+  "measuredIn": [
+   "[\"Alpha\"] → \"Measured in: Alpha. Carried to this brain by name and not measured in it; both hemispheres show the same values.\"",
+   "[\"\"] → \"Measured in: . Carried to this brain by name and not measured in it; both hemispheres show the same values.\""
+  ],
+  "dataset": "EBRAINS dataset"
+ },
  "sheet": {
   "expand": "Expand panel",
   "collapse": "Collapse panel",
@@ -1146,6 +1176,18 @@
    "half": "Panel half open",
    "full": "Panel fully open"
   }
+ },
+ "territories": {
+  "heading": "Typical arterial supply",
+  "basis": {
+   "vertices": "Share of this region’s pial vertices in each territory.",
+   "voxels": "Share of this region’s voxels in each territory."
+  },
+  "unassigned": [
+   "[\"Alpha\"] → \"Alpha lies in no territory the atlas draws.\"",
+   "[\"\"] → \" lies in no territory the atlas draws.\""
+  ],
+  "caveat": "Typical territories from where infarcts fell in 1,298 stroke patients (Liu et al. 2023), registered onto this brain: not this brain’s own vessels. Collateral flow and variant anatomy move real territories by centimetres."
  },
  "shortcuts": {
   "title": "Keyboard shortcuts",

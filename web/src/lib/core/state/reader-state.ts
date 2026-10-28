@@ -12,7 +12,6 @@ const SCENE_FIELDS = [
   'internalVisible',
   'spinalCordVisible',
   'surfaceColor',
-  'functionalLevel',
   'internalSystem',
   'view',
   'cut',
@@ -159,11 +158,6 @@ export async function applyReaderState(
   await step(['hidden'], () => {
     if (!sameRegions(target.hiddenRegions, settings().hiddenRegions)) {
       model.loadHiddenRegions([...target.hiddenRegions]);
-    }
-  });
-  await step(['level'], () => {
-    if (target.functionalLevel !== settings().functionalLevel) {
-      model.setFunctionalLevel(target.functionalLevel);
     }
   });
   await step(['colors'], () => commands.applySurfaceColor(target.surfaceColor, current));

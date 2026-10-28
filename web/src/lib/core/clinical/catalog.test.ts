@@ -77,6 +77,7 @@ const create = (data: object, regions: readonly object[] = manifest.regions) =>
   createClinicalCatalog(
     data as ClinicalData,
     { regions } as Parameters<typeof createClinicalCatalog>[1],
+    {},
   );
 
 test('deficit search supports translated names, domains, synonyms and accents', () => {

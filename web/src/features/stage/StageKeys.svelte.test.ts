@@ -1,11 +1,10 @@
 // The stage's colour keys against the legacy viewport-chrome.js behaviour and WCAG 2.2, in a real browser:
-// the folds (APG Disclosure), the functional level (Radio Group), the paint rows (Toolbar), focus, the
+// the folds (APG Disclosure), the paint rows (Toolbar), focus, the
 // band the keys take off the framing and the contrast and target sizes the stage needs.
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { tick } from 'svelte';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
-import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import type { Legend } from '../../lib/core/state/paint.ts';
 import { createStageLayout } from '../../lib/state/stage-layout.svelte.ts';
 import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
@@ -38,16 +37,6 @@ const CAB_NP: ColoredNetworks = {
   networks: CAB_NP_KEYS,
   colors: Object.fromEntries(CAB_NP_KEYS.map((key, i) => [key, [20 * i, 90, 200 - 10 * i]])),
 };
-const FUNCTIONAL = {
-  levels: {
-    named: [
-      { id: 'a', number: 3, short: 'Primary', short_fr: 'Primaire', color: [9, 98, 7] },
-      { id: 'b', short: 'Insula', short_fr: 'Insula', color: [66, 5, 144] },
-    ],
-    sections: [{ id: 's', number: 1, short: 'Early', short_fr: 'Précoce', color: [31, 91, 1] }],
-  },
-} as unknown as FunctionalRegions;
-
 const finding = (id: string, label: string, extra = {}) => ({
   id,
   color: [id.charCodeAt(1) * 3, 120, 200] as [number, number, number],
@@ -73,11 +62,9 @@ const picked = (legend: Legend, id: string): Legend => ({
 type Live = {
   lang: 'en' | 'fr';
   status: 'ready' | 'loading';
-  surfaceColor: 'atlas' | 'network' | 'cab-np' | 'functional';
-  functionalLevel: 'named' | 'sections';
+  surfaceColor: 'atlas' | 'network' | 'cab-np';
   networks: ColoredNetworks | null;
   cabNp: ColoredNetworks | null;
-  functionalRegions: FunctionalRegions | null;
   legend: Legend | null;
   directionShown: boolean;
   media: { phone: boolean; coarsePointer: boolean };
@@ -86,7 +73,6 @@ type Live = {
 let stage: StageLayout;
 let live: Live;
 let handle: { model?: () => (KeyPlate & { open: boolean })[] };
-const onFunctionalLevel = vi.fn();
 const onPaintPick = vi.fn();
 const onDock = vi.fn();
 
@@ -106,10 +92,8 @@ function mount(
     lang: 'en',
     status: 'ready',
     surfaceColor: 'network',
-    functionalLevel: 'named',
     networks: YEO,
     cabNp: CAB_NP,
-    functionalRegions: FUNCTIONAL,
     legend: null,
     directionShown: false,
     media: { phone: false, coarsePointer: false },
@@ -117,7 +101,7 @@ function mount(
   });
   live = reactive;
   handle = {};
-  return render(Fixture, { stage, live, onFunctionalLevel, onPaintPick, width, height, handle });
+  return render(Fixture, { stage, live, onPaintPick, width, height, handle });
 }
 
 const find = <T extends HTMLElement = HTMLElement>(selector: string) =>
@@ -137,7 +121,6 @@ beforeEach(async () => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
-  onFunctionalLevel.mockClear();
   onPaintPick.mockClear();
   onDock.mockClear();
 });
@@ -154,11 +137,10 @@ describe('plates', () => {
     expect(getComputedStyle(swatch('Visual')).backgroundColor).toBe('rgb(120, 18, 134)');
   });
 
-  test('French titles the plate, the rows and the level in French', async () => {
-    mount({ lang: 'fr', surfaceColor: 'functional' });
-    await expect.element(toggle('Divisions fonctionnelles')).toBeVisible();
-    await expect.element(page.getByRole('radio', { name: 'Nommées' })).toBeChecked();
-    await expect.element(page.getByText('3 · Primaire')).toBeVisible();
+  test('French titles the plate and the rows in French', async () => {
+    mount({ lang: 'fr', surfaceColor: 'cab-np' });
+    await expect.element(toggle('Réseaux CAB-NP')).toBeVisible();
+    await expect.element(page.getByText('Langage')).toBeVisible();
   });
 
   test('the direction key names three directions in the colours of the streamlines', async () => {
@@ -234,7 +216,7 @@ describe('folding', () => {
     await expect.element(toggle('Réseaux CAB-NP')).toHaveAttribute('aria-expanded', 'true');
   });
 
-  test('model() reports each plate’s fold, crowd-folded or reader-folded, and the functional level', async () => {
+  test('model() reports each plate’s fold, crowd-folded or reader-folded', async () => {
     mount({ surfaceColor: 'cab-np' }, { width: 900 });
     const model = () => handle.model!();
     expect(model().map(({ name, open }) => [name, open])).toEqual([['network', false]]);
@@ -244,13 +226,9 @@ describe('folding', () => {
     expect(model()[0]!.open).toBe(false);
     live.surfaceColor = 'network';
     await expect.element(toggle('Yeo 7 networks')).toBeVisible();
-    expect(model()[0]).toMatchObject({ open: true, level: null });
+    expect(model()[0]).toMatchObject({ name: 'network', map: 'network', open: true });
     await toggle('Yeo 7 networks').click();
     expect(model()[0]!.open).toBe(false);
-    live.surfaceColor = 'functional';
-    live.functionalLevel = 'sections';
-    await expect.element(toggle('Functional divisions')).toBeVisible();
-    expect(model()[0]).toMatchObject({ name: 'functional', open: true, level: 'sections' });
   });
 
   test('a resize does not refold a key the stage has already drawn', async () => {
@@ -259,37 +237,6 @@ describe('folding', () => {
     stage.setViewport({ x: 0, y: 0, width: 800, height: 800 }, { width: 800, height: 800 });
     await tick();
     expect(toggle('CAB-NP networks').element().getAttribute('aria-expanded')).toBe('true');
-  });
-});
-
-describe('functional level', () => {
-  test('is a radio group: the level is checked, and an arrow chooses the other', async () => {
-    mount({ surfaceColor: 'functional' });
-    const named = page.getByRole('radio', { name: 'Named' });
-    await expect
-      .element(page.getByRole('radiogroup', { name: 'Functional division level' }))
-      .toBeVisible();
-    await expect.element(named).toBeChecked();
-    named.element().focus();
-    await userEvent.keyboard('{ArrowRight}');
-    expect(onFunctionalLevel).toHaveBeenCalledExactlyOnceWith('sections');
-  });
-
-  test('the checked level and the rows follow the state', async () => {
-    mount({ surfaceColor: 'functional' });
-    await expect.element(page.getByText('3 · Primary')).toBeVisible();
-    live.functionalLevel = 'sections';
-    await expect.element(page.getByRole('radio', { name: 'Sections' })).toBeChecked();
-    await expect.element(page.getByText('1 · Early')).toBeVisible();
-    await expect.element(page.getByText('3 · Primary')).not.toBeInTheDocument();
-  });
-
-  test('a click on the other level chooses it, on the one shown it chooses nothing', async () => {
-    mount({ surfaceColor: 'functional' });
-    await page.getByRole('radio', { name: 'Named' }).click();
-    expect(onFunctionalLevel).not.toHaveBeenCalled();
-    await page.getByRole('radio', { name: 'Sections' }).click();
-    expect(onFunctionalLevel).toHaveBeenCalledExactlyOnceWith('sections');
   });
 });
 
@@ -552,46 +499,20 @@ describe('framing', () => {
 describe('targets, reflow and the stage’s colours', () => {
   const height = (element: Element) => element.getBoundingClientRect().height;
 
-  test('desktop targets: rows and toggle are 24 px; the 20 px level buttons keep WCAG 2.5.8’s spacing exception', async () => {
+  test('desktop targets: rows and toggle are 24 px', async () => {
     mount({ legend: DEFICIT });
     for (const button of [...rowButtons(), find('.stage-key-toggle')]) {
       expect(height(button), button.textContent!).toBeGreaterThanOrEqual(24);
     }
-    live.legend = null;
-    live.surfaceColor = 'functional';
-    await expect.element(page.getByRole('radio', { name: 'Named' })).toBeVisible();
-    const radios = [...document.querySelectorAll('[role=radio]')];
-    const boxes = radios.map((radio) => radio.getBoundingClientRect());
-    for (const box of boxes) expect(box.height).toBeLessThan(24);
-    // A 24 px circle on each button's centre reaches neither the other button's circle nor the toggle.
-    const centre = (box: DOMRect) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 });
-    const [a, b] = boxes.map(centre) as [{ x: number; y: number }, { x: number; y: number }];
-    expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(24);
-    const toggle = find('.stage-key-toggle').getBoundingClientRect();
-    const gap = (c: { x: number; y: number }, box: DOMRect) =>
-      Math.hypot(
-        Math.max(box.left - c.x, 0, c.x - box.right),
-        Math.max(box.top - c.y, 0, c.y - box.bottom),
-      );
-    expect(gap(a, toggle)).toBeGreaterThanOrEqual(12);
-    expect(gap(b, toggle)).toBeGreaterThanOrEqual(12);
-    expect(gap(a, boxes[1]!)).toBeGreaterThanOrEqual(12);
-    expect(gap(b, boxes[0]!)).toBeGreaterThanOrEqual(12);
   });
 
-  test('a coarse pointer makes the level and the paint rows 44 px', async () => {
+  test('a coarse pointer makes the paint rows 44 px', async () => {
     mount({ legend: DEFICIT });
     const session = cdp();
     await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
     try {
       expect(matchMedia('(pointer: coarse)').matches).toBe(true);
       for (const button of rowButtons()) expect(height(button)).toBeGreaterThanOrEqual(44);
-      live.legend = null;
-      live.surfaceColor = 'functional';
-      await expect.element(page.getByRole('radio', { name: 'Named' })).toBeVisible();
-      for (const radio of document.querySelectorAll('[role=radio]')) {
-        expect(height(radio)).toBeGreaterThanOrEqual(44);
-      }
     } finally {
       await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
     }
@@ -661,9 +582,9 @@ describe('targets, reflow and the stage’s colours', () => {
     });
   });
 
-  test('axe: the functional plate with the level and the direction key', async () => {
-    mount({ surfaceColor: 'functional', directionShown: true });
-    await expect.element(page.getByRole('radio', { name: 'Named' })).toBeVisible();
+  test('axe: a network plate and the direction key', async () => {
+    mount({ surfaceColor: 'cab-np', directionShown: true });
+    await expect.element(toggle('CAB-NP networks')).toBeVisible();
     await expectAxeClean();
   });
 

@@ -257,6 +257,10 @@ describe('commands', () => {
       'Neuropsychological functions',
       'Functional networks',
     ]);
+    // The ninth stop, after the networks, is the typical arterial supply.
+    await userEvent.keyboard('{Tab}');
+    expect(text(document.activeElement!)).toBe('Typical arterial supply');
+    await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
     const networks = section('Functional networks');
     expect(networks.open).toBe(false);
     await userEvent.keyboard('{Enter}');
@@ -295,7 +299,7 @@ describe('source label', () => {
 });
 
 describe('evidence sections', () => {
-  test('functional division, domains and networks, in that order, collapsed, with plain summaries', async () => {
+  test('functional division, domains, networks and arterial supply, in that order, collapsed, with plain summaries', async () => {
     render(Fixture, { regionId: FRONTAL });
     const sections = [...root().querySelectorAll('details')].filter(
       (details) => !details.closest('.source-labels'),
@@ -304,6 +308,7 @@ describe('evidence sections', () => {
       'Functional division',
       'Neuropsychological functions',
       'Functional networks',
+      'Typical arterial supply',
     ]);
     for (const details of sections) {
       expect(details.open).toBe(false);
@@ -672,5 +677,137 @@ describe('failure', () => {
         }),
       ),
     ).toThrow('Missing learning constituent: ghost');
+  });
+});
+
+describe('receptor densities', () => {
+  const AREA_44 = 'julich:left:2';
+  const IFS1 = 'julich:left:75';
+  const PF = 'julich:left:65';
+  const FO1 = 'julich:left:3'; // no fingerprint is published for it
+  const PUTAMEN = 'aseg:left:12';
+  const row = (details: Element, receptor: string) =>
+    [...details.querySelectorAll('.receptor-row')].find((item) =>
+      text(item).startsWith(`${receptor} `),
+    );
+
+  test('an area sampled in two parts shows each part’s fingerprint by transmitter', async () => {
+    render(Fixture, { regionId: AREA_44 });
+    const receptors = section('Receptor densities');
+    expect(receptors.open).toBe(false);
+    expect(
+      document.querySelector('[data-slot=comparison]')!.compareDocumentPosition(receptors) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    receptors.open = true;
+    expect([...receptors.querySelectorAll('.network-map')].map(text)).toEqual([
+      'Glutamate',
+      'GABA',
+      'Acetylcholine',
+      'Noradrenaline',
+      'Serotonin',
+      'Dopamine',
+    ]);
+    expect(text(row(receptors, 'NMDA')!)).toBe('NMDA 964 ± 95');
+    expect(row(receptors, 'mGluR2/3')).toBeUndefined();
+    expect(text(receptors)).toContain('Not measured: mGluR2/3, A1.');
+    expect(text(receptors)).toContain(
+      'autoradiography of 4 hemispheres from 3 post-mortem brains aged 72–77',
+    );
+    expect(text(receptors)).toContain('Measured in: Dorsal part of Area 44 (IFG).');
+    expect([...receptors.querySelectorAll('a')].map((link) => link.getAttribute('href'))).toEqual([
+      'https://doi.org/10.25493/yqcr-1dq',
+      'https://doi.org/10.1016/j.cortex.2014.07.007',
+    ]);
+    await userEvent.click(page.getByRole('radio', { name: 'Ventral' }));
+    expect(text(row(receptors, 'NMDA')!)).toBe('NMDA 1129 ± 382');
+    expect(text(row(receptors, 'mGluR2/3')!)).toBe('mGluR2/3 3545 ± 913');
+    expect(text(receptors)).toContain('Measured in: Ventral part of Area 44 (IFG).');
+    await expectAxeClean();
+  });
+
+  test('the chosen part holds across a region without parts and back', async () => {
+    const screen = await render(Fixture, { regionId: AREA_44 });
+    section('Receptor densities').open = true;
+    await userEvent.click(page.getByRole('radio', { name: 'Ventral' }));
+    await screen.rerender({ regionId: PUTAMEN });
+    expect(text(row(section('Receptor densities'), 'NMDA')!)).toMatch(/^NMDA \d+ ± \d+$/);
+    await screen.rerender({ regionId: AREA_44 });
+    expect(text(row(section('Receptor densities'), 'NMDA')!)).toBe('NMDA 1129 ± 382');
+    expect(
+      page.getByRole('radio', { name: 'Ventral' }).element().getAttribute('aria-checked'),
+    ).toBe('true');
+  });
+
+  test('a withheld SD gives its reason, and an unpublished one says so', async () => {
+    const screen = await render(Fixture, { regionId: IFS1 });
+    section('Receptor densities').open = true;
+    expect(text(row(section('Receptor densities'), 'D1')!)).toBe('D1 78 ± —, no SD');
+    expect(text(section('Receptor densities'))).toContain(
+      'D1 SD withheld (published as 863): The published SD equals the same file',
+    );
+    await screen.rerender({ regionId: PF });
+    expect(text(row(section('Receptor densities'), 'α2')!)).toBe('α2 837 ± —, no SD');
+    expect(text(section('Receptor densities'))).toContain('No SD published for α2.');
+  });
+
+  test('a deep structure takes the fingerprint of what was measured; a region without one has no section', async () => {
+    const screen = await render(Fixture, { regionId: PUTAMEN });
+    section('Receptor densities').open = true;
+    expect(text(section('Receptor densities'))).toContain('from 2 post-mortem brains');
+    expect(text(section('Receptor densities'))).toContain('Measured in: Putamen.');
+    expect(section('Receptor densities').querySelector('[role=radiogroup]')).toBeNull();
+    await screen.rerender({ regionId: FO1 });
+    expect(section('Receptor densities')).toBeUndefined();
+    await screen.rerender({ regionId: V1 });
+    expect(section('Receptor densities')).toBeUndefined();
+  });
+
+  test('French', async () => {
+    render(Fixture, { regionId: AREA_44, lang: 'fr' });
+    const receptors = section('Densités de récepteurs');
+    receptors.open = true;
+    expect(page.getByRole('radio', { name: 'Dorsale' }).element()).toBeTruthy();
+    expect(text(receptors)).toContain('Acétylcholine');
+    expect(text(receptors)).toContain('de 4 hémisphères issus de 3 cerveaux post mortem');
+  });
+});
+
+describe('typical arterial supply', () => {
+  test('a deep structure lists its territories by voxel share, with the caveat', async () => {
+    render(Fixture, { regionId: 'aseg:left:12' });
+    const supply = section('Typical arterial supply');
+    expect(supply.open).toBe(false);
+    supply.open = true;
+    const rows = [...supply.querySelectorAll('.network-row')].map(text);
+    expect(rows[0]).toBe('Lateral lenticulostriate 87%');
+    expect(rows.length).toBeGreaterThan(1);
+    expect(text(supply)).toContain('Share of this region’s voxels in each territory.');
+    expect(text(supply)).toContain('not this brain’s own vessels');
+    await expectAxeClean();
+  });
+
+  test('a cortical area counts its pial vertices; a territory itself and an unreached region have none', async () => {
+    const screen = await render(Fixture, { regionId: 'julich:left:2' });
+    section('Typical arterial supply').open = true;
+    expect(text(section('Typical arterial supply'))).toContain(
+      'Share of this region’s pial vertices in each territory.',
+    );
+    expect(text(section('Typical arterial supply').querySelector('.network-row')!)).toMatch(
+      /^Middle cerebral artery, frontal \d+%$/,
+    );
+    await screen.rerender({ regionId: 'arterial:left:aca' });
+    expect(section('Typical arterial supply')).toBeUndefined();
+    await screen.rerender({ regionId: NOTED });
+    expect(section('Typical arterial supply')).toBeUndefined();
+  });
+
+  test('French', async () => {
+    render(Fixture, { regionId: 'aseg:left:12', lang: 'fr' });
+    const supply = section('Vascularisation artérielle typique');
+    supply.open = true;
+    expect(text(supply.querySelector('.network-row')!)).toMatch(
+      /^Lenticulo-striées latérales 87\s?%$/,
+    );
   });
 });

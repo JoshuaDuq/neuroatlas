@@ -33,7 +33,7 @@ describe('the fixed lists', () => {
   it('CAT-03: six surface colourings', () => {
     assert.deepStrictEqual(
       [...SURFACE_COLORS],
-      ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'],
+      ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'territory'],
     );
   });
 

@@ -9,7 +9,7 @@ Every `.segmented` is a `role=group` of `aria-pressed` buttons with a custom rov
 
 ## New behaviour
 
-Radio Group (arrows move and select) for language, theme, single keys, hemisphere, functional level, MPR planes and tree scope; Toolbar of `aria-pressed` toggle buttons for view presets, cut mode and paint picks. Not Bits ToggleGroup. See 0003.
+Radio Group (arrows move and select) for language, theme, single keys, hemisphere, MPR planes and tree scope; Toolbar of `aria-pressed` toggle buttons for view presets, cut mode and paint picks. Not Bits ToggleGroup. See 0003.
 
 ## Standard cited
 

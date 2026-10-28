@@ -24,7 +24,7 @@ For an anatomy without its own tracts, such as a local `fsaverage` build, the vi
 
 ## Sources and interpretation
 
-Seventeen CDMD bundles were generated using DIPY and RecoBundles against the HCP842 atlas. The remaining 13 use TractSeg 2.10: SLF I–III on each side and seven callosal segments (rostrum, genu, rostral body, anterior midbody, posterior midbody, isthmus and splenium). Both sets are resampled to 0.5 mm steps. They are reconstructions from diffusion data, not direct observations of individual axons.
+Seventeen CDMD bundles were generated using DIPY and RecoBundles against the HCP842 atlas. The remaining 13 use TractSeg 2.10: SLF I–III on each side and seven callosal segments (rostrum, genu, rostral body, anterior midbody, posterior midbody, isthmus and splenium). Both sets are resampled to 0.5 mm steps, after each streamline end that ran past the brain into CSF is trimmed back to the last point inside it: DIPY stops RecoBundles tracking on diffusion-resolution tissue maps, so up to half a bundle’s streamlines overshot the pial surface by as much as 5 mm. They are reconstructions from diffusion data, not direct observations of individual axons.
 
 The compressed TRK files are loaded only when selected. Their checksums, transforms, methods and geometry checks are recorded in [`provenance.json`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/diffusion/cdmd-sub-013/provenance.json). See [Validation and limits](../validation.md#tracts) for the checks and [References and licensing](../reference/references.md) for the source terms.
 

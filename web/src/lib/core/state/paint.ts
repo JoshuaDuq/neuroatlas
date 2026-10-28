@@ -155,10 +155,12 @@ export function legendFor(
     const { findings } = clinical.paint(state.selectedDeficit!);
     // A finding whose colour no drawn region carries, because its regions are not drawn in this view or
     // take an earlier finding's colour, is keyed but greyed, so the key promises nothing the stage lacks.
+    // A FreeSurfer structure is shown by its teaching-set stand-ins, too.
     const shows = (association: (typeof findings)[number]['association'], color: Rgb) =>
-      association.mappings.some(
-        ({ region }) =>
-          state.paint!.colors.get(region)?.join() === color.join() && drawn(region, state),
+      association.mappings.some(({ region }) =>
+        [region, ...clinical.standIns(region)].some(
+          (id) => state.paint!.colors.get(id)?.join() === color.join() && drawn(id, state),
+        ),
       );
     const rows = findings.map(({ association, color }) => ({
       id: association.id,

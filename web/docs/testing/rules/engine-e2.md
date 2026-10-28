@@ -235,13 +235,13 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Expected:** [23, 220, 60] → linear [0.008568, 0.715694, 0.045186] ± 1e-6, alpha 1; background code 0 → alpha 0. Every CDMD label with a mesh (`cortex-destrieux.glb`, `cortex-hcp-mmp.glb`, `structures.glb`, `nextbrain.glb` where published) equals that mesh's material colour ± 1e-6; every NextBrain cut-only label equals its table colour ± 1e-6.
 - **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `src/lib/engine/tissues/assets.test.ts` (S, every published label)
 
-### SHADER-23 · Network, CAB-NP and functional colours reach the cut as they reach the surface
+### SHADER-23 · Network and CAB-NP colours reach the cut as they reach the surface
 
-- **Rule:** Each colour mode applies only in its own `surfaceColor` (`network`, `cab-np`, `functional`), over the tissue colour. Under network colour a label takes the colour of its region's dominant network, NextBrain cortical parcels included. CAB-NP and functional colours apply to the areas those partitions assign, at the functional level on show. A label with no such colour keeps its tissue colour.
+- **Rule:** Each colour mode applies only in its own `surfaceColor` (`network`, `cab-np`), over the tissue colour. Under network colour a label takes the colour of its region's dominant network, NextBrain cortical parcels included. CAB-NP colours apply to the areas the partition assigns. A label with no such colour keeps its tissue colour.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/tissues/palette.js:26-38, 40-58, 71-84`
-- **Expected:** Default 0.6 / Vis 0.3 → Default [205, 62, 78] linear; white matter → tissue white. CAB-NP `{destrieux:left:1: Default}` with Default [255, 0, 0] → linear (1, 0, 0). Functional `sections` → section-22 [0, 0, 255]; level `named` → tissue cortex. `nextbrain:left:2001` (Default 0.8) → Default; `nextbrain:left:48` (no networks) → tissue gray. Published NextBrain `ctx-` labels under network colour: more than 0 differ from tissue colour. The predicates are true only for their own mode; `usesPaint` only with a paint.
+- **Expected:** Default 0.6 / Vis 0.3 → Default [205, 62, 78] linear; white matter → tissue white. CAB-NP `{destrieux:left:1: Default}` with Default [255, 0, 0] → linear (1, 0, 0). `nextbrain:left:2001` (Default 0.8) → Default; `nextbrain:left:48` (no networks) → tissue gray. Published NextBrain `ctx-` labels under network colour: more than 0 differ from tissue colour. The predicates are true only for their own mode; `usesPaint` only with a paint.
 - **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R)
 
 ### SHADER-24 · Tissue colour and a paint override the published colours

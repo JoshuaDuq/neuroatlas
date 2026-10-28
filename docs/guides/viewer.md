@@ -14,11 +14,11 @@ The masthead selects the subject and display layers. The panel holds searchable 
 | Field | Choices |
 | :--- | :--- |
 | Subject | MGH CDMD (and `fsaverage` when built locally) |
-| Atlas | Destrieux (74 regions per hemisphere) or HCP-MMP (180 areas per hemisphere) |
-| Colour | Tissue, T1 MRI, Regions, Yeo 7 networks, CAB-NP networks, Functional divisions |
+| Atlas | Destrieux (74 regions per hemisphere), HCP-MMP (180 areas per hemisphere) or Julich-Brain (139 cytoarchitectonic areas per hemisphere; about a quarter of the cortex not yet mapped) |
+| Colour | Tissue, T1 MRI, Regions, Yeo 7 networks, CAB-NP networks |
 | Internal anatomy | Teaching set, FreeSurfer aseg, NextBrain |
 
-CAB-NP and Functional divisions colour HCP-MMP areas only, so choosing one switches the atlas; the option says so before you choose it. While the Functions or Deficits tab paints the brain, Colour reads **Functions** or **Deficit**; choosing a colour there replaces the paint.
+CAB-NP colours HCP-MMP areas only, so choosing it switches the atlas; the option says so before you choose it. While the Functions or Deficits tab paints the brain, Colour reads **Functions** or **Deficit**; choosing a colour there replaces the paint.
 
 When the fields do not fit, they collapse into one summary button that opens the same fields. **⋯** holds Language, Theme, Single-key shortcuts and the keyboard shortcut list. **Save image** writes the stage as a PNG, with its orientation letters, scale bar, colour key, a caption and the not-clinical statement.
 

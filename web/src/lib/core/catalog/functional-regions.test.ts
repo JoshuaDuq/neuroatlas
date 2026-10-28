@@ -5,7 +5,6 @@ import {
   FUNCTIONAL_LEVELS,
   functionalName,
   functionalRegionOf,
-  functionalShortName,
   validateFunctionalRegions,
   type FunctionalRegions,
 } from './functional-regions.ts';
@@ -80,13 +79,10 @@ test('an area takes its section at every level, and a named region only where on
   assert.equal(functionalRegionOf(null, 'sections', 'hcp-mmp:left:84'), null);
 });
 
-test("names and key labels are read in the reader's language", () => {
+test("names are read in the reader's language", () => {
   const [record] = partition().levels.named;
   assert.equal(functionalName(record), 'Primary motor cortex (M1)');
   assert.equal(functionalName(record, 'fr'), 'Cortex moteur primaire (M1)');
-  const [, section] = partition().levels.sections;
-  assert.equal(functionalShortName(section), 'Dorsolateral prefrontal');
-  assert.equal(functionalShortName(section, 'fr'), 'Préfrontal dorsolatéral');
 });
 
 test('an assignment to another atlas or to an undefined region is rejected', () => {

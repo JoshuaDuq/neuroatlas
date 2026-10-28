@@ -1,11 +1,9 @@
 // What the stage's colour keys say and how they fit the stage (viewport-chrome.js:23-42, 269-402).
 import { cabNpName, networkCss, networkName } from '../../lib/core/catalog/networks.ts';
-import { functionalShortName } from '../../lib/core/catalog/functional-regions.ts';
-import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import { t } from '../../lib/core/i18n/index.ts';
 import type { Legend } from '../../lib/core/state/paint.ts';
 import type {
-  FunctionalLevel,
+  ArterialTerritory,
   Language,
   LoadStatus,
   Rgb,
@@ -22,7 +20,7 @@ export const KEY_NOTE_MIN_WIDTH_PX = 600;
 /** The title row, foot and edges of a plate. */
 const KEY_HEAD_PX = 42;
 
-export type KeyName = 'network' | 'functional' | 'paint' | 'direction';
+export type KeyName = 'network' | 'paint' | 'direction';
 
 export interface KeyRow {
   id: string;
@@ -43,8 +41,6 @@ export interface KeyPlate {
   rows: KeyRow[];
   /** The paint key's sentence under its rows; empty for the others. */
   note: string;
-  /** The functional plate's level; null for the others. */
-  level: FunctionalLevel | null;
   /** Each row is a toggle that shows that row alone. */
   pickable: boolean;
 }
@@ -59,10 +55,10 @@ export interface KeySources {
   lang: Language;
   status: LoadStatus;
   surfaceColor: SurfaceColor;
-  functionalLevel: FunctionalLevel;
   networks: ColoredNetworks | null;
   cabNp: ColoredNetworks | null;
-  functionalRegions: FunctionalRegions | null;
+  /** The arterial territories' palette, in the atlas's order, when the build publishes them. */
+  territories?: readonly ArterialTerritory[] | null;
   /** The key of the paint on show (`legendFor`), or null. */
   legend: Legend | null;
   /** The streamlines are drawn, coloured by direction. */
@@ -108,25 +104,19 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
       title: maps[surfaceColor]!,
       rows: partition.networks.map((key) => row(key, partition.colors[key]!, name(key, lang))),
       note: '',
-      level: null,
       pickable: false,
     });
   }
 
-  if (ready && !legend && sources.functionalRegions && surfaceColor === 'functional') {
+  if (ready && !legend && surfaceColor === 'territory' && sources.territories) {
     plates.push({
-      name: 'functional',
-      map: 'functional',
-      title: maps.functional!,
-      rows: sources.functionalRegions.levels[sources.functionalLevel].map((record) =>
-        row(
-          record.id,
-          record.color,
-          (record.number ? `${record.number} · ` : '') + functionalShortName(record, lang),
-        ),
+      name: 'network',
+      map: surfaceColor,
+      title: maps[surfaceColor]!,
+      rows: sources.territories.map((territory) =>
+        row(territory.id, territory.color, lang === 'fr' ? territory.name_fr : territory.name),
       ),
       note: '',
-      level: sources.functionalLevel,
       pickable: false,
     });
   }
@@ -140,7 +130,6 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
         row(entry.id, entry.color, entry.label, entry.pressed, entry.absent),
       ),
       note: legend.note,
-      level: null,
       pickable: legend.pickable !== false && legend.rows.length > 1,
     });
   }
@@ -157,7 +146,6 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
         row('si', 'var(--scene-direction-si)', copy.superiorInferior),
       ],
       note: '',
-      level: null,
       pickable: false,
     });
   }

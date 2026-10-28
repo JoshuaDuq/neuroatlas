@@ -1,6 +1,6 @@
 <!--
   A mutually exclusive choice that is cheap to apply: language, theme, single keys, hemisphere,
-  functional level, MPR planes, tree scope. APG Radio Group (decision 0003, deviation
+  MPR planes, tree scope. APG Radio Group (decision 0003, deviation
   u3-segmented-controls): one Tab stop on the checked item, arrows move AND select (wrapping),
   Space selects. Bits RadioGroup behind the Planum seam; drawn as the legacy `.segmented` track.
   A visible label text can be shorter than its accessible name ("EN" / "English"), which

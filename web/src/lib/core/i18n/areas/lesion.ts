@@ -25,6 +25,9 @@ export const en = {
   deep: 'Deep structures',
   white: 'Gyral white matter',
   whiteNote: 'Within 5 mm of the cortex, named by the gyrus above',
+  territories: 'Arterial territories',
+  territoryNote:
+    'Each typical territory’s share of the lesion volume that lies in any territory, with that volume in mm³ (Liu et al. 2023, registered onto this brain); not this brain’s own vessels',
   slightRegions: (count: string) => `${count} more under 1%`,
   tracts: 'Tracts',
   tractsNote: 'Streamlines with a point inside the lesion',
@@ -101,6 +104,9 @@ export const fr: typeof en = {
   deep: 'Structures profondes',
   white: 'Substance blanche gyrale',
   whiteNote: 'À moins de 5 mm du cortex, nommée d’après le gyrus au-dessus',
+  territories: 'Territoires artériels',
+  territoryNote:
+    'Part de chaque territoire typique dans le volume de la lésion situé dans un territoire, avec ce volume en mm³ (Liu et al. 2023, recalé sur ce cerveau) ; pas les propres vaisseaux de ce cerveau',
   slightRegions: (count: string) => `${count} de plus sous 1 %`,
   tracts: 'Faisceaux',
   tractsNote: 'Trajectoires ayant un point dans la lésion',

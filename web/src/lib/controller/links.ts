@@ -106,7 +106,7 @@ export function createLinks({
       'atlas',
       ...(model.manifest.networks ? ['network'] : []),
       ...(model.cabNp ? ['cab-np'] : []),
-      ...(model.functionalRegions ? ['functional'] : []),
+      ...(model.manifest.arterial_territories ? ['territory'] : []),
     ]),
     functions: new Set([
       ALL_DOMAINS,

@@ -12,10 +12,9 @@ export const publishesSpinalCord = (manifest: Pick<Manifest, 'supplemental_layer
 
 /** Colours that are defined on one atlas's areas, and so need that atlas shown. */
 export const requiredAtlas = (
-  { cabNp, functionalRegions }: Pick<ModelPort, 'cabNp' | 'functionalRegions'>,
+  { cabNp }: Pick<ModelPort, 'cabNp'>,
   colour: SurfaceColor,
-): string | null | undefined =>
-  colour === 'cab-np' ? cabNp?.atlas : colour === 'functional' ? functionalRegions?.atlas : null;
+): string | null | undefined => (colour === 'cab-np' ? cabNp?.atlas : null);
 
 /**
  * The scene changes that wait on downloads: layer switches, surface colours and
@@ -145,10 +144,8 @@ export function createSceneCommands({
     if (!current()) return false;
     // Through the sections even when the colour is already shown, so an older colour still loading is overtaken.
     const colour = () => sections.setSurfaceColor(value, current);
-    // The scan and the glass solids, cut from the envelopes, are downloads of their own.
-    if (value === 'functional' && value !== model.settings.surfaceColor) {
-      await Promise.all([envelopes(), download(colour)]);
-    } else if (value === 'mri' && value !== model.settings.surfaceColor) await download(colour);
+    // The scan is a download of its own.
+    if (value === 'mri' && value !== model.settings.surfaceColor) await download(colour);
     else await colour();
     return current();
   }
@@ -230,17 +227,11 @@ export function createSceneCommands({
   async function chooseSurfaceColor(value: SurfaceColor) {
     const current = begin();
     session.notify(null);
-    const entering = value === 'functional' && model.settings.surfaceColor !== 'functional';
     try {
       if (!(await applySurfaceColor(value, current))) return;
     } catch (error) {
       failIfCurrent(current, 'colour', error, t(lang(), 'display').surfaceColors[value]);
       return;
-    }
-    // The glass brain shows the cortex alone; the reader is told how to bring the internal anatomy back.
-    if (entering && model.settings.internalVisible) {
-      model.setInternalVisible(false);
-      session.notify({ text: t(lang(), 'app').functionalHidesInternal });
     }
     render();
   }

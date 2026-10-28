@@ -48,6 +48,7 @@ export function createEngineModel(atlas: BrainAtlas): EngineModel {
     functionalRegions: atlas.functionalRegions,
     domains: atlas.domains,
     boundaryCertainty: atlas.boundaryCertainty,
+    receptors: atlas.receptors,
     get defaultDetail() {
       return atlas.defaultDetail;
     },
@@ -78,7 +79,6 @@ export function createEngineModel(atlas: BrainAtlas): EngineModel {
     setCortexOpacity: (opacity) => atlas.setCortexOpacity(opacity),
     setInternalVisible: (visible) => atlas.setInternalVisible(visible),
     setSpinalCordVisible: (visible, onProgress) => atlas.setSpinalCordVisible(visible, onProgress),
-    setFunctionalLevel: (level) => atlas.setFunctionalLevel(level),
     setSurfaceColor: (mode) => atlas.setSurfaceColor(mode),
     setPaint: (paint) => atlas.setPaint(paint),
     isolate: () => atlas.isolate(),

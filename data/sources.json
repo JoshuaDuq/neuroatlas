@@ -176,262 +176,6 @@
       "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
     },
     {
-      "path": "data/cdmd/input/sub_013_t1w.nii.gz",
-      "sha256": "16e9137160f20c3dfb39fbd04ce1299415c5252ba96e8b0266f5f9402c60730b",
-      "anatomy": "cdmd",
-      "url": "https://doi.org/10.6084/m9.figshare.c.5315474.v1"
-    },
-    {
-      "path": "data/cdmd/mri/orig.mgz",
-      "sha256": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/mri/aseg.mgz",
-      "sha256": "d8e1e9fbd8d3cf34ee259ac708147da4c61319faf293dd3671584d655f611cbc",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/mri/aparc.a2009s+aseg.mgz",
-      "sha256": "c859c5b38010b319862f8c3d5deb0828bd73524be27ed1cd483eefc234781d0e",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/mri/ribbon.mgz",
-      "sha256": "42a9d24c0dc202caa7776bc2f10bf3da2279dcacde2e23ce4614e64c1e6db9e7",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/mri/brain.mgz",
-      "sha256": "2d9d847b16bc29ac94dff4960ef1d83ce9282a0075bcb9d9c4d0f50654599abe",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/mri/wmparc.mgz",
-      "sha256": "a080190a2ba6d2b77cddd158786f4ccb99185b8abb9906b550820248ce45131f",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/scripts/build-stamp.txt",
-      "sha256": "05e1fbf2faef4be22a0180c1aaf9a337bfdaccfdcdd7a34adaac27e1578458dd",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/stats/aseg.stats",
-      "sha256": "07001d0adb81bee401752883a1ee84a97fee9aae0535e26c65ed99e075c2ce47",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/lh.pial",
-      "sha256": "75ba707c512c289ad0d6e7aabefbcac854ae5bdf2b3e8ceecddf9834e162cee2",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/lh.white",
-      "sha256": "abd03f82ea7574ec42740d72550d253504cd66fb9420cb793d1556e2d99f732c",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/lh.sulc",
-      "sha256": "7601bb5ce22309153ac8226a952dd0ce14c992a1948c636589ff1753eb09c595",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/lh.sphere.reg",
-      "sha256": "410f20030632c9bfc31684b900a9636464f6e979f343ad9d6f62c63c9418df70",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/label/lh.aparc.a2009s.annot",
-      "sha256": "a0a16110336901d3fa893d64e7dc00df89dd8826020902797d6851416f1716f4",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/rh.pial",
-      "sha256": "bcee0a1346002663e77d9832202d4c04793402c96a3162aefbdb3ff7d7d256f9",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/rh.white",
-      "sha256": "6357b680737a2813b2c9c946525a389087748d13845c4c4d6218e738c1919b93",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/rh.sulc",
-      "sha256": "fcfc9dabbe52462ff9bcfcd09f30a31703212540584d6c7471f5fea71330b3a0",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/surf/rh.sphere.reg",
-      "sha256": "ef0bf345caf85a7f430c612d85ffa7a5d2b9eb44123ce36a1b491129ca33cc8d",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/label/rh.aparc.a2009s.annot",
-      "sha256": "5fc2cddc9cb4c1652b7512dc689227e07f7ac4dfb6bc7dccc4bcce04de368742",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/reconstruction.json",
-      "sha256": "fa83e9dc513d548bf7f949d29daff0caf408de4e565b0b47d6cfd15c196f9a1d",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/cdmd/input/sub_013_t1w.nii.gz"
-      ],
-      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
-    },
-    {
-      "path": "data/cdmd/label/lh.HCPMMP1.annot",
-      "sha256": "be26cfba13236a274f46da127d0e2776abcae89f10b7f9489bbd8188aebc1386",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/fsaverage/label/lh.HCPMMP1.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/cdmd/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/cdmd/label/rh.HCPMMP1.annot",
-      "sha256": "257aa1f069fee38517686fa1d9f4224a643efb7de4ac7cac278b3d5be2bb8206",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/fsaverage/label/rh.HCPMMP1.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/cdmd/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/cdmd/hcp-registration.json",
-      "sha256": "e5c2ce2b88d0ef4898ea7613cfd55a4581e102efa01bb34a668267d30e74b94f",
-      "anatomy": "cdmd",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
-    },
-    {
-      "path": "data/cdmd/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
-      "sha256": "c604116e027c27a5ac3b9e302b14c436ac2672fe67c01d7b54f3c896ec4fc6b4",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/cdmd/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/cdmd/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
-      "sha256": "a099dbed4242930a1f378a98756e62b9649c83fcb2fb667d198a047253718a9f",
-      "anatomy": "cdmd",
-      "derived_from": [
-        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/cdmd/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/cdmd/network-registration.json",
-      "sha256": "e8eec343ddbe2f5c428bd551e2cc246c540078efb3ae264010efc9fa9afb7e0f",
-      "anatomy": "cdmd",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
-    },
-    {
       "path": "data/cdmd/mri/cerebellum.CerebNet.mgz",
       "sha256": "884ffe5c2cd9e616b5cd1bcf635ce4193f7dd60f9ba9cf76ae90502a07340ec3",
       "anatomy": "cdmd",
@@ -762,6 +506,818 @@
         "https://doi.org/10.1016/j.neuroimage.2016.10.009"
       ],
       "license": "PAM50: MIT; the Spinal Cord Toolbox that produced these files is LGPL-3.0"
+    },
+    {
+      "path": "data/fsaverage/label/lh.JulichBrain3.1.annot",
+      "sha256": "94749a7d6f1f9c6644a3cb563bc7b09589cda565e78581e602fdd225d064b4ea",
+      "anatomy": "fsaverage",
+      "derived_from": [
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/d-f1fe19e8-99bd-44bc-9616-a52850680777/fsaverage_surface/lh.JulichBrainAtlas_3.1.label.gii",
+          "sha256": "e4a854225e5269b807d995bba6ecfd7068f4ef729fd44e3c6f3ea06dfe1afda4"
+        }
+      ],
+      "procedure": "scripts/fetch_julich_brain.py: Julich-Brain 3.1's fsaverage maximum-probability map, GIFTI label keys and table written unchanged as a FreeSurfer annotation",
+      "citation": "https://doi.org/10.25493/KNSN-XB4",
+      "license": "CC BY-NC-SA 4.0"
+    },
+    {
+      "path": "data/fsaverage/label/rh.JulichBrain3.1.annot",
+      "sha256": "8a0144ac1362cad6b89ebae094f30db29e38f5b7eaab4c487df2ffbdd65266dc",
+      "anatomy": "fsaverage",
+      "derived_from": [
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/d-f1fe19e8-99bd-44bc-9616-a52850680777/fsaverage_surface/rh.JulichBrainAtlas_3.1.label.gii",
+          "sha256": "88e44264e41bf36075e610c2d45c42fde9a54dfc478e6b835197207adc68a9ac"
+        }
+      ],
+      "procedure": "scripts/fetch_julich_brain.py: Julich-Brain 3.1's fsaverage maximum-probability map, GIFTI label keys and table written unchanged as a FreeSurfer annotation",
+      "citation": "https://doi.org/10.25493/KNSN-XB4",
+      "license": "CC BY-NC-SA 4.0"
+    },
+    {
+      "path": "public/models/licenses/Julich-Brain-CC-BY-NC-SA-4.0.pdf",
+      "sha256": "8ece6cf82c6c58157b8166d4a4cfd248ef5dec6ff1758a8d3811ebf032c714bf",
+      "anatomy": "fsaverage",
+      "derived_from": [
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/d-f1fe19e8-99bd-44bc-9616-a52850680777/Licence-CC-BY-NC-SA.pdf"
+        }
+      ],
+      "procedure": "scripts/fetch_julich_brain.py: Julich-Brain 3.1's fsaverage maximum-probability map, GIFTI label keys and table written unchanged as a FreeSurfer annotation",
+      "citation": "https://doi.org/10.25493/KNSN-XB4",
+      "license": "CC BY-NC-SA 4.0"
+    },
+    {
+      "path": "data/cdmd/input/sub_013_t1w.nii.gz",
+      "sha256": "16e9137160f20c3dfb39fbd04ce1299415c5252ba96e8b0266f5f9402c60730b",
+      "anatomy": "cdmd",
+      "url": "https://doi.org/10.6084/m9.figshare.c.5315474.v1"
+    },
+    {
+      "path": "data/cdmd/mri/orig.mgz",
+      "sha256": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/aseg.mgz",
+      "sha256": "d8e1e9fbd8d3cf34ee259ac708147da4c61319faf293dd3671584d655f611cbc",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/aparc.a2009s+aseg.mgz",
+      "sha256": "c859c5b38010b319862f8c3d5deb0828bd73524be27ed1cd483eefc234781d0e",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/ribbon.mgz",
+      "sha256": "42a9d24c0dc202caa7776bc2f10bf3da2279dcacde2e23ce4614e64c1e6db9e7",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/brain.mgz",
+      "sha256": "2d9d847b16bc29ac94dff4960ef1d83ce9282a0075bcb9d9c4d0f50654599abe",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/wmparc.mgz",
+      "sha256": "a080190a2ba6d2b77cddd158786f4ccb99185b8abb9906b550820248ce45131f",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/scripts/build-stamp.txt",
+      "sha256": "05e1fbf2faef4be22a0180c1aaf9a337bfdaccfdcdd7a34adaac27e1578458dd",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/stats/aseg.stats",
+      "sha256": "07001d0adb81bee401752883a1ee84a97fee9aae0535e26c65ed99e075c2ce47",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.pial",
+      "sha256": "75ba707c512c289ad0d6e7aabefbcac854ae5bdf2b3e8ceecddf9834e162cee2",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.white",
+      "sha256": "abd03f82ea7574ec42740d72550d253504cd66fb9420cb793d1556e2d99f732c",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.sulc",
+      "sha256": "7601bb5ce22309153ac8226a952dd0ce14c992a1948c636589ff1753eb09c595",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.sphere.reg",
+      "sha256": "410f20030632c9bfc31684b900a9636464f6e979f343ad9d6f62c63c9418df70",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/label/lh.aparc.a2009s.annot",
+      "sha256": "a0a16110336901d3fa893d64e7dc00df89dd8826020902797d6851416f1716f4",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.pial",
+      "sha256": "bcee0a1346002663e77d9832202d4c04793402c96a3162aefbdb3ff7d7d256f9",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.white",
+      "sha256": "6357b680737a2813b2c9c946525a389087748d13845c4c4d6218e738c1919b93",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.sulc",
+      "sha256": "fcfc9dabbe52462ff9bcfcd09f30a31703212540584d6c7471f5fea71330b3a0",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.sphere.reg",
+      "sha256": "ef0bf345caf85a7f430c612d85ffa7a5d2b9eb44123ce36a1b491129ca33cc8d",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/label/rh.aparc.a2009s.annot",
+      "sha256": "5fc2cddc9cb4c1652b7512dc689227e07f7ac4dfb6bc7dccc4bcce04de368742",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/reconstruction.json",
+      "sha256": "fa83e9dc513d548bf7f949d29daff0caf408de4e565b0b47d6cfd15c196f9a1d",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/label/lh.HCPMMP1.annot",
+      "sha256": "be26cfba13236a274f46da127d0e2776abcae89f10b7f9489bbd8188aebc1386",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/lh.HCPMMP1.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/cdmd/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/label/rh.HCPMMP1.annot",
+      "sha256": "257aa1f069fee38517686fa1d9f4224a643efb7de4ac7cac278b3d5be2bb8206",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/rh.HCPMMP1.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/cdmd/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/hcp-registration.json",
+      "sha256": "e5c2ce2b88d0ef4898ea7613cfd55a4581e102efa01bb34a668267d30e74b94f",
+      "anatomy": "cdmd",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/cdmd/label/lh.JulichBrain3.1.annot",
+      "sha256": "07898556b5083d731d735717527ae4d5d573647d96f2884b1d359186b97d3fdd",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/lh.JulichBrain3.1.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/cdmd/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/label/rh.JulichBrain3.1.annot",
+      "sha256": "a2aae43679af4cf16d8617e8ecb6226aec94b8ed649e3ab54ae01ed4e6ef5be2",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/rh.JulichBrain3.1.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/cdmd/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/julich-registration.json",
+      "sha256": "1f86a5bb8d599c1f927abd6c4c27c45fffb2e2b90becaad6a458b322e29d936c",
+      "anatomy": "cdmd",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/cdmd/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "c604116e027c27a5ac3b9e302b14c436ac2672fe67c01d7b54f3c896ec4fc6b4",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/cdmd/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "a099dbed4242930a1f378a98756e62b9649c83fcb2fb667d198a047253718a9f",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/cdmd/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/network-registration.json",
+      "sha256": "e8eec343ddbe2f5c428bd551e2cc246c540078efb3ae264010efc9fa9afb7e0f",
+      "anatomy": "cdmd",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/receptor-fingerprints.json",
+      "sha256": "c1c113e540ae9cfa93e696bf19b97333ced750ba5e9840b91b41522b04159a47",
+      "derived_from": [
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-3b_pub/v1.0/3b_fp_20180321.tsv",
+          "sha256": "1eb068ad6edb94a45804c9424c476968606bbe405904913d7cf55694067ef36d"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-3b_pub/v1.0/subjects.tsv",
+          "sha256": "f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-3b_pub/v1.0/tissue-samples.tsv",
+          "sha256": "ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-44d_pub/v1.0/44d_fp_20171202.tsv",
+          "sha256": "26f3f2e7788e3fa96e525e89e83bc83a513676a288dc03cc6949b7d7c1f15bd8"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-44d_pub/v1.0/subjects.tsv",
+          "sha256": "9773876d980f1c7ec49b5b754f1cd60c926ee2d8cc4b3eb3b416a416c391eb45"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-44d_pub/v1.0/tissue-samples.tsv",
+          "sha256": "511e9d4b1c24a31067c8e7c59f11f828047eea562bc5c52fd542e5d7f79a2aaa"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-44v_pub/v1.0/44v_fp_20180405.tsv",
+          "sha256": "a9f6f4b66db06f541952d21c86b85df620634b9545628d7573b320dbbc663275"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-44v_pub/v1.0/subjects.tsv",
+          "sha256": "f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-44v_pub/v1.0/tissue-samples.tsv",
+          "sha256": "8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-45_pub/v1.0/45_fp_20171202.tsv",
+          "sha256": "19de569c55f530d5ed92bdfaf3b901bd58c89954ece26ff353d4fb64b7272154"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-45_pub/v1.0/subjects.tsv",
+          "sha256": "9773876d980f1c7ec49b5b754f1cd60c926ee2d8cc4b3eb3b416a416c391eb45"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-45_pub/v1.0/tissue-samples.tsv",
+          "sha256": "511e9d4b1c24a31067c8e7c59f11f828047eea562bc5c52fd542e5d7f79a2aaa"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-4p_pub/v1.0/4p_fp_20171202.tsv",
+          "sha256": "eab0cd7794ab1a943ce3fea516ee9a0109337618383dfe20a3616cef93531cdc"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-4p_pub/v1.0/subjects.tsv",
+          "sha256": "053df9f358f5e0341c39b625fd01894123b416a7aef8795c62385042be1a08c5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-4p_pub/v1.0/tissue-samples.tsv",
+          "sha256": "a05ec28e869d820663cabe299cf17e96d5e2a498ddc4d3ebad14df70f99c9aea"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-7A_pub/v1.0/7A_fp_20180321.tsv",
+          "sha256": "c27acd654d1b0f5ecbdcb3fb985fddbf755c5de521b385d498bd1fd4871f7521"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-7A_pub/v1.0/subjects.tsv",
+          "sha256": "f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-7A_pub/v1.0/tissue-samples.tsv",
+          "sha256": "ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-FG1_pub/v1.0/FG1_fp_20180321.tsv",
+          "sha256": "240b0ded2adf1e8fcbc7a001f40046bb22dd0f9589eae68f2fa704a67876e824"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-FG1_pub/v1.0/subjects.tsv",
+          "sha256": "3c4fd08bc281ef64f05bfb46f8829397735a2a3c252bdffa7eeb0b72f6039aa5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-FG1_pub/v1.0/tissue-samples.tsv",
+          "sha256": "f855ddaccb8918c759736ab857e94804b096067ae5f7dda3683355ecf359a904"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-FG2_pub/v1.0/FG2_fp_20180321.tsv",
+          "sha256": "a38f44fca6c3ea7987eb25789cb779faa1a4d6df28fb1338c963e6655912be99"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-FG2_pub/v1.0/subjects.tsv",
+          "sha256": "9d5c86613e66d755d453513de20738618b1adb72eadbd1cb29d266d9660e2849"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-FG2_pub/v1.0/tissue-samples.tsv",
+          "sha256": "6a18e54f764868d60ce2e3b6e201fc17c2e29a643833e278f1919d980b99e415"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PF_pub/v1.0/PF_fp_20180405.tsv",
+          "sha256": "2c4f618c29c2a6c5e32fcfadf17d0ed9f4b2e86398cfebd3ffec906519f11cc9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PF_pub/v1.0/subjects.tsv",
+          "sha256": "f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PF_pub/v1.0/tissue-samples.tsv",
+          "sha256": "8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFcm_pub/v1.0/PFcm_fp_20180405.tsv",
+          "sha256": "c764420718f1bef6a52e823feba7a17f26749f083abc4f5bc9bc3b17282d290c"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFcm_pub/v1.0/subjects.tsv",
+          "sha256": "f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFcm_pub/v1.0/tissue-samples.tsv",
+          "sha256": "ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFm_pub/v1.0/PFm_fp_20171202.tsv",
+          "sha256": "e2b3fd17aa8364636edae206f6561f2188b4d62cbfb60a0f3eac00596cf98b7f"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFm_pub/v1.0/subjects.tsv",
+          "sha256": "053df9f358f5e0341c39b625fd01894123b416a7aef8795c62385042be1a08c5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFm_pub/v1.0/tissue-samples.tsv",
+          "sha256": "a05ec28e869d820663cabe299cf17e96d5e2a498ddc4d3ebad14df70f99c9aea"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFop_pub/v1.0/PFop_fp_20180405.tsv",
+          "sha256": "1504e7ab6e0140f6752292bb8057e676d45091d5616dad65ac83de50b3ede725"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFop_pub/v1.0/subjects.tsv",
+          "sha256": "f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFop_pub/v1.0/tissue-samples.tsv",
+          "sha256": "ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFt_pub/v1.0/PFt_fp_20180405.tsv",
+          "sha256": "797cb12c92d1733ea370ac747c40c901ef01aebe335176bf6e589d806473733d"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFt_pub/v1.0/subjects.tsv",
+          "sha256": "f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PFt_pub/v1.0/tissue-samples.tsv",
+          "sha256": "8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PGa_pub/v1.0/PGa_fp_20180405.tsv",
+          "sha256": "c2abe63dbfc3c8612c7d65251d7fa50c388f55c92d10565d11bc40c81bb918c7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PGa_pub/v1.0/subjects.tsv",
+          "sha256": "f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PGa_pub/v1.0/tissue-samples.tsv",
+          "sha256": "ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PGp_pub/v1.0/PGp_fp_20180405.tsv",
+          "sha256": "dd4d34d715c94f6a93a2f7daba8ce9288fe3a2b7e2b6b878d3cbb4f97524a5f0"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PGp_pub/v1.0/subjects.tsv",
+          "sha256": "f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-PGp_pub/v1.0/tissue-samples.tsv",
+          "sha256": "8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-TE1_0_pub/v1.0/TE1_0_fp_20180405.tsv",
+          "sha256": "47a00f492f80afaca10ee603bb36e7b328acf20017789f34f6139e5de8af40a8"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-TE1_0_pub/v1.0/subjects.tsv",
+          "sha256": "f7ba7998e4efbd573a906bc41941e8ecc70f15a609f9ad62105fe7dc6ea1bdc3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-TE1_0_pub/v1.0/tissue-samples.tsv",
+          "sha256": "ae80b05a84afbb80338f1024153b1b38740cfd741f762cea77f17bea412184d7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-TE2_1_pub/v1.0/TE2_1_fp_20180405.tsv",
+          "sha256": "053143b8200d810afdb49d409fbd079fa63d8924812f952adf837e707328f636"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-TE2_1_pub/v1.0/subjects.tsv",
+          "sha256": "f367647e9bce19ad06cc1451f01f4e259ee0f44456b8328da3649a8c3284b32a"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-TE2_1_pub/v1.0/tissue-samples.tsv",
+          "sha256": "8d87348a158f66cbbf273f73dbfff2af77f9622d1035746ed58a11d5c617c2d9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc1_pub/v1.0/hOc1_fp_20171202.tsv",
+          "sha256": "b5f5f643ca031c482af9ce71661bbba3852c4bbcf397399369431c93cb463621"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc1_pub/v1.0/subjects_all.csv",
+          "sha256": "053df9f358f5e0341c39b625fd01894123b416a7aef8795c62385042be1a08c5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc1_pub/v1.0/tissue-samples_all.csv",
+          "sha256": "a05ec28e869d820663cabe299cf17e96d5e2a498ddc4d3ebad14df70f99c9aea"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc2d_pub/v1.0/hOc2d_fp_20200214.tsv",
+          "sha256": "3ebcd776d692f971f2b7938bbadc7130cf44979e87c3246f43d9906c8bf5eeff"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc2d_pub/v1.0/subjects.tsv",
+          "sha256": "cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc2d_pub/v1.0/tissue-samples.tsv",
+          "sha256": "de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc2v_pub/v1.0/hOc2v_fp_20200214.tsv",
+          "sha256": "a3e3d7fd5eedadd8047ee33935b41db92e8d775ea85e42944e705980813dbe37"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc2v_pub/v1.0/subjects.tsv",
+          "sha256": "cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc2v_pub/v1.0/tissue-samples.tsv",
+          "sha256": "de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc3d_pub/v1.0/hOc3d_fp_20200214.tsv",
+          "sha256": "d6392e277100095f062fd409d6bd008674daf8c7066a4e4e103cc2850f452382"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc3d_pub/v1.0/subjects.tsv",
+          "sha256": "cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc3d_pub/v1.0/tissue-samples.tsv",
+          "sha256": "de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc3v_pub/v1.0/hOc3v_fp_20200214.tsv",
+          "sha256": "7c99badae8b2b6b9bf9a66de76ae2524633530f1d1d0617ac6f402c6e7657f80"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc3v_pub/v1.0/subjects.tsv",
+          "sha256": "cf74a3664d9b2d477c8dd7ba6a67560f082203db3c2e2882c7c1326b9165ff23"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-hOc3v_pub/v1.0/tissue-samples.tsv",
+          "sha256": "de05d048ed85214b58aec641302b90b59136ef642152d4e3e5d18679e88c29a0"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs1_pub/v1.0/ifs1_fp/ifs1_fp.tsv",
+          "sha256": "d273463c62dc82eb4f027c3fb30e3c1fabf0409e3bdfd98fe1bcb7af4ac6e6a3"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs1_pub/v1.0/ifs1_fp/subjects_all.csv",
+          "sha256": "4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs1_pub/v1.0/ifs1_fp/tissue-samples_all.csv",
+          "sha256": "fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs2_pub/v1.0/ifs2_fp/ifs2_fp.tsv",
+          "sha256": "20351ea7dcb5e908bfbac95572c697c24c8c4968e21f2c639e30ff7da39738da"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs2_pub/v1.0/ifs2_fp/subjects_all.csv",
+          "sha256": "4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs2_pub/v1.0/ifs2_fp/tissue-samples_all.csv",
+          "sha256": "fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs3_pub/v1.0/ifs3_fp/ifs3_fp.tsv",
+          "sha256": "a2b7d0f8981e756828aa9cde24cc8d30630d8038a7cd3bcd8bfa6ed66cb77a83"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs3_pub/v1.0/ifs3_fp/subjects_all.csv",
+          "sha256": "4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs3_pub/v1.0/ifs3_fp/tissue-samples_all.csv",
+          "sha256": "fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs4_pub/v1.0/ifs4_fp/ifs4_fp.tsv",
+          "sha256": "7a7c645c80bbd65e7a045dda5d6c18280e7bc35fd6e1cd695dffd741ea0be8c7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs4_pub/v1.0/ifs4_fp/subjects_all.csv",
+          "sha256": "4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifs4_pub/v1.0/ifs4_fp/tissue-samples_all.csv",
+          "sha256": "fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifj1_pub/v1.0/ifj1_fp/ifj1_fp.tsv",
+          "sha256": "b36a4856d1acf4af0e18f00850ea2f4c07cb710652363ad42808d8bddcdf2768"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifj1_pub/v1.0/ifj1_fp/subjects_all.csv",
+          "sha256": "4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifj1_pub/v1.0/ifj1_fp/tissue-samples_all.csv",
+          "sha256": "fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifj2_pub/v1.0/ifj2_fp/ifj2_fp.tsv",
+          "sha256": "91b9242cf3d3ba788f52623958d9bc61bd78c7cd68c8dec2103773b2e34a671f"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifj2_pub/v1.0/ifj2_fp/subjects_all.csv",
+          "sha256": "4144e293067a1a3405364df43ffeaaf208474f5eb1bb0b853376d2b0aab86a64"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ifj2_pub/v1.0/ifj2_fp/tissue-samples_all.csv",
+          "sha256": "fbc47ef2a04a2ff17cc95067c7055d6ff6d1a1a994d1de4cb95b12bd023da5c9"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA1_pub/v2.0/CA1_fp_20200214.tsv",
+          "sha256": "393efe2883bce5d08c132cd6a86dc7a91d47202015cea01538544fba7ffd9692"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA1_pub/v2.0/subjects.tsv",
+          "sha256": "936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA1_pub/v2.0/tissue-samples.tsv",
+          "sha256": "231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA2_pub/v2.0/CA2_fp_20200214.tsv",
+          "sha256": "8c2a415b3b2fc4affe39292c4fbb62627b392987f960fb39bedca527744025de"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA2_pub/v2.0/subjects.tsv",
+          "sha256": "936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA2_pub/v2.0/tissue-samples.tsv",
+          "sha256": "231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA3_pub/v2.0/CA3_fp_20200214.tsv",
+          "sha256": "4b4e8547a08d0955af165f5a9a07df797cffedee1d86fbd04d243c8f22b90822"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA3_pub/v2.0/subjects.tsv",
+          "sha256": "936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-CA3_pub/v2.0/tissue-samples.tsv",
+          "sha256": "231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-DG_pub/v2.0/DG_fp_20200214.tsv",
+          "sha256": "23f65a54b6229b7e15cbc019ca7983e18918eae8f96337085ce97aafb4eca3d0"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-DG_pub/v2.0/subjects.tsv",
+          "sha256": "936c626d133e3f6e1ee42878111dff7f1b75e3a8c5f91bf8ab2b7f8286250d01"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-DG_pub/v2.0/tissue-samples.tsv",
+          "sha256": "231b960cee7119fea7e2ffc3c487ae6877ddb0274af289c24c2701e2e9929323"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-Pu_pub/v1.0/Pu_fp_20180405.tsv",
+          "sha256": "40bb81138232c6b07bc62a62d1ab66b948968b5189dc64d9fcbf2a3a95cca1cf"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-Pu_pub/v1.0/subjects.tsv",
+          "sha256": "bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-Pu_pub/v1.0/tissue-samples.tsv",
+          "sha256": "e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-GP_pub/v1.0/GP_fp_20180405.tsv",
+          "sha256": "47a0935a755566b213b43fa31c340b0842d9d15b5e8c988b37d6aa1488bdd82d"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-GP_pub/v1.0/subjects.tsv",
+          "sha256": "bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-GP_pub/v1.0/tissue-samples.tsv",
+          "sha256": "e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ThMD_pub/v1.0/ThMD_fp_20180405.tsv",
+          "sha256": "db944876501b4cd0cacc90741b48149bf21e918d5a2a052e313d1b9caf268ea2"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ThMD_pub/v1.0/subjects.tsv",
+          "sha256": "bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ThMD_pub/v1.0/tissue-samples.tsv",
+          "sha256": "e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ThA_pub/v1.0/ThA_fp_20180405.tsv",
+          "sha256": "fa78dad29b73f3a7a6a5b540f5bbeaf2a88dd7863571f074195314044d5223ba"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ThA_pub/v1.0/subjects.tsv",
+          "sha256": "bd20bec90c678b75b3fd8af46a8573a9d7c6c787145606f5abd624b908cb5bd7"
+        },
+        {
+          "url": "https://data-proxy.ebrains.eu/api/v1/buckets/p22717-hbp-d000045_receptors-human-ThA_pub/v1.0/tissue-samples.tsv",
+          "sha256": "e2af2dccf8117f5f3c72e22738d706d5bb296f4683a1c42b3864754c5d01bce5"
+        }
+      ],
+      "procedure": "scripts/fetch_receptor_fingerprints.py: each EBRAINS receptor dataset's fingerprint, donors and sampled hemispheres, read value for value",
+      "citation": "https://doi.org/10.1016/j.cortex.2014.07.007, https://doi.org/10.1016/B978-0-444-63639-3.00024-4",
+      "license": "CC BY-NC-SA 4.0"
+    },
+    {
+      "path": "data/cdmd/mri/arterial-territories.mgz",
+      "sha256": "e1824d4d9f053f6ea343ca2a720dd870972f1c335200fdb6095f6bab7e6a5f8a",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://raw.githubusercontent.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation/159df3a34a769f804d22790752013d4e5ed04944/data/template/ArterialAtlas_padding.nii.gz",
+          "sha256": "3659447397867b18f2404406173cc13f5fe221aa30c9275d506272d367485ba0"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation/159df3a34a769f804d22790752013d4e5ed04944/data/template/ArterialAtlasLables.txt",
+          "sha256": "480ffc17764ecf35a5c12bf08165a9733eb0c7d23f7b6d1a2cc104d93627b048"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation/159df3a34a769f804d22790752013d4e5ed04944/data/template/JHU_SS_b0_ss_padding.nii.gz",
+          "sha256": "445c077024e40e327109b366b02119852aa676bbf7395e325fb80f62fdda3dda"
+        }
+      ],
+      "procedure": "scripts/register_arterial_territories.py: SynthMorph registration of the atlas template to brain.mgz, nearest-neighbour transfer",
+      "citation": "https://doi.org/10.1038/s41597-022-01923-0",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "path": "data/cdmd/arterial-registration.json",
+      "sha256": "eae7fea40ba7f85d9de17ca710677392c64567bcd41a7591c6fd3612a8c87889",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://raw.githubusercontent.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation/159df3a34a769f804d22790752013d4e5ed04944/data/template/ArterialAtlas_padding.nii.gz",
+          "sha256": "3659447397867b18f2404406173cc13f5fe221aa30c9275d506272d367485ba0"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation/159df3a34a769f804d22790752013d4e5ed04944/data/template/ArterialAtlasLables.txt",
+          "sha256": "480ffc17764ecf35a5c12bf08165a9733eb0c7d23f7b6d1a2cc104d93627b048"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation/159df3a34a769f804d22790752013d4e5ed04944/data/template/JHU_SS_b0_ss_padding.nii.gz",
+          "sha256": "445c077024e40e327109b366b02119852aa676bbf7395e325fb80f62fdda3dda"
+        }
+      ],
+      "procedure": "scripts/register_arterial_territories.py: SynthMorph registration of the atlas template to brain.mgz, nearest-neighbour transfer",
+      "citation": "https://doi.org/10.1038/s41597-022-01923-0",
+      "license": "CC BY-SA 4.0"
     }
   ]
 }

@@ -32,6 +32,8 @@ const KINDS: Record<string, string> = {
   'footer.visibleRegions': 'n',
   'boundary.summary': 'snn',
   'boundary.more': 'n',
+  'receptors.note': 'snnsn',
+  'territories.unassigned': 's',
   'comparison.more': 'n',
   'domains.band': 'sl',
   'domains.lesionCheck': 'a',

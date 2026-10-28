@@ -47,6 +47,7 @@ export interface Appearance {
 export interface AnatomicalUserData {
   tissueVariation: IUniform<number>;
   networkMix: IUniform<number> | null;
+  territoryMix: IUniform<number> | null;
 }
 
 /** Display colours describe tissue classes, never a measured tissue albedo. */
@@ -89,17 +90,21 @@ function addFoldShading(
   material: MeshPhysicalMaterial,
   { folds, intensity, field_ranges: ranges }: Appearance,
   withNetworks: boolean,
+  withTerritories: boolean,
 ): void {
   const variation = { value: intensity.surface_strength };
   const networkMix = { value: 0 };
+  const territoryMix = { value: 0 };
   const userData: AnatomicalUserData = {
     tissueVariation: variation,
     networkMix: withNetworks ? networkMix : null,
+    territoryMix: withTerritories ? territoryMix : null,
   };
   Object.assign(material.userData, userData);
   material.onBeforeCompile = (shader: WebGLProgramParametersWithUniforms) => {
     shader.uniforms.tissueVariation = variation;
     if (withNetworks) shader.uniforms.networkMix = networkMix;
+    if (withTerritories) shader.uniforms.territoryMix = territoryMix;
     shader.uniforms.sulcDecode = { value: fieldDecode(ranges, '_SULC') };
     shader.uniforms.concavityDecode = { value: fieldDecode(ranges, '_CONCAVITY') };
     shader.uniforms.t1Decode = { value: fieldDecode(ranges, '_T1') };
@@ -119,13 +124,15 @@ varying float vConcavity;
 varying float vT1;
 varying float vSulcalDepth;
 ${withNetworks ? 'attribute vec4 _networkColor;\nvarying vec4 vNetworkColor;' : ''}
+${withTerritories ? 'attribute vec4 _territoryColor;\nvarying vec4 vTerritoryColor;' : ''}
 ${shader.vertexShader}`.replace(
       '#include <begin_vertex>',
       `#include <begin_vertex>
 vSulcalDepth = _sulc * sulcDecode.y + sulcDecode.x;
 vConcavity = _concavity * concavityDecode.y + concavityDecode.x;
 vT1 = _t1 * t1Decode.y + t1Decode.x;
-${withNetworks ? 'vNetworkColor = _networkColor;' : ''}`,
+${withNetworks ? 'vNetworkColor = _networkColor;' : ''}
+${withTerritories ? 'vTerritoryColor = _territoryColor;' : ''}`,
     );
     shader.fragmentShader = `varying float vSulcalDepth;
 varying float vConcavity;
@@ -136,6 +143,7 @@ uniform float tissueVariation;
 uniform vec2 foldRange;
 uniform vec2 foldStrength;
 ${withNetworks ? 'varying vec4 vNetworkColor;\nuniform float networkMix;' : ''}
+${withTerritories ? 'varying vec4 vTerritoryColor;\nuniform float territoryMix;' : ''}
 ${shader.fragmentShader}`
       .replace(
         '#include <color_fragment>',
@@ -147,6 +155,14 @@ ${shader.fragmentShader}`
       // wall keeps its region colour however far this is turned up.
       diffuseColor.rgb = mix(
         diffuseColor.rgb, vNetworkColor.rgb, networkMix * vNetworkColor.a);`
+          : ''
+      }
+      ${
+        withTerritories
+          ? `
+      // As for networks: a vertex outside every territory keeps its region colour.
+      diffuseColor.rgb = mix(
+        diffuseColor.rgb, vTerritoryColor.rgb, territoryMix * vTerritoryColor.a);`
           : ''
       }
       float intensity = clamp((vT1 - t1Range.x) / (t1Range.y - t1Range.x), 0.0, 1.0);
@@ -163,7 +179,8 @@ ${shader.fragmentShader}`
       reflectedLight.indirectSpecular *= 1.0 - foldStrength.y * fold;`,
       );
   };
-  material.customProgramCacheKey = () => `source-tissue-relief-v4${withNetworks ? '-network' : ''}`;
+  material.customProgramCacheKey = () =>
+    `source-tissue-relief-v4${withNetworks ? '-network' : ''}${withTerritories ? '-territory' : ''}`;
 }
 
 export function createAnatomicalMaterial(
@@ -193,7 +210,12 @@ export function createAnatomicalMaterial(
         throw new Error(`Missing source shading attribute ${name}: ${region.id}`);
       }
     }
-    addFoldShading(material, appearance, Boolean(mesh.geometry.getAttribute('_network')));
+    addFoldShading(
+      material,
+      appearance,
+      Boolean(mesh.geometry.getAttribute('_network')),
+      Boolean(mesh.geometry.getAttribute('_territory')),
+    );
   }
   return material;
 }

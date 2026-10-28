@@ -18,7 +18,7 @@ test('TRK decoding accepts original gzip files and HTTP-decompressed response bo
   assert.deepEqual(gzip.offsetPt0, http.offsetPt0);
   assert.deepEqual(gzip.pts, http.pts);
   assert.equal(http.offsetPt0.length - 1, 3639);
-  assert.equal(http.pts.length / 3, 850570);
+  assert.equal(http.pts.length / 3, 844916);
 });
 
 test('the 3D lines and the MRI navigator share one download and one decode per tract', async () => {

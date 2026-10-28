@@ -419,7 +419,7 @@ test('MAST-36 · every data choice has a note in both languages, and the field i
       assert.ok(notes[id]!.length > 10, `${lang} ${id}`);
     }
     const titles = TRANSLATIONS[lang].display.surfaceColorTitles;
-    for (const choice of ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional']) {
+    for (const choice of ['tissue', 'mri', 'atlas', 'network', 'cab-np']) {
       assert.ok(Object.hasOwn(titles, choice), `${lang} ${choice}`);
     }
     assert.doesNotMatch(JSON.stringify(TRANSLATIONS[lang].header), /Specimen|Spécimen/);

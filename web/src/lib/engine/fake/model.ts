@@ -1,6 +1,5 @@
 import type {
   DisplaySettings,
-  FunctionalLevel,
   Hemisphere,
   Manifest,
   ModelState,
@@ -8,7 +7,7 @@ import type {
   Region,
   SurfaceColor,
 } from '../../types/index.ts';
-import { FUNCTIONAL_LEVELS, HEMISPHERES, SURFACE_COLORS } from '../../types/index.ts';
+import { HEMISPHERES, SURFACE_COLORS } from '../../types/index.ts';
 import type {
   CabNpData,
   DomainsData,
@@ -41,7 +40,6 @@ export interface FakeModel extends EngineModel {
   setCutState(cut: { atlas: string; active: boolean }): void;
   /** Mark a layer downloaded (what `loadLayer` does, brain-atlas.js:364). */
   loadLayer(id: string): void;
-  loadGlassSolids(): void;
   attachMri(): void;
   dispose(): void;
 }
@@ -82,7 +80,6 @@ export function createFakeModel({
   const dissection = { hidden: new Set<string>(), history: [] as Dissected[] };
   let envelopes = false;
   let spinalCord: SpinalCordLoad = 'unloaded';
-  let glassSolids = false;
   let mri = false;
   let disposed = false;
   let selectedId: string | null = null;
@@ -100,7 +97,6 @@ export function createFakeModel({
     internalVisible: true,
     spinalCordVisible: false,
     surfaceColor: 'atlas' as SurfaceColor,
-    functionalLevel: 'named' as FunctionalLevel,
     paint: null as Paint | null,
     isolatedRegion: null as string | null,
   };
@@ -167,6 +163,7 @@ export function createFakeModel({
     functionalRegions: (functionalRegions ?? null) as unknown as FunctionalRegionsData | null,
     domains: (domains ?? null) as unknown as DomainsData | null,
     boundaryCertainty: null,
+    receptors: null,
     defaultDetail,
     get settings() {
       return settings();
@@ -266,12 +263,6 @@ export function createFakeModel({
     setSurfaceColor(mode) {
       model.applySurfaceColor(mode);
     },
-    setFunctionalLevel(level) {
-      if (!FUNCTIONAL_LEVELS.includes(level))
-        throw new TypeError(`Unknown functional level: ${level}`);
-      values.functionalLevel = level;
-      update();
-    },
     setPaint(paint) {
       if (paint !== null && (typeof paint.id !== 'string' || !(paint.colors instanceof Map))) {
         throw new TypeError('A paint needs an id and a Map of region colours.');
@@ -335,7 +326,6 @@ export function createFakeModel({
       values.internalVisible = true;
       values.spinalCordVisible = false;
       values.surfaceColor = 'atlas';
-      values.functionalLevel = 'named';
       values.isolatedRegion = null;
       select(null);
     },
@@ -346,8 +336,6 @@ export function createFakeModel({
       layers.add(id);
       values.atlas = id;
       if (values.surfaceColor === 'cab-np' && id !== cabNp?.atlas) values.surfaceColor = 'atlas';
-      if (values.surfaceColor === 'functional' && id !== functionalRegions?.atlas)
-        values.surfaceColor = 'atlas';
       values.isolatedRegion = null;
       select(null);
     },
@@ -387,21 +375,13 @@ export function createFakeModel({
       if (mode === 'mri' && !mri) throw new Error('MRI must load before selecting MRI appearance.');
       if (mode === 'network' && !manifest.networks)
         throw new Error('This model carries no network layer.');
+      if (mode === 'territory' && !manifest.arterial_territories)
+        throw new Error('This model carries no arterial territories.');
       if (mode === 'cab-np') {
         if (!cabNp) throw new Error('This model carries no CAB-NP partition.');
         if (values.atlas !== cabNp.atlas) {
           throw new Error(`CAB-NP colours ${cabNp.atlas} areas; show that atlas first.`);
         }
-      }
-      if (mode === 'functional') {
-        if (!functionalRegions) throw new Error('This model carries no functional divisions.');
-        if (values.atlas !== functionalRegions.atlas) {
-          throw new Error(
-            `Functional divisions colour ${functionalRegions.atlas} areas; show that atlas first.`,
-          );
-        }
-        if (!glassSolids)
-          throw new Error('Glass-brain solids must load before selecting functional divisions.');
       }
       values.surfaceColor = mode;
       update();
@@ -414,9 +394,6 @@ export function createFakeModel({
     },
     loadLayer(id) {
       layers.add(id);
-    },
-    loadGlassSolids() {
-      glassSolids = true;
     },
     attachMri() {
       mri = true;

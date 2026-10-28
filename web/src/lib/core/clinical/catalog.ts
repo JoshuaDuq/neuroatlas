@@ -71,6 +71,17 @@ export function findingPaint<A extends Mapped & { id: string }>(
   return { findings, paint: { id: `deficit:${deficit}${finding ? `:${finding}` : ''}`, colors } };
 }
 
+/** The teaching-set units each cited FreeSurfer structure is drawn as there (neuropsych-domains.json `units`). */
+function teachingStandIns(
+  units: Readonly<Record<string, string>>,
+): ReadonlyMap<string, readonly string[]> {
+  const standIns = new Map<string, string[]>();
+  for (const [unit, structure] of Object.entries(units)) {
+    standIns.set(structure, [...(standIns.get(structure) ?? []), unit]);
+  }
+  return standIns;
+}
+
 /** Every region a deficit's associations map, once each, in the order they are cited. */
 export function mappedRegionIds(associations: readonly Mapped[]): string[] {
   return [
@@ -80,11 +91,17 @@ export function mappedRegionIds(associations: readonly Mapped[]): string[] {
 
 export type ClinicalCatalog = ReturnType<typeof createClinicalCatalog>;
 
-export function createClinicalCatalog(data: ClinicalData, manifest: Pick<Manifest, 'regions'>) {
+export function createClinicalCatalog(
+  data: ClinicalData,
+  manifest: Pick<Manifest, 'regions'>,
+  units: Readonly<Record<string, string>>,
+) {
   const { groups, deficits, references, associations, regions } = validateClinicalData(
     data,
     manifest,
   );
+  const standIns = teachingStandIns(units);
+  const atlasOf = new Map(manifest.regions.map((region) => [region.id, region.atlas]));
   const byDeficit = new Map<string, ClinicalAssociation[]>(
     [...deficits.keys()].map((id) => [id, []]),
   );
@@ -137,8 +154,22 @@ export function createClinicalCatalog(data: ClinicalData, manifest: Pick<Manifes
     forDeficit: (id: string) => required(byDeficit, id, 'deficit'),
     forRegion: (id: string) => required(byRegion, id, 'region'),
     mappedRegions: (id: string) => required(mapped, id, 'deficit'),
-    paint: (id: string, finding: string | null = null) =>
-      findingPaint(id, required(byDeficit, id, 'deficit'), finding),
+    /** The teaching-set regions a cited structure is drawn as there; none for most regions. */
+    standIns: (id: string) => standIns.get(id) ?? [],
+    /** The regions a cited one is drawn as: its teaching-set stand-ins, unless its own segmentation is shown. */
+    drawnAs: (id: string, detail: string): readonly string[] =>
+      (detail !== atlasOf.get(id) && standIns.get(id)) || [id],
+    /** The findings and their paint, each stand-in in its structure's colour, the first finding's where two share one. */
+    paint: (id: string, finding: string | null = null) => {
+      const { findings, paint } = findingPaint(id, required(byDeficit, id, 'deficit'), finding);
+      const colors = new Map(paint.colors);
+      for (const [region, color] of paint.colors) {
+        for (const standIn of standIns.get(region) ?? []) {
+          if (!colors.has(standIn)) colors.set(standIn, color);
+        }
+      }
+      return { findings, paint: { ...paint, colors } };
+    },
     search,
     grouped: (query: string, lang: Language) =>
       groupDeficits([...groups.values()], search(query, lang)),

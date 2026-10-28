@@ -159,7 +159,16 @@
       "fork_start_method": "TractSeg's Tracking passes worker state through module globals, which only reach workers under fork; it runs through a wrapper that selects it."
     }
   },
-  "processing": "Every streamline kept and resampled to 0.5 mm arc-length steps by linear interpolation; the T1 is the reconstruction's pinned input, unchanged, and FA is the tensor FA of the subject's own diffusion scan resampled onto it.",
+  "brain_volume": {
+    "ribbon_sha256": "42a9d24c0dc202caa7776bc2f10bf3da2279dcacde2e23ce4614e64c1e6db9e7",
+    "aseg_sha256": "d8e1e9fbd8d3cf34ee259ac708147da4c61319faf293dd3671584d655f611cbc",
+    "outside_aseg_labels": [
+      3,
+      42,
+      24
+    ]
+  },
+  "processing": "Every streamline kept, the runs of points at its ends outside the brain volume (ribbon.mgz, or aseg tissue other than [3, 42, 24]; nearest voxel) dropped, and resampled to 0.5 mm arc-length steps by linear interpolation; the T1 is the reconstruction's pinned input, unchanged, and FA is the tensor FA of the subject's own diffusion scan resampled onto it.",
   "spatial_validation": "Map shape and affine agree with every TRK header at absolute tolerance 1e-5.",
   "geometry_validation": "NiBabel RAS+ millimetre samples and float64 polyline lengths provide independent checks of the browser's TRK decoder.",
   "files": [
@@ -237,29 +246,34 @@
       "file": "af.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "d22640a146e929f816532604f31cb9bdf34cbcf4d809a06d1789d4db30d9f79c",
-      "resampled_sha256": "5576e06688184c270a8e6d68ff3aac94a851b0efcc10c1bfb28574e15bbfdd03",
-      "published_sha256": "927bf52c1a0568fb9ad20c93da1d496636f899dc8e2f32f2c7d63c955eeafd98",
+      "resampled_sha256": "808aa13dde775262b95f615a26fbdd180e5bd5a000150a34877ae7c8997fc13d",
+      "published_sha256": "fe9d3b263a17ea4e91f15173b067a741c325e85fd9934fd355d1346965b17c0e",
       "source_bytes": 25467904,
-      "published_bytes": 8903034,
+      "published_bytes": 8844272,
       "source_points": 2121029,
+      "end_trimming": {
+        "points_removed": 14155,
+        "streamlines_trimmed": 947,
+        "length_removed_mm_max": 19.0000091974525
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49546438455581665,
+          "median": 0.4954583942890167,
           "max": 0.5015098452568054
         },
         "deviation_mm": {
           "sampled_streamlines": 146,
-          "median": 0.046441471569041104,
+          "median": 0.04649135413193217,
           "max": 0.052979774851481753
         },
         "length_change_mm_max": 1.7989695679162025,
         "relative_length_change": {
-          "median": 0.009582109094705346,
-          "max": 0.010836228270918197
+          "median": 0.009573049600634334,
+          "max": 0.010823452522939665
         }
       },
       "streamlines": 3639,
-      "points": 850570,
+      "points": 844916,
       "rasmm_samples": [
         {
           "index": 0,
@@ -270,15 +284,15 @@
           ]
         },
         {
-          "index": 425285,
+          "index": 422458,
           "position": [
-            -32.135772705078125,
-            -28.672042846679688,
-            16.26836395263672
+            -29.07276153564453,
+            10.336776733398438,
+            29.577186584472656
           ]
         },
         {
-          "index": 850569,
+          "index": 844915,
           "position": [
             -58.02375793457031,
             -5.6905059814453125,
@@ -290,16 +304,16 @@
         {
           "minimum_mm": 1,
           "shown": 3639,
-          "mean_mm": 115.25906955188131,
+          "mean_mm": 114.48914429406383,
           "min_mm": 58.46950787016473,
-          "max_mm": 180.30315833509184
+          "max_mm": 179.3186822287787
         },
         {
           "minimum_mm": 100,
-          "shown": 2787,
-          "mean_mm": 122.78900573682508,
+          "shown": 2738,
+          "mean_mm": 122.31985564819031,
           "min_mm": 100.00921620727371,
-          "max_mm": 180.30315833509184
+          "max_mm": 179.3186822287787
         },
         {
           "minimum_mm": 200,
@@ -314,29 +328,34 @@
       "file": "af.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "2fadbfa4a6b2d43cc81610d265840316b5d34da60bce28c9473e875c8c4d7a4d",
-      "resampled_sha256": "9771d6b50bdbf3e08269dfc0ded9c339a798ab5dd049344205e131302d9e4893",
-      "published_sha256": "c654789486895c002ef4ea4d97d6c6225f51cf75b75454f8ee6cbe3e9ada7f48",
+      "resampled_sha256": "5307c86c9da532cfcc3b1da3d5693c068bd29256f355cfa79c695f358e776253",
+      "published_sha256": "de5ec7dccfecb87beb042674efc9ce226266b5068174119a9b950c6a9b195fc1",
       "source_bytes": 15492332,
-      "published_bytes": 5444380,
+      "published_bytes": 5408724,
       "source_points": 1290214,
+      "end_trimming": {
+        "points_removed": 8357,
+        "streamlines_trimmed": 612,
+        "length_removed_mm_max": 9.800007070330878
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4954611659049988,
-          "max": 0.5012383460998535
+          "median": 0.4954560697078705,
+          "max": 0.5012256503105164
         },
         "deviation_mm": {
           "sampled_streamlines": 88,
-          "median": 0.04635156003911664,
-          "max": 0.05128545108493448
+          "median": 0.04654965088096624,
+          "max": 0.051748600403005794
         },
         "length_change_mm_max": 1.71239495206558,
         "relative_length_change": {
-          "median": 0.009555326736485811,
+          "median": 0.009553699044938508,
           "max": 0.010654485564844671
         }
       },
       "streamlines": 2191,
-      "points": 517400,
+      "points": 514062,
       "rasmm_samples": [
         {
           "index": 0,
@@ -347,15 +366,15 @@
           ]
         },
         {
-          "index": 258700,
+          "index": 257031,
           "position": [
-            34.54667663574219,
-            4.3624420166015625,
-            25.48383331298828
+            39.03849792480469,
+            -3.93023681640625,
+            29.857093811035156
           ]
         },
         {
-          "index": 517399,
+          "index": 514061,
           "position": [
             24.352188110351562,
             56.585350036621094,
@@ -367,16 +386,16 @@
         {
           "minimum_mm": 1,
           "shown": 2191,
-          "mean_mm": 116.450566625149,
+          "mean_mm": 115.69510298522997,
           "min_mm": 65.74997888098224,
-          "max_mm": 176.90217628085753
+          "max_mm": 173.6876063124142
         },
         {
           "minimum_mm": 100,
-          "shown": 1701,
-          "mean_mm": 123.3665176586048,
-          "min_mm": 100.02864396595666,
-          "max_mm": 176.90217628085753
+          "shown": 1677,
+          "mean_mm": 122.81581767480444,
+          "min_mm": 100.0131855043538,
+          "max_mm": 173.6876063124142
         },
         {
           "minimum_mm": 200,
@@ -391,48 +410,53 @@
       "file": "cst.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "d8ec8130094af52c3ed7a2632851efe196ec14899d16cefc1e1c4999db894632",
-      "resampled_sha256": "cc1983ce81e57208423f6f7371116f8e2a1b487850efecc72afb3117b7800ce9",
-      "published_sha256": "b4f21956a62d08bf526569a7804beb4d398c65743556e30aa25398299ad8fe4c",
+      "resampled_sha256": "a464ea220f2a1d280a93cde344f75fa24711fccb3e4de43e557a45ade96227be",
+      "published_sha256": "c463f8833ca0dbec1bba4b49ce85cfaf4d2fd3575ba885d07eb17d11bec18f9a",
       "source_bytes": 5902908,
-      "published_bytes": 2041836,
+      "published_bytes": 2023194,
       "source_points": 491582,
+      "end_trimming": {
+        "points_removed": 4530,
+        "streamlines_trimmed": 305,
+        "length_removed_mm_max": 11.599999025427621
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49545857310295105,
-          "max": 0.5008878707885742
+          "median": 0.4954601526260376,
+          "max": 0.5009045004844666
         },
         "deviation_mm": {
           "sampled_streamlines": 30,
-          "median": 0.04798109721943524,
+          "median": 0.047478873164130464,
           "max": 0.0541673081811658
         },
-        "length_change_mm_max": 1.5850179002022173,
+        "length_change_mm_max": 1.583878014786933,
         "relative_length_change": {
-          "median": 0.009596040646189909,
+          "median": 0.009604702498644846,
           "max": 0.010630975261114017
         }
       },
       "streamlines": 731,
-      "points": 197063,
+      "points": 195252,
       "rasmm_samples": [
         {
           "index": 0,
           "position": [
-            -3.5174942016601562,
-            -5.568511962890625,
-            -43.62389373779297
+            -6.391822814941406,
+            -5.592071533203125,
+            -36.56603240966797
           ]
         },
         {
-          "index": 98531,
+          "index": 97626,
           "position": [
-            -2.945281982421875,
-            -6.800178527832031,
-            -38.067039489746094
+            -10.06170654296875,
+            -2.7984771728515625,
+            -12.188758850097656
           ]
         },
         {
-          "index": 197062,
+          "index": 195251,
           "position": [
             -12.92474365234375,
             -67.40862274169922,
@@ -444,16 +468,16 @@
         {
           "minimum_mm": 1,
           "shown": 731,
-          "mean_mm": 133.0061579359361,
-          "min_mm": 105.59144782655117,
-          "max_mm": 163.82964176736562
+          "mean_mm": 131.7782834824099,
+          "min_mm": 102.79593011603546,
+          "max_mm": 160.49737163480282
         },
         {
           "minimum_mm": 100,
           "shown": 731,
-          "mean_mm": 133.0061579359361,
-          "min_mm": 105.59144782655117,
-          "max_mm": 163.82964176736562
+          "mean_mm": 131.7782834824099,
+          "min_mm": 102.79593011603546,
+          "max_mm": 160.49737163480282
         },
         {
           "minimum_mm": 200,
@@ -468,29 +492,34 @@
       "file": "cst.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "222418877884268286a445502fab71716bdda201539e619a27cf8d85bf7aa089",
-      "resampled_sha256": "62846713d6af82a5333ee9246854e626e61c27c0a4d42f2584e09c60fecbf644",
-      "published_sha256": "6fa36742b9ac359edfdf45401d8307a4f57f69ee072a4bc83a54a3d307879a6a",
+      "resampled_sha256": "36273198ff603fc59f1e8a582d244104458c2ee0ee5a9e542c90d95c8da3a33a",
+      "published_sha256": "2e0447c48e93e6168f5bd22fc6c7d0fea83bb95d2db4e813b3d998cd8f747730",
       "source_bytes": 7752860,
-      "published_bytes": 2694097,
+      "published_bytes": 2670195,
       "source_points": 645667,
+      "end_trimming": {
+        "points_removed": 5834,
+        "streamlines_trimmed": 398,
+        "length_removed_mm_max": 18.999989488980162
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49544113874435425,
-          "max": 0.5009114146232605
+          "median": 0.49543964862823486,
+          "max": 0.5009744167327881
         },
         "deviation_mm": {
           "sampled_streamlines": 39,
-          "median": 0.04689476828146055,
+          "median": 0.04652559404877552,
           "max": 0.052039171982243095
         },
-        "length_change_mm_max": 1.6764017892689935,
+        "length_change_mm_max": 1.5967159848752885,
         "relative_length_change": {
-          "median": 0.00954475847234105,
-          "max": 0.01044255120714336
+          "median": 0.009537824700422512,
+          "max": 0.010601565639464499
         }
       },
       "streamlines": 964,
-      "points": 258858,
+      "points": 256525,
       "rasmm_samples": [
         {
           "index": 0,
@@ -501,15 +530,15 @@
           ]
         },
         {
-          "index": 129429,
+          "index": 128262,
           "position": [
-            18.970123291015625,
-            -3.5410308837890625,
-            7.273002624511719
+            27.40728759765625,
+            -9.237495422363281,
+            34.11267852783203
           ]
         },
         {
-          "index": 258857,
+          "index": 256524,
           "position": [
             13.471420288085938,
             1.0036163330078125,
@@ -521,16 +550,16 @@
         {
           "minimum_mm": 1,
           "shown": 964,
-          "mean_mm": 132.4794539331908,
-          "min_mm": 101.5849132005109,
-          "max_mm": 160.12356875623837
+          "mean_mm": 131.2810547451967,
+          "min_mm": 98.60388524187886,
+          "max_mm": 159.52692735279547
         },
         {
           "minimum_mm": 100,
-          "shown": 964,
-          "mean_mm": 132.4794539331908,
-          "min_mm": 101.5849132005109,
-          "max_mm": 160.12356875623837
+          "shown": 963,
+          "mean_mm": 131.31498742380865,
+          "min_mm": 100.82149412226576,
+          "max_mm": 159.52692735279547
         },
         {
           "minimum_mm": 200,
@@ -545,29 +574,34 @@
       "file": "cg.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "d2fe32df48377601715cfebf216baeb3284d4b87dea56edd39efe378980166e0",
-      "resampled_sha256": "648c07b5514fc5937ab9a9ea94888820f9811163ab8f09c8c14185b07ea5d507",
-      "published_sha256": "ffb707985fa5557de3011ffea3689debb910cd3c083ac526e5f66a906d32d6b0",
+      "resampled_sha256": "94c9f897599240f1808e98203dff86874b5da7e54a3ee18eebceedb9470bb6c2",
+      "published_sha256": "f199f04834e82731c64e2332e3c0f9cec7be68e2633bcf8fcde34d339df8c2e2",
       "source_bytes": 12125024,
-      "published_bytes": 4218777,
+      "published_bytes": 4175459,
       "source_points": 1009613,
+      "end_trimming": {
+        "points_removed": 10243,
+        "streamlines_trimmed": 603,
+        "length_removed_mm_max": 31.5999904431522
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4953841269016266,
-          "max": 0.5020371675491333
+          "median": 0.495401531457901,
+          "max": 0.5020785927772522
         },
         "deviation_mm": {
           "sampled_streamlines": 87,
           "median": 0.047169197982020704,
           "max": 0.05379160466771172
         },
-        "length_change_mm_max": 1.9039110744027141,
+        "length_change_mm_max": 1.9269182397047189,
         "relative_length_change": {
-          "median": 0.009678425691149028,
-          "max": 0.011303779848690338
+          "median": 0.009686490936001478,
+          "max": 0.011272849204496244
         }
       },
       "streamlines": 2167,
-      "points": 405156,
+      "points": 401047,
       "rasmm_samples": [
         {
           "index": 0,
@@ -578,15 +612,15 @@
           ]
         },
         {
-          "index": 202578,
+          "index": 200523,
           "position": [
-            0.686614990234375,
-            -0.26644134521484375,
-            37.79326629638672
+            0.9016876220703125,
+            14.80133056640625,
+            39.505104064941406
           ]
         },
         {
-          "index": 405155,
+          "index": 401046,
           "position": [
             -34.678306579589844,
             4.501701354980469,
@@ -598,16 +632,16 @@
         {
           "minimum_mm": 1,
           "shown": 2167,
-          "mean_mm": 92.08188003321858,
-          "min_mm": 45.93063587248334,
-          "max_mm": 196.10887170340243
+          "mean_mm": 91.14591748692979,
+          "min_mm": 16.627660752808396,
+          "max_mm": 195.56234800810867
         },
         {
           "minimum_mm": 100,
-          "shown": 823,
-          "mean_mm": 121.96951715016635,
+          "shown": 811,
+          "mean_mm": 121.44554107009064,
           "min_mm": 100.00405488420672,
-          "max_mm": 196.10887170340243
+          "max_mm": 195.56234800810867
         },
         {
           "minimum_mm": 200,
@@ -622,48 +656,53 @@
       "file": "cg.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "90ee7ec5c6a6104b51b649158cab2ee40bd79bfd3c1031915d6acd9e19ae72fc",
-      "resampled_sha256": "7ae100e0b70a5a0097bf670b218f0562b899da5a73b58c29926acf53431d9441",
-      "published_sha256": "2998c8540bf7b9ee55ab0a3ca3fb6cbb6ac9d0a20b9b69b62f8fa8844aafd66d",
+      "resampled_sha256": "f293ad11ab4519e4e5e015a58b0a78beebfb133f31e8239c60901e4798f8761f",
+      "published_sha256": "d04a6ccdce7f489886073e7aaf8d1fa0ed0fa48ee26d4ca28d1939d9a37f0987",
       "source_bytes": 10344704,
-      "published_bytes": 3598642,
+      "published_bytes": 3574269,
       "source_points": 861394,
+      "end_trimming": {
+        "points_removed": 5796,
+        "streamlines_trimmed": 451,
+        "length_removed_mm_max": 19.199990432867068
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4954462945461273,
+          "median": 0.49544763565063477,
           "max": 0.5020880699157715
         },
         "deviation_mm": {
           "sampled_streamlines": 70,
-          "median": 0.046609664008872925,
+          "median": 0.04641968652668958,
           "max": 0.05453039327098161
         },
         "length_change_mm_max": 1.926983254136701,
         "relative_length_change": {
-          "median": 0.009588037072802817,
-          "max": 0.010941399227516238
+          "median": 0.009585166608662203,
+          "max": 0.010909111883337892
         }
       },
       "streamlines": 1744,
-      "points": 345595,
+      "points": 343275,
       "rasmm_samples": [
         {
           "index": 0,
           "position": [
-            58.339561462402344,
-            16.55353546142578,
-            19.42790985107422
+            55.99223709106445,
+            17.59210205078125,
+            19.926353454589844
           ]
         },
         {
-          "index": 172797,
+          "index": 171637,
           "position": [
-            8.075347900390625,
-            -7.864753723144531,
-            30.432762145996094
+            3.3614959716796875,
+            -7.257606506347656,
+            29.941261291503906
           ]
         },
         {
-          "index": 345594,
+          "index": 343274,
           "position": [
             18.20953369140625,
             47.92267608642578,
@@ -675,14 +714,14 @@
         {
           "minimum_mm": 1,
           "shown": 1744,
-          "mean_mm": 97.63829290970646,
-          "min_mm": 46.1628383690048,
+          "mean_mm": 96.98035831909321,
+          "min_mm": 42.763088298792276,
           "max_mm": 190.67303287664885
         },
         {
           "minimum_mm": 100,
-          "shown": 831,
-          "mean_mm": 119.69507538260822,
+          "shown": 818,
+          "mean_mm": 119.20646859901836,
           "min_mm": 100.02857863910643,
           "max_mm": 190.67303287664885
         },
@@ -699,29 +738,34 @@
       "file": "uf.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "519a086387f43b9b4cb44b39677e8b44b5b88e564871b52a3a3bcd7615ea011f",
-      "resampled_sha256": "bca2473f40e734c2e9ce023b93d789d65f657e60e677f91558616c48ac58a6d8",
-      "published_sha256": "95011f0057780b81a5b2c2a97232a4616c69f625bec94f966435aad9d4d50147",
+      "resampled_sha256": "db1312706731fecbec0e3bb96b94ce251d54280423e7747550879977821b9818",
+      "published_sha256": "54a2ac01346bf1a9787b407dd38dcdf5ce5f7120dcbec44bfd9d148f11658e59",
       "source_bytes": 3943932,
-      "published_bytes": 1359816,
+      "published_bytes": 1317997,
       "source_points": 328274,
+      "end_trimming": {
+        "points_removed": 9993,
+        "streamlines_trimmed": 486,
+        "length_removed_mm_max": 20.7999909785936
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49520668387413025,
+          "median": 0.49524110555648804,
           "max": 0.5020880699157715
         },
         "deviation_mm": {
           "sampled_streamlines": 37,
-          "median": 0.04658108983884855,
+          "median": 0.04575181351050602,
           "max": 0.052436338548615555
         },
-        "length_change_mm_max": 1.4173375396143513,
+        "length_change_mm_max": 1.4040208096372737,
         "relative_length_change": {
-          "median": 0.009867315403228341,
-          "max": 0.011375428249459326
+          "median": 0.009864455642080298,
+          "max": 0.011551144773326827
         }
       },
       "streamlines": 911,
-      "points": 131882,
+      "points": 127873,
       "rasmm_samples": [
         {
           "index": 0,
@@ -732,19 +776,19 @@
           ]
         },
         {
-          "index": 65941,
+          "index": 63936,
           "position": [
-            -23.727996826171875,
-            15.39959716796875,
-            3.1505050659179688
+            -35.570091247558594,
+            11.061439514160156,
+            -6.419075012207031
           ]
         },
         {
-          "index": 131881,
+          "index": 127872,
           "position": [
-            -53.52659606933594,
-            13.719322204589844,
-            10.642051696777344
+            -51.90107727050781,
+            13.289482116699219,
+            10.070045471191406
           ]
         }
       ],
@@ -752,16 +796,16 @@
         {
           "minimum_mm": 1,
           "shown": 911,
-          "mean_mm": 71.15873446544016,
-          "min_mm": 45.61837150216671,
-          "max_mm": 134.18262482140932
+          "mean_mm": 68.98677073732597,
+          "min_mm": 33.87210447864739,
+          "max_mm": 132.3959280236324
         },
         {
           "minimum_mm": 100,
-          "shown": 54,
-          "mean_mm": 108.53225358689798,
-          "min_mm": 100.05705560501997,
-          "max_mm": 134.18262482140932
+          "shown": 41,
+          "mean_mm": 108.2211495180982,
+          "min_mm": 100.39270596608162,
+          "max_mm": 132.3959280236324
         },
         {
           "minimum_mm": 200,
@@ -776,29 +820,34 @@
       "file": "uf.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "690115c4d5c13ebbae163d2b2e7e4b01746672cae164234a129d033471078227",
-      "resampled_sha256": "2c443f83496f1badb0e2d17dc8c88001d016a0185f3751081955de35cdcfe880",
-      "published_sha256": "ed3567e9ddf4f8ad3fd839352211940583d9461a551f070c1895d18064b08d35",
+      "resampled_sha256": "3ba1b9609f3bbf3f58582cfd0b0d6e5241d4d230e3863c8eb7ea49a47cf93b4f",
+      "published_sha256": "b40cfe827aa5f3955fd045042b35b56ff83475c32c9b8eb859603fc3f9c9bdc2",
       "source_bytes": 4217576,
-      "published_bytes": 1475812,
+      "published_bytes": 1445989,
       "source_points": 351083,
+      "end_trimming": {
+        "points_removed": 7021,
+        "streamlines_trimmed": 377,
+        "length_removed_mm_max": 13.200012466350131
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4953085482120514,
+          "median": 0.4953114688396454,
           "max": 0.501932680606842
         },
         "deviation_mm": {
           "sampled_streamlines": 36,
-          "median": 0.04672347391367652,
-          "max": 0.051896126270145684
+          "median": 0.04603642790400016,
+          "max": 0.05178305408242734
         },
         "length_change_mm_max": 1.3449828473342222,
         "relative_length_change": {
-          "median": 0.009753004724105025,
-          "max": 0.011273169993990015
+          "median": 0.009758581642850497,
+          "max": 0.011069502839827106
         }
       },
       "streamlines": 895,
-      "points": 140983,
+      "points": 138171,
       "rasmm_samples": [
         {
           "index": 0,
@@ -809,15 +858,15 @@
           ]
         },
         {
-          "index": 70491,
+          "index": 69085,
           "position": [
-            21.760772705078125,
-            44.75731658935547,
-            18.82390594482422
+            34.07767868041992,
+            16.01128387451172,
+            -13.611152648925781
           ]
         },
         {
-          "index": 140982,
+          "index": 138170,
           "position": [
             -7.8579864501953125,
             25.99970245361328,
@@ -829,15 +878,15 @@
         {
           "minimum_mm": 1,
           "shown": 895,
-          "mean_mm": 77.49087305496867,
-          "min_mm": 45.555535087377166,
+          "mean_mm": 75.9376158564252,
+          "min_mm": 40.62585329084251,
           "max_mm": 134.85934215491056
         },
         {
           "minimum_mm": 100,
-          "shown": 79,
-          "mean_mm": 109.65651419250479,
-          "min_mm": 100.58430671202802,
+          "shown": 62,
+          "mean_mm": 109.64379854095971,
+          "min_mm": 100.04244052444093,
           "max_mm": 134.85934215491056
         },
         {
@@ -853,29 +902,34 @@
       "file": "ifof.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "49bd59a7862b23bc6f1677def7b9e66003cf2ec567c640cc68b24127f9544cd6",
-      "resampled_sha256": "1d6ac8e9a1a2356d16427acf3a587d62b46ddfa3957fc12f68ffc438fa5b90b9",
-      "published_sha256": "2cbdb771beba9b8f8d7a574a70bea36c4c1ba99ffeb13b24a24560c5fa5fb79c",
+      "resampled_sha256": "f3254aab480e6e40a4b512b8786f876db1bc58b7aaee659e28fefca6e0d3f35e",
+      "published_sha256": "5127702ab49a193a44f91364343438b82eef207fbb501bd35cbef414f63e59b6",
       "source_bytes": 3851928,
-      "published_bytes": 1340427,
+      "published_bytes": 1338281,
       "source_points": 320764,
+      "end_trimming": {
+        "points_removed": 514,
+        "streamlines_trimmed": 28,
+        "length_removed_mm_max": 9.79998965432317
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4953567385673523,
-          "max": 0.5007919669151306
+          "median": 0.4953533411026001,
+          "max": 0.5008754730224609
         },
         "deviation_mm": {
           "sampled_streamlines": 18,
-          "median": 0.04672205105262932,
+          "median": 0.04637257347535763,
           "max": 0.05319446142513733
         },
         "length_change_mm_max": 1.827458374625337,
         "relative_length_change": {
-          "median": 0.009783283258033484,
-          "max": 0.010669816386507509
+          "median": 0.009786627760078489,
+          "max": 0.011022826590883895
         }
       },
       "streamlines": 440,
-      "points": 128570,
+      "points": 128365,
       "rasmm_samples": [
         {
           "index": 0,
@@ -886,15 +940,15 @@
           ]
         },
         {
-          "index": 64285,
+          "index": 64182,
           "position": [
-            -19.97168731689453,
-            21.607872009277344,
-            9.155647277832031
+            -32.952178955078125,
+            7.147819519042969,
+            -1.8317337036132812
           ]
         },
         {
-          "index": 128569,
+          "index": 128364,
           "position": [
             -38.85136413574219,
             -50.97801971435547,
@@ -906,14 +960,14 @@
         {
           "minimum_mm": 1,
           "shown": 440,
-          "mean_mm": 144.1788328590229,
+          "mean_mm": 143.94699388430553,
           "min_mm": 101.22482570450467,
           "max_mm": 180.62030635380353
         },
         {
           "minimum_mm": 100,
           "shown": 440,
-          "mean_mm": 144.1788328590229,
+          "mean_mm": 143.94699388430553,
           "min_mm": 101.22482570450467,
           "max_mm": 180.62030635380353
         },
@@ -930,15 +984,20 @@
       "file": "ifof.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "88788c2c1c59f92260fe9917a9f656f8c5d98dbb0b24c645a8c8b718dc5d2338",
-      "resampled_sha256": "737404eeca81365f442027834d7e5c547efec24131c1c43e148ac1e4e9cb9791",
-      "published_sha256": "48afd675fd18e098ac47b5fbc852f14ae4b94c52e08f8c68f1df224e9930a22d",
+      "resampled_sha256": "08cc81f5866a667528bfcb71a82967925034c4cdc099e565cfbaa276a9cb3bc1",
+      "published_sha256": "a5d1c3c9e730638fd79f8a91359be4f56de3309b6cdedb9fda26b2374c4ab066",
       "source_bytes": 1939340,
-      "published_bytes": 677556,
+      "published_bytes": 676526,
       "source_points": 161455,
+      "end_trimming": {
+        "points_removed": 244,
+        "streamlines_trimmed": 17,
+        "length_removed_mm_max": 10.399997080060814
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49543696641921997,
-          "max": 0.5009503960609436
+          "median": 0.4954397976398468,
+          "max": 0.5010116100311279
         },
         "deviation_mm": {
           "sampled_streamlines": 9,
@@ -947,12 +1006,12 @@
         },
         "length_change_mm_max": 1.7440489328310775,
         "relative_length_change": {
-          "median": 0.009649915535769434,
+          "median": 0.009644395174729311,
           "max": 0.010390280195830536
         }
       },
       "streamlines": 220,
-      "points": 64710,
+      "points": 64612,
       "rasmm_samples": [
         {
           "index": 0,
@@ -963,15 +1022,15 @@
           ]
         },
         {
-          "index": 32355,
+          "index": 32306,
           "position": [
-            22.566314697265625,
-            40.461036682128906,
-            19.737815856933594
+            22.30170440673828,
+            35.77983856201172,
+            18.80115509033203
           ]
         },
         {
-          "index": 64709,
+          "index": 64611,
           "position": [
             13.4771728515625,
             56.50237274169922,
@@ -983,15 +1042,15 @@
         {
           "minimum_mm": 1,
           "shown": 220,
-          "mean_mm": 145.1612256602816,
-          "min_mm": 102.59418061330584,
+          "mean_mm": 144.94215117872704,
+          "min_mm": 98.2276787170066,
           "max_mm": 173.65592380799305
         },
         {
           "minimum_mm": 100,
-          "shown": 220,
-          "mean_mm": 145.1612256602816,
-          "min_mm": 102.59418061330584,
+          "shown": 219,
+          "mean_mm": 145.15545927215956,
+          "min_mm": 102.80546339492938,
           "max_mm": 173.65592380799305
         },
         {
@@ -1007,48 +1066,53 @@
       "file": "ilf.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "189ea4009aa788ac0d3591bdb9b44852f30ae21e818884b4ffea723d5f8a7d60",
-      "resampled_sha256": "f72c7ccb55abb6c9a362f92142dd7249b4e35784a56f7d828e9e7b6237ef4dab",
-      "published_sha256": "2f901146268e62c59267bac07b0b7bf8d78442e72c6f886f54c84bc52ac4fd9e",
+      "resampled_sha256": "22098ca974c7e9db8a0b74b144abb564b9dc8f973ce8ec4f84f2fada3b420bc4",
+      "published_sha256": "6d82586fc90be3e33b17366b4926284f740df26e0bde753d4e7db1f63d33cba1",
       "source_bytes": 21602768,
-      "published_bytes": 7470589,
+      "published_bytes": 7391184,
       "source_points": 1798899,
+      "end_trimming": {
+        "points_removed": 18875,
+        "streamlines_trimmed": 1299,
+        "length_removed_mm_max": 24.799994765436082
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49538716673851013,
+          "median": 0.4953974485397339,
           "max": 0.5017578601837158
         },
         "deviation_mm": {
           "sampled_streamlines": 150,
-          "median": 0.046392793333847424,
+          "median": 0.04641390577139304,
           "max": 0.05598426101368117
         },
         "length_change_mm_max": 1.5372080525542344,
         "relative_length_change": {
-          "median": 0.009710107251466017,
+          "median": 0.009699801351020155,
           "max": 0.011036129140150506
         }
       },
       "streamlines": 3745,
-      "points": 721807,
+      "points": 714248,
       "rasmm_samples": [
         {
           "index": 0,
           "position": [
-            6.7922210693359375,
-            -62.47550964355469,
-            -1.1037445068359375
+            6.317115783691406,
+            -62.534393310546875,
+            -0.47438812255859375
           ]
         },
         {
-          "index": 360903,
+          "index": 357124,
           "position": [
-            -34.34253692626953,
-            -24.31604766845703,
-            -0.9224929809570312
+            -14.914710998535156,
+            -50.349979400634766,
+            -5.268775939941406
           ]
         },
         {
-          "index": 721806,
+          "index": 714247,
           "position": [
             -19.68682098388672,
             -69.09194946289062,
@@ -1060,15 +1124,15 @@
         {
           "minimum_mm": 1,
           "shown": 3745,
-          "mean_mm": 94.93899212948168,
+          "mean_mm": 93.94110416910395,
           "min_mm": 47.693988996730084,
           "max_mm": 148.06276812871891
         },
         {
           "minimum_mm": 100,
-          "shown": 1401,
-          "mean_mm": 111.07328617668233,
-          "min_mm": 100.0114324385973,
+          "shown": 1287,
+          "mean_mm": 110.25376138077438,
+          "min_mm": 100.01073433609537,
           "max_mm": 148.06276812871891
         },
         {
@@ -1084,48 +1148,53 @@
       "file": "ilf.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "00cbed09a4c45ac7e48e8d2b8012d69f5beb11686cd66aec85ba3bb9d5b1a410",
-      "resampled_sha256": "264a43370d27184ea12c62790dbc51a9fbc2f48965c3ad5c59a93a43d9b96c20",
-      "published_sha256": "70150c8b227b4cb410abfaf32375ad9298d1c091ffaac226ff8093803755ac30",
+      "resampled_sha256": "ae525b8f14e369521a3a1bc1023a78fc90ba12e2d106f2e2c93207cb99f214e2",
+      "published_sha256": "2e789e040d0dd2d29f12a7a4cebb9746f03fa16745c4f2ed84dccb204bc7750d",
       "source_bytes": 9891436,
-      "published_bytes": 3432196,
+      "published_bytes": 3396948,
       "source_points": 823635,
+      "end_trimming": {
+        "points_removed": 8363,
+        "streamlines_trimmed": 520,
+        "length_removed_mm_max": 14.200006626912582
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4953487515449524,
+          "median": 0.4953453242778778,
           "max": 0.5017848014831543
         },
         "deviation_mm": {
           "sampled_streamlines": 69,
-          "median": 0.04629242796226239,
+          "median": 0.046268921284276815,
           "max": 0.05422717333911478
         },
         "length_change_mm_max": 1.6481110090437028,
         "relative_length_change": {
-          "median": 0.009781839627753818,
+          "median": 0.009781980457186184,
           "max": 0.011255264127214807
         }
       },
       "streamlines": 1704,
-      "points": 330476,
+      "points": 327134,
       "rasmm_samples": [
         {
           "index": 0,
           "position": [
-            64.13983917236328,
-            -24.33148956298828,
-            -13.473007202148438
+            61.90692901611328,
+            -23.17413330078125,
+            -13.376106262207031
           ]
         },
         {
-          "index": 165238,
+          "index": 163567,
           "position": [
-            32.748252868652344,
-            -28.972434997558594,
-            8.330879211425781
+            30.816452026367188,
+            -49.34286880493164,
+            0.7000045776367188
           ]
         },
         {
-          "index": 330475,
+          "index": 327133,
           "position": [
             42.22855758666992,
             21.53656768798828,
@@ -1137,14 +1206,14 @@
         {
           "minimum_mm": 1,
           "shown": 1704,
-          "mean_mm": 95.52646266661407,
+          "mean_mm": 94.55483912135539,
           "min_mm": 47.76446253284749,
           "max_mm": 167.5518722957152
         },
         {
           "minimum_mm": 100,
-          "shown": 681,
-          "mean_mm": 113.58195596401436,
+          "shown": 643,
+          "mean_mm": 112.9165012275467,
           "min_mm": 100.02060094148308,
           "max_mm": 167.5518722957152
         },
@@ -1161,29 +1230,34 @@
       "file": "mdlf.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "efe30c6b144caecc633da8b6b18f4739901dc8f13ac15b45fe24c89f62e40d7d",
-      "resampled_sha256": "388255dc758608e6f8500e94a9c844da3f9e42e7cfa5dce99ce7d3f1da7bf665",
-      "published_sha256": "e85df4b86fcf68b264feb136ee16eeba0cb4baaebdc724de97426160fe13ec49",
+      "resampled_sha256": "1ad42305a90f45f835e1b0f86dee9267b9cdb09b9f7d1a52a0e0b99faf9500d3",
+      "published_sha256": "2a2f60ade14ca1df063bdac27e8dc0c2f2889ddbbbfcc1a8b273874003336ded",
       "source_bytes": 17104568,
-      "published_bytes": 5990615,
+      "published_bytes": 5898776,
       "source_points": 1424238,
+      "end_trimming": {
+        "points_removed": 22055,
+        "streamlines_trimmed": 1522,
+        "length_removed_mm_max": 24.799994765436082
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49539798498153687,
+          "median": 0.4954001307487488,
           "max": 0.5019629001617432
         },
         "deviation_mm": {
           "sampled_streamlines": 128,
-          "median": 0.04580677599230781,
-          "max": 0.052243496002293846
+          "median": 0.045626656218950276,
+          "max": 0.05224094584010029
         },
         "length_change_mm_max": 1.4809643267013257,
         "relative_length_change": {
-          "median": 0.00966267723753265,
+          "median": 0.00966412726678946,
           "max": 0.01113345719193042
         }
       },
       "streamlines": 3178,
-      "points": 571599,
+      "points": 562779,
       "rasmm_samples": [
         {
           "index": 0,
@@ -1194,15 +1268,15 @@
           ]
         },
         {
-          "index": 285799,
+          "index": 281389,
           "position": [
-            -30.66680908203125,
-            -27.50629425048828,
-            13.495429992675781
+            -35.82237243652344,
+            -20.722923278808594,
+            6.607002258300781
           ]
         },
         {
-          "index": 571598,
+          "index": 562778,
           "position": [
             -12.194419860839844,
             -64.57337951660156,
@@ -1214,15 +1288,15 @@
         {
           "minimum_mm": 1,
           "shown": 3178,
-          "mean_mm": 88.56615587826454,
+          "mean_mm": 87.19179224164152,
           "min_mm": 47.127271554924974,
           "max_mm": 148.31901831013676
         },
         {
           "minimum_mm": 100,
-          "shown": 782,
-          "mean_mm": 110.8561045195411,
-          "min_mm": 100.00939986561454,
+          "shown": 689,
+          "mean_mm": 110.06122718000508,
+          "min_mm": 100.01997213949669,
           "max_mm": 148.31901831013676
         },
         {
@@ -1238,48 +1312,53 @@
       "file": "mdlf.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "073baec6a76c41dd497113453d2ca92a8cdc1223035417c4c729f527d0680098",
-      "resampled_sha256": "70ba4e70703837df3e4705b629f55b7ee778e2bae94d190517d853aeaffca869",
-      "published_sha256": "d3340bd73cdd7196a7df77064eebc27d1a8bfc237e84b1945338714b2be5c865",
+      "resampled_sha256": "18b22f4aeb4c29d01b2ffe0d49357c9e20f41aa9b57be861ecfb307a1086d4b2",
+      "published_sha256": "b0861e104cf7b59f0d4849949f0b0276f0e4adcf06a479b90dab1ce58899e2f8",
       "source_bytes": 11690696,
-      "published_bytes": 4107299,
+      "published_bytes": 4035447,
       "source_points": 973404,
+      "end_trimming": {
+        "points_removed": 16662,
+        "streamlines_trimmed": 1154,
+        "length_removed_mm_max": 16.599999709649268
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.495394229888916,
+          "median": 0.4953928589820862,
           "max": 0.5021283626556396
         },
         "deviation_mm": {
           "sampled_streamlines": 89,
-          "median": 0.04644706186309159,
-          "max": 0.05248505151272098
+          "median": 0.046409155872288575,
+          "max": 0.05147419280773465
         },
-        "length_change_mm_max": 1.506840770963663,
+        "length_change_mm_max": 1.490143390683187,
         "relative_length_change": {
-          "median": 0.009749100560545728,
+          "median": 0.009748433936901632,
           "max": 0.011126134432453142
         }
       },
       "streamlines": 2212,
-      "points": 390661,
+      "points": 383996,
       "rasmm_samples": [
         {
           "index": 0,
           "position": [
-            66.21232604980469,
-            -27.11357879638672,
-            9.572853088378906
+            64.91194152832031,
+            -26.697776794433594,
+            9.702308654785156
           ]
         },
         {
-          "index": 195330,
+          "index": 191998,
           "position": [
-            35.50529098510742,
-            -20.96930694580078,
-            7.421318054199219
+            25.708946228027344,
+            -51.99407196044922,
+            10.421821594238281
           ]
         },
         {
-          "index": 390660,
+          "index": 383995,
           "position": [
             44.0592155456543,
             -16.690956115722656,
@@ -1291,16 +1370,16 @@
         {
           "minimum_mm": 1,
           "shown": 2212,
-          "mean_mm": 86.95466455606578,
+          "mean_mm": 85.46312670727777,
           "min_mm": 46.33187334510255,
-          "max_mm": 146.69314261357835
+          "max_mm": 144.90984265593377
         },
         {
           "minimum_mm": 100,
-          "shown": 482,
-          "mean_mm": 109.98167792583922,
-          "min_mm": 100.00305177126612,
-          "max_mm": 146.69314261357835
+          "shown": 417,
+          "mean_mm": 109.11464378149341,
+          "min_mm": 100.02533522489803,
+          "max_mm": 144.90984265593377
         },
         {
           "minimum_mm": 200,
@@ -1315,29 +1394,34 @@
       "file": "slf.left.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "41e24b6f2a3ec490be516f59c0619b8bd3970e76fdcec6d66e70960a130bfd04",
-      "resampled_sha256": "2a30b652984d75d4b527cb361e65ba900035066a793332109cb8368a40103ded",
-      "published_sha256": "92ab987d342798151e1b753e5f4878181317d70cf7bcff8e6f800c322018e608",
+      "resampled_sha256": "a046900b782466af962160a58e90fa4071c1a4c5d0d83bbc10339d763adac819",
+      "published_sha256": "1e64cace4777011f097021b867deec42fb4ec25729a717bc2e9971ca521c454a",
       "source_bytes": 19461716,
-      "published_bytes": 6816115,
+      "published_bytes": 6664319,
       "source_points": 1620298,
+      "end_trimming": {
+        "points_removed": 35914,
+        "streamlines_trimmed": 2148,
+        "length_removed_mm_max": 17.399985261570563
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4953559935092926,
-          "max": 0.5021819472312927
+          "median": 0.49537429213523865,
+          "max": 0.5023755431175232
         },
         "deviation_mm": {
           "sampled_streamlines": 172,
-          "median": 0.04585337215606844,
-          "max": 0.05209409402188678
+          "median": 0.04586053286553492,
+          "max": 0.05598135441371875
         },
         "length_change_mm_max": 1.3771274665966757,
         "relative_length_change": {
-          "median": 0.009714991051914482,
-          "max": 0.01167904007944103
+          "median": 0.00970347794378884,
+          "max": 0.01208308653286468
         }
       },
       "streamlines": 4285,
-      "points": 650704,
+      "points": 636320,
       "rasmm_samples": [
         {
           "index": 0,
@@ -1348,15 +1432,15 @@
           ]
         },
         {
-          "index": 325352,
+          "index": 318160,
           "position": [
-            -27.181793212890625,
-            -7.696571350097656,
-            36.78913116455078
+            -38.86936950683594,
+            -7.285186767578125,
+            46.64470672607422
           ]
         },
         {
-          "index": 650703,
+          "index": 636319,
           "position": [
             -34.19536590576172,
             14.000808715820312,
@@ -1368,16 +1452,16 @@
         {
           "minimum_mm": 1,
           "shown": 4285,
-          "mean_mm": 74.69464113504169,
-          "min_mm": 45.13448609103773,
-          "max_mm": 142.4338839184858
+          "mean_mm": 73.0351832889866,
+          "min_mm": 36.67444686303004,
+          "max_mm": 142.42380804545286
         },
         {
           "minimum_mm": 100,
-          "shown": 560,
-          "mean_mm": 110.08827042935383,
+          "shown": 510,
+          "mean_mm": 109.81021869444496,
           "min_mm": 100.00921620727371,
-          "max_mm": 142.4338839184858
+          "max_mm": 142.42380804545286
         },
         {
           "minimum_mm": 200,
@@ -1392,48 +1476,53 @@
       "file": "slf.right.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "e77ce9b9d36a6ad3191a55bba1b1ba4f9b3dc3ca5278a2b1799914c25f01175d",
-      "resampled_sha256": "45a5bf48e58f9470582ea47bf8a66cd97bc53cbc13cba03d4089fb658b05fd57",
-      "published_sha256": "9fa9696cc2b1cd312e3f0f2edc23d7cfa3ea8b92c4554e6bdbbf95abe8698b55",
+      "resampled_sha256": "1dade20fb9a0ace5adb2295439dd7028bbe4a53fec37df17036bbf50a18bd056",
+      "published_sha256": "3d41c393065821c8d9879f217fc4b4b13d2182650ef067419a297e455875976c",
       "source_bytes": 17770184,
-      "published_bytes": 6233174,
+      "published_bytes": 6138697,
       "source_points": 1479606,
+      "end_trimming": {
+        "points_removed": 22168,
+        "streamlines_trimmed": 1472,
+        "length_removed_mm_max": 16.200006587343267
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4954303503036499,
-          "max": 0.5021785497665405
+          "median": 0.4954177141189575,
+          "max": 0.5023286938667297
         },
         "deviation_mm": {
           "sampled_streamlines": 140,
-          "median": 0.04582857577523329,
-          "max": 0.05181525805268139
+          "median": 0.04577893943281666,
+          "max": 0.05282518218876504
         },
-        "length_change_mm_max": 1.5769811996573253,
+        "length_change_mm_max": 1.543120067870575,
         "relative_length_change": {
-          "median": 0.009581554797528462,
+          "median": 0.009587105139745863,
           "max": 0.011494769092414064
         }
       },
       "streamlines": 3478,
-      "points": 593936,
+      "points": 585083,
       "rasmm_samples": [
         {
           "index": 0,
           "position": [
-            53.76049041748047,
-            34.01958465576172,
-            30.31694793701172
+            51.884883880615234,
+            32.979957580566406,
+            29.66645050048828
           ]
         },
         {
-          "index": 296968,
+          "index": 292541,
           "position": [
-            37.49043273925781,
-            -53.54877471923828,
-            12.060920715332031
+            33.236244201660156,
+            0.46033477783203125,
+            45.05284881591797
           ]
         },
         {
-          "index": 593935,
+          "index": 585082,
           "position": [
             7.216087341308594,
             1.4465866088867188,
@@ -1445,16 +1534,16 @@
         {
           "minimum_mm": 1,
           "shown": 3478,
-          "mean_mm": 84.07137040409926,
-          "min_mm": 45.73565649993086,
-          "max_mm": 159.65139376177456
+          "mean_mm": 82.8089139626541,
+          "min_mm": 40.397907233879955,
+          "max_mm": 155.68668441758527
         },
         {
           "minimum_mm": 100,
-          "shown": 819,
-          "mean_mm": 114.60572933028308,
+          "shown": 772,
+          "mean_mm": 114.2310792004658,
           "min_mm": 100.00303597937764,
-          "max_mm": 159.65139376177456
+          "max_mm": 155.68668441758527
         },
         {
           "minimum_mm": 200,
@@ -1469,29 +1558,34 @@
       "file": "cc.trk.gz",
       "method": "RecoBundles",
       "source_sha256": "e1cf12057755df875804fea565d01269206b3ac78304ba1483a3862d9a811970",
-      "resampled_sha256": "58ccc30fd09b2b0a5eb2824c8c5b4c4a6dccdd7cfa1124a4dd32e7caffdfc815",
-      "published_sha256": "491fc2c8f12dabde00856e1f543fc40e49ab7b1c520f72a3a63186c53d7b69c9",
+      "resampled_sha256": "f018b31aff4e4febd7ae21ad82e6278ae5852a35e21855cf55a4040739f1a749",
+      "published_sha256": "3a8b7150f4b00db6d3306624cd3f7c80893dc42ab0ee22db3d7b8a6ab7ebab71",
       "source_bytes": 190565788,
-      "published_bytes": 66422425,
+      "published_bytes": 65950545,
       "source_points": 15869864,
+      "end_trimming": {
+        "points_removed": 111500,
+        "streamlines_trimmed": 8525,
+        "length_removed_mm_max": 15.599983041884514
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49543997645378113,
+          "median": 0.49543508887290955,
           "max": 0.5022255182266235
         },
         "deviation_mm": {
           "sampled_streamlines": 1265,
-          "median": 0.046239002466977965,
+          "median": 0.04618699626725676,
           "max": 0.05583994089803413
         },
         "length_change_mm_max": 2.163735204231301,
         "relative_length_change": {
-          "median": 0.009568407574461557,
+          "median": 0.009565749416230165,
           "max": 0.01109845334677197
         }
       },
       "streamlines": 31605,
-      "points": 6366902,
+      "points": 6322352,
       "rasmm_samples": [
         {
           "index": 0,
@@ -1502,15 +1596,15 @@
           ]
         },
         {
-          "index": 3183451,
+          "index": 3161176,
           "position": [
-            18.75513458251953,
-            8.108596801757812,
-            36.868385314941406
+            22.09527587890625,
+            11.423652648925781,
+            36.81281280517578
           ]
         },
         {
-          "index": 6366901,
+          "index": 6322351,
           "position": [
             -57.75447082519531,
             -11.315177917480469,
@@ -1522,21 +1616,21 @@
         {
           "minimum_mm": 1,
           "shown": 31605,
-          "mean_mm": 99.26692317680474,
+          "mean_mm": 98.5682360011481,
           "min_mm": 44.74209005429647,
           "max_mm": 220.03624741082353
         },
         {
           "minimum_mm": 100,
-          "shown": 11978,
-          "mean_mm": 120.07147909685868,
-          "min_mm": 100.00609027134394,
+          "shown": 11050,
+          "mean_mm": 120.85431428163783,
+          "min_mm": 100.00815216867647,
           "max_mm": 220.03624741082353
         },
         {
           "minimum_mm": 200,
           "shown": 28,
-          "mean_mm": 207.10749147424667,
+          "mean_mm": 207.02990159100673,
           "min_mm": 200.23183905193642,
           "max_mm": 220.03624741082353
         }
@@ -1546,14 +1640,19 @@
       "file": "slf1.left.trk.gz",
       "method": "TractSeg",
       "source_sha256": "3a84c7040cbf907fd6f025a598c8e3fe699b18544a6e7c825bd6c758ef189b5f",
-      "resampled_sha256": "a1fc08e785c7aa368291d48830a893eb62581202240b0dc9dd0416e8436a78d4",
-      "published_sha256": "b26485d8a307ef6e0b1b64a725759e1a23dd8a4ccddebf69d66c46d14b07c7a8",
+      "resampled_sha256": "29b44d371475a0a7982ca97c972ef63977e0f9ff6e77d5e919a58a2a89c97d4c",
+      "published_sha256": "c885026e4735e72e8bb564ed94a3a927c96a2c4084b7ac861ff0768ae21e9418",
       "source_bytes": 471840,
-      "published_bytes": 2749496,
+      "published_bytes": 2749001,
       "source_points": 38570,
+      "end_trimming": {
+        "points_removed": 7,
+        "streamlines_trimmed": 7,
+        "length_removed_mm_max": 7.227223188398185
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4998214840888977,
+          "median": 0.4998261630535126,
           "max": 0.5033339262008667
         },
         "deviation_mm": {
@@ -1563,12 +1662,12 @@
         },
         "length_change_mm_max": 0.41817198544239886,
         "relative_length_change": {
-          "median": 0.0006354915939623899,
+          "median": 0.0006358099974199952,
           "max": 0.005095280712970139
         }
       },
       "streamlines": 2000,
-      "points": 262288,
+      "points": 262238,
       "rasmm_samples": [
         {
           "index": 0,
@@ -1579,15 +1678,15 @@
           ]
         },
         {
-          "index": 131144,
+          "index": 131119,
           "position": [
-            -21.982818603515625,
-            -25.16014862060547,
-            34.759239196777344
+            -22.13695526123047,
+            -26.527442932128906,
+            34.169227600097656
           ]
         },
         {
-          "index": 262287,
+          "index": 262237,
           "position": [
             -8.327156066894531,
             3.3380355834960938,
@@ -1599,7 +1698,7 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 65.02850244217359,
+          "mean_mm": 65.01626184526204,
           "min_mm": 34.64351670841194,
           "max_mm": 93.6438617236708
         },
@@ -1623,14 +1722,19 @@
       "file": "slf1.right.trk.gz",
       "method": "TractSeg",
       "source_sha256": "994b8926f19721aa98d725163a9d46b206150b230d0840e8d33404532fa40819",
-      "resampled_sha256": "953cd2174dbd25ac11c8788b3b876f2350a31bee35fff38856b5435e1f89fc42",
-      "published_sha256": "ebed6ec856e11790829734d07e7cfe32dccb47c5b95ee2c46a19eabed77551b9",
+      "resampled_sha256": "fb13c5906079917ae2e8c933574bd75f1c26f42eaf1fe7904ac82d415075b338",
+      "published_sha256": "5f90af2af36a831ce956c0374d69d8cdde5d006a686f366134028a0d1261f844",
       "source_bytes": 500388,
-      "published_bytes": 2876243,
+      "published_bytes": 2875937,
       "source_points": 40949,
+      "end_trimming": {
+        "points_removed": 11,
+        "streamlines_trimmed": 8,
+        "length_removed_mm_max": 4.563807154812736
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49981963634490967,
+          "median": 0.4998183250427246,
           "max": 0.5031339526176453
         },
         "deviation_mm": {
@@ -1640,12 +1744,12 @@
         },
         "length_change_mm_max": 0.4018380972058395,
         "relative_length_change": {
-          "median": 0.0007052828007575855,
+          "median": 0.0007050468669222393,
           "max": 0.010115111337038617
         }
       },
       "streamlines": 2000,
-      "points": 275107,
+      "points": 275072,
       "rasmm_samples": [
         {
           "index": 0,
@@ -1656,15 +1760,15 @@
           ]
         },
         {
-          "index": 137553,
+          "index": 137536,
           "position": [
-            25.437881469726562,
-            -49.78445053100586,
-            46.33281707763672
+            26.205078125,
+            -50.8592414855957,
+            47.045066833496094
           ]
         },
         {
-          "index": 275106,
+          "index": 275071,
           "position": [
             20.681243896484375,
             -63.04738998413086,
@@ -1676,7 +1780,7 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 68.22742768322532,
+          "mean_mm": 68.21846995335429,
           "min_mm": 34.27426211748712,
           "max_mm": 113.94889701337439
         },
@@ -1705,6 +1809,11 @@
       "source_bytes": 639624,
       "published_bytes": 3741261,
       "source_points": 52552,
+      "end_trimming": {
+        "points_removed": 0,
+        "streamlines_trimmed": 0,
+        "length_removed_mm_max": 0.0
+      },
       "resampling": {
         "step_mm": {
           "median": 0.4998900592327118,
@@ -1782,6 +1891,11 @@
       "source_bytes": 570192,
       "published_bytes": 3400284,
       "source_points": 46766,
+      "end_trimming": {
+        "points_removed": 0,
+        "streamlines_trimmed": 0,
+        "length_removed_mm_max": 0.0
+      },
       "resampling": {
         "step_mm": {
           "median": 0.4998093843460083,
@@ -1859,6 +1973,11 @@
       "source_bytes": 474624,
       "published_bytes": 2781385,
       "source_points": 38802,
+      "end_trimming": {
+        "points_removed": 0,
+        "streamlines_trimmed": 0,
+        "length_removed_mm_max": 0.0
+      },
       "resampling": {
         "step_mm": {
           "median": 0.4997222125530243,
@@ -1936,6 +2055,11 @@
       "source_bytes": 494472,
       "published_bytes": 2993215,
       "source_points": 40456,
+      "end_trimming": {
+        "points_removed": 0,
+        "streamlines_trimmed": 0,
+        "length_removed_mm_max": 0.0
+      },
       "resampling": {
         "step_mm": {
           "median": 0.4998357594013214,
@@ -2013,6 +2137,11 @@
       "source_bytes": 544920,
       "published_bytes": 2915086,
       "source_points": 44660,
+      "end_trimming": {
+        "points_removed": 0,
+        "streamlines_trimmed": 0,
+        "length_removed_mm_max": 0.0
+      },
       "resampling": {
         "step_mm": {
           "median": 0.4998045563697815,
@@ -2085,14 +2214,19 @@
       "file": "callosum_2.trk.gz",
       "method": "TractSeg",
       "source_sha256": "e78ecc91581975ef48114380eaf2c291a6a277ad78bf49bf509a044f2a1de64c",
-      "resampled_sha256": "7544de602ce45b2cc7712d58811bda3b5d7c7d262d9d16d321cfea7a3dc3dfdb",
-      "published_sha256": "bf07a170e65c76db5578a412e9cf2020114a603b8abcad2a0fb29bd323145468",
+      "resampled_sha256": "6f3899fa218089bc085a333f052ce71d9e45c058ba1ba2734ea6fc5fa73002bf",
+      "published_sha256": "b107e5e57bf032219249ae274a79177c4c8bb5860f67c29bb2ac0247e4188237",
       "source_bytes": 601944,
-      "published_bytes": 3406644,
+      "published_bytes": 3405996,
       "source_points": 49412,
+      "end_trimming": {
+        "points_removed": 14,
+        "streamlines_trimmed": 12,
+        "length_removed_mm_max": 5.37612949185943
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49977394938468933,
+          "median": 0.4997767210006714,
           "max": 0.5023835897445679
         },
         "deviation_mm": {
@@ -2102,12 +2236,12 @@
         },
         "length_change_mm_max": 0.19985691008916717,
         "relative_length_change": {
-          "median": 0.0006634976549530269,
+          "median": 0.0006639191512765646,
           "max": 0.002446945437656238
         }
       },
       "streamlines": 2000,
-      "points": 324620,
+      "points": 324562,
       "rasmm_samples": [
         {
           "index": 0,
@@ -2118,15 +2252,15 @@
           ]
         },
         {
-          "index": 162310,
+          "index": 162281,
           "position": [
-            10.719749450683594,
-            -2.3886032104492188,
-            30.16901397705078
+            15.134567260742188,
+            -2.8088302612304688,
+            32.468894958496094
           ]
         },
         {
-          "index": 324619,
+          "index": 324561,
           "position": [
             23.96643829345703,
             51.368003845214844,
@@ -2138,7 +2272,7 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 80.59679020551667,
+          "mean_mm": 80.58236571328737,
           "min_mm": 39.7458562918729,
           "max_mm": 101.11343485782243
         },
@@ -2167,6 +2301,11 @@
       "source_bytes": 490260,
       "published_bytes": 3227545,
       "source_points": 40105,
+      "end_trimming": {
+        "points_removed": 0,
+        "streamlines_trimmed": 0,
+        "length_removed_mm_max": 0.0
+      },
       "resampling": {
         "step_mm": {
           "median": 0.49983835220336914,
@@ -2239,14 +2378,19 @@
       "file": "callosum_4.trk.gz",
       "method": "TractSeg",
       "source_sha256": "1d2c996f39e16dec2c9a37cd8b1de46b2618e16d8dd4ad4bbbbfc42c969ea368",
-      "resampled_sha256": "65bebd36c969dc7e644e46902ced5af97436b7ff6cd6104ed948e4a2965512c2",
-      "published_sha256": "fb89b1d6b6abbe083a493b077c62ded8f7952ce7fc369f2673b909ce9bc094b7",
+      "resampled_sha256": "0b081c292c674de685342a19ee09352e17befbd85dab4c75932b0bae210faee1",
+      "published_sha256": "883d79f22de690ce1f978ac74153110a61a4b9985b01224247ba2bbab6491c23",
       "source_bytes": 618756,
-      "published_bytes": 3888357,
+      "published_bytes": 3879330,
       "source_points": 50813,
+      "end_trimming": {
+        "points_removed": 137,
+        "streamlines_trimmed": 126,
+        "length_removed_mm_max": 8.608734090469767
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4998832046985626,
+          "median": 0.49988090991973877,
           "max": 0.5018094182014465
         },
         "deviation_mm": {
@@ -2256,12 +2400,12 @@
         },
         "length_change_mm_max": 0.10258968679288216,
         "relative_length_change": {
-          "median": 0.0004868606067144461,
+          "median": 0.00048632840742693416,
           "max": 0.0011102877726941807
         }
       },
       "streamlines": 2000,
-      "points": 371157,
+      "points": 370303,
       "rasmm_samples": [
         {
           "index": 0,
@@ -2272,15 +2416,15 @@
           ]
         },
         {
-          "index": 185578,
+          "index": 185151,
           "position": [
-            -14.155914306640625,
-            -0.791717529296875,
-            37.345008850097656
+            -19.517318725585938,
+            -0.6955795288085938,
+            38.43114471435547
           ]
         },
         {
-          "index": 371156,
+          "index": 370302,
           "position": [
             -5.8263397216796875,
             -29.465408325195312,
@@ -2292,16 +2436,16 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 92.24334957244442,
+          "mean_mm": 92.02857129628323,
           "min_mm": 52.268096670193714,
-          "max_mm": 115.37999554175198
+          "max_mm": 114.10474801255359
         },
         {
           "minimum_mm": 100,
-          "shown": 408,
-          "mean_mm": 104.05081330160796,
+          "shown": 379,
+          "mean_mm": 104.04096868527346,
           "min_mm": 100.01075828598934,
-          "max_mm": 115.37999554175198
+          "max_mm": 114.10474801255359
         },
         {
           "minimum_mm": 200,
@@ -2316,29 +2460,34 @@
       "file": "callosum_5.trk.gz",
       "method": "TractSeg",
       "source_sha256": "1d2e9e7fe4ba127c173d935a8da1afb96aac6ab8c73e5febdd6466b25f9bb654",
-      "resampled_sha256": "16ff4ad504c08b4cbeb4d57c68c3126952dd7766923798697cdf362d9038576b",
-      "published_sha256": "f053189176ace03ea1f2fdb1c9ca256188bf1245da995e35043a00a635b110fe",
+      "resampled_sha256": "e354252b7757b4f4bae38d0369e17dccb3a55eb88160ddd5472768d194f83746",
+      "published_sha256": "8f967e92739c731419993327152eff34b6457894107faafe6af559e00d13d61c",
       "source_bytes": 583788,
-      "published_bytes": 3396042,
+      "published_bytes": 3391370,
       "source_points": 47899,
+      "end_trimming": {
+        "points_removed": 82,
+        "streamlines_trimmed": 77,
+        "length_removed_mm_max": 9.84595518210709
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.49979665875434875,
-          "max": 0.5031415224075317
+          "median": 0.4997791647911072,
+          "max": 0.5034551620483398
         },
         "deviation_mm": {
           "sampled_streamlines": 80,
           "median": 0.03814149574504276,
           "max": 0.055453973333251146
         },
-        "length_change_mm_max": 0.11668608477879161,
+        "length_change_mm_max": 0.11787556623306727,
         "relative_length_change": {
-          "median": 0.0006069417950047289,
-          "max": 0.001260016356690561
+          "median": 0.0006063081877468731,
+          "max": 0.0012600882891885387
         }
       },
       "streamlines": 2000,
-      "points": 324158,
+      "points": 323710,
       "rasmm_samples": [
         {
           "index": 0,
@@ -2349,15 +2498,15 @@
           ]
         },
         {
-          "index": 162079,
+          "index": 161855,
           "position": [
-            -11.092369079589844,
-            -20.5035400390625,
-            36.88904571533203
+            -3.7787704467773438,
+            -15.184295654296875,
+            28.46234893798828
           ]
         },
         {
-          "index": 324157,
+          "index": 323709,
           "position": [
             14.607246398925781,
             -18.39769744873047,
@@ -2369,14 +2518,14 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 80.48739474262156,
-          "min_mm": 34.40255553322838,
+          "mean_mm": 80.37541749186407,
+          "min_mm": 27.799160883762543,
           "max_mm": 124.24914345168663
         },
         {
           "minimum_mm": 100,
-          "shown": 440,
-          "mean_mm": 108.8046396577368,
+          "shown": 437,
+          "mean_mm": 108.60791957202558,
           "min_mm": 100.0074881211376,
           "max_mm": 124.24914345168663
         },
@@ -2393,29 +2542,34 @@
       "file": "callosum_6.trk.gz",
       "method": "TractSeg",
       "source_sha256": "06acc75e6e2ed5c6c6e6aa9e84c1afdc6842f964fba3da676d15cb82134a3586",
-      "resampled_sha256": "f26bfbddee614a0d818a7506af1e0ef4ceceea25dcce79b4abb34523f29636fe",
-      "published_sha256": "98f9f9d7afc509a98b71d8ea14f2303d37dc91955c4c47e9d82c32896509bbce",
+      "resampled_sha256": "c768873d41d5c17b3a0f2112f6e81fdd5078a8317715d33465b0f9dcf11c81cc",
+      "published_sha256": "6dd31cace78be932ad11024eaf2e662569175798169aa8ecdb51e6fe100bfcd9",
       "source_bytes": 772020,
-      "published_bytes": 4356125,
+      "published_bytes": 4353316,
       "source_points": 63585,
+      "end_trimming": {
+        "points_removed": 43,
+        "streamlines_trimmed": 34,
+        "length_removed_mm_max": 10.948942061563855
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4998607635498047,
-          "max": 0.503535807132721
+          "median": 0.49986258149147034,
+          "max": 0.5046690106391907
         },
         "deviation_mm": {
           "sampled_streamlines": 80,
-          "median": 0.0457783464301936,
+          "median": 0.04593158494368522,
           "max": 0.14140831035710177
         },
         "length_change_mm_max": 0.23896059690338234,
         "relative_length_change": {
-          "median": 0.0007072591141468048,
+          "median": 0.0007083372256624836,
           "max": 0.005151939095105256
         }
       },
       "streamlines": 2000,
-      "points": 414360,
+      "points": 414099,
       "rasmm_samples": [
         {
           "index": 0,
@@ -2426,15 +2580,15 @@
           ]
         },
         {
-          "index": 207180,
+          "index": 207049,
           "position": [
-            5.796821594238281,
-            -26.18939971923828,
-            13.415901184082031
+            6.6807861328125,
+            -26.649070739746094,
+            13.518943786621094
           ]
         },
         {
-          "index": 414359,
+          "index": 414098,
           "position": [
             -5.985786437988281,
             -55.142330169677734,
@@ -2446,14 +2600,14 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 103.01334854163875,
-          "min_mm": 34.13004209783646,
+          "mean_mm": 102.94818007198815,
+          "min_mm": 23.195756593574156,
           "max_mm": 143.30635986093074
         },
         {
           "minimum_mm": 100,
-          "shown": 1302,
-          "mean_mm": 113.60405590942534,
+          "shown": 1300,
+          "mean_mm": 113.59618468249859,
           "min_mm": 100.02244607709437,
           "max_mm": 143.30635986093074
         },
@@ -2470,29 +2624,34 @@
       "file": "callosum_7.trk.gz",
       "method": "TractSeg",
       "source_sha256": "2021dfee05eb00d5a854cca33274f98d6e519cd64a790fbb00fd33ed7778cc49",
-      "resampled_sha256": "7c6d7d7ea8a51c92efef60b036a1f837ba70c8156c9e052baf4e249bde84d7e8",
-      "published_sha256": "6f43385b2deea465bede8e0909b42c38962aec8b7f97319cdd481ae4ead167dc",
+      "resampled_sha256": "b73a99f1f27285a35efd4ffd9efdca9126e2be78d292f0b62fc20c6d1a9d5e2b",
+      "published_sha256": "80ff559c51fe679540238e9c5f0248cdbde7f12a1d5be90f588a6cf75530461a",
       "source_bytes": 866148,
-      "published_bytes": 4708305,
+      "published_bytes": 4706676,
       "source_points": 71429,
+      "end_trimming": {
+        "points_removed": 33,
+        "streamlines_trimmed": 29,
+        "length_removed_mm_max": 9.259051629478293
+      },
       "resampling": {
         "step_mm": {
-          "median": 0.4998732805252075,
+          "median": 0.4998684823513031,
           "max": 0.5033941268920898
         },
         "deviation_mm": {
           "sampled_streamlines": 80,
-          "median": 0.044291076247542985,
+          "median": 0.04450994571855173,
           "max": 0.23561556225312988
         },
         "length_change_mm_max": 0.784347962824782,
         "relative_length_change": {
-          "median": 0.0007526555944056051,
+          "median": 0.0007524746579961792,
           "max": 0.007217430077228989
         }
       },
       "streamlines": 2000,
-      "points": 451705,
+      "points": 451538,
       "rasmm_samples": [
         {
           "index": 0,
@@ -2503,15 +2662,15 @@
           ]
         },
         {
-          "index": 225852,
+          "index": 225769,
           "position": [
-            25.130935668945312,
-            -35.24568176269531,
-            12.120872497558594
+            22.156333923339844,
+            -34.47090148925781,
+            14.616340637207031
           ]
         },
         {
-          "index": 451704,
+          "index": 451537,
           "position": [
             15.947601318359375,
             -67.8462905883789,
@@ -2523,14 +2682,14 @@
         {
           "minimum_mm": 1,
           "shown": 2000,
-          "mean_mm": 112.33906821772642,
+          "mean_mm": 112.29744071975063,
           "min_mm": 32.05476834820625,
           "max_mm": 144.6932919117285
         },
         {
           "minimum_mm": 100,
           "shown": 1480,
-          "mean_mm": 121.68525688680792,
+          "mean_mm": 121.63975633262451,
           "min_mm": 100.0807687852997,
           "max_mm": 144.6932919117285
         },

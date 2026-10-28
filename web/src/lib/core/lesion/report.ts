@@ -28,6 +28,23 @@ export function regionRows(
   };
 }
 
+/**
+ * The arterial territories a lesion lies in, largest first: each row's share is of the lesion volume
+ * that falls in some territory, not of the territory, since which artery a lesion belongs to is the
+ * question; under 1% folds away.
+ */
+export function territoryRows(regions: Shares): { shown: RegionRow[]; slight: RegionRow[] } {
+  const reached = [...regions].filter(([id]) => atlasOf(id) === 'arterial');
+  const total = reached.reduce((sum, [, { inside }]) => sum + inside, 0);
+  const rows = reached
+    .map(([id, { inside, whole }]) => ({ id, inside, whole, share: inside / total }))
+    .sort((a, b) => b.share - a.share);
+  return {
+    shown: rows.filter((row) => row.share >= SLIGHT_SHARE),
+    slight: rows.filter((row) => row.share < SLIGHT_SHARE),
+  };
+}
+
 /** The hemispheres the lesion's labelled regions lie in, or null before it reaches any. */
 export function lesionSides(regions: Shares): 'left' | 'right' | 'both' | null {
   const sides = new Set([...regions.keys()].map(sideOf));

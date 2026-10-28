@@ -3,16 +3,10 @@
   scale bar) and the colour keys over the fake engine. Not shipped.
 -->
 <script lang="ts">
-  import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { Legend } from '../../lib/core/state/paint.ts';
   import type { FakeEngine } from '../../lib/engine/fake.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
-  import type {
-    FunctionalLevel,
-    Language,
-    LoadStatus,
-    SurfaceColor,
-  } from '../../lib/types/index.ts';
+  import type { Language, LoadStatus, SurfaceColor } from '../../lib/types/index.ts';
   import StageKeys from '../stage/StageKeys.svelte';
   import StageOverlay from '../stage/StageOverlay.svelte';
   import type { HoverSources } from '../stage/hover-text.ts';
@@ -27,9 +21,7 @@
       lang: Language;
       status: LoadStatus;
       surfaceColor: SurfaceColor;
-      functionalLevel: FunctionalLevel;
       networks: ColoredNetworks | null;
-      functionalRegions: FunctionalRegions | null;
       legend: Legend | null;
     };
     /** Receives the keys, as the Stage region binds them for the snapshot. */
@@ -43,7 +35,6 @@
   const media = { phone: false, coarsePointer: false };
   const sources: HoverSources = {
     regions: new Map(),
-    functionalRegions: null,
     cabNp: null,
     domains: null,
     catalogName: () => undefined,
@@ -64,7 +55,6 @@
     view={{
       lang: live.lang,
       surfaceColor: live.surfaceColor,
-      functionalLevel: live.functionalLevel,
       paint: null,
       selectedFunction: null,
     }}
@@ -77,13 +67,10 @@
     lang={live.lang}
     status={live.status}
     surfaceColor={live.surfaceColor}
-    functionalLevel={live.functionalLevel}
     networks={live.networks}
     cabNp={null}
-    functionalRegions={live.functionalRegions}
     legend={live.legend}
     directionShown={false}
-    onFunctionalLevel={() => {}}
     onPaintPick={() => {}}
   />
 </main>

@@ -56,8 +56,8 @@ export interface SentenceInput {
   paint: Paint | null;
   /** NextBrain is segmented on this brain rather than warped to it (manifest `procedure`). */
   nextbrainSegmented: boolean;
-  /** The atlases CAB-NP, the functional divisions and the domains colour. */
-  colourAtlases: { cabNp?: string; functional?: string; domains?: string };
+  /** The atlases CAB-NP and the domains colour. */
+  colourAtlases: { cabNp?: string; domains?: string };
   /** An error the bar itself caught, said in place of the state's sentence until the cut changes again. */
   failure: unknown;
 }
@@ -76,24 +76,24 @@ export function sectionSentences(input: SentenceInput): { said: string; shown: s
   const atlasLabel =
     {
       'hcp-mmp': copy.hcpDerived,
+      julich: copy.julichDerived,
       destrieux: copy.destrieuxNative,
       nextbrain: input.nextbrainSegmented ? copy.nextbrainSegmented : copy.nextbrainWarped,
+      arterial: copy.arterialRegistered,
     }[state.cutAtlas] ?? state.cutAtlas;
   // A cut is sampled from a label volume, so its network colour is per parcel while the surface's is
-  // per vertex. CAB-NP and the functional divisions group HCP-MMP areas: other labels have none.
-  const { cabNp, functional, domains } = input.colourAtlases;
+  // per vertex. CAB-NP groups HCP-MMP areas: other labels have none.
+  const { cabNp, domains } = input.colourAtlases;
   const colourNote = input.paint
     ? null
     : input.surfaceColor === 'network'
       ? copy.networkByRegion
-      : input.surfaceColor === 'cab-np'
-        ? state.cutAtlas === cabNp
-          ? copy.cabNpByArea
-          : copy.cabNpOtherLabels
-        : input.surfaceColor === 'functional'
-          ? state.cutAtlas === functional
-            ? copy.functionalByArea
-            : copy.functionalOtherLabels
+      : input.surfaceColor === 'territory' && state.cutAtlas !== 'arterial'
+        ? copy.territoryByRegion
+        : input.surfaceColor === 'cab-np'
+          ? state.cutAtlas === cabNp
+            ? copy.cabNpByArea
+            : copy.cabNpOtherLabels
           : null;
   // A function's paint, like the HCP-MMP colourings, has areas only on HCP-MMP labels.
   const paintNote =

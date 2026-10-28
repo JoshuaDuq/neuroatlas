@@ -7,7 +7,6 @@ import { flushSync } from 'svelte';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
-import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import type { Legend } from '../../lib/core/state/paint.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
@@ -22,16 +21,6 @@ import type { SnapshotStage, SnapshotSubject } from './snapshot.ts';
 import Fixture from './snapshot-test-support.svelte';
 
 const eventually = <T>(check: () => T | Promise<T>) => vi.waitFor(check, { timeout: 5000 });
-
-const FUNCTIONAL = {
-  levels: {
-    named: [{ id: 'a', number: 3, short: 'Primary', short_fr: 'Primaire', color: [9, 98, 7] }],
-    sections: [
-      { id: 's', number: 1, short: 'Early', short_fr: 'Précoce', color: [31, 91, 1] },
-      { id: 't', number: 2, short: 'Late', short_fr: 'Tardif', color: [91, 31, 1] },
-    ],
-  },
-} as unknown as FunctionalRegions;
 
 const row = (id: string, label: string, extra = {}) => ({
   id,
@@ -55,10 +44,8 @@ const DEFICIT: Legend = {
 interface Live {
   lang: 'en' | 'fr';
   status: 'ready' | 'loading';
-  surfaceColor: 'atlas' | 'functional';
-  functionalLevel: 'named' | 'sections';
+  surfaceColor: 'atlas';
   networks: null;
-  functionalRegions: FunctionalRegions | null;
   legend: Legend | null;
 }
 
@@ -81,9 +68,7 @@ async function mount(overrides: Partial<Live> = {}, { width = 1000, height = 700
     lang: 'en',
     status: 'ready',
     surfaceColor: 'atlas',
-    functionalLevel: 'named',
     networks: null,
-    functionalRegions: FUNCTIONAL,
     legend: null,
     ...overrides,
   });
@@ -99,8 +84,7 @@ async function mount(overrides: Partial<Live> = {}, { width = 1000, height = 700
   await eventually(() => expect(stage.visibleRect).not.toBeNull());
 }
 
-const markings = () =>
-  snapshotMarkings(host(), stage.visibleRect!, { stage, keys: keys(), lang: live.lang });
+const markings = () => snapshotMarkings(host(), stage.visibleRect!, { stage, keys: keys() });
 
 const scene = (): SnapshotStage => ({ host: host(), stage, keys: keys(), engine });
 
@@ -170,22 +154,11 @@ describe('the keys in the image', () => {
     expect(mark!.box).toMatchObject({ width: box.width, height: box.height });
   });
 
-  test('the functional level drawn is the chosen one, beside the title, and a fold keeps the title row alone', async () => {
-    await mount({ surfaceColor: 'functional', functionalLevel: 'sections' });
-    expect(markings().keys[0]!.texts.map((text) => text.text)).toEqual([
-      'Functional divisions',
-      'Sections',
-      '1 · Early',
-      '2 · Late',
-    ]);
-    const radio = plate('functional').querySelector('[role="radio"][aria-checked="true"]')!;
-    expect(markings().keys[0]!.texts[1]!.x).toBeCloseTo(textLeft(radio), 3);
-    await userEvent.click(plate('functional').querySelector('.stage-key-toggle')!);
+  test('a fold draws the title row alone', async () => {
+    await mount({ legend: DEFICIT });
+    await userEvent.click(plate('paint').querySelector('.stage-key-toggle')!);
     await eventually(() =>
-      expect(markings().keys[0]!.texts.map((text) => text.text)).toEqual([
-        'Functional divisions',
-        'Sections',
-      ]),
+      expect(markings().keys[0]!.texts.map((text) => text.text)).toEqual(['Aphasia']),
     );
     expect(markings().keys[0]!.swatches).toEqual([]);
   });
@@ -199,11 +172,7 @@ describe('the keys in the image', () => {
           .model()
           .map((entry) => ({ ...entry, open: false })),
     } as StageKeysModel;
-    const [mark] = snapshotMarkings(host(), stage.visibleRect!, {
-      stage,
-      keys: folded,
-      lang: live.lang,
-    }).keys;
+    const [mark] = snapshotMarkings(host(), stage.visibleRect!, { stage, keys: folded }).keys;
     expect(mark!.texts.map((text) => text.text)).toEqual(['Aphasia']);
     expect(mark!.swatches).toEqual([]);
   });

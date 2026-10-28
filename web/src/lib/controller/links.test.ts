@@ -377,13 +377,9 @@ describe('what a link may name', () => {
     expect(await restore('view=sideways&tab=bogus')).toEqual(['tab', 'view']);
   });
 
-  it('LINK-09 accepts a Neurosynth term as a function, and the functional colouring when published', async () => {
-    const { restore } = restorer(
-      {},
-      { engineOptions: { functionalRegions: { atlas: 'hcp-mmp' } } },
-    );
+  it('LINK-09 accepts a Neurosynth term as a function', async () => {
+    const { restore } = restorer();
     expect(await restore('tab=functions&function=term-a')).toEqual([]);
-    expect(await restore('atlas=hcp-mmp&colors=functional')).toEqual([]);
   });
 
   it('LINK-09 refuses to restore links at all in a build without neuropsychological domains', () => {

@@ -131,6 +131,7 @@ export function createFakeTracts({
     },
     setOverlay(visible) {
       overlay = visible;
+      emit('tractsVisibility', undefined);
     },
     // The surface sits off the scanner, so a caller that skips the conversion is caught.
     scannerToSurface: ([x, y, z]) => [x + 1, y - 2, z + 3],

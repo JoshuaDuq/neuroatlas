@@ -24,7 +24,6 @@ test('an empty link is the default scene on the loaded layers, with nothing left
     internalVisible: true,
     spinalCordVisible: false,
     surfaceColor: 'atlas',
-    functionalLevel: 'named',
     internalSystem: null,
     view: 'oblique',
     cut: 'off',
@@ -159,10 +158,6 @@ function restorationFixture(): RestorationFixture {
     },
     setCortexOpacity(value) {
       this.settings.cortexOpacity = value;
-    },
-    setFunctionalLevel(value) {
-      events.push('level');
-      this.settings.functionalLevel = value;
     },
     loadHiddenRegions(ids) {
       events.push('hidden');

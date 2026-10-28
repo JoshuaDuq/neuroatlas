@@ -6,15 +6,18 @@ Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manif
 | :--- | :--- | :--- | :--- |
 | Destrieux (`aparc.a2009s`) | 148 parcels | Subject `.annot` | Native; no projection |
 | HCP-MMP1.0 | 360 areas | `fs_LR` → `fsaverage` | Nearest vertex on registered spheres |
-| Teaching set | 105 solids | NextBrain, aseg and CerebNet unions | Bounded smoothing |
+| Julich-Brain 3.1 | 278 areas | Colin27 → `fsaverage` | Nearest vertex on registered spheres |
+| Teaching set | 106 solids | NextBrain, aseg and CerebNet unions | Bounded smoothing |
 | FreeSurfer aseg | 32 structures | `aseg.mgz` | Marching cubes, bounded smoothing |
 | NextBrain | 514 labels, 292 meshed | Subject segmentation at 0.4 mm | Native |
 | Gyral white matter | 68 parcels | `wmparc.mgz` | Native; cut faces only |
-| Spinal cord | 36 regions | PAM50 (Spinal Cord Toolbox) | Registered to this brain's segmented cord |
+| Spinal cord | 34 regions | PAM50 (Spinal Cord Toolbox) | Registered to this brain's segmented cord |
 | Yeo 7 | 7 networks | Schaefer 2018 on `fsaverage` | Per vertex, registered spheres |
 | CAB-NP | 12 networks | Ji et al. 2019 | One network per HCP-MMP area |
 | Functional divisions | 22 sections, 21 named regions | Glasser 2016; Rolls 2022, 2023 | Per HCP-MMP area |
 | Neuropsychological functions | 70 functions | Neurosynth 7 | Per HCP-MMP area and aseg structure |
+| Receptor fingerprints | 36 fingerprints, 94 regions | Zilles and Palomero-Gallagher, EBRAINS | By the name of the area or structure measured |
+| Arterial territories | 15 branches per hemisphere | Liu et al. 2023 (1,298 stroke patients) | Template registered with SynthMorph; nearest neighbour |
 
 ## Destrieux
 
@@ -23,6 +26,12 @@ Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manif
 ## HCP-MMP1.0
 
 180 multimodal areas per hemisphere (Glasser et al. 2016), published on `fs_LR`, projected to `fsaverage` by the Mills projection, then to the subject: each vertex takes the label of the nearest `fsaverage` vertex on the registered spheres. Validation repeats the transfer and requires the committed annotation byte for byte. The mesh is native; the labels are a group-atlas estimate two registrations from HCP space.
+
+## Julich-Brain
+
+139 cytoarchitectonic areas per hemisphere (Amunts et al. 2020), defined from the histology of postmortem brains: Brodmann-style areas such as 3a, 3b, 1 and 2, 44 and 45, and hOc1 (V1). EBRAINS publishes version 3.1's maximum-probability map on `fsaverage`, resampled there from the Colin27 surface; `scripts/fetch_julich_brain.py` writes it unchanged as an annotation, and it reaches the subject like HCP-MMP1.0, by the nearest `fsaverage` vertex on the registered spheres. Each area joins the lobe its published location names, for example postcentral gyrus to Central, so its groups match Destrieux's.
+
+About a quarter of each hemisphere (24% on CDMD) is in seven gap maps, cortex the atlas has not yet mapped, mostly prefrontal and temporo-parietal. They and the two medial masks are unassigned, like the medial wall. Cut faces take the label of the nearest pial or white vertex inside the ribbon, as for HCP-MMP. The atlas is CC BY-NC-SA 4.0: non-commercial, shared alike.
 
 ## Comparing Destrieux and HCP-MMP
 
@@ -69,7 +78,35 @@ Two levels of published HCP-MMP groupings, kept apart because they cross. Glasse
 
 Six areas (23c, 52, PFcm, TF, a47r, pOFC) sit in one section in Table 1 and another in the section texts. Planum follows Table 1, as HCPex does, and shows the alternative in the region detail.
 
-The colour mode draws the divisions solid inside a glass brain, after Carlén (2017). Neighbouring colours differ by OKLab ΔE ≥ 15 under normal and simulated red-green vision.
+They are not a surface colour: the region detail names an HCP-MMP area's section and named region, and the Functions tab names the division each area it lists belongs to.
+
+## Receptor fingerprints
+
+Densities of up to 17 neurotransmitter receptors, measured by quantitative in vitro autoradiography in two to six post-mortem brains (Zilles et al. 2015; Palomero-Gallagher and Zilles 2018) and published per area on EBRAINS. `scripts/fetch_receptor_fingerprints.py` reads each dataset's mean and SD, donors and sampled hemispheres, pinned by checksum, into `data/receptor-fingerprints.json`. A fingerprint reaches a region only through the name of what it was measured in: 30 Julich-Brain areas (Area 44 and hOc2 in a dorsal and a ventral part), and the putamen, globus pallidus, mediodorsal and anterior thalamic nuclei on their aseg, NextBrain and teaching-set structures. Both hemispheres show the same pooled values.
+
+- **Bars.** Each bar is the share of that receptor's highest mean among the 36 published fingerprints, so a cortical D1 bar is short beside the putamen's.
+- **Left out.** Areas 9, 46 and 47 are published but name no Julich-Brain area.
+- **Withheld.** Area ifs1's D1 SD is published as 863 fmol/mg, the same file's A1 mean; neighbouring areas measured in the same brains give 27–44. It is withheld with that reason, and the fetch fails if the source changes. Five parietal areas publish no α2 SD, and none is shown.
+- **Limits.** Two to six brains, aged 61–79, and not this brain. Licensed CC BY-NC-SA 4.0.
+
+## Arterial territories
+
+Typical territories of the cerebral arteries (Liu et al. 2023): where acute infarcts of each artery fell in 1,298 stroke patients, traced on diffusion MRI and drawn on the JHU single-subject template. The atlas and its template b0 come from the authors' repository, pinned by commit and checksum. `scripts/register_arterial_territories.py` registers the skull-stripped b0 to CDMD's skull-stripped T1 with SynthMorph (FreeSurfer 8.2, joint affine and deformable) and carries the atlas across by nearest neighbour. The result is accepted only if CDMD's own segmentation agrees with it:
+
+| Check | Limit | CDMD |
+| :--- | :--- | :--- |
+| Lateral ventricle Dice, left / right | ≥ 0.6 | 0.68 / 0.74 |
+| Cerebellar cortex in the cerebellar territories | ≥ 95% | 97.3% |
+| Cerebral cortex and white matter in no territory | ≤ 2% | 1.2% |
+| Lateralised tissue in a territory of its own side | ≥ 98% | 99.6% |
+
+The atlas's ventricle label is a coarse mask that spills into periventricular white matter, so its Dice is a floor rather than a target. The repository's header does not place the template in MNI space, about 18 mm forward and 19 mm low, which is why the template is registered image to image rather than through CDMD's MNI field.
+
+- **Colour.** The Blood supply colouring paints the cortex per vertex, each taking the territory at the midpoint of its pial and white positions. A cut with the arterial cut labels shows each voxel's territory and recolours nothing else; any other cut labels show a region in the territory holding a majority of it, and in tissue colour without one.
+- **Supply.** Each region carries its territory shares and, counted separately, the share in no territory: of its pial vertices for a cortical area, of its voxels otherwise, and for a teaching-set unit of its source labels' voxels on the grid the teaching set builds from (clipped where a unit stops at a NextBrain floor). Shares under 1% are left out of the list but not counted as unassigned. Ventricles, CSF and choroid plexus take no shares. The inspector lists them; a lesion reports the share of its territory-labelled volume in each territory.
+- **Two levels.** Fifteen branches per hemisphere, each under one of four major arteries: anterior, middle and posterior cerebral, and vertebro-basilar. The atlas places the anterior choroidal and thalamoperforating territory under the posterior circulation, and Planum keeps it there.
+- **Label table.** The published table repeats three left codes for right branches and swaps the PCA sides at level two. The volume itself numbers each branch's left side odd and its right side even, which the script checks by position, so names and levels come from the label values, not the codes.
+- **Limits.** Typical territories, not this brain's vessels: collateral flow and variants such as a fetal posterior communicating artery move real territories by centimetres. The ACA rests on 29 cases, and the medial lenticulostriate and anterior thalamoperforating territories on anatomical knowledge. Border-zone probabilities are not published here. Licensed CC BY-SA 4.0.
 
 ## Neuropsychological functions
 

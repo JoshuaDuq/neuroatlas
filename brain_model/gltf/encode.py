@@ -214,10 +214,10 @@ def reencode(data, *, ranges=None, normals=True, fields=True):
                         packed.ravel(), INT16, "VEC3", normalized=True, target=34962
                     )
                     quantized_normals = True
-                elif name == "_NETWORK":
+                elif name in ("_NETWORK", "_TERRITORY"):
                     codes = np.rint(values).astype(np.uint8)
                     if not np.array_equal(codes.astype(np.float32), values):
-                        raise ValueError("_NETWORK is not an integer index")
+                        raise ValueError(f"{name} is not an integer index")
                     attributes[name] = out.add(codes, UINT8, "SCALAR", target=34962)
                 elif name in ranges:
                     low, high = ranges[name]

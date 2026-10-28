@@ -16,7 +16,7 @@ import {
   labelAppearance,
   usesAtlasColors,
   usesCabNpColors,
-  usesFunctionalColors,
+  usesTerritoryColors,
   usesNetworkColors,
   usesPaint,
 } from './palette.ts';
@@ -335,8 +335,8 @@ export function paintSolids(
   const published =
     usesAtlasColors(state) ||
     usesNetworkColors(state) ||
+    usesTerritoryColors(state) ||
     usesCabNpColors(state) ||
-    usesFunctionalColors(state) ||
     usesPaint(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
   const mri = state.surfaceColor === 'mri' && !usesPaint(state);

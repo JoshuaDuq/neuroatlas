@@ -1,11 +1,17 @@
 import { Box3, Group, LineBasicMaterial, LineSegments, Mesh, MeshStandardMaterial } from 'three';
-import type { Object3D, Plane } from 'three';
+import type { BufferGeometry, Object3D, Plane } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { readDiffusionAsset } from '../../core/assets/diffusion-assets.ts';
 import type { TractBundle, TractCatalog } from '../../core/diffusion/catalogs.ts';
 import { rasToWorld, worldToRas } from '../slices/coordinates.ts';
 import type { Ras } from '../slices/coordinates.ts';
-import { RAS_MM_TO_WORLD, createTractGeometry, filterTractGeometry } from './native-geometry.ts';
+import {
+  MOTION_STRIDE,
+  RAS_MM_TO_WORLD,
+  createMotionGeometry,
+  createTractGeometry,
+  filterTractGeometry,
+} from './native-geometry.ts';
 import { createReferenceTransform } from './reference-space.ts';
 import { summarizeLengths } from './streamlines.ts';
 import type { LengthSummary } from './streamlines.ts';
@@ -24,6 +30,9 @@ export type TractSnapshot = LengthSummary & {
 interface LoadedBundle {
   bundle: TractBundle;
   lines: LineSegments<ReturnType<typeof createTractGeometry>['geometry'], LineBasicMaterial>;
+  /** Every point, drawn at rest, and the coarser lines drawn while the camera moves. */
+  still: BufferGeometry;
+  moving: BufferGeometry;
   lengths: Float64Array;
   offsets: Uint32Array;
 }
@@ -52,6 +61,7 @@ export function createNativeTractViewer(
   const loading = new Map<string, Promise<void>>();
   let outline: Object3D | null = null;
   let minimum = 1;
+  let inMotion = false;
   let disposed = false;
   let outlineVisible = true;
   let outlineOpacity = catalog.brain_outline.opacity;
@@ -96,8 +106,9 @@ export function createNativeTractViewer(
     if (disposed) throw new Error('Tract viewer disposed during bundle loading.');
     const { geometry, lengths } = createTractGeometry(tract.pts, tract.offsetPt0, tract.lengths);
     filterTractGeometry(geometry, tract.offsetPt0, lengths, minimum);
+    const moving = createMotionGeometry(geometry, tract.offsetPt0, lengths, minimum);
     const lines = new LineSegments(
-      geometry,
+      inMotion ? moving : geometry,
       new LineBasicMaterial({ vertexColors: true, toneMapped: false, clippingPlanes }),
     );
     lines.name = bundle.id;
@@ -105,7 +116,7 @@ export function createNativeTractViewer(
     lines.matrix.copy(RAS_MM_TO_WORLD);
     lines.matrixWorldNeedsUpdate = true;
     group.add(lines);
-    bundles.set(bundle.id, { bundle, lines, lengths, offsets: tract.offsetPt0 });
+    bundles.set(bundle.id, { bundle, lines, still: geometry, moving, lengths, offsets: tract.offsetPt0 });
     invalidate();
   }
 
@@ -186,10 +197,16 @@ export function createNativeTractViewer(
       // Checked up front, so an empty or part-filtered set never keeps a value that loading rejects.
       requireMinimum(value);
       for (const entry of bundles.values()) {
-        filterTractGeometry(entry.lines.geometry, entry.offsets, entry.lengths, value);
+        filterTractGeometry(entry.still, entry.offsets, entry.lengths, value);
+        filterTractGeometry(entry.moving, entry.offsets, entry.lengths, value, MOTION_STRIDE);
       }
       minimum = value;
       invalidate();
+    },
+    /** Draw the coarser lines while the camera moves; the scene redraws at rest with every point. */
+    setMotion(moving: boolean) {
+      inMotion = moving;
+      for (const entry of bundles.values()) entry.lines.geometry = moving ? entry.moving : entry.still;
     },
     snapshot(): TractSnapshot[] {
       return [...bundles.values()].map(({ bundle, lines, lengths }) => ({
@@ -210,6 +227,9 @@ export function createNativeTractViewer(
           (object.material as { dispose(): void }).dispose();
         }
       });
+      for (const { lines, still, moving } of bundles.values()) {
+        (lines.geometry === still ? moving : still).dispose();
+      }
       group.removeFromParent();
       bundles.clear();
     },

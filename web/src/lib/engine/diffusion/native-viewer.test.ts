@@ -295,3 +295,29 @@ test('DIFF-18 a scanner point and its surface point are inverse for 100 seeded r
     point.forEach((value, axis) => assert.ok(Math.abs(back[axis]! - value) < 1e-9));
   }
 });
+
+test('a moving camera draws every third point, the length filter included, and rest draws every point', async () => {
+  const viewer = createNativeTractViewer(
+    catalog,
+    () => {},
+    async () => decoded(),
+  );
+  const drawn = (id: string) => {
+    const { geometry } = viewer.group.getObjectByName(id) as LineSegments;
+    return Array.from(geometry.index!.array.slice(0, geometry.drawRange.count));
+  };
+  await viewer.loadBundle(first);
+  assert.deepEqual(drawn(first.id), [0, 1, 1, 2, 3, 4]);
+  viewer.setMotion(true);
+  assert.deepEqual(drawn(first.id), [0, 2, 3, 4]);
+  // A bundle that arrives mid-move starts on the coarser lines.
+  await viewer.loadBundle(second);
+  assert.deepEqual(drawn(second.id), [0, 2, 3, 4]);
+  viewer.setMinimum(20);
+  assert.deepEqual(drawn(first.id), [3, 4]);
+  viewer.setMotion(false);
+  assert.deepEqual(drawn(first.id), [3, 4]);
+  viewer.setMinimum(1);
+  assert.deepEqual(drawn(second.id), [0, 1, 1, 2, 3, 4]);
+  viewer.dispose();
+});

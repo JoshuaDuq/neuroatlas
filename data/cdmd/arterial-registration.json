@@ -1,0 +1,37 @@
+{
+  "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+  "method": "mri_synthmorph register -m joint (template b0 \u2192 brain.mgz), then apply -m nearest to the atlas",
+  "source": {
+    "repository": "https://github.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation",
+    "commit": "159df3a34a769f804d22790752013d4e5ed04944",
+    "files": {
+      "atlas": [
+        "data/template/ArterialAtlas_padding.nii.gz",
+        "3659447397867b18f2404406173cc13f5fe221aa30c9275d506272d367485ba0"
+      ],
+      "labels": [
+        "data/template/ArterialAtlasLables.txt",
+        "480ffc17764ecf35a5c12bf08165a9733eb0c7d23f7b6d1a2cc104d93627b048"
+      ],
+      "template": [
+        "data/template/JHU_SS_b0_ss_padding.nii.gz",
+        "445c077024e40e327109b366b02119852aa676bbf7395e325fb80f62fdda3dda"
+      ]
+    }
+  },
+  "checks": {
+    "ventricle_dice": {
+      "left": 0.6824,
+      "right": 0.7351
+    },
+    "cerebellar_cortex_in_cerebellar_territories": 0.9731,
+    "cerebral_tissue_unassigned": 0.0122,
+    "hemisphere_agreement": 0.996
+  },
+  "acceptance": {
+    "ventricle_dice_min": 0.6,
+    "cerebellar_cortex_in_cerebellar_territories_min": 0.95,
+    "cerebral_tissue_unassigned_max": 0.02,
+    "hemisphere_agreement_min": 0.98
+  }
+}
