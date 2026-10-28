@@ -109,7 +109,10 @@ test('the motion lines join every third point of the same buffers, ending on eac
   const ends = new Uint32Array([0, 7, 9]);
   const { geometry, lengths } = createTractGeometry(long, ends);
   const motion = createMotionGeometry(geometry, ends, lengths, 1);
-  assert.deepEqual(Array.from(motion.index!.array.slice(0, motion.drawRange.count)), [0, 3, 3, 6, 7, 8]);
+  assert.deepEqual(
+    Array.from(motion.index!.array.slice(0, motion.drawRange.count)),
+    [0, 3, 3, 6, 7, 8],
+  );
   assert.equal(motion.getAttribute('position'), geometry.getAttribute('position'));
   assert.equal(motion.getAttribute('color'), geometry.getAttribute('color'));
   assert.ok(motion.boundingSphere!.equals(geometry.boundingSphere!));

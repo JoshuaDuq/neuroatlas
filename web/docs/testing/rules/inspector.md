@@ -389,4 +389,3 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Source:** arterial territories phase 1, 2026-10-28
 - **Expected:** `aseg:left:12` → first row "Lateral lenticulostriate 87%", "Share of this region’s voxels in each territory.", "not this brain’s own vessels"; `julich:left:2` → "Share of this region’s pial vertices in each territory.", first row "Middle cerebral artery, frontal …%"; `arterial:left:aca` and `pam50:left:gracile-fasciculus` → no section; French "Vascularisation artérielle typique", "Lenticulo-striées latérales 87 %". Axe clean with the section open. A V1 Tab walk reaches it ninth, after Functional networks.
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
-

@@ -116,7 +116,14 @@ export function createNativeTractViewer(
     lines.matrix.copy(RAS_MM_TO_WORLD);
     lines.matrixWorldNeedsUpdate = true;
     group.add(lines);
-    bundles.set(bundle.id, { bundle, lines, still: geometry, moving, lengths, offsets: tract.offsetPt0 });
+    bundles.set(bundle.id, {
+      bundle,
+      lines,
+      still: geometry,
+      moving,
+      lengths,
+      offsets: tract.offsetPt0,
+    });
     invalidate();
   }
 
@@ -206,7 +213,8 @@ export function createNativeTractViewer(
     /** Draw the coarser lines while the camera moves; the scene redraws at rest with every point. */
     setMotion(moving: boolean) {
       inMotion = moving;
-      for (const entry of bundles.values()) entry.lines.geometry = moving ? entry.moving : entry.still;
+      for (const entry of bundles.values())
+        entry.lines.geometry = moving ? entry.moving : entry.still;
     },
     snapshot(): TractSnapshot[] {
       return [...bundles.values()].map(({ bundle, lines, lengths }) => ({

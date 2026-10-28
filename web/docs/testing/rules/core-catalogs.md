@@ -636,4 +636,3 @@ the expected values change with them in the same commit.
 - **Source:** arterial territories phase 1, 2026-10-28
 - **Expected:** indices [1, 0, 2, 0] with palette red, blue → red, none, blue, none; [1, 3] → "Vertex index 3 has no published territory". Cut: 70% ACA → ACA blue; 45% is no majority → tissue; with arterial cut labels a Destrieux label keeps its tissue colour.
 - **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R); `src/lib/engine/tissues/palette.test.ts` (R)
-

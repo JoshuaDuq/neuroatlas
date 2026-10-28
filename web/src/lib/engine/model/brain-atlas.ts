@@ -217,24 +217,25 @@ export class BrainAtlas extends EventTarget {
     const readJson = async <T>(address: string | URL) =>
       JSON.parse(new TextDecoder().decode(await fetchAsset(address))) as T;
     const manifest = await readJson<AtlasManifest>(url.href);
-    const [cabNp, functionalRegions, domains, terms, boundaryCertainty, receptors] = await Promise.all([
-      manifest.cab_np ? readJson<CabNpPartition>(new URL(manifest.cab_np.file, url)) : null,
-      manifest.functional_regions
-        ? readJson<FunctionalRegions>(new URL(manifest.functional_regions.file, url))
-        : null,
-      manifest.neuropsych_domains
-        ? readJson<NeuropsychDomains>(new URL(manifest.neuropsych_domains.file, url))
-        : null,
-      manifest.neurosynth_terms
-        ? readJson<NeurosynthTerms>(new URL(manifest.neurosynth_terms.file, url))
-        : null,
-      manifest.boundary_certainty
-        ? readJson<BoundaryCertainty>(new URL(manifest.boundary_certainty.file, url))
-        : null,
-      manifest.receptor_fingerprints
-        ? readJson<ReceptorFingerprints>(new URL(manifest.receptor_fingerprints.file, url))
-        : null,
-    ]);
+    const [cabNp, functionalRegions, domains, terms, boundaryCertainty, receptors] =
+      await Promise.all([
+        manifest.cab_np ? readJson<CabNpPartition>(new URL(manifest.cab_np.file, url)) : null,
+        manifest.functional_regions
+          ? readJson<FunctionalRegions>(new URL(manifest.functional_regions.file, url))
+          : null,
+        manifest.neuropsych_domains
+          ? readJson<NeuropsychDomains>(new URL(manifest.neuropsych_domains.file, url))
+          : null,
+        manifest.neurosynth_terms
+          ? readJson<NeurosynthTerms>(new URL(manifest.neurosynth_terms.file, url))
+          : null,
+        manifest.boundary_certainty
+          ? readJson<BoundaryCertainty>(new URL(manifest.boundary_certainty.file, url))
+          : null,
+        manifest.receptor_fingerprints
+          ? readJson<ReceptorFingerprints>(new URL(manifest.receptor_fingerprints.file, url))
+          : null,
+      ]);
     const gltf = new GLTFLoader();
     const path = new URL('.', url).href;
     const loader: GlbLoader = {

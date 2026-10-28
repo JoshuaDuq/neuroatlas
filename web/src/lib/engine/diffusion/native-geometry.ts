@@ -43,8 +43,10 @@ export function filterTractGeometry(
   const index = geometry.index!;
   const indices = index.array as Uint32Array;
   let needed = 0;
-  for (let line = 0; line < lengths.length; line++) needed += 2 * segmentCount(offsets, line, stride);
-  if (needed > indices.length) throw new RangeError(`The index holds too few segments for stride ${stride}.`);
+  for (let line = 0; line < lengths.length; line++)
+    needed += 2 * segmentCount(offsets, line, stride);
+  if (needed > indices.length)
+    throw new RangeError(`The index holds too few segments for stride ${stride}.`);
   let count = 0;
   for (let line = 0; line < lengths.length; line++) {
     if (lengths[line]! < minimum) continue;
@@ -69,7 +71,8 @@ export function createMotionGeometry(
   motion.setAttribute('position', geometry.getAttribute('position'));
   motion.setAttribute('color', geometry.getAttribute('color'));
   let segments = 0;
-  for (let line = 0; line < lengths.length; line++) segments += segmentCount(offsets, line, MOTION_STRIDE);
+  for (let line = 0; line < lengths.length; line++)
+    segments += segmentCount(offsets, line, MOTION_STRIDE);
   motion.setIndex(new BufferAttribute(new Uint32Array(segments * 2), 1));
   filterTractGeometry(motion, offsets, lengths, minimum, MOTION_STRIDE);
   motion.boundingBox = geometry.boundingBox!.clone();

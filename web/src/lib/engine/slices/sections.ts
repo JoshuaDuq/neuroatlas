@@ -554,7 +554,12 @@ export class BrainSections extends EventTarget {
   /** Pick the nearest visible surface or categorical cut-face label. */
   pick(raycaster: Raycaster): Region | null | undefined {
     const hit = this.intersect(raycaster);
-    console.log('[pick-debug]', hit && (hit.object?.name), hit && ('region' in hit ? hit.region?.id : hit.object?.userData), hit?.distance);
+    console.log(
+      '[pick-debug]',
+      hit && hit.object?.name,
+      hit && ('region' in hit ? hit.region?.id : hit.object?.userData),
+      hit?.distance,
+    );
     if (!hit) return null;
     if ('region' in hit && hit.region !== undefined) return hit.region;
     return hit.object.userData['kind'] !== 'non-region'
