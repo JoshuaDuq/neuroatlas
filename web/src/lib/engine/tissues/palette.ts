@@ -5,6 +5,7 @@ import type { CabNpPartition } from '../../core/catalog/networks.ts';
 import { internalSystemAllows } from '../../core/catalog/visibility.ts';
 import { tissueColor } from '../render/materials.ts';
 import type { TissuePalette } from '../render/materials.ts';
+import { majorityTerritoryColor } from '../render/network-colors.ts';
 import type { NetworkMetadata } from '../render/network-colors.ts';
 
 /** One entry of a cut atlas's label table (`tissue-labels.json`). */
@@ -95,8 +96,6 @@ function networkColor(label: Label, { regions, networks }: PaletteLookup = {}): 
  * leaves out, or a fluid space, shows its tissue. With other cut labels a region is painted, like
  * networks, with the territory holding most of it, and only when one holds a majority.
  */
-const TERRITORY_MAJORITY = 0.5;
-
 function territoryColor(
   label: Label,
   state: PaletteState,
@@ -106,11 +105,7 @@ function territoryColor(
   const region = regions?.get(label.region_id);
   if (region?.atlas === 'arterial') return label.color;
   if (state.cutAtlas === 'arterial') return null;
-  const largest = region?.territories?.[0];
-  if (!largest || largest.fraction < TERRITORY_MAJORITY) return null;
-  const entry = territories.find((candidate) => candidate.id === largest.territory);
-  if (!entry) throw new Error(`No arterial territory ${largest.territory} is published.`);
-  return entry.color;
+  return majorityTerritoryColor(region, territories);
 }
 
 /**

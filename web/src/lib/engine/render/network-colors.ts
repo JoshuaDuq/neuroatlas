@@ -1,6 +1,6 @@
 import { BufferAttribute, Color, SRGBColorSpace } from 'three';
 import type { BufferGeometry } from 'three';
-import type { Rgb } from '../../types/index.ts';
+import type { Region, Rgb } from '../../types/index.ts';
 
 /** Red, green, blue and whether this vertex has a network at all. */
 export const NETWORK_COLOR_ITEM_SIZE = 4;
@@ -89,4 +89,19 @@ export function attachTerritoryColors(
     ),
   );
   return true;
+}
+
+/**
+ * The colour of the territory holding most of a region, when one holds a majority. A region drawn
+ * whole, as a deep structure's surface or a cut voxel is, has one code, so it can only show that.
+ */
+export function majorityTerritoryColor(
+  region: Pick<Region, 'territories'> | undefined,
+  territories: readonly { id: string; color: Rgb }[],
+): Rgb | null {
+  const largest = region?.territories?.[0];
+  if (!largest || largest.fraction < 0.5) return null;
+  const entry = territories.find((candidate) => candidate.id === largest.territory);
+  if (!entry) throw new Error(`No arterial territory ${largest.territory} is published.`);
+  return entry.color;
 }

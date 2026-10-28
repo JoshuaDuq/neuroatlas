@@ -762,6 +762,33 @@ test('CAB-NP needs its own atlas, and leaving that atlas leaves its colours', as
   atlas.dispose();
 });
 
+test('blood supply colours a deep structure whole by the territory holding most of it', async () => {
+  const { atlas } = fixture();
+  atlas.manifest.arterial_territories = {
+    territories: [
+      { id: 'basilar', color: [126, 87, 166] },
+      { id: 'aca', color: [59, 111, 182] },
+    ],
+  } as never;
+  const stem = atlas.regions.get('stem')!;
+  stem.territories = [{ territory: 'basilar', fraction: 0.8 }];
+  await atlas.initialize('a');
+  const mesh = atlas.layers.get('aseg')!.meshes[0]!;
+  atlas.setSurfaceColor('tissue');
+  const tissue = mesh.material.color.getHex();
+  atlas.setSurfaceColor('territory');
+  const basilar = new Color().setRGB(126 / 255, 87 / 255, 166 / 255, SRGBColorSpace);
+  assert.equal(mesh.material.color.getHex(), basilar.getHex());
+  // Split between territories with none holding a majority, as on the cut, it keeps its tissue.
+  stem.territories = [
+    { territory: 'basilar', fraction: 0.45 },
+    { territory: 'aca', fraction: 0.4 },
+  ];
+  atlas.update();
+  assert.equal(mesh.material.color.getHex(), tissue);
+  atlas.dispose();
+});
+
 test('a model without the partition refuses CAB-NP colours', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');

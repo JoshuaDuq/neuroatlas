@@ -42,7 +42,11 @@ import { createDissection } from '../../core/state/dissection.ts';
 import { fetchAsset } from '../../core/assets/asset-cache.ts';
 import { tissueColor, createAnatomicalMaterial } from '../render/materials.ts';
 import type { Appearance, AnatomicalUserData } from '../render/materials.ts';
-import { attachNetworkColors, attachTerritoryColors } from '../render/network-colors.ts';
+import {
+  attachNetworkColors,
+  attachTerritoryColors,
+  majorityTerritoryColor,
+} from '../render/network-colors.ts';
 import type { NetworkMetadata } from '../render/network-colors.ts';
 import {
   addBorderFeather,
@@ -732,6 +736,11 @@ export class BrainAtlas extends EventTarget {
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
         const cabNpNetwork =
           this.surfaceColor === 'cab-np' && !paint ? this.cabNp!.regions[region.id] : null;
+        // The cortex carries its territories per vertex; a deep structure is drawn whole, as its cut is.
+        const territory =
+          this.surfaceColor === 'territory' && !paint && !cortex
+            ? majorityTerritoryColor(region, this.manifest.arterial_territories!.territories)
+            : null;
         mesh.visible = visibilityOf(region, settings).visible;
         const material = mesh.material;
         const userData = material.userData as AnatomicalUserData;
@@ -768,6 +777,13 @@ export class BrainAtlas extends EventTarget {
           // Published sRGB, converted as the per-vertex network colours are.
           const [r, g, b] = this.cabNp!.colors[cabNpNetwork]!;
           material.color.setRGB(r / 255, g / 255, b / 255, SRGBColorSpace);
+        } else if (territory) {
+          material.color.setRGB(
+            territory[0] / 255,
+            territory[1] / 255,
+            territory[2] / 255,
+            SRGBColorSpace,
+          );
         } else if (this.surfaceColor !== 'atlas' || region.kind === 'non-region') {
           material.color.set(tissueColor(region, appearance.tissue));
         }
