@@ -2,7 +2,8 @@
   The selected region (ui/panels/inspector.js, index.html:340-414): its name and where it sits,
   the commands that act on it, its measurements, then the collapsed sections that qualify it.
   Without a selection it is one hint line. The sections keep legacy's order (decision 35 on #4):
-  the comparison slot (R2), constituents, functional division, domains, networks; the deficits
+  the comparison slot (R2), constituents, functional division, domains, networks, with NextBrain's
+  boundary certainty after the comparison, both being about the labels' source; the deficits
   and circuits the region takes part in (X2, X3) follow as slots of their own.
   - the name is the `region-title` focus target; the commands that hide the selection with it
     (Clear ×, Hide) hand focus on through S2's commands, not here;
@@ -18,12 +19,14 @@
   import type { CabNpPartition } from '../../lib/core/catalog/networks.ts';
   import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
+  import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
   import { ARIA_KEYSHORTCUTS } from '../../lib/controller/keymap.ts';
   import { t } from '../../lib/core/i18n/index.ts';
   import { inspectorEmptyChrome } from '../../lib/core/panels/inspector.ts';
   import { FOCUS_TARGETS, registerFocusTarget } from '../../lib/ui/focus.ts';
   import IconButton from '../../lib/ui/IconButton.svelte';
   import { isKeyboardActivation } from '../../lib/ui/instant.ts';
+  import BoundarySection from './BoundarySection.svelte';
   import Constituents from './Constituents.svelte';
   import DomainSection from './DomainSection.svelte';
   import FunctionalSection from './FunctionalSection.svelte';
@@ -52,6 +55,7 @@
     cabNp: CabNpPartition | null;
     functionalRegions: FunctionalRegions | null;
     domains: NeuropsychDomains | null;
+    boundaryCertainty: BoundaryCertainty | null;
     /** Takes no arguments: I1 wires `focusSelection()`, which frames with an animation (only the F key is immediate). */
     onfocus: () => void;
     /** Takes no arguments: I1 wires `isolateSelection`. */
@@ -62,6 +66,8 @@
     onclear: () => void;
     /** A constituent structure: opens it, as S2's `openConstituent`. */
     onregion: (id: string) => void;
+    /** A boundary's neighbour: selects it without moving the view. */
+    onselect: (id: string) => void;
     /** S3's `openLinkedMri`; `instant` is true for a keyboard activation. */
     openLinkedMri: (options: { atRegion: true; instant: boolean }) => unknown;
     comparison?: Snippet;
@@ -83,11 +89,13 @@
     cabNp,
     functionalRegions,
     domains,
+    boundaryCertainty,
     onfocus,
     onisolate,
     onhide,
     onclear,
     onregion,
+    onselect,
     openLinkedMri,
     comparison,
     relatedDeficits,
@@ -160,6 +168,7 @@
     {/if}
   {/if}
   {@render comparison?.()}
+  <BoundarySection {region} {lang} certainty={boundaryCertainty} label={catalog.label} {onselect} />
   <Constituents {region} {lang} get={catalog.get} label={catalog.label} {onregion} />
   <FunctionalSection {region} {lang} {functionalRegions} />
   <DomainSection {region} {lang} {domains} />

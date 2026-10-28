@@ -6,7 +6,7 @@ import yaml
 
 from ..gltf.export import add_region, published_area_mm2, write_scene
 from ..labels import cerebellum, nextbrain
-from ..labels.volumes import conformed_grid, load_on_grid
+from ..labels.volumes import LabelGrid, conformed_grid, load_on_grid
 from ..sources import ROOT, read_color_table
 from ..surfaces.geometry import extract_structure, smooth_display
 
@@ -83,12 +83,49 @@ def expand_nextbrain(groups, table):
     return expanded
 
 
+def nextbrain_floors(definition, nextbrain_source):
+    """Where an aseg unit taken below a NextBrain unit stops, in surface z.
+
+    The higher of the unit's two sides' lowest voxel centres, so neither side is
+    left with a gap above the aseg unit.
+    """
+    grid, table = nextbrain_source
+    sides = {}
+    for group in expand_nextbrain(definition["nextbrain"], table):
+        sides.setdefault(group["id"].split(":", 1)[1], []).append(group["labels"])
+    floors = {}
+    for unit in {group["below_nextbrain"] for group in definition["aseg"] if "below_nextbrain" in group}:
+        lowest = []
+        for labels in sides[unit]:
+            voxels = np.argwhere(np.isin(grid.labels, labels))
+            if len(voxels) == 0:
+                raise ValueError(f"NextBrain unit {unit} has a side with no voxels to sit below")
+            lowest.append((voxels @ grid.voxel_to_surface[2, :3] + grid.voxel_to_surface[2, 3]).min())
+        floors[unit] = float(max(lowest))
+    return floors
+
+
+def below_floors(labels, voxel_to_surface, groups, floors):
+    """Labels of a unit taken below a NextBrain unit, cleared at and above that unit's floor."""
+    restricted = labels.copy()
+    z = np.tensordot(voxel_to_surface[2, :3], np.indices(labels.shape), axes=1) + voxel_to_surface[2, 3]
+    for group in groups:
+        if "below_nextbrain" in group:
+            restricted[np.isin(labels, group["labels"]) & (z >= floors[group["below_nextbrain"]])] = 0
+    return restricted
+
+
 def source_groups(config, nextbrain_source):
     """Each source's label grid and display units; the two grids need not match."""
     definition = read_definition(config)
     grid, table = nextbrain_source
     yield "nextbrain", grid, table, expand_nextbrain(definition["nextbrain"], table)
+    floors = nextbrain_floors(definition, nextbrain_source)
     grid = conformed_grid(load_on_grid(config, config["source_directory"] / "mri/aseg.mgz"))
+    grid = LabelGrid(
+        below_floors(grid.labels, grid.voxel_to_surface, definition["aseg"], floors),
+        grid.voxel_to_surface, grid.spacing_mm,
+    )
     table = read_color_table()
     for group in definition["aseg"]:
         if set(group["labels"]) - set(table):

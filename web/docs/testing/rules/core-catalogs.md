@@ -83,7 +83,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/labels.js:55-117`; `viewer/catalog/catalog.js:37-60`
-- **Expected:** all 1289 regions of `cdmd/manifest.json` resolve in `en` and `fr`. `createCatalog` of a manifest holding a region with no label throws "Region has no label: <id>".
+- **Expected:** all 1266 regions of `cdmd/manifest.json` resolve in `en` and `fr`. `createCatalog` of a manifest holding a region with no label throws "Region has no label: <id>".
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (S), `src/lib/core/catalog/labels.fr.test.ts` (S); `src/lib/core/catalog/published-catalog.test.ts` (S, and the throw)
 
 ### CAT-08 · The published regions are all there
@@ -92,7 +92,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/labels.test.js`
-- **Expected:** cortex: destrieux 148, hcp-mmp 360; structures: aseg 32, nextbrain 292, learning 105; the supplemental zanatomy layer 58; tissue regions 290 (nextbrain 222, wmparc 68); non-regions 4 (`destrieux:left:-1`, `destrieux:right:-1`, `hcp-mmp:left:0`, `hcp-mmp:right:0`). Total 1289.
+- **Expected:** cortex: destrieux 148, hcp-mmp 360; structures: aseg 32, nextbrain 292, learning 106; the supplemental pam50 layer 34; tissue regions 290 (nextbrain 222, wmparc 68); non-regions 4 (`destrieux:left:-1`, `destrieux:right:-1`, `hcp-mmp:left:0`, `hcp-mmp:right:0`). Total 1266.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (S, declared vs listed, not the fixed numbers), `labels.fr.test.ts` (S, same), `functional-regions.test.ts` (S, hcp-mmp 360)
 
 ### CAT-09 · Destrieux parcels read their curated anatomical names, grouped by lobe
@@ -184,8 +184,8 @@ the expected values change with them in the same commit.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/catalog/visibility.js:23-27, 59-75`
-- **Expected:** hemisphere `right` → a left cortex 'hemisphere', a midline region visible. `cortexVisible:false` or `cortexOpacity:0` → cortex, non-region and wmparc 'cortex-hidden'; an aseg structure and a nextbrain tissue region stay visible. `internalVisible:false` → structure 'internal-hidden', cortex visible. `spinalCordVisible:false` → zanatomy 'spinal-cord-hidden', aseg visible. `surfaceColor:'mri'` with `mri_registered:false` → 'no-mri'; `surfaceColor:'tissue'` → visible. Published: the 58 zanatomy regions are the ones with `mri_registered:false`.
-- **Covered by:** `src/lib/core/catalog/visibility.test.ts` (R); `src/lib/core/catalog/published-catalog.test.ts` (S, the 58 unregistered)
+- **Expected:** hemisphere `right` → a left cortex 'hemisphere', a midline region visible. `cortexVisible:false` or `cortexOpacity:0` → cortex, non-region and wmparc 'cortex-hidden'; an aseg structure and a nextbrain tissue region stay visible. `internalVisible:false` → structure 'internal-hidden', cortex visible. `spinalCordVisible:false` → pam50 'spinal-cord-hidden', aseg visible. `surfaceColor:'mri'` with `mri_registered:false` → 'no-mri'; `surfaceColor:'tissue'` → visible. Published: the 58 pam50 regions are the ones with `mri_registered:false`.
+- **Covered by:** `src/lib/core/catalog/visibility.test.ts` (R); `src/lib/core/catalog/published-catalog.test.ts` (S, the 34 cord regions, all registered)
 
 ### CAT-19 · Removal beats isolation; isolation hides everything else
 
@@ -240,7 +240,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/catalog.js:111-136`
-- **Expected:** published, English, destrieux surface, aseg detail: `search('s', settings, 50)` → 50 rows, total 779. Default cap 50.
+- **Expected:** published, English, destrieux surface, aseg detail: `search('s', settings, 50)` → 50 rows, total 752. Default cap 50.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (W, asserts `total > 50`); `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ### CAT-25 · The list shows the active atlas's groups, then structures, then the cut's regions
@@ -267,7 +267,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/catalog/catalog.js:182-188`
-- **Expected:** published, aseg detail, no cut: destrieux surface 238 (148 + 32 + 58), hcp-mmp 450 (360 + 90), cortex hidden 90.
+- **Expected:** published, aseg detail, no cut: destrieux surface 214 (148 + 32 + 34), hcp-mmp 426 (360 + 66), cortex hidden 66.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (S, derived from the manifest's declared counts); `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ### CAT-28 · The list follows the reader's language
@@ -437,7 +437,7 @@ the expected values change with them in the same commit.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/clinical/catalog.js:64-90`
-- **Expected:** fixture: "amnesie" (fr), "mémoire" (fr), "oubli" (fr), "forgetfulness" (en), "memory" (en) → `['amnesia']`; "" → 1; "unlisted" → []; `search('x','de')` throws "Unknown language: de". Published: "prosopagnosie" (fr) first `agnosia`; "set shifting" first `executive`; "champ visuel" (fr) first `hemianopia`; "reading" first `alexia`; "amnesia" → `['amnesia']`; "memory" (en) → `['agraphia','amnesia','auditory-short-term-memory','olfactory-recognition','prospective-memory','confabulation']`.
+- **Expected:** published query "aphas" → aphasia and speech-apraxia (the latter matches its finding title). fixture: "amnesie" (fr), "mémoire" (fr), "oubli" (fr), "forgetfulness" (en), "memory" (en) → `['amnesia']`; "" → 1; "unlisted" → []; `search('x','de')` throws "Unknown language: de". Published: "prosopagnosie" (fr) first `agnosia`; "set shifting" first `executive`; "champ visuel" (fr) first `hemianopia`; "reading" first `alexia`; "amnesia" → `['amnesia']`; "memory" (en) → `['agraphia','amnesia','auditory-short-term-memory','olfactory-recognition','prospective-memory','confabulation']`.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S, fixed published searches); `catalog.test.ts` (R, ranking and the unknown-language error)
 
 ### CAT-46 · Deficits list under their groups in authored order
@@ -482,7 +482,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `data/neuropsychology.yaml`; `viewer/clinical/data.test.js`
-- **Expected:** revised "2026-10-27"; 6 groups, 70 deficits (abulia … word-deafness, the list in `data.test.ts`), 113 references, 96 associations; every deficit has a finding. `forRegion`: `destrieux:left:38` deficits aphasia, aphasia, aphasia, akinetopsia; `destrieux:right:21` agnosia; `aseg:left:17` and `aseg:right:53` amnesia; `destrieux:left:16` none; `destrieux:right:38` neglect-allocentric, akinetopsia-lateral; `destrieux:right:26` extinction-temporoparietal, neglect-egocentric, neglect-perceptual, sound-localization-right-network; `destrieux:left:12` apraxia-finger, dysphagia-insula, emotion-prosody, emotional-empathy-inferior-frontal, speech-apraxia-frontal, stuttering-cortico-striatal; `aseg:left:18` emotion-recognition; `learning:right:dentate` ataxia; `nextbrain:left:458` central-pain, lateropulsion; `aseg:right:47` ataxia, cerebellar-cognitive, dysarthria. `forDeficit('amnesia')` hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic; `speech-apraxia` 2 findings, each with qualifying evidence; every apraxia finding and the first hemichorea finding have qualifying evidence; a meta-analysis is cited.
+- **Expected:** revised "2026-10-27"; 6 groups, 70 deficits (abulia … word-deafness, the list in `data.test.ts`), 131 references, 108 associations; every deficit has a finding. The amusia connectivity finding has no parcel, while the profile retains its direct right temporal landmarks (33, 34). The focal coma finding maps only `learning:left:pons`, leaving connected cortical nodes uncoloured. The alien-hand map contains only the two anterior callosal subdivisions (254, 255), leaving posterior callosum uncoloured; akinetopsia cites the unilateral Otsuka-Hirota case as qualifying evidence. The posterior-parietal motor-neglect case has no parcel; the motor-neglect profile maps only right putamen (`aseg:right:51`) from the separate stroke cohort. `forRegion`: `destrieux:left:38` deficits aphasia, aphasia, aphasia, akinetopsia; `destrieux:right:21` agnosia; `aseg:left:17` and `aseg:right:53` amnesia; `destrieux:left:16` none; `destrieux:right:38` neglect-allocentric, akinetopsia-lateral; `destrieux:right:26` aprosodia-frontal-parietal, extinction-temporoparietal, neglect-egocentric, neglect-perceptual, sound-localization-right-network, tactile-agnosia-persistence; `destrieux:left:12` agraphia-orthographic-long-term, apraxia-finger, dysphagia-insula, emotion-prosody, emotional-empathy-inferior-frontal, speech-apraxia-frontal, stuttering-cortico-striatal; `aseg:left:18` emotion-recognition; `learning:right:dentate` ataxia; `nextbrain:left:458` central-pain, central-pain, lateropulsion; `aseg:right:47` ataxia, cerebellar-cognitive, dysarthria. `forDeficit('amnesia')` hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic; `speech-apraxia` 3 findings, each with qualifying evidence; every apraxia finding and the first hemichorea finding have qualifying evidence; a meta-analysis is cited.
 - **Covered by:** `src/lib/core/clinical/data.test.ts` (S, counts and revision added)
 
 ## Circuits and lessons

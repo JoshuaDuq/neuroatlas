@@ -8,7 +8,7 @@ import type { Session } from './session.ts';
 
 /** Whether a subject publishes the spinal cord; a scan ending inside the medulla does not. */
 export const publishesSpinalCord = (manifest: Pick<Manifest, 'supplemental_layers'>): boolean =>
-  (manifest.supplemental_layers ?? []).some((layer) => layer.id === 'zanatomy');
+  (manifest.supplemental_layers ?? []).some((layer) => layer.id === 'pam50');
 
 /** Colours that are defined on one atlas's areas, and so need that atlas shown. */
 export const requiredAtlas = (

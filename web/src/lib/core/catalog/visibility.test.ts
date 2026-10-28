@@ -24,7 +24,7 @@ const settings = (over = {}) => ({ ...base, ...over });
 
 test('unregistered reference anatomy is unavailable in MRI appearance', () => {
   const cord = region({
-    atlas: 'zanatomy',
+    atlas: 'pam50',
     kind: 'structure',
     supplemental: true,
     mri_registered: false,
@@ -150,7 +150,7 @@ test('reasons are reported in a fixed precedence, most fundamental first', () =>
 
 test('CAT-21 · each reason beats the next one in the precedence', () => {
   const cord = region({
-    atlas: 'zanatomy',
+    atlas: 'pam50',
     kind: 'structure',
     supplemental: true,
     mri_registered: false,
@@ -195,8 +195,8 @@ test('CAT-21 · each reason beats the next one in the precedence', () => {
     'internal-hidden',
   );
   const cordOnly = region({
-    id: 'zanatomy:left:1',
-    atlas: 'zanatomy',
+    id: 'pam50:left:1',
+    atlas: 'pam50',
     kind: 'structure',
     supplemental: true,
   });
@@ -290,7 +290,7 @@ test('white matter is drawn with the cortex, so hiding the cortex hides it', () 
 
 test('hiding the spinal cord hides spinal cord regions but leaves other structures alone', () => {
   const cord = region({
-    atlas: 'zanatomy',
+    atlas: 'pam50',
     hemisphere: 'midline',
     kind: 'structure',
     supplemental: true,

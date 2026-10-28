@@ -59,7 +59,7 @@ describe('the list', () => {
 
   test('typing filters the list, drops the scope note and says the count once typing pauses', async () => {
     await mount();
-    await userEvent.fill(field(), 'aphas');
+    await userEvent.fill(field(), 'dysphag');
     await expect.poll(() => rows().length).toBe(1);
     expect(document.querySelector('.scope-note')).toBeNull();
     expect(announced()).toBe('');
@@ -69,7 +69,7 @@ describe('the list', () => {
   test('Escape clears a filled field and keeps focus; the cleared list says its count (x2-results-announcement)', async () => {
     const { calls } = await mount();
     field().focus();
-    await userEvent.keyboard('aphas');
+    await userEvent.keyboard('dysphag');
     await expect.poll(announced, { timeout: 2000 }).toBe('1 deficit');
     await userEvent.keyboard('{Escape}');
     expect(field().value).toBe('');
@@ -81,7 +81,7 @@ describe('the list', () => {
   test('an equal sentence for a different query is said again', async () => {
     await mount();
     field().focus();
-    await userEvent.keyboard('aphas');
+    await userEvent.keyboard('dysphag');
     await expect.poll(announced, { timeout: 2000 }).toBe('1 deficit');
     // Stands for the screen reader having spoken it: only a new write is said again.
     document.querySelector('.visually-hidden[role="status"]')!.textContent = '';

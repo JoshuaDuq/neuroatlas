@@ -320,7 +320,7 @@ const caudate = () =>
 const thalamus = () =>
   part('thalamus', { atlas: 'aseg', kind: 'structure' }, [0.03, 0.03, 0.03], [0.015, 0.01, -0.01]);
 const cord = () =>
-  part('cord', { atlas: 'zanatomy', kind: 'structure' }, [0.012, 0.45, 0.02], [0, -0.3, 0.03]);
+  part('cord', { atlas: 'pam50', kind: 'structure' }, [0.012, 0.45, 0.02], [0, -0.3, 0.03]);
 const wholeBrain = () => [leftCortex(), rightCortex(), caudate(), thalamus()];
 
 /** How far from the centre of the frame the meshes' vertices project, on each axis. */

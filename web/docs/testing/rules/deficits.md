@@ -12,7 +12,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Kind:** data
 - **Level:** unit (view-model; the grouping is the clinical catalogue's) for the content; browser for the note's removal
 - **Source:** `viewer/ui/panels/clinical.js:40-49,63-71,494-504`
-- **Expected:** 70 rows in 6 groups ("Attention and executive functions" 10, "Memory" 5, "Language, reading and number" 10, "Perception and visuospatial abilities" 17, "Sensorimotor functions" 21, "Social and emotional functions" 7); note "70 profiles · adult acquired deficits"; query "aphas" → 1 row ("Aphasia") and no note.
+- **Expected:** 70 rows in 6 groups ("Attention and executive functions" 10, "Memory" 5, "Language, reading and number" 10, "Perception and visuospatial abilities" 17, "Sensorimotor functions" 21, "Social and emotional functions" 7); note "70 profiles · adult acquired deficits"; query "dysphag" → 1 row ("Dysphagia") and no note; "aphas" also matches the speech-apraxia finding title and returns 2 profiles.
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; groups only checked as more than 3)
 
 ### DEF-02 · Groups are labelled lists of buttons
@@ -48,7 +48,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Kind:** behaviour
 - **Level:** browser — key dispatch to the focused field
 - **Source:** `viewer/ui/panels/clinical.js:406-413`; KEY-04 in `controller.md`
-- **Expected:** "aphas", Escape → value '', focus on the field, the query set to ''. Empty field, Escape → the window sees `defaultPrevented` false. Composing: uncovered.
+- **Expected:** "dysphag", Escape → value '', focus on the field, the query set to ''. Empty field, Escape → the window sees `defaultPrevented` false. Composing: uncovered.
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); the composing case is uncovered
 
 ### DEF-06 · The `/` entry point focuses the field with its text selected
@@ -102,7 +102,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Kind:** accessibility
 - **Level:** unit for the sentence (`results`); browser with fake timers for the debounce in the component
 - **Source:** `viewer/ui/panels/clinical.js:513`; `viewer/ui/announce.js`; deviation `x2-results-announcement.md`; decision 37 on #4
-- **Expected:** "aphas" → '' at once, then "1 deficit"; Escape → "70 deficits"; "aphas" then "amnesi" → "1 deficit" written again; "aphazia" → "No match". Language `fr` with a query → nothing said.
+- **Expected:** "dysphag" → '' at once, then "1 deficit"; Escape → "70 deficits"; "dysphag" then "amnesi" → "1 deficit" written again; "aphazia" → "No match". Language `fr` with a query → nothing said.
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; real 500 ms waits). The language case is uncovered.
 
 ### DEF-12 · The open deficit's row is current

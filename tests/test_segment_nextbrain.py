@@ -131,6 +131,41 @@ def test_voxels_both_sides_label_go_where_freesurfer_splits_the_hemispheres(tmp_
     assert join["voxels_labelled_by_both_sides"] > 0
 
 
+def test_a_near_tie_names_the_runner_up_of_the_hemisphere_its_label_came_from(tmp_path):
+    mri = tmp_path / "subject/mri"
+    mri.mkdir(parents=True)
+    nib.save(nib.MGHImage(np.zeros((32, 32, 32), np.uint8), grid(1.0, [-16] * 3)), mri / "orig.mgz")
+    config = read_config()
+    config = {"source_directory": tmp_path / "subject",
+              "nextbrain": {**config["nextbrain"], "near_ties": "ties.mgz", "directory": tmp_path}}
+    margin = config["nextbrain"]["near_tie_margin"]
+    work = tmp_path / "work"
+    work.mkdir()
+    # Each side: label 7 everywhere; the first slab led 9 by just under the margin,
+    # the second by just over it, the third led background by just under it.
+    for side, low in (("left", -10.0), ("right", 2.0)):
+        affine = grid(0.4, [low, -4, -4])
+        shape = (21, 21, 21)
+        winner = np.full(shape, 0.9, np.float32)
+        second = np.zeros(shape, np.float32)
+        runner = np.zeros(shape, np.uint16)
+        second[:5], runner[:5] = 0.9 - margin + 0.01, 9
+        second[5:10], runner[5:10] = 0.9 - margin - 0.01, 9
+        second[10:15] = 0.9 - margin + 0.01
+        for name, values in (("seg", np.full(shape, 7, np.float32)), ("max_p", winner),
+                             ("second_p", second), ("second_seg", runner)):
+            nib.save(nib.Nifti1Image(values, affine), work / f"{name}.{side}.nii.gz")
+
+    labels, affine, _ = segment.join_hemispheres(config, work)
+    near_ties, record = segment.join_near_ties(config, work, labels, affine)
+    for label, runner_up in ((7, 9), (7 + nextbrain.HEMISPHERE_OFFSET, 9 + nextbrain.HEMISPHERE_OFFSET)):
+        side = labels == label
+        # The joined grid's voxels coincide with each side's, so exactly the first slab.
+        assert set(np.unique(near_ties[side]).tolist()) == {0, runner_up}
+        assert np.count_nonzero(near_ties[side]) == 5 * 21 * 21
+    assert record["near_tie_voxels"] == 2 * 5 * 21 * 21
+
+
 FREESURFER = Path(os.environ.get("FREESURFER_HOME", "/Applications/freesurfer/8.2.0"))
 
 

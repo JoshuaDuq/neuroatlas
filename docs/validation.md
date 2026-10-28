@@ -23,6 +23,8 @@ CI runs all three for `cdmd` on every pull request and deployment. A validation 
 9. **Declared layers.** Nothing undeclared is published, nothing declared is missing, and no unnamed file sits in the directory.
 10. **Segmentation agreement.** NextBrain against the subject's own aseg (below); a Dice under 0.8 fails unless a documented exception specifies a lower floor. CDMD’s left amygdala has a 0.77 floor (measured 0.772). Where lobules are declared, CerebNet's lobules together must reach Dice 0.85 against aseg's cerebellar cortex.
 11. **Transforms.** Projected annotations are re-derived byte for byte; CDMD's tract scanner-to-surface transform is recomputed from `orig.mgz`.
+12. **Spinal cord.** Every PAM50 region is re-voxelised from its mesh with no voxel centre crossed, and left regions lie left of their partners. The registered atlas's cord must meet SCT's own segmentation at Dice 0.95 or more on the slices it covers; `cdmd` measures 0.967 over 65 slices.
+13. **Boundary certainty.** `boundary-certainty.json` recounted per voxel and the label it touches must equal the build's per-pair counts exactly. The near-tie volume must sit on the label grid, name a runner-up from its winner's own hemisphere and never the winner, and have been made with the configured margin.
 
 Browser QA runs are recorded in [`deliverables/`](https://github.com/JoshuaDuq/neuroatlas/tree/main/deliverables); the docs build does not re-run them.
 
@@ -44,6 +46,10 @@ Counts are before barycentric partition; area is conserved across it to a relati
 
 [`tests/test_comparison.py`](https://github.com/JoshuaDuq/neuroatlas/blob/main/tests/test_comparison.py) checks the overlap calculation against explicit barycentric subdivision. CDMD publishes 1,202 positive pairs. Pair areas conserve both hemispheres (about 85,619.412 mm² left, 85,458.887 mm² right); the largest discrepancy against the cortical meshes is $1.12 \times 10^{-4}$ mm², within the float32 bound. These are numerical checks, not proof that projected boundaries are biologically exact.
 
+## Boundary certainty
+
+On `cdmd`, 1,061,305 voxels (7.5% of those labelled) are near ties, and 93.2% of them nearly went to a label that touches them across a face. 1,738 same-hemisphere pairs are rated, covering 99.1% of interface voxels; 2,387 smaller pairs are not. A rated boundary is nearly tied on a median 19% of its interface, 26% weighted by interface. The rerun that records the posteriors reproduces the published labels byte for byte.
+
 ## Tracts
 
 Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, bundle counts, sampled RAS+ coordinates against NiBabel, and float64 lengths. The scanner-to-surface transform is checked against independent voxel anchors and rejects scale and reflection.
@@ -59,3 +65,5 @@ Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, 
 7. **Non-manifold contacts.** On `cdmd`, 116 of 324 solids touch themselves across voxel corners; enclosed volumes stay definite.
 8. **FreeSurfer surface defects** before repair: 8 holes on `cdmd`.
 9. **Shading is illustrative.** T1 relief and tissue colours are not measured optical or histological properties.
+10. **Boundary certainty is the model's own.** It rates how close NextBrain came to choosing the neighbouring label, given one registration. It is not agreement with aseg: CDMD's left amygdala, the Dice exception above, has a median winning posterior of 0.975. A firm boundary can be misplaced.
+11. **The cord's tracts are an atlas.** The cord's outline and levels are this subject's, from the medulla to C5 where the scan ends; the tracts and grey matter inside it are PAM50's, registered to that outline, since a 1 mm scan does not resolve them. PAM50's lateral reticulospinal tract is never any voxel's most probable region and is not published.

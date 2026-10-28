@@ -24,7 +24,7 @@ test('a list longer than two ids, or a reference without one, takes the line und
       .stacked,
     true,
   );
-  const reference = sourceLabel({ atlas: 'zanatomy' }, 'fr');
+  const reference = sourceLabel({ atlas: 'pam50' }, 'fr');
   assert.equal(reference.ids, null);
   assert.equal(reference.stacked, true);
 });

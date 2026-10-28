@@ -413,7 +413,7 @@ test('a reference cord cap is painted as the tissue its region declares, not by 
       hemisphere: 'left',
       supplemental: true,
       mri_registered: false,
-      region_id: `zanatomy:left:${id}`,
+      region_id: `pam50:left:${id}`,
       source_name,
       tissue,
     });
@@ -496,7 +496,7 @@ test('TISSUE-16 a cap not registered to the MRI is left out under MRI colour', (
       hemisphere: 'left',
       supplemental: true,
       mri_registered: false,
-      region_id: 'zanatomy:left:x',
+      region_id: 'pam50:left:x',
       tissue: 'white',
     });
   assert.equal(paint([cord()], { surfaceColor: 'mri' })[0]!.visible, false);

@@ -69,7 +69,7 @@ test('the cord field is not applied where the subject publishes no cord; hiding 
   const cordless = {
     ...manifest,
     supplemental_layers: (manifest.supplemental_layers ?? []).filter(
-      (layer) => layer.id !== 'zanatomy',
+      (layer) => layer.id !== 'pam50',
     ),
   };
   assert.equal(publishesSpinalCord(manifest), true);

@@ -37,3 +37,12 @@ One brain's NextBrain labels on a 0.4 mm grid in its surface RAS, placed through
 .. automodule:: brain_model.labels.nextbrain
    :members:
 ```
+
+## `brain_model.labels.boundary_certainty`
+
+How often NextBrain nearly tied each pair of touching labels, from the near-tie volume beside a subject segmentation.
+
+```{eval-rst}
+.. automodule:: brain_model.labels.boundary_certainty
+   :members:
+```

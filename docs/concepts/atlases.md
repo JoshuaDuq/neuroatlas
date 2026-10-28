@@ -10,7 +10,7 @@ Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manif
 | FreeSurfer aseg | 32 structures | `aseg.mgz` | Marching cubes, bounded smoothing |
 | NextBrain | 514 labels, 292 meshed | Subject segmentation at 0.4 mm | Native |
 | Gyral white matter | 68 parcels | `wmparc.mgz` | Native; cut faces only |
-| Spinal cord | 58 structures | Z-Anatomy | Rigid translation below the brainstem |
+| Spinal cord | 36 regions | PAM50 (Spinal Cord Toolbox) | Registered to this brain's segmented cord |
 | Yeo 7 | 7 networks | Schaefer 2018 on `fsaverage` | Per vertex, registered spheres |
 | CAB-NP | 12 networks | Ji et al. 2019 | One network per HCP-MMP area |
 | Functional divisions | 22 sections, 21 named regions | Glasser 2016; Rolls 2022, 2023 | Per HCP-MMP area |
@@ -32,11 +32,19 @@ The region detail lists overlaps with the other atlas. Each triangle gives one t
 
 Three exclusive levels.
 
-- **Teaching set.** Eight systems (basal ganglia, diencephalon, limbic, brainstem, basal forebrain, cerebellum, ventricles, white-matter pathways), each unit an explicit union of source labels in [`config/learning-anatomy.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/config/learning-anatomy.yaml). Midline units stay whole. The cerebellar cortex is FastSurfer CerebNet's 25 SUIT lobules (vermis VI–X midline; vermis I–V lies in lobules I–IV and V) where an anatomy declares them, and one aseg unit per side otherwise.
+- **Teaching set.** Eight systems (basal ganglia, diencephalon, limbic, brainstem, basal forebrain, cerebellum, ventricles, white-matter pathways), each unit an explicit union of source labels in [`config/learning-anatomy.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/config/learning-anatomy.yaml). Midline units stay whole. NextBrain labels no medulla below its lowest medullary voxels, though the scan does, so the caudal medulla is aseg's brainstem below the higher of the two sides' lowest voxel: it carries the medulla down to meet the cord. The cerebellar cortex is FastSurfer CerebNet's 25 SUIT lobules (vermis VI–X midline; vermis I–V lies in lobules I–IV and V) where an anatomy declares them, and one aseg unit per side otherwise.
 - **FreeSurfer aseg.** Marching cubes at 0.5 on the 1 mm `aseg.mgz`.
 - **NextBrain.** This brain's own NextBrain segmentation (FreeSurfer 8.2, `invivo` mode), each hemisphere joined onto one 0.4 mm grid in surface RAS, moving no label more than 0.25 mm. Midline voxels both sides claim follow SuperSynth's MNI $x$, as FreeSurfer splits hemispheres. The volume is placed through `orig.mgz`'s transform, never its own header. Structures of at least 10 mm³ are meshed; the rest are cut labels. Cut faces sample 0.8 mm blocks, so fragments of ≤ 4.5 mm³ that win no block are absent from cuts but still searchable.
 
 Every display surface uses a Taubin filter bounded to 0.6 mm of the raw surface, pulled back wherever it would cross a voxel centre, so each source voxel stays on its side. Reported volumes come from voxels, not meshes.
+
+### Boundary certainty
+
+NextBrain computes each voxel's winning posterior but does not write it; `scripts/freesurfer/run_patched.py` writes it with the runner-up label and posterior, leaving the labels unchanged. A voxel is a **near tie** where the winner leads the runner-up by less than 0.2. For each pair of touching labels in one hemisphere, the interface is the voxels of either label with a face neighbour in the other on the 0.4 mm grid; the pair's rating is the share of them where the two most probable labels were this pair and nearly tied. Pairs with fewer than 50 interface voxels are not rated, nor are pairs across the midline, whose boundary is the hemisphere join's.
+
+A boundary is **soft** when a third or more of it is a near tie. The selected region's outline on a NextBrain cut and its **Boundary certainty** section draw the same rating. Near ties sit in a band about one voxel wide along boundaries, so a per-voxel map would show only edges; rating the boundary keeps that measurement and names the pair.
+
+It is the model's competition between its own labels, conditional on one registration. It is not agreement with another segmentation: CDMD's left amygdala, NextBrain's largest disagreement with aseg, is a confident label (median winning posterior 0.975). A firm boundary can still be misplaced.
 
 ## Gyral white matter
 
@@ -44,7 +52,9 @@ Every display surface uses a Taubin filter bounded to 0.6 mm of the raw surface,
 
 ## Spinal cord
 
-58 Z-Anatomy structures (roots, ganglia, cauda equina, 19 tracts, horns with Rexed laminae), translated to sit below the brainstem without rotation or scaling. It is a schematic reference, not registered to the MRI. The build refuses it when the scan ends inside the brainstem. Licensed CC BY-SA 4.0.
+This brain's own cervical cord, from the medulla to where the scan ends. `scripts/segment_spinal_cord.py` runs the Spinal Cord Toolbox 7.3 on the source T1: its contrast-agnostic model segments the cord, the vertebrae are labelled from the discs, and the PAM50 template is registered to the cord and its discs. PAM50's atlas of 30 white-matter tracts and 6 grey-matter regions, left and right, is warped onto a 0.5 mm grid around the cord, its own spacing; each voxel keeps its most probable region where the region probabilities sum to at least 0.5. Each region is meshed like the other solids, smoothed by at most 0.6 mm and never across a voxel centre.
+
+The outline and the levels are this cord's. The tracts and grey matter inside it are the atlas's: a 1 mm scan of a cord about 12 mm across does not resolve them. There are no nerve roots, and nothing below the scan. Licensed MIT.
 
 ## Functional networks
 

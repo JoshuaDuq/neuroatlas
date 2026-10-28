@@ -282,8 +282,8 @@ const cordRegion = (
   aliases: Record<string, string[]> = { en: [], fr: [] },
 ) =>
   asRegion({
-    id: `zanatomy:${hemisphere}:${id}`,
-    atlas: 'zanatomy',
+    id: `pam50:${hemisphere}:${id}`,
+    atlas: 'pam50',
     kind: 'structure',
     hemisphere,
     supplemental: true,

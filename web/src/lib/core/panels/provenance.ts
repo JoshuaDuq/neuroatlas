@@ -174,11 +174,14 @@ export function provenanceRows(
   );
   add(
     copy.supplemental,
-    (manifest.supplemental_layers ?? []).map((layer) => ({
-      text: names[layer.id] ?? layer.label,
-      note: [layer.license, layer.attribution].filter(Boolean).join(' · ') || null,
-      link: link(layer.citation),
-    })),
+    (manifest.supplemental_layers ?? []).flatMap((layer) => [
+      {
+        text: names[layer.id] ?? layer.label,
+        note: [layer.license, layer.attribution].filter(Boolean).join(' · ') || null,
+      },
+      ...layer.citations.map((citation) => ({ link: link(citation) })),
+      licence(layer.license_file),
+    ]),
   );
 
   const sources =

@@ -199,11 +199,11 @@ is the English interface text.
 
 ### STATE-21 · Showing the cord is refused where the subject publishes none; hiding it never is
 
-- **Rule:** A subject publishes a spinal cord when its manifest lists the `zanatomy` supplemental layer. On a subject without one, a link that shows the cord has that field refused; a link that hides it always passes.
+- **Rule:** A subject publishes a spinal cord when its manifest lists the `pam50` supplemental layer. On a subject without one, a link that shows the cord has that field refused; a link that hides it always passes.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/link-check.js:37-39`; `viewer/state/scene-commands.js:6`
-- **Expected:** `publishesSpinalCord(cdmd manifest)` = true; with `zanatomy` removed = false; `{}` and `{ supplemental_layers: [{ id: 'envelopes' }] }` = false. Cordless: `cord=1&hemi=left` → rejected `['cord']`, state `{ hemisphere: 'left' }`; `cord=0` → nothing rejected. With a cord, `cord=1` passes.
+- **Expected:** `publishesSpinalCord(cdmd manifest)` = true; with `pam50` removed = false; `{}` and `{ supplemental_layers: [{ id: 'envelopes' }] }` = false. Cordless: `cord=1&hemi=left` → rejected `['cord']`, state `{ hemisphere: 'left' }`; `cord=0` → nothing rejected. With a cord, `cord=1` passes.
 - **Covered by:** `src/lib/core/state/link-check.test.ts` (R)
 
 ## The session

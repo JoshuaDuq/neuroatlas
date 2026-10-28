@@ -52,12 +52,14 @@ export interface ManifestSupplementalLayer {
   file: string;
   region_count: number;
   sha256: string;
-  citation: string;
+  citations: string[];
   license: string;
+  license_file: string;
   attribution: string;
   /** Two opposite corners, `[min, max]` (slices/sections.js:117). */
   bounds_ras_mm: readonly [readonly number[], readonly number[]];
-  template_to_surface_ras_mm: Matrix4;
+  /** The vertebral levels the cord reaches, top to bottom. */
+  vertebral_levels: string[];
 }
 
 export interface ManifestAppearance {
@@ -102,6 +104,7 @@ export interface Manifest {
   functional_regions?: ManifestFile & Record<string, unknown>;
   neuropsych_domains?: ManifestFile & Record<string, unknown>;
   neurosynth_terms?: ManifestFile & Record<string, unknown>;
+  boundary_certainty?: ManifestFile & Record<string, unknown>;
   volumes?: ManifestFile;
   tissues?: ManifestFile;
   atlas_comparison?: ManifestFile;

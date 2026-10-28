@@ -2,7 +2,7 @@
 
 Scope: chunk H4 (#42), the Provenance sheet: what the loaded anatomy's own published records say about where it came from, shown in a native modal dialog opened from the colophon (COLO-05) or, on a phone, from the ⋯ menu (MAST-19). It covers the rows the sheet builds (the C5 view-model `provenanceRows`/`referenceRows`, here because they are what the reader reads) and the dialog's behaviour. Mounting it, and passing the manifest, the domains and the tract reference, is I3b's (`regions.md`, REGION-05 and REGION-18). Legacy sources: `viewer/ui/panels/provenance.js`, `viewer/ui/panels/provenance.test.js`, the root `index.html:689-697`, `viewer/styles/dialogs.css:112-133`, `viewer/ui/chrome/header.js:423-425, 543-549`. New code: `web/src/features/provenance/ProvenanceDialog.svelte`, `web/src/lib/core/panels/provenance.ts`, U5's `web/src/lib/ui/Dialog.svelte`. Deviations: `h4-initial-focus.md`, `h4-lang-of-parts.md`, `h4-rerender-focus.md`. Decision 17 on #4 (external links), decision record `0008-dialog-mount-points.md`.
 
-The data values below come from the published `public/models/cdmd/manifest.json`: subject "MGH CDMD “sub_013”", `individual: true`, source `https://doi.org/10.6084/m9.figshare.c.5315474.v1`, reconstruction `freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45`, HCP-MMP projected from `fsaverage`, atlases `destrieux` and `hcp-mmp`, networks, CAB-NP, functional divisions, neuropsychological domains, one supplemental layer (`zanatomy`), and 39 source files, all with a SHA-256. Domain checks come from `public/models/cdmd/neuropsych-domains.json`. Copy quoted is the English interface text unless marked FR.
+The data values below come from the published `public/models/cdmd/manifest.json`: subject "MGH CDMD “sub_013”", `individual: true`, source `https://doi.org/10.6084/m9.figshare.c.5315474.v1`, reconstruction `freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45`, HCP-MMP projected from `fsaverage`, atlases `destrieux` and `hcp-mmp`, networks, CAB-NP, functional divisions, neuropsychological domains, one supplemental layer (`pam50`), and 42 source files, all with a SHA-256. Domain checks come from `public/models/cdmd/neuropsych-domains.json`. Copy quoted is the English interface text unless marked FR.
 
 ## What the sheet says
 
@@ -12,7 +12,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Kind:** data
 - **Level:** unit (view-model over the published manifest)
 - **Source:** `provenance.js:29-99`; `provenance.test.js:41-45`
-- **Expected:** for `cdmd` with both URLs: labels `Subject, Source data, Reconstruction, Cortical atlases, Functional networks, Functional divisions, Neuropsychological domains, Supplemental layers, Published files`. `{anatomy:{display_name:'X “1”'}}` in `fr` → labels `['Sujet']` and the item's note is `null`. `provenanceRows({})` → `[]`. Supplemental layers: "Z-Anatomy spinal cord reference" with the note "CC BY-SA 4.0 · Z-Anatomy, after BodyParts3D (CC BY-SA 2.1 JP)". Licence links resolve beside the manifest: `/neuroatlas/models/cdmd/../licenses/CAB-NP.txt` and `…/../licenses/HCP-Data-Use-Terms.txt`.
+- **Expected:** for `cdmd` with both URLs: labels `Subject, Source data, Reconstruction, Cortical atlases, Functional networks, Functional divisions, Neuropsychological domains, Supplemental layers, Published files`. `{anatomy:{display_name:'X “1”'}}` in `fr` → labels `['Sujet']` and the item's note is `null`. `provenanceRows({})` → `[]`. Supplemental layers: "PAM50 cord atlas on this spinal cord" with the note "MIT · PAM50 template (De Leener et al. 2018) and white-matter atlas (Lévy et al. 2015), registered with the Spinal Cord Toolbox", its four DOIs, then `PAM50.txt`. Licence links resolve beside the manifest: `/neuroatlas/models/cdmd/../licenses/HCP-Data-Use-Terms.txt`, `…/../licenses/CAB-NP.txt` and `…/../licenses/PAM50.txt`.
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `PROV-01`: the empty case and the full `cdmd` label list, supplemental note and licence links)
 
 ### PROV-02 · Every link comes from the published records
@@ -30,7 +30,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Kind:** data
 - **Level:** unit (view-model over the published manifest)
 - **Source:** `provenance.js:43-48, 53-58, 65-69, 89-97`; `provenance.test.js:30-39`
-- **Expected:** Subject "MGH CDMD “sub_013”" with the note "One individual’s MRI reconstruction". Reconstruction `freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45`, set in mono. Each `atlases[].citation` and each `functional_regions.citations[]` is linked. Published files: `manifest.json` with the note "39 source files, each with a SHA-256 checksum" (FR "39 fichiers sources, chacun avec une somme SHA-256"), then `anatomies.json` with the note "Index of the published anatomies".
+- **Expected:** Subject "MGH CDMD “sub_013”" with the note "One individual’s MRI reconstruction". Reconstruction `freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45`, set in mono. Each `atlases[].citation` and each `functional_regions.citations[]` is linked. Published files: `manifest.json` with the note "42 source files, each with a SHA-256 checksum" (FR "42 fichiers sources, chacun avec une somme SHA-256"), then `anatomies.json` with the note "Index of the published anatomies".
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (S; R `PROV-03` pins the subject, reconstruction and the source-file note in both languages)
 
 ### PROV-04 · HCP-MMP says where it was projected from
@@ -75,7 +75,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the order of elements
 - **Source:** `provenance.js:5-8, 49-52, 110-134`; `provenance.test.js:63-66`
-- **Expected:** `https://doi.org/10.1/x` → `doi.org/10.1/x`; `https://www.z-anatomy.com/` → `www.z-anatomy.com`. CAB-NP licence link text = the last segment of `license_file`, mono. Under Published files the first child of each item is an `A` ("manifest.json", "anatomies.json") and the second a `.provenance-note`. `ftp://x/` → `ftp://x` (only the http and https schemes are dropped).
+- **Expected:** `https://doi.org/10.1/x` → `doi.org/10.1/x`; `https://www.example.org/` → `www.example.org`. CAB-NP licence link text = the last segment of `license_file`, mono. Under Published files the first child of each item is an `A` ("manifest.json", "anatomies.json") and the second a `.provenance-note`. `ftp://x/` → `ftp://x` (only the http and https schemes are dropped).
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `shortUrl`); `src/features/provenance/provenance.svelte.test.ts` (R, element order)
 
 ### PROV-09 · The sheet ends with the intended use

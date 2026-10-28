@@ -87,7 +87,7 @@ export function visibilityOf(region: Region, settings: DisplaySettings): Visibil
   if (isStructure(region) && settings.internalVisible === false) {
     return hidden('internal-hidden');
   }
-  if (region.atlas === 'zanatomy' && settings.spinalCordVisible === false) {
+  if (region.atlas === 'pam50' && settings.spinalCordVisible === false) {
     return hidden('spinal-cord-hidden');
   }
   if (settings.hiddenRegions?.has(region.id)) return hidden('removed');

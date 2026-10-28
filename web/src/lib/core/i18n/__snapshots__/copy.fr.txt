@@ -26,7 +26,30 @@
   "nextbrain": "Atlas histologique NextBrain",
   "cerebnet": "Lobules cérébelleux FastSurfer CerebNet",
   "wmparc": "Parcellisation de la substance blanche FreeSurfer",
-  "zanatomy": "Moelle épinière de référence Z-Anatomy"
+  "pam50": "Atlas médullaire PAM50 sur cette moelle"
+ },
+ "boundary": {
+  "heading": "Certitude des limites",
+  "summary": [
+   "[\"Alpha\",1,2] → \"Quasi-égalité sur Alpha des limites évaluées de cette région · 1 limite floue sur 2\"",
+   "[\"\",2,183] → \"Quasi-égalité sur  des limites évaluées de cette région · 2 limites floues sur 183\"",
+   "[\"Alpha\",183,12345] → \"Quasi-égalité sur Alpha des limites évaluées de cette région · 183 limites floues sur 12345\"",
+   "[\"\",12345,0] → \"Quasi-égalité sur  des limites évaluées de cette région · 12345 limites floues sur 0\"",
+   "[\"Alpha\",0,1] → \"Quasi-égalité sur Alpha des limites évaluées de cette région · 0 limite floue sur 1\""
+  ],
+  "soft": "floue",
+  "firm": "nette",
+  "more": [
+   "[0] → \"0 limites plus petites non listées.\"",
+   "[1] → \"1 limite plus petite non listée.\"",
+   "[2] → \"2 limites plus petites non listées.\"",
+   "[183] → \"183 limites plus petites non listées.\"",
+   "[12345] → \"12345 limites plus petites non listées.\""
+  ],
+  "note": [
+   "[\"Alpha\",\"\"] → \"Part de chaque limite commune, en voxels de Alpha, où les deux étiquettes les plus probables de NextBrain étaient cette paire, à moins de  l’une de l’autre. Sur la coupe, un trait plein est une limite nette, des tirets une limite floue (un tiers ou plus) et le gris une limite non évaluée. C’est la compétition du modèle entre ses propres étiquettes, pas l’accord avec une autre segmentation<NNBSP>; les limites de part et d’autre de la ligne médiane ne sont pas évaluées.\"",
+   "[\"\",\"Alpha\"] → \"Part de chaque limite commune, en voxels de , où les deux étiquettes les plus probables de NextBrain étaient cette paire, à moins de Alpha l’une de l’autre. Sur la coupe, un trait plein est une limite nette, des tirets une limite floue (un tiers ou plus) et le gris une limite non évaluée. C’est la compétition du modèle entre ses propres étiquettes, pas l’accord avec une autre segmentation<NNBSP>; les limites de part et d’autre de la ligne médiane ne sont pas évaluées.\""
+  ]
  },
  "circuits": {
   "heading": "Apprentissage guidé",
@@ -703,7 +726,7 @@
    "nextbrain": "NextBrain",
    "cerebnet": "CerebNet",
    "wmparc": "wmparc",
-   "zanatomy": "Moelle"
+   "pam50": "PAM50"
   },
   "subject": "Sujet",
   "atlas": "Atlas",

@@ -94,7 +94,7 @@ test('a tract reference lists its own sources, not the hidden anatomy', () => {
 
 test('URLs read without their scheme', () => {
   assert.equal(shortUrl('https://doi.org/10.1/x'), 'doi.org/10.1/x');
-  assert.equal(shortUrl('https://www.z-anatomy.com/'), 'www.z-anatomy.com');
+  assert.equal(shortUrl('https://www.example.org/'), 'www.example.org');
 });
 
 const published = (lang: 'en' | 'fr') => provenanceRows(manifest, { lang, ...urls, domains });
@@ -117,11 +117,24 @@ test('PROV-01 the published cdmd manifest gives one row per record, in order', (
   );
   assert.deepEqual(provenanceRows({}), []);
   const supplemental = rowOf(published('en'), 'Supplemental layers').items;
+  const doi = (id: string) => ({
+    link: { href: `https://doi.org/${id}`, text: `doi.org/${id}` },
+  });
   assert.deepEqual(supplemental, [
     {
-      text: 'Z-Anatomy spinal cord reference',
-      note: 'CC BY-SA 4.0 · Z-Anatomy, after BodyParts3D (CC BY-SA 2.1 JP)',
-      link: { href: 'https://www.z-anatomy.com/', text: 'www.z-anatomy.com' },
+      text: 'PAM50 cord atlas on this spinal cord',
+      note: 'MIT · PAM50 template (De Leener et al. 2018) and white-matter atlas (Lévy et al. 2015), registered with the Spinal Cord Toolbox',
+    },
+    doi('10.1016/j.neuroimage.2017.10.041'),
+    doi('10.1016/j.neuroimage.2015.06.040'),
+    doi('10.1016/j.media.2025.103473'),
+    doi('10.1016/j.neuroimage.2016.10.009'),
+    {
+      link: {
+        href: '/neuroatlas/models/cdmd/../licenses/PAM50.txt',
+        text: 'PAM50.txt',
+        mono: true,
+      },
     },
   ]);
   const licences = items(published('en'))
@@ -130,6 +143,7 @@ test('PROV-01 the published cdmd manifest gives one row per record, in order', (
   assert.deepEqual(licences, [
     '/neuroatlas/models/cdmd/../licenses/HCP-Data-Use-Terms.txt',
     '/neuroatlas/models/cdmd/../licenses/CAB-NP.txt',
+    '/neuroatlas/models/cdmd/../licenses/PAM50.txt',
   ]);
 });
 
@@ -144,7 +158,7 @@ test('PROV-03 the subject, its reconstruction and the source files are named in 
   assert.deepEqual(
     rowOf(en, 'Published files').items.map((item) => [item.link!.text, item.note]),
     [
-      ['manifest.json', '39 source files, each with a SHA-256 checksum'],
+      ['manifest.json', '42 source files, each with a SHA-256 checksum'],
       ['anatomies.json', 'Index of the published anatomies'],
     ],
   );
@@ -172,7 +186,7 @@ test('PROV-05 each domain lists how much of every lesion-mapped parcel its areas
   );
   assert.equal(
     text('Pain: “pain”'),
-    'Lesion check: Central post-stroke pain (Sprenger et al. 2012): caudal_division_of_ventral_posterior_lateral_nucleus (L), not measured, caudal_division_of_ventral_posterior_lateral_nucleus (R), not measured, anterior_nucleus_of_pulvinar (L), not measured, anterior_nucleus_of_pulvinar (R), not measured.',
+    'Lesion check: Central post-stroke pain (Sprenger et al. 2012, Karoam et al. 2025): caudal_division_of_ventral_posterior_lateral_nucleus (L), not measured, caudal_division_of_ventral_posterior_lateral_nucleus (R), not measured, anterior_nucleus_of_pulvinar (L), not measured, anterior_nucleus_of_pulvinar (R), not measured.',
   );
   assert.equal(
     text('Working memory: “working memory”'),

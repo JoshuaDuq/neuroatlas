@@ -35,6 +35,7 @@ Search by name, or browse the **Whole brain** or **By system**. Select a region 
 - Hemisphere, lobe or system, surface area or volume, centroid in RAS millimetres, and the source label.
 - **Focus**, **Isolate**, **Hide** and **Linked MRI**.
 - **Overlap with** the other cortical atlas (see below).
+- **Boundary certainty**, for a NextBrain region: each rated neighbour, largest shared boundary first, with the share of that boundary where NextBrain nearly chose the other label. A name selects the neighbour without moving the camera. See [Atlases](../concepts/atlases.md#boundary-certainty).
 - **Functional division**, **Neuropsychological functions** and **Functional networks**, as disclosures that stay open between selections.
 - The deficits and guided-circuit landmarks that involve the region, each opening in its own tab.
 
@@ -51,7 +52,7 @@ A Destrieux or HCP-MMP region lists the regions of the other atlas it shares pia
 The dock at the bottom left holds four tools.
 
 - **View** holds the presets: oblique, left, right, anterior, posterior, superior, inferior.
-- **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels.
+- **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels. With NextBrain cut labels, a selected NextBrain region is outlined on the cut: solid where its boundary is firm, dashed where soft, grey where unrated.
 - **Display** holds hemisphere, cortex and its opacity, internal anatomy, spinal cord and **Reset view**.
 - **Lesion** places a sphere (3–30 mm radius): while it is open, a click on the brain or a cut face sets the centre. Cut first to place it at depth.
 
@@ -70,7 +71,7 @@ The report measures overlap only: it predicts no deficit. Structures drawn only 
 
 A cut adds the section bar above the dock: a slider and a millimetre field for the position, tilt and azimuth for an oblique plane, **Reverse side**, **Linked MRI**, and × to return to the full brain. Positions are surface RAS millimetres: +R right, +A anterior, +S superior. Each solid is capped where the plane meets it, and the cap samples the label volume of the chosen cut labels.
 
-An anatomy whose scan ends inside the brainstem publishes no spinal cord; Display says so.
+An anatomy without a segmented cord publishes no spinal cord; Display says so.
 
 ### Linked MRI
 

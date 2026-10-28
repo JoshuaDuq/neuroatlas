@@ -271,12 +271,12 @@ export function defineEngineContract(
       it('refuses to prefetch what is not an atlas or a detail level', async () => {
         const { engine } = world();
         // A supplemental layer loads with its own command (the E4b review).
-        await assert.rejects(engine.model.prefetchLayer('zanatomy'), rejectsWith('unknown-layer'));
+        await assert.rejects(engine.model.prefetchLayer('pam50'), rejectsWith('unknown-layer'));
         await assert.rejects(
           engine.model.prefetchLayer('no-such-layer'),
           rejectsWith('unknown-layer'),
         );
-        assert.equal(engine.model.hasLayer('zanatomy'), false);
+        assert.equal(engine.model.hasLayer('pam50'), false);
       });
 
       it('downloads the spinal cord on first showing', async () => {
@@ -483,16 +483,16 @@ export function defineEngineContract(
         assert.throws(() => engine.model.select(left.id), /not visible/);
       });
 
-      // Published CDMD, learning detail: 255 regions drawn, 150 of them cortex and 105 internal; a
+      // Published CDMD, learning detail: 256 regions drawn, 150 of them cortex and 106 internal; a
       // hemisphere shows its own and the midline.
       it('draws the regions each hemisphere, cortex and internal setting shows', () => {
         const { engine, regions } = world();
         const { model } = engine;
         const drawn = () => [...regions.keys()].filter((id) => model.isRegionDrawn(id));
         const expected = {
-          both: { both: 255, cortex: 150, internal: 105, neither: 0 },
-          left: { both: 132, cortex: 75, internal: 57, neither: 0 },
-          right: { both: 132, cortex: 75, internal: 57, neither: 0 },
+          both: { both: 256, cortex: 150, internal: 106, neither: 0 },
+          left: { both: 133, cortex: 75, internal: 58, neither: 0 },
+          right: { both: 133, cortex: 75, internal: 58, neither: 0 },
         } as const;
         for (const hemisphere of ['both', 'left', 'right'] as const) {
           for (const [setting, cortex, internal] of [
@@ -549,7 +549,7 @@ export function defineEngineContract(
         model.clearIsolation();
         assert.equal(model.state.selectedRegion?.id, left.id, 'releasing keeps the selection');
         assert.equal(model.settings.cortexOpacity, 0.5, 'and every other setting');
-        assert.equal(model.state.visibleMeshCount, 255);
+        assert.equal(model.state.visibleMeshCount, 256);
         model.reset();
         model.setPaint(null);
         const releasers: [string, () => unknown][] = [

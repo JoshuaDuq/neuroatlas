@@ -118,8 +118,10 @@ def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
     # inside that label, so publishing it would enclose them completely. The two
     # segmentations disagree along shared borders, which is ordinary; a unit that
     # vanishes inside another is not.
+    from brain_model.layers.learning import below_floors, nextbrain_floors
+
     config = read_config()
-    grid, _ = nextbrain.load(config)
+    grid, table = nextbrain.load(config)
     labels = grid.labels
     image = load_on_grid(config, config["source_directory"] / "mri/aseg.mgz")
     aseg, _ = resample_nearest(
@@ -127,6 +129,11 @@ def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
         grid.voxel_to_surface, labels.shape,
     )
     definition = read_definition(config)
+    # An aseg unit taken below a NextBrain floor publishes none of its label above it.
+    aseg = below_floors(
+        aseg, grid.voxel_to_surface, definition["aseg"],
+        nextbrain_floors(definition, (grid, table)),
+    )
     covered = np.isin(aseg, [label for unit in definition["aseg"] for label in unit["labels"]])
     for unit in definition["nextbrain"]:
         members = [
@@ -138,3 +145,33 @@ def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
         if not mask.any():
             continue
         assert (mask & covered).sum() / mask.sum() < 0.5, unit["id"]
+
+
+def test_a_unit_below_a_nextbrain_floor_keeps_only_voxels_under_it():
+    from brain_model.layers.learning import below_floors
+
+    labels = np.full((1, 1, 6), 16, dtype=np.int32)
+    labels[0, 0, 0] = 7  # another unit's label is never cleared
+    affine = np.eye(4)  # surface z is the third index
+    groups = [{"id": "low", "labels": [16], "below_nextbrain": "medulla"}, {"id": "other", "labels": [7]}]
+    restricted = below_floors(labels, affine, groups, {"medulla": 3.0})
+    assert restricted.ravel().tolist() == [7, 16, 16, 0, 0, 0]
+    assert labels.ravel().tolist() == [7, 16, 16, 16, 16, 16]
+
+
+def test_the_caudal_medulla_joins_nextbrain_s_medulla_to_the_cord():
+    """aseg's brainstem fills what NextBrain leaves unlabelled between its medulla and C1."""
+    from brain_model.layers import spinal_cord
+    from brain_model.layers.learning import nextbrain_floors, source_groups
+
+    config = read_config("cdmd")
+    source = nextbrain.load(config)
+    floor = nextbrain_floors(read_definition(config), source)["medulla"]
+    groups = {name: (grid, units) for name, grid, _, units in source_groups(config, source)}
+    grid, _ = groups["aseg"]
+    voxels = np.argwhere(grid.labels == 16)
+    z = voxels @ grid.voxel_to_surface[2, :3] + grid.voxel_to_surface[2, 3]
+    assert z.max() < floor <= z.max() + 1.0
+    cord = spinal_cord.load(config)
+    cord_z = np.argwhere(cord.labels > 0) @ cord.voxel_to_surface[2, :3] + cord.voxel_to_surface[2, 3]
+    assert z.min() < cord_z.max()

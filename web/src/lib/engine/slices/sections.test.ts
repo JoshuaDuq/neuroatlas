@@ -145,7 +145,7 @@ test('a hidden spinal cord does not stretch the axial cut below the brain', asyn
   model.manifest = {
     supplemental_layers: [
       {
-        id: 'zanatomy',
+        id: 'pam50',
         bounds_ras_mm: [
           [-5, -50, -550],
           [8, -30, -60],
@@ -288,8 +288,6 @@ test('the oblique range is the projected bounds, cut back to where the crosshair
   const [low, high] = sections.offsetRange;
   assert.ok(Math.abs(low - Math.max(Math.min(...projections), -reach)) < 1e-9);
   assert.ok(Math.abs(high - Math.min(Math.max(...projections), reach)) < 1e-9);
-  // The cord still reaches far below the brain, and so does the plane.
-  assert.ok(low < -500);
   sections.dispose();
 });
 

@@ -37,6 +37,8 @@ import {
 import type { FunctionalRegions } from '../../core/catalog/functional-regions.ts';
 import { validateNeuropsychDomains } from '../../core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains, NeurosynthTerms } from '../../core/catalog/neuropsych-domains.ts';
+import { validateBoundaryCertainty } from '../../core/catalog/boundary-certainty.ts';
+import type { BoundaryCertainty } from '../../core/catalog/boundary-certainty.ts';
 import { belongsToDetail, visibilityOf } from '../../core/catalog/visibility.ts';
 import { createDissection } from '../../core/state/dissection.ts';
 import { fetchAsset } from '../../core/assets/asset-cache.ts';
@@ -224,7 +226,7 @@ export class BrainAtlas extends EventTarget {
     const readJson = async <T>(address: string | URL) =>
       JSON.parse(new TextDecoder().decode(await fetchAsset(address))) as T;
     const manifest = await readJson<AtlasManifest>(url.href);
-    const [cabNp, functionalRegions, domains, terms] = await Promise.all([
+    const [cabNp, functionalRegions, domains, terms, boundaryCertainty] = await Promise.all([
       manifest.cab_np ? readJson<CabNpPartition>(new URL(manifest.cab_np.file, url)) : null,
       manifest.functional_regions
         ? readJson<FunctionalRegions>(new URL(manifest.functional_regions.file, url))
@@ -235,6 +237,9 @@ export class BrainAtlas extends EventTarget {
       manifest.neurosynth_terms
         ? readJson<NeurosynthTerms>(new URL(manifest.neurosynth_terms.file, url))
         : null,
+      manifest.boundary_certainty
+        ? readJson<BoundaryCertainty>(new URL(manifest.boundary_certainty.file, url))
+        : null,
     ]);
     const gltf = new GLTFLoader();
     const path = new URL('.', url).href;
@@ -244,7 +249,15 @@ export class BrainAtlas extends EventTarget {
         return gltf.parseAsync(buffer, path);
       },
     };
-    const model = new BrainAtlas(manifest, loader, cabNp, functionalRegions, domains, terms);
+    const model = new BrainAtlas(
+      manifest,
+      loader,
+      cabNp,
+      functionalRegions,
+      domains,
+      terms,
+      boundaryCertainty,
+    );
     try {
       await model.initialize(atlasId, options);
       return model;
@@ -261,6 +274,7 @@ export class BrainAtlas extends EventTarget {
   readonly cabNp: CabNpPartition | null;
   readonly functionalRegions: FunctionalRegions | null;
   readonly domains: NeuropsychDomains | null;
+  readonly boundaryCertainty: BoundaryCertainty | null;
   functionalLevel: FunctionalLevel = 'named';
   /** A panel's colours for named regions, every other region in tissue colour; null for none. */
   paint: Paint | null = null;
@@ -309,6 +323,7 @@ export class BrainAtlas extends EventTarget {
     functionalRegions: FunctionalRegions | null = null,
     domains: NeuropsychDomains | null = null,
     terms: NeurosynthTerms | null = null,
+    boundaryCertainty: BoundaryCertainty | null = null,
   ) {
     super();
     validateManifest(manifest);
@@ -320,6 +335,8 @@ export class BrainAtlas extends EventTarget {
     this.functionalRegions =
       functionalRegions && validateFunctionalRegions(functionalRegions, this.regions);
     this.domains = domains && validateNeuropsychDomains(domains, this.regions, terms);
+    this.boundaryCertainty =
+      boundaryCertainty && validateBoundaryCertainty(boundaryCertainty, this.regions);
     this.dissection = createDissection(this.regions);
     // What `initialize` is asked for by default; nothing is drawn until it has loaded them.
     this.atlasId = manifest.atlases[0]!.id;
@@ -461,7 +478,7 @@ export class BrainAtlas extends EventTarget {
   async ensureSpinalCord(onProgress?: ProgressCallback): Promise<void> {
     if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     const layers = this.manifest.supplemental_layers ?? [];
-    if (!layers.some((layer) => layer.id === 'zanatomy')) {
+    if (!layers.some((layer) => layer.id === 'pam50')) {
       throw new Error('This anatomy does not publish a spinal cord.');
     }
     if (this.pending.has(SPINAL_CORD)) {

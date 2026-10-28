@@ -49,7 +49,7 @@ Teaching-set units as explicit unions of source labels, with bounded display sur
 
 ## `brain_model.layers.spinal_cord`
 
-The Z-Anatomy cord, translated below the brainstem without deformation.
+This brain's cervical cord: SCT's segmentation, with PAM50's tracts and grey matter registered to it.
 
 ```{eval-rst}
 .. automodule:: brain_model.layers.spinal_cord

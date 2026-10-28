@@ -64,6 +64,9 @@ import type { Appearance } from '../render/materials.ts';
 import { token } from '../render/tokens.ts';
 import { createCapLabels, updateCapLabels } from './cap-labels.ts';
 import type { CapLabelUniforms } from './cap-labels.ts';
+import { addBoundaryEdges, createEdgeUniforms, pairTexture } from './boundary-edges.ts';
+import type { EdgeUniforms } from './boundary-edges.ts';
+import type { BoundaryCertainty } from '../../core/catalog/boundary-certainty.ts';
 
 /** `volumes.json`: the MRI and segmentation records, their labels and the default MRI window. */
 export interface VolumeMetadata {
@@ -103,6 +106,7 @@ export interface Anatomy {
   worldToVoxel: Matrix4;
   mriUniforms: MriUniforms;
   capLabels: CapLabelUniforms;
+  capEdges: EdgeUniforms;
 }
 
 /** One loaded cut atlas: its label grid on the GPU and the plane that samples it. */
@@ -129,6 +133,7 @@ export interface TissueLayer {
   solidLabels: LabelIndex;
   codes: Map<string, number>;
   wedged: boolean;
+  edges: EdgeUniforms;
 }
 
 /**
@@ -144,6 +149,7 @@ export interface CutModel extends EventTarget {
   readonly regions: ReadonlyMap<string, Region>;
   readonly cabNp: PaletteLookup['cabNp'] | null;
   readonly functionalRegions: PaletteLookup['functional'] | null;
+  readonly boundaryCertainty: BoundaryCertainty | null;
   readonly layers: ReadonlyMap<string, { meshes: Mesh[] }>;
   readonly sourceColors: Pick<ReadonlyMap<Mesh, Color>, 'get'>;
   readonly state: PaletteState;
@@ -272,9 +278,7 @@ export class TissueSections {
     this.solidsLoading = (async () => {
       await this.loadMetadata();
       const parcels = this.metadata!.white_matter;
-      const cord = this.model.manifest.supplemental_layers?.some(
-        (layer) => layer.id === 'zanatomy',
-      );
+      const cord = this.model.manifest.supplemental_layers?.some((layer) => layer.id === 'pam50');
       const [, envelopes, parcelVolume] = await Promise.all([
         this.loadMri(),
         this.model.ensureEnvelopes(),
@@ -358,6 +362,7 @@ export class TissueSections {
       worldToVoxel,
       mriUniforms: createMriUniforms({ texture, worldToVoxel, volume }),
       capLabels: createCapLabels(),
+      capEdges: createEdgeUniforms(),
     };
     this.markWith(anatomy.mriUniforms);
     return anatomy;
@@ -396,6 +401,15 @@ export class TissueSections {
       .then(([volume, wedges]) => {
         if (this.disposed) throw new Error('Tissue sections disposed during loading.');
         const layer = this.createLayer(metadata, volume);
+        const certainty = this.model.boundaryCertainty;
+        if (certainty?.atlas === atlas) {
+          layer.edges.edgeEnabled.value = true;
+          layer.edges.edgePairs.value = pairTexture(
+            layer.codes,
+            metadata.labels.length,
+            certainty.pairs,
+          );
+        }
         addSolidSources(
           this.solids,
           wedges.map((wedge) => solidSource(wedge)),
@@ -448,6 +462,14 @@ export class TissueSections {
     };
     const material = createCutMaterial(uniforms, tissue);
     addMriAppearance(material, this.anatomy.mriUniforms, 'lift');
+    const edges = createEdgeUniforms();
+    addBoundaryEdges(material, edges, {
+      volume: 'labelVolume',
+      shape: 'volumeShape',
+      toLabels: 'worldToVoxel',
+      enabled: 'true',
+      selected: 'highlightCodes.y',
+    });
     const mesh = new Mesh(new PlaneGeometry(0.5, 0.5), material);
     mesh.name = 'Native labelled tissue cut';
     mesh.visible = false;
@@ -463,6 +485,7 @@ export class TissueSections {
       solidLabels: indexLabels(metadata.labels),
       codes: codeIndex(metadata.labels),
       wedged: false,
+      edges,
     };
   }
 
@@ -477,6 +500,8 @@ export class TissueSections {
     const mri = state.surfaceColor === 'mri' && !usesPaint(state);
     anatomy.mriUniforms.scanEnabled.value = mri;
     updateCapLabels(anatomy.capLabels, layer, state);
+    anatomy.capEdges.edgeEnabled.value = layer.edges.edgeEnabled.value;
+    anatomy.capEdges.edgePairs.value = layer.edges.edgePairs.value;
     const solid = layer.wedged || state.surfaceColor === 'tissue' || mri;
     const supplemental = this.solids.solids.some((entry) => entry.source.userData['supplemental']);
     this.solids.group.visible = solid || supplemental;

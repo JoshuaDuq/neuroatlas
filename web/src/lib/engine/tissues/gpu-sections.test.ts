@@ -343,8 +343,8 @@ test('a surfaceless atlas keeps the label volume for published colours', () => {
 test('a surfaceless cut atlas still caps and picks supplemental anatomy outside its volume', () => {
   const { sections, model, layer } = fixture();
   const cord = {
-    id: 'zanatomy:midline:cord',
-    atlas: 'zanatomy',
+    id: 'pam50:midline:cord',
+    atlas: 'pam50',
     kind: 'structure',
     supplemental: true,
     hemisphere: 'midline',

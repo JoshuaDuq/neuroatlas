@@ -45,7 +45,7 @@ test(
     );
     const solids = sections.tissues.solids.solids;
     const learning = model.layers.get('learning')!.meshes;
-    const cord = model.layers.get('zanatomy')!.meshes;
+    const cord = model.layers.get('pam50')!.meshes;
     const wedges = model.ribbonWedges.get('destrieux')!;
     const shared = new Set(
       [...model.envelopes!, ...learning, ...cord, ...wedges].map((mesh) => mesh.geometry),

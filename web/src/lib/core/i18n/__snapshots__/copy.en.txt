@@ -26,7 +26,30 @@
   "nextbrain": "NextBrain histological atlas",
   "cerebnet": "FastSurfer CerebNet cerebellar lobules",
   "wmparc": "FreeSurfer white-matter parcellation",
-  "zanatomy": "Z-Anatomy spinal cord reference"
+  "pam50": "PAM50 cord atlas on this spinal cord"
+ },
+ "boundary": {
+  "heading": "Boundary certainty",
+  "summary": [
+   "[\"Alpha\",1,2] → \"Near tie on Alpha of this region’s rated boundary · 1 of 2 boundaries soft\"",
+   "[\"\",2,183] → \"Near tie on  of this region’s rated boundary · 2 of 183 boundaries soft\"",
+   "[\"Alpha\",183,12345] → \"Near tie on Alpha of this region’s rated boundary · 183 of 12345 boundaries soft\"",
+   "[\"\",12345,0] → \"Near tie on  of this region’s rated boundary · 12345 of 0 boundaries soft\"",
+   "[\"Alpha\",0,1] → \"Near tie on Alpha of this region’s rated boundary · 0 of 1 boundaries soft\""
+  ],
+  "soft": "soft",
+  "firm": "firm",
+  "more": [
+   "[0] → \"0 smaller boundaries not listed.\"",
+   "[1] → \"1 smaller boundary not listed.\"",
+   "[2] → \"2 smaller boundaries not listed.\"",
+   "[183] → \"183 smaller boundaries not listed.\"",
+   "[12345] → \"12345 smaller boundaries not listed.\""
+  ],
+  "note": [
+   "[\"Alpha\",\"\"] → \"Share of each shared boundary, in Alpha voxels, where NextBrain’s two most probable labels were this pair and within  of each other. On the cut, solid is firm, dashed is soft (a third or more) and grey is not rated. This is the model’s own competition between its labels, not agreement with another segmentation; boundaries across the midline are not rated.\"",
+   "[\"\",\"Alpha\"] → \"Share of each shared boundary, in  voxels, where NextBrain’s two most probable labels were this pair and within Alpha of each other. On the cut, solid is firm, dashed is soft (a third or more) and grey is not rated. This is the model’s own competition between its labels, not agreement with another segmentation; boundaries across the midline are not rated.\""
+  ]
  },
  "circuits": {
   "heading": "Guided learning",
@@ -703,7 +726,7 @@
    "nextbrain": "NextBrain",
    "cerebnet": "CerebNet",
    "wmparc": "wmparc",
-   "zanatomy": "Spinal cord"
+   "pam50": "PAM50"
   },
   "subject": "Subject",
   "atlas": "Atlas",

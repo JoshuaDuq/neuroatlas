@@ -57,4 +57,4 @@ See [installation](https://joshuaduq.github.io/neuroatlas/docs/install.html) and
 
 ## Data and licences
 
-The code is MIT licensed; data have separate terms. In particular, HCP-MMP data have HCP use terms, CAB-NP is non-commercial, Neurosynth-derived databases are ODbL, and the Z-Anatomy spinal cord is CC BY-SA. TractSeg-derived bundles require attribution. See [references and licensing](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) for sources, citations and complete terms.
+The code is MIT licensed; data have separate terms. In particular, HCP-MMP data have HCP use terms, CAB-NP is non-commercial, Neurosynth-derived databases are ODbL, and the PAM50 cord atlas is MIT. TractSeg-derived bundles require attribution. See [references and licensing](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) for sources, citations and complete terms.

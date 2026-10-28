@@ -52,7 +52,7 @@ test('caps reach the lower spinal cord in every orientation and retained side', 
     new MeshBasicMaterial({ side: DoubleSide }),
   );
   source.position.set(0.002, -0.3, 0.038);
-  source.userData.region_id = 'zanatomy:midline:cord';
+  source.userData.region_id = 'pam50:midline:cord';
   const sections = new SolidSections();
   sections.add(source, new MeshBasicMaterial(), 2);
   const point = new Vector3(0.002, -0.5, 0.038);
@@ -66,7 +66,7 @@ test('caps reach the lower spinal cord in every orientation and retained side', 
       const direction = normal.clone().multiplyScalar(side);
       sections.update(new Plane().setFromNormalAndCoplanarPoint(direction, point));
       const ray = new Raycaster(point.clone().addScaledVector(direction, 0.1), direction.negate());
-      assert.equal(sections.intersect(ray)?.region, 'zanatomy:midline:cord');
+      assert.equal(sections.intersect(ray)?.region, 'pam50:midline:cord');
     }
   }
   sections.dispose();

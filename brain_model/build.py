@@ -9,7 +9,7 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
 from .gltf.export import add_region, compact_region, published_area_mm2, write_scene
-from .labels import cerebellum, nextbrain, white_matter
+from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
 from .layers import (
@@ -24,7 +24,6 @@ from .layers import (
 )
 from .sources import (
     HEMISPHERES,
-    ROOT,
     read_color_table,
     read_config,
     verify_sources,
@@ -72,10 +71,13 @@ def require_layer_inputs(config):
             networks.annotation_path(config["source_directory"], prefix)
             for prefix in HEMISPHERES
         ],
-        "nextbrain": lambda: nextbrain.paths(config),
+        "nextbrain": lambda: [
+            *nextbrain.paths(config),
+            *([boundary_certainty.path(config)] if boundary_certainty.is_published(config) else []),
+        ],
         "cerebellar_lobules": lambda: [cerebellum.path(config)],
         "white_matter": lambda: [white_matter.path(config)],
-        "spinal_cord": lambda: [ROOT / config["spinal_cord"]["source"]],
+        "spinal_cord": lambda: list(spinal_cord.paths(config).values()),
         "neurosynth_terms": lambda: [neurosynth_terms.DEFINITION, neurosynth_terms.SCORES],
     }
     missing = [
@@ -359,6 +361,15 @@ def resolution_limitations(config, fine):
     ]
 
 
+def boundary_certainty_limitations(config):
+    if not boundary_certainty.is_published(config):
+        return []
+    return [
+        f"Boundary certainty is NextBrain's competition between its own labels: the share of a boundary where its two most probable labels were within {config[nextbrain.ATLAS_ID]['near_tie_margin']:g} of each other. It is conditional on one registration and is not agreement with another segmentation; a confident boundary can still be misplaced.",
+        "Boundaries across the midline are not rated: each hemisphere is segmented separately and joined.",
+    ]
+
+
 def cerebellum_limitations(config):
     limitations = [
         "Learning publishes the cerebellar cortex and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
@@ -422,6 +433,8 @@ def main():
     require_layer_inputs(config)
     if nextbrain.is_declared(config):
         nextbrain.verify_procedure(config, provenance)
+    if boundary_certainty.is_published(config):
+        boundary_certainty.verify_margin(config, provenance)
     atlas_metadata = []
     regions = []
     field_ranges = None
@@ -453,10 +466,15 @@ def main():
     if white_matter.is_declared(config):
         regions.extend(white_matter.build_regions(config))
     export_volumes(config)
-    cord_layers, cord_regions = [], []
+    cord_layers = []
     if spinal_cord.is_declared(config):
-        layer, cord_regions = spinal_cord.build(config)
-        cord_layers = [layer]
+        cord = spinal_cord.load(config)
+        built, cord_regions = build_structure_layer(
+            config, cord, sorted(spinal_cord.label_table(config)),
+            spinal_cord.describer(config), "spinal-cord.glb",
+        )
+        path = config["output_directory"] / built["file"]
+        cord_layers = [spinal_cord.layer(config, built, cord_regions, path)]
         regions.extend(cord_regions)
     manifest = {
         "supplemental_layers": cord_layers,
@@ -485,12 +503,17 @@ def main():
         "functional_regions": functional_regions.export(config, regions),
         "neuropsych_domains": neuropsych_domains.export(config, regions),
         "neurosynth_terms": neurosynth_terms.export(config, regions),
+        **(
+            {"boundary_certainty": boundary_certainty.export(config, regions)}
+            if boundary_certainty.is_published(config)
+            else {}
+        ),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
         "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
         "limitations": [
-            *(spinal_cord.limitations(config) if cord_regions else spinal_cord.omission(config)),
+            *(spinal_cord.limitations(config) if cord_layers else []),
             *anatomy_limitations(config),
             "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
@@ -503,6 +526,7 @@ def main():
             f"Internal solids are marching-cubes surfaces smoothed for display by at most {config['structures']['smoothing']['maximum_displacement_mm']:g} mm and never across a voxel centre; between voxel centres their boundaries are a display convention, not a measurement.",
             "Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; validation counts those edges, and the volume each surface encloses stays definite.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
+            *boundary_certainty_limitations(config),
             "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
             "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
             *network_limitations(config),

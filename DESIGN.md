@@ -683,7 +683,7 @@ spans and hidden from assistive technology.
   column, 4.5rem area and 4rem share columns with unwrapped heads, aligned 13px/500 tabular figures,
   row-height rows, and rules only at the header and unassigned remainder. Detail sections are
   separated by 24px; functional-network rows are row height and use space rather than rules.
-  Constituent regions, Functional division, Neuropsychological domains, and
+  Boundary certainty, Constituent regions, Functional division, Neuropsychological domains, and
   Functional networks are collapsed native disclosures in one ruled index,
   with fine bottom rules and weight-500 summaries 36px tall (a row and 8px of
   air; 44px on touch). Each retains its

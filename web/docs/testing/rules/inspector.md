@@ -21,7 +21,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Kind:** behaviour
 - **Level:** browser — heading, focus target
 - **Source:** `viewer/ui/panels/inspector.js:283-312`; decision 35 on #4
-- **Expected:** `hcp-mmp:left:1` → h2 "V1"; context terms "Hemisphere", "Lobe / System"; side "Left" (French "Gauche"); `requestFocus('region-title')` → true, focus on the h2 with `tabindex="-1"`. `learning:left:thalamus` → "Left", then French "Gauche" and a different group text; region cleared → no context and no facts. `zanatomy:midline:cord` → hint "Z-Anatomy reference cord in its anatomical posture; seated below the brainstem by translation alone, not registered to this subject’s MRI. Segment levels and root counts are the reference model’s, not this subject’s."
+- **Expected:** `hcp-mmp:left:1` → h2 "V1"; context terms "Hemisphere", "Lobe / System"; side "Left" (French "Gauche"); `requestFocus('region-title')` → true, focus on the h2 with `tabindex="-1"`. `learning:left:thalamus` → "Left", then French "Gauche" and a different group text; region cleared → no context and no facts. `pam50:left:gracile-fasciculus` → its notes as the hint
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, but the group value is only checked non-empty and the notes only for length > 0: W for those parts)
 
 ### INSP-03 · Four commands act on the selection
@@ -57,7 +57,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Kind:** data
 - **Level:** unit (view-model: `sourceLabel`, `core-panels.md`)
 - **Source:** `viewer/ui/panels/inspector.js:24-42`, `237-262`
-- **Expected:** `hcp-mmp:left:1` (`source_label_id` 1) → "… · 1", `.code` "1", not stacked. `zanatomy:midline:cord` (no id) → stacked. `learning:left:thalamus` (52 `source_label_ids`) → summary ending "52 labels" (French "52 étiquettes") and the 52 ids joined by ", ". The boundary: 8 ids listed, 9 counted.
+- **Expected:** `hcp-mmp:left:1` (`source_label_id` 1) → "… · 1", `.code` "1", not stacked. `learning:left:caudate` (3 `source_label_ids`) → stacked; a region with no id stacks too (`core-panels.md`). `learning:left:thalamus` (52 `source_label_ids`) → summary ending "52 labels" (French "52 étiquettes") and the 52 ids joined by ", ". The boundary: 8 ids listed, 9 counted.
 - **Covered by:** `src/lib/core/panels/inspector.test.ts` (R, with the 8/9 boundary); `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-07 · An open source list stays open until the region or the language changes
@@ -353,3 +353,21 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` clean for `destrieux:left:16` (en, fr, all open), `hcp-mmp:left:119` pressed and then unavailable, and the 503 failure. `app.expectAccessible('atlas-comparison')` with the more list open (published data).
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
+
+### INSP-39 · A NextBrain region lists how often each of its boundaries nearly tied
+
+- **Rule:** A region with rated boundaries in `boundary-certainty.json` has a collapsed Boundary certainty section after the comparison slot. Its line gives the interface-weighted near-tie share and how many boundaries are soft (a third or more). Up to eight neighbours follow, largest interface first, each with a solid or dashed glyph matching the cut-face outline, its name with "soft" or "firm" for a reader, a decorative bar and a whole percentage; the rest are counted. The note gives the published voxel spacing and margin. A neighbour's name selects it without moving the camera. A region with no rated boundary has no section.
+- **Kind:** scientific
+- **Level:** unit (`boundariesOf`, `overallShare`, `validateBoundaryCertainty`) and browser
+- **Source:** design round 2026-10-27, option C
+- **Expected:** `nextbrain:right:10394` (14 rated, 3 soft) → eight rows in the published order, "6 smaller boundaries not listed.", "in 0.4 mm voxels", "within 0.2 of each other"; activating the first row calls `onselect` with its neighbour. `hcp-mmp:left:1` → no section. French "Certitude des limites", "en voxels de 0,4 mm". Axe clean with the section open.
+- **Covered by:** `src/lib/core/catalog/boundary-certainty.test.ts`, `src/features/inspector/inspector.svelte.test.ts` (R)
+
+### INSP-40 · The selected NextBrain region is outlined on a NextBrain cut by the same rating
+
+- **Rule:** With NextBrain cut labels and a NextBrain region selected, the cut draws the region's boundaries with its neighbours: solid where the boundary is firm, two-tone dashes where it is soft, grey where the pair is unrated. Nothing is outlined without a selection, on another cut atlas, or against unlabelled tissue.
+- **Kind:** scientific
+- **Level:** unit (`pairTexture`) and render
+- **Source:** design round 2026-10-27, option C
+- **Expected:** the pair table is symmetric, 0 for an unrated pair and 1 + share × 254 otherwise; a label with no cut code leaves no entry.
+- **Covered by:** `src/lib/engine/tissues/boundary-edges.test.ts` (W: the shader's ink is checked by render capture, not by a test)

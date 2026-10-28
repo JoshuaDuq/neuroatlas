@@ -19,7 +19,7 @@ from .gltf.encode import (
     published_field_ranges,
 )
 from .gltf.export import compact_region
-from .labels import cerebellum, nextbrain, white_matter
+from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
 from .labels.volumes import conformed_grid
 from .layers import (
     cab_np,
@@ -394,7 +394,9 @@ def validate_sides(sides, volume, affine, partner_of):
             raise ValueError(f"{hemisphere.title()} structure on wrong side: {region_id}")
 
 
-def validate_structure_layer(path, volume, affine, labels, smoothing, tolerance, partner_of=None):
+def validate_structure_layer(
+    path, volume, affine, labels, smoothing, tolerance, partner_of=None, label_key="source_label_id"
+):
     meshes = read_meshes(path)
     maximum = smoothing["maximum_displacement_mm"]
     reports = []
@@ -402,7 +404,7 @@ def validate_structure_layer(path, volume, affine, labels, smoothing, tolerance,
     sides = {}
     boxes = label_boxes(volume)
     for region_id, mesh in meshes.items():
-        label = mesh.metadata["source_label_id"]
+        label = mesh.metadata[label_key]
         found.add(label)
         if label not in boxes:
             raise ValueError(f"Structure label {label} is absent: {region_id}")
@@ -578,6 +580,41 @@ def expected_structure_metadata(config):
     return regions, conformed_grid(image)
 
 
+def expected_cord_metadata(config):
+    grid = spinal_cord.load(config)
+    describe = spinal_cord.describer(config)
+    regions = {}
+    for label in sorted(spinal_cord.label_table(config)):
+        region, _ = describe(label)
+        regions[region["id"]] = {
+            **region,
+            "voxel_count": int(np.count_nonzero(grid.labels == label)),
+            "voxel_size_mm": grid.spacing_mm,
+        }
+    return regions, grid
+
+
+def validate_cord(config, layer):
+    """The cord's meshes against PAM50's regions, and the atlas's cord against SCT's."""
+    grid = spinal_cord.load(config)
+    path = config["output_directory"] / layer["file"]
+    report = validate_structure_layer(
+        path, grid.labels, grid.voxel_to_surface, sorted(spinal_cord.label_table(config)),
+        config["structures"]["smoothing"], config["validation"]["coordinate_tolerance_mm"],
+        spinal_cord.partner_of, label_key="volume_label",
+    )
+    if layer["sha256"] != report["sha256"]:
+        raise ValueError("Spinal cord asset checksum mismatch")
+    agreement = spinal_cord.cord_agreement(config, grid)
+    minimum = config["spinal_cord"]["minimum_cord_dice"]
+    if agreement["dice"] < minimum:
+        raise ValueError(
+            f"PAM50's registered cord meets SCT's segmentation at Dice {agreement['dice']:.3f}, "
+            f"below {minimum}"
+        )
+    return {**report, "vertebral_levels": spinal_cord.levels(config), "cord_agreement": agreement}
+
+
 def validate_region_metadata(region, mesh, expected, tolerance):
     for field, value in expected.items():
         if region.get(field) != value:
@@ -652,14 +689,6 @@ def validate_manifest(config, manifest, nextbrain_source):
     }:
         raise ValueError("Manifest atlas set mismatch")
     groups = {}
-    if spinal_cord.is_declared(config):
-        groups["spinal-cord.glb"] = {
-            region["id"]: region
-            for region in (
-                spinal_cord.describe(config, part["structure"], part["hemisphere"], part["mesh"])
-                for part in spinal_cord.parts(config)
-            )
-        }
     for atlas in config["atlases"]:
         filename = f"cortex-{atlas['id']}.glb"
         expected = expected_cortical_metadata(config, atlas)
@@ -691,6 +720,10 @@ def validate_manifest(config, manifest, nextbrain_source):
     groups["structures.glb"] = coarse
     expected_levels = {"aseg": ("structures.glb", coarse, grid_fields(coarse_grid))}
     measured = [(coarse, coarse_grid)]
+    if spinal_cord.is_declared(config):
+        cord, cord_grid = expected_cord_metadata(config)
+        groups["spinal-cord.glb"] = cord
+        measured.append((cord, cord_grid))
     if nextbrain.is_declared(config):
         fine, fine_grid = expected_nextbrain_metadata(config, nextbrain_source)
         groups["nextbrain.glb"] = fine
@@ -760,6 +793,9 @@ def validate_layers(config, manifest, tissues):
         "cerebellar_lobules": "cerebellar_lobules" in declared,
         "supplemental_layers": [spinal_cord.ATLAS_ID] if "spinal_cord" in declared else [],
         "neurosynth_terms": neurosynth_terms.metadata() if "neurosynth_terms" in declared else None,
+        "boundary_certainty": (
+            boundary_certainty.metadata(config) if boundary_certainty.is_published(config) else None
+        ),
     }
     published = {
         "networks": manifest["networks"],
@@ -771,6 +807,7 @@ def validate_layers(config, manifest, tissues):
         ),
         "supplemental_layers": [layer["id"] for layer in manifest["supplemental_layers"]],
         "neurosynth_terms": manifest["neurosynth_terms"],
+        "boundary_certainty": manifest.get("boundary_certainty"),
     }
     differ = [key for key in expected if published[key] != expected[key]]
     if differ:
@@ -850,7 +887,7 @@ def main():
             for atlas, published in zip(config["atlases"], manifest["atlases"])
         ],
         "structures": validate_structures(config),
-        **({"spinal_cord": spinal_cord.validate(config, manifest["supplemental_layers"][0])}
+        **({"spinal_cord": validate_cord(config, manifest["supplemental_layers"][0])}
            if spinal_cord.is_declared(config) else {}),
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         "cab_np": cab_np.validate(config, manifest),
@@ -867,6 +904,13 @@ def main():
                  config, manifest, nextbrain_source
              )}
             if nextbrain.is_declared(config)
+            else {}
+        ),
+        **(
+            {"boundary_certainty": boundary_certainty.validate(
+                config, manifest, nextbrain_source
+            )}
+            if boundary_certainty.is_published(config)
             else {}
         ),
         **(

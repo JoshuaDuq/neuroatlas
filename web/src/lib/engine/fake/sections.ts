@@ -126,7 +126,7 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
       [128, 128, 128],
     ];
     for (const layer of manifest.supplemental_layers ?? []) {
-      if (layer.id === 'zanatomy' && !model.state.spinalCordVisible) continue;
+      if (layer.id === 'pam50' && !model.state.spinalCordVisible) continue;
       for (let axis = 0; axis < 3; axis++) {
         bounds[0][axis] = Math.floor(Math.min(bounds[0][axis]!, layer.bounds_ras_mm[0]![axis]!));
         bounds[1][axis] = Math.ceil(Math.max(bounds[1][axis]!, layer.bounds_ras_mm[1]![axis]!));

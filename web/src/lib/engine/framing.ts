@@ -213,7 +213,7 @@ export function createFraming({
     if (internalSystem === 'Spinal cord') {
       if (!cachedBounds) {
         const cord = boundsOf(
-          model.visibleMeshes.filter((mesh) => mesh.userData['atlas'] === 'zanatomy'),
+          model.visibleMeshes.filter((mesh) => mesh.userData['atlas'] === 'pam50'),
         );
         cachedBounds = cord.isEmpty() ? bounds : cord;
       }
@@ -226,7 +226,7 @@ export function createFraming({
       if (!cachedBounds) {
         const visible = hemisphere === 'both' ? bounds.clone() : new Box3();
         for (const mesh of model.visibleMeshes) {
-          if (hemisphere === 'both' && mesh.userData['atlas'] !== 'zanatomy') continue;
+          if (hemisphere === 'both' && mesh.userData['atlas'] !== 'pam50') continue;
           visible.expandByObject(mesh);
         }
         cachedBounds = visible.isEmpty() ? bounds : visible;
@@ -236,7 +236,7 @@ export function createFraming({
     if (cortexVisible) return bounds;
     if (!cachedBounds) {
       const visible = boundsOf(
-        model.visibleMeshes.filter((mesh) => mesh.userData['atlas'] !== 'zanatomy'),
+        model.visibleMeshes.filter((mesh) => mesh.userData['atlas'] !== 'pam50'),
       );
       cachedBounds = visible.isEmpty() ? bounds : visible;
     }
@@ -497,7 +497,7 @@ export function createFraming({
     const isCord = model.state.internalSystem === 'Spinal cord';
     const structures = model.visibleMeshes.filter((mesh) => mesh.userData['kind'] === 'structure');
     let internal = boundsOf(
-      structures.filter((mesh) => isCord || mesh.userData['atlas'] !== 'zanatomy'),
+      structures.filter((mesh) => isCord || mesh.userData['atlas'] !== 'pam50'),
     );
     if (internal.isEmpty()) internal = boundsOf(structures);
     if (internal.isEmpty()) return;

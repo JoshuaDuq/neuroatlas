@@ -51,7 +51,7 @@
     commands,
   } = $derived(world);
   const current = $derived(view.current);
-  const { manifest, cabNp, functionalRegions, domains } = $derived(engine.model);
+  const { manifest, cabNp, functionalRegions, domains, boundaryCertainty } = $derived(engine.model);
   // The comparison file is published beside the manifest the engine opened (boot.ts).
   const manifestUrl = $derived(`${ASSET_BASE}models/${manifest.anatomy.id}/manifest.json`);
   // A function's or deficit's profile above makes the region a smaller second subject (clinical.css:172-173, 299-300).
@@ -138,11 +138,13 @@
         {cabNp}
         {functionalRegions}
         {domains}
+        {boundaryCertainty}
         onfocus={() => anatomy.focusSelection()}
         onisolate={anatomy.isolateSelection}
         onhide={() => void anatomy.hideSelection()}
         onclear={() => void anatomy.clearSelection()}
         onregion={(id) => void anatomy.openConstituent(id)}
+        onselect={(id) => anatomy.selectRegion(id)}
         openLinkedMri={excursions.openLinkedMri}
       >
         {#snippet comparison()}

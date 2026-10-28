@@ -30,7 +30,7 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
   const shown: (readonly string[])[] = [];
   const model = {
     disposed: false,
-    manifest: { supplemental_layers: cord ? [{ id: 'zanatomy', file: 'spinal-cord.glb' }] : [] },
+    manifest: { supplemental_layers: cord ? [{ id: 'pam50', file: 'spinal-cord.glb' }] : [] },
     envelopes: null as unknown[] | null,
     spinalCordLoadState: 'unloaded' as SpinalCordLoad,
     spinalCordVisible: false,
@@ -101,7 +101,7 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
     },
     async ensureSpinalCord(progress?: OnProgress) {
       if (!cord) throw new Error('This anatomy does not publish a spinal cord.');
-      await this.loadLayer('zanatomy', progress);
+      await this.loadLayer('pam50', progress);
       this.spinalCordLoadState = 'ready';
     },
     async setSpinalCordVisible(visible: boolean, progress?: OnProgress) {
@@ -296,9 +296,9 @@ test('the first showing of the cord is a download with progress; an anatomy with
   const scene = fixture();
   const showing = scene.commands.showSpinalCord(true, scene.commands.begin());
   await scene.settle();
-  scene.tick('zanatomy', 1, 4);
+  scene.tick('pam50', 1, 4);
   assert.deepEqual(scene.session.assemble({}).progress, { loaded: 1, total: 4 });
-  await scene.finish('zanatomy');
+  await scene.finish('pam50');
   assert.equal(await showing, true);
   assert.equal(scene.model.spinalCordVisible, true);
   const without = fixture({ cord: false });
@@ -316,7 +316,7 @@ test('the first cut downloads the envelopes and the cord, and a later command ov
   assert.equal(scene.session.assemble({}).status, 'switching');
   scene.commands.begin();
   await scene.finish('envelopes');
-  await scene.finish('zanatomy');
+  await scene.finish('pam50');
   assert.equal(await cutting, false, 'overtaken: the caller must not face the cut');
   assert.equal(scene.session.assemble({}).status, 'ready');
   const ready = fixture({ cord: false });
@@ -422,10 +422,10 @@ test('STATE-43 downloads running together report their summed progress', async (
   const cutting = scene.commands.cut('axial', scene.commands.begin());
   await scene.settle();
   scene.tick('envelopes', 1, 4);
-  scene.tick('zanatomy', 5, 15);
+  scene.tick('pam50', 5, 15);
   assert.deepEqual(scene.session.assemble({}).progress, { loaded: 6, total: 19 });
   await scene.finish('envelopes');
-  await scene.finish('zanatomy');
+  await scene.finish('pam50');
   assert.equal(await cutting, true);
   assert.equal(scene.session.assemble({}).status, 'ready');
 });

@@ -1,32 +1,34 @@
-"""Z-Anatomy reference cord, placed illustratively without deforming its shape."""
+"""This brain's cervical cord: SCT's segmentation, with PAM50's tracts and grey matter registered to it.
+
+scripts/segment_spinal_cord.py writes three volumes beside the subject's MRI:
+PAM50's most probable region per voxel on a grid around the cord, SCT's cord
+segmentation and its vertebral levels, the last two on the source T1's grid.
+"""
 
 import nibabel as nib
 import numpy as np
-import trimesh
 
-from ..gltf.export import add_region, published_area_mm2, write_scene
-from ..labels.volumes import validate_same_grid
-from ..sources import ROOT, declares, sha256
-from ..surfaces.geometry import to_gltf
+from ..labels import nextbrain
+from ..labels.volumes import LabelGrid
+from ..sources import declares, sha256
 
-ATLAS_ID = "zanatomy"
-BRAINSTEM = 16
+ATLAS_ID = "pam50"
+# PAM50's white-matter atlas: 30 tracts and 6 grey-matter regions, left then right.
+ATLAS_REGIONS = 36
+FILES = {
+    "regions": "pam50-regions.nii.gz",
+    "segmentation": "sct-cord.nii.gz",
+    "levels": "sct-levels.nii.gz",
+}
+LEVEL_NAMES = {**{n: f"C{n}" for n in range(1, 8)}, **{n + 7: f"T{n}" for n in range(1, 13)}}
 
 NOTES = {
-    "en": "Z-Anatomy reference cord in its anatomical posture; seated below the "
-          "brainstem by translation alone, not registered to this subject’s MRI. "
-          "Segment levels and root counts are the reference model’s, not this subject’s.",
-    "fr": "Moelle de référence Z-Anatomy dans sa posture anatomique ; placée sous le "
-          "tronc cérébral par simple translation, sans recalage sur l’IRM de ce sujet. "
-          "Les niveaux segmentaires et le nombre de racines sont ceux du modèle de "
-          "référence, non ceux de ce sujet.",
-}
-
-SCHEMATIC = {
-    "en": "Its cross-section is Z-Anatomy’s schematic one, swept unchanged along the cord, "
-          "so every level shows the same arrangement.",
-    "fr": "Sa section est le schéma de Z-Anatomy, prolongé sans changement le long de la "
-          "moelle : chaque niveau montre la même disposition.",
+    "en": "This brain’s own cord, segmented from its T1 with the Spinal Cord Toolbox. "
+          "The tracts and grey matter inside it are the PAM50 atlas registered to that cord: "
+          "the 1 mm scan does not resolve them in this person.",
+    "fr": "La moelle de ce cerveau, segmentée sur son IRM T1 avec la Spinal Cord Toolbox. "
+          "Les faisceaux et la substance grise qu’elle contient sont l’atlas PAM50 recalé sur "
+          "cette moelle : l’IRM à 1 mm ne les résout pas chez cette personne.",
 }
 
 
@@ -34,232 +36,162 @@ def is_declared(config):
     return declares(config, "spinal_cord")
 
 
-def key_of(structure):
-    return f"{structure['hemisphere']}:{structure['id']}"
+def paths(config):
+    directory = config["source_directory"] / "spinal-cord"
+    return {key: directory / name for key, name in FILES.items()}
 
 
-def notes_of(structure):
-    notes = [NOTES]
-    if "tissue" in structure and structure["id"] != "cord":
-        notes.append(SCHEMATIC)
-    if "note" in structure:
-        notes.append(structure["note"])
-    return {lang: " ".join(note[lang] for note in notes) for lang in NOTES}
-
-
-def limitations(config):
-    return [NOTES["en"], SCHEMATIC["en"],
-            *(s["note"]["en"] for s in config["spinal_cord"]["structures"] if "note" in s)]
-
-
-def describe(config, structure, hemisphere, mesh):
-    families = config["spinal_cord"]["families"]
-    family = structure.get("family")
-    region = {
-        "id": f"{ATLAS_ID}:{hemisphere}:{structure['id']}",
-        "atlas": ATLAS_ID,
-        "label": f"{structure['names']['en']} (Z-Anatomy reference)",
-        "source_name": structure["object"],
-        "kind": "structure",
-        "hemisphere": hemisphere,
-        "supplemental": True,
-        "mri_registered": False,
-        "display_names": dict(structure["names"]),
-        "system_names": {"en": "Spinal cord", "fr": "Moelle épinière"},
-        "family": family,
-        "family_names": dict(families[family]) if family else None,
-        "family_order": list(families).index(family) if family else None,
-        "aliases": {lang: list(structure.get("aliases", {}).get(lang, [])) for lang in ("en", "fr")},
-        "notes": notes_of(structure),
-        # Every other structure measures its volume from the voxels it was
-        # segmented from. This one has no segmentation behind it, so the figure
-        # under the same name is the volume its published closed surface encloses.
-        "segmentation_volume_mm3": float(mesh.volume),
-        "surface_area_mm2": published_area_mm2(to_gltf(mesh.vertices), mesh.faces),
-    }
-    if "tissue" in structure:
-        region["tissue"] = structure["tissue"]
-    return region
-
-
-def read_structures(config):
-    archive = np.load(ROOT / config["spinal_cord"]["source"])
-    meshes = {}
-    for structure in config["spinal_cord"]["structures"]:
-        key = key_of(structure)
-        mesh = trimesh.Trimesh(vertices=archive[f"{key}/vertices"],
-                                faces=archive[f"{key}/faces"], process=False)
-        if not mesh.is_watertight or not mesh.is_winding_consistent or mesh.volume <= 0:
-            raise ValueError(f"Reference cord structure {key!r} is not a closed outward solid")
-        meshes[key] = mesh
-    return meshes
-
-
-def brainstem(config):
-    """Brainstem voxel centres in surface RAS, and where the scan cuts it off.
-
-    The scan ends inside the brainstem when its lowest labelled slice is also the
-    lowest slice holding any MRI signal: below it nothing was imaged, so its
-    lower end is the edge of the field of view, not the medulla's.
-    """
-    directory = config["source_directory"] / "mri"
-    aseg, orig = nib.load(directory / "aseg.mgz"), nib.load(directory / "orig.mgz")
-    validate_same_grid(orig, aseg)
-    affine = aseg.header.get_vox2ras_tkr()
-    stem = nib.affines.apply_affine(affine, np.argwhere(np.asarray(aseg.dataobj) == BRAINSTEM))
-    if len(stem) == 0:
-        raise ValueError("Brainstem label 16 is required to place the reference cord")
-    signal = np.argwhere(np.asarray(orig.dataobj) > 0) @ affine[2, :3] + affine[2, 3]
-    half = min(aseg.header.get_zooms()[:3]) / 2
-    lowest = stem[:, 2].min()
-    if lowest >= signal.min() + half:
-        return stem, None
-    on_slice = int(np.count_nonzero(stem[:, 2] < lowest + half))
-    return stem, {"surface_z_mm": float(lowest), "brainstem_voxels": on_slice}
-
-
-def truncation_limitation(cut):
-    return (
-        f"The scan ends at surface z = {cut['surface_z_mm']:g} mm with "
-        f"{cut['brainstem_voxels']} brainstem voxels still labelled on its last slice, "
-        "so the brainstem's lower end was not imaged. The Z-Anatomy reference cord is "
-        "seated against that end, so it is not published for this brain."
+def scanner_grid(config, path):
+    """A label volume and where its voxel centres sit in the subject's surface RAS."""
+    image = nib.load(path)
+    labels = np.asarray(image.dataobj)
+    if not np.array_equal(labels, np.rint(labels)) or labels.min() < 0:
+        raise ValueError(f"{path.name} must hold nonnegative integer labels")
+    return LabelGrid(
+        labels.astype(np.int64),
+        nextbrain.scanner_to_surface(config) @ image.affine,
+        [float(x) for x in image.header.get_zooms()[:3]],
     )
 
 
-def omission(config):
-    """Why an anatomy publishes no cord, where its scan is the reason."""
-    _, cut = brainstem(config)
-    return [] if cut is None else [truncation_limitation(cut)]
+def load(config):
+    """PAM50's regions as atlas index + 1, on the atlas grid; 0 outside the cord."""
+    grid = scanner_grid(config, paths(config)["regions"])
+    spacing = config["spinal_cord"]["atlas_spacing_mm"]
+    if not np.allclose(grid.spacing_mm, spacing, rtol=1e-4):
+        raise ValueError(f"PAM50 regions must sit on a {spacing} mm grid")
+    present = set(np.unique(grid.labels).tolist()) - {0}
+    expected = published_labels(config)
+    if present != expected:
+        raise ValueError(
+            f"PAM50 regions missing from this cord: {sorted(expected - present)}, "
+            f"unexpected: {sorted(present - expected)}"
+        )
+    return grid
 
 
-def placement(config, cord):
+def published_labels(config):
+    """Volume labels (atlas index + 1) of every region but the unresolved ones."""
+    unresolved = set(config["spinal_cord"]["unresolved"]["atlas"])
+    return {index + 1 for index in range(ATLAS_REGIONS) if index not in unresolved}
+
+
+def levels(config):
+    """The vertebral levels SCT labelled on the cord, top to bottom."""
+    grid = scanner_grid(config, paths(config)["levels"])
+    return [LEVEL_NAMES[int(level)] for level in np.unique(grid.labels) if level > 0]
+
+
+def label_table(config):
+    """Each region's volume label: its structure, side and PAM50 atlas index."""
+    table = {}
+    for structure in config["spinal_cord"]["structures"]:
+        for hemisphere, index in zip(("left", "right"), structure["atlas"]):
+            table[index + 1] = (structure, hemisphere, index)
+    if sorted(table) != sorted(published_labels(config)):
+        raise ValueError("The cord's structures must name every resolved PAM50 region once")
+    return table
+
+
+def partner_of(label):
+    """The same region on the other side: PAM50 lists each left region before its right."""
+    return label + 1 if label % 2 else label - 1
+
+
+def describer(config):
+    table = label_table(config)
+    families = config["spinal_cord"]["families"]
+    reach = levels(config)
+    notes = {
+        lang: f"{note} {span}" for (lang, note), span in zip(NOTES.items(), (
+            f"It reaches {reach[0]}–{reach[-1]}, where the scan ends.",
+            f"Elle atteint {reach[0]}–{reach[-1]}, où l’IRM s’arrête.",
+        ))
+    }
+
+    def describe(label):
+        structure, hemisphere, index = table[label]
+        family = structure["family"]
+        return {
+            "id": f"{ATLAS_ID}:{hemisphere}:{structure['id']}",
+            "atlas": ATLAS_ID,
+            "label": f"{structure['names']['en']} · {hemisphere}",
+            "source_name": f"{hemisphere} {structure['source_name']}",
+            # PAM50's own region ID; the published volume stores it plus one.
+            "source_label_id": index,
+            "volume_label": label,
+            "kind": "structure",
+            "hemisphere": hemisphere,
+            "supplemental": True,
+            "mri_registered": True,
+            "tissue": structure["tissue"],
+            "display_names": dict(structure["names"]),
+            "system_names": {"en": "Spinal cord", "fr": "Moelle épinière"},
+            "family": family,
+            "family_names": dict(families[family]),
+            "family_order": list(families).index(family),
+            "aliases": {lang: list(structure.get("aliases", {}).get(lang, [])) for lang in ("en", "fr")},
+            "notes": notes,
+        }, structure["color"]
+
+    return describe
+
+
+def layer(config, built, regions, path):
+    """The supplemental layer record around build_structure_layer's output."""
     settings = config["spinal_cord"]
-    stem, cut = brainstem(config)
-    if cut is not None:
-        raise ValueError(f"Cannot place the reference cord: {truncation_limitation(cut)}")
-    depth = settings["brainstem_anchor_depth_mm"]
-    if not np.isfinite(depth) or depth <= 0:
-        raise ValueError("Brainstem anchor depth must be positive and finite")
-    anchor = stem[stem[:, 2] < stem[:, 2].min() + depth].mean(axis=0)
-    overlap = settings["superior_overlap_mm"]
-    if not np.isfinite(overlap) or overlap < 0:
-        raise ValueError("Cord overlap must be nonnegative and finite")
-    anchor[2] += overlap
-    band = settings["anchor_band_mm"]
-    if not np.isfinite(band) or band <= 0:
-        raise ValueError("Anchor band must be positive and finite")
-    superior = cord.vertices[cord.vertices[:, 2] >= cord.bounds[1, 2] - band].mean(axis=0)
-    transform = np.eye(4)
-    transform[:3, 3] = anchor - superior
-    return transform
-
-
-def source_geometry(config):
-    meshes = read_structures(config)
-    transform = placement(config, meshes[key_of(config["spinal_cord"]["structures"][0])])
-    for mesh in meshes.values():
-        mesh.apply_translation(transform[:3, 3])
-    return meshes, transform
-
-
-def split_faces(mesh, midline):
-    groups = trimesh.graph.connected_components(mesh.face_adjacency, nodes=np.arange(len(mesh.faces)))
-    if len(groups) != 2:
-        raise ValueError(f"Expected two mirrored halves, found {len(groups)} pieces")
-    sides = {}
-    for group in groups:
-        # RAS: the subject's left is negative x.
-        side = "left" if mesh.vertices[mesh.faces[group]][..., 0].mean() < midline else "right"
-        if side in sides:
-            raise ValueError("Both halves lie on the same side of the midline")
-        sides[side] = np.sort(group)
-    return sides
-
-
-def compact(mesh, faces):
-    used, inverse = np.unique(mesh.faces[faces], return_inverse=True)
-    return trimesh.Trimesh(mesh.vertices[used], inverse.reshape(-1, 3), process=False)
-
-
-def parts(config, meshes=None):
-    if meshes is None:
-        meshes, _ = source_geometry(config)
-    structures = config["spinal_cord"]["structures"]
-    midline = meshes[key_of(structures[0])].vertices[:, 0].mean()
-    published = []
-    for structure in structures:
-        source = meshes[key_of(structure)]
-        if structure["hemisphere"] == "split":
-            halves = split_faces(source, midline)
-            pieces = [(side, compact(source, halves[side])) for side in ("left", "right")]
-        else:
-            pieces = [(structure["hemisphere"], source)]
-        published += [{"structure": structure, "hemisphere": hemisphere, "mesh": mesh,
-                       "key": f"{hemisphere}:{structure['id']}"} for hemisphere, mesh in pieces]
-    return published
-
-
-def build(config):
-    settings = config["spinal_cord"]
-    meshes, transform = source_geometry(config)
-    scene = trimesh.Scene()
-    regions, bounds = [], []
-    for part in parts(config, meshes):
-        mesh = part["mesh"]
-        if not mesh.is_watertight or not mesh.is_winding_consistent or mesh.volume <= 0:
-            raise ValueError(f"Reference cord part {part['key']!r} is not a closed outward solid")
-        region = describe(config, part["structure"], part["hemisphere"], mesh)
-        exported = add_region(scene, mesh.vertices, mesh.faces, mesh.vertex_normals,
-                              region, part["structure"]["color"])
-        region.update(vertex_count=len(exported.vertices), triangle_count=len(exported.faces))
-        regions.append(region)
-        bounds.append(mesh.bounds)
-    path = config["output_directory"] / "spinal-cord.glb"
-    write_scene(scene, path)
-    bounds = np.array(bounds)
+    grid = load(config)
+    corners = grid.voxel_to_surface @ np.array(
+        [[i, j, k, 1] for i in (0, grid.labels.shape[0] - 1)
+         for j in (0, grid.labels.shape[1] - 1) for k in (0, grid.labels.shape[2] - 1)]
+    ).T
     return {
         "id": ATLAS_ID,
-        "label": "Z-Anatomy spinal cord reference",
-        "file": path.name,
+        "label": "PAM50 cord atlas on this brain’s spinal cord",
+        **built,
         "region_count": len(regions),
         "sha256": sha256(path),
-        "citation": settings["citation"],
+        "citations": settings["citations"],
         "license": settings["license"],
+        "license_file": f"../licenses/{settings['license_file']}",
         "attribution": settings["attribution"],
-        "bounds_ras_mm": [bounds[:, 0].min(axis=0).tolist(), bounds[:, 1].max(axis=0).tolist()],
-        "template_to_surface_ras_mm": transform.tolist(),
-    }, regions
+        "vertebral_levels": levels(config),
+        # The atlas grid holds every cord voxel, so its box bounds every surface.
+        "bounds_ras_mm": [corners[:3].min(axis=1).tolist(), corners[:3].max(axis=1).tolist()],
+    }
 
 
-def validate(config, layer):
-    path = config["output_directory"] / layer["file"]
-    if sha256(path) != layer["sha256"]:
-        raise ValueError("Spinal cord asset checksum mismatch")
-    meshes, transform = source_geometry(config)
-    scene = trimesh.load_scene(path, process=False)
-    np.testing.assert_allclose(layer["template_to_surface_ras_mm"], transform)
-    published = parts(config, meshes)
-    triangles = 0
-    for part in published:
-        source = part["mesh"]
-        mesh = scene.geometry[f"{ATLAS_ID}:{part['key']}"]
-        np.testing.assert_allclose(mesh.vertices, to_gltf(source.vertices), atol=3e-8, rtol=0)
-        np.testing.assert_array_equal(mesh.faces, source.faces)
-        if not mesh.is_watertight or not mesh.is_winding_consistent or mesh.volume <= 0:
-            raise ValueError(f"Published {part['key']!r} is not a closed outward solid")
-        triangles += len(mesh.faces)
-    for structure in config["spinal_cord"]["structures"]:
-        pieces = [part["mesh"] for part in published if part["structure"] is structure]
-        if sum(len(piece.faces) for piece in pieces) != len(meshes[key_of(structure)].faces):
-            raise ValueError(f"Reference cord structure {structure['id']!r} is not published whole")
-    bounds = np.array([part["mesh"].bounds for part in published])
-    np.testing.assert_allclose(layer["bounds_ras_mm"],
-                               [bounds[:, 0].min(axis=0), bounds[:, 1].max(axis=0)])
-    return {"source_shape_preserved": True, "watertight": True, "mri_registered": False,
-            "structure_count": len(config["spinal_cord"]["structures"]),
-            "region_count": len(published),
-            "triangle_count": triangles,
-            "volume_method": "Enclosed volume of the published closed surface",
-            "placement": "Rigid translation onto the brainstem; no rotation or scaling",
-            "division": "Mirrored objects publish their two disconnected halves; no triangle is cut"}
+def limitations(config):
+    settings = config["spinal_cord"]
+    reach = levels(config)
+    return [
+        NOTES["en"],
+        (f"The cord is published from the medulla to {reach[-1]}, where this scan ends; it has "
+         "no nerve roots, and the cord below is not shown."),
+        ("A voxel takes the PAM50 region with the highest registered probability, so region "
+         f"borders are the atlas's, at its {settings['atlas_spacing_mm']:g} mm spacing."),
+        (f"PAM50's {settings['unresolved']['names']['en'].lower()} is not published: it is no "
+         "voxel's most probable region, and its voxels belong to its neighbours."),
+    ]
+
+
+def cord_agreement(config, grid):
+    """The registered atlas's cord against SCT's segmentation, on the segmentation's grid."""
+    segmentation = scanner_grid(config, paths(config)["segmentation"])
+    voxels = np.argwhere(np.ones(segmentation.labels.shape, bool))
+    points = nib.affines.apply_affine(segmentation.voxel_to_surface, voxels)
+    inside = np.rint(nib.affines.apply_affine(np.linalg.inv(grid.voxel_to_surface), points)).astype(int)
+    valid = np.all((inside >= 0) & (inside < grid.labels.shape), axis=1)
+    atlas = np.zeros(len(voxels), bool)
+    atlas[valid] = grid.labels[tuple(inside[valid].T)] > 0
+    segmented = segmentation.labels[tuple(voxels.T)] > 0
+    # The atlas starts at C1; compare only the slices it covers.
+    covered = np.unique(voxels[atlas, 2])
+    on = np.isin(voxels[:, 2], covered)
+    a, s = atlas[on], segmented[on]
+    return {
+        "dice": float(2 * np.count_nonzero(a & s) / (np.count_nonzero(a) + np.count_nonzero(s))),
+        "atlas_mm3": float(np.count_nonzero(a) * np.prod(segmentation.spacing_mm)),
+        "segmentation_mm3": float(np.count_nonzero(s) * np.prod(segmentation.spacing_mm)),
+        "slices_compared": len(covered),
+    }

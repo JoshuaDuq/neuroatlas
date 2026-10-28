@@ -71,6 +71,10 @@ nextbrain:
   - {id: interposed, color: [187, 151, 103], name: Interposed nuclei, name_fr: Noyaux interposés, system: Cerebellum, system_fr: Cervelet, labels: [751, 752]}
   - {id: fastigial, color: [116, 168, 150], name: Fastigial nucleus, name_fr: Noyau fastigial, system: Cerebellum, system_fr: Cervelet, labels: [715]}
 aseg:
+  # NextBrain labels no medulla below its lowest medullary voxels, though the scan and
+  # aseg do. This unit is aseg's brainstem below the higher side's lowest voxel, so the
+  # medulla meets the cord; above it, the NextBrain units stand alone.
+  - {id: caudal-medulla, color: [128, 134, 168], hemisphere: midline, name: Caudal medulla, name_fr: Bulbe caudal, system: Brainstem, system_fr: Tronc cérébral, labels: [16], below_nextbrain: medulla}
   - {id: ventricles-left, color: [87, 139, 194], hemisphere: left, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [4, 5]}
   - {id: ventricles-right, color: [87, 139, 194], hemisphere: right, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [43, 44]}
   - {id: third-ventricle, color: [87, 139, 194], hemisphere: midline, name: Third ventricle, name_fr: Troisième ventricule, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [14]}

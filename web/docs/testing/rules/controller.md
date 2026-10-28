@@ -112,7 +112,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:1233-1250`; `viewer/i18n/translations.js:340`
-- **Expected:** show → `spinalCordVisible` true, `zanatomy:midline:cord` drawn, one whole-brain framing. Select the cord, then hide it → nothing selected, and the "Selection cleared — …" notice. No `zanatomy` layer → "No spinal cord is published for this subject.", still hidden.
+- **Expected:** show → `spinalCordVisible` true, `pam50:left:gracile-fasciculus` drawn, one whole-brain framing. Select the cord, then hide it → nothing selected, and the "Selection cleared — …" notice. No `pam50` layer → "No spinal cord is published for this subject.", still hidden.
 - **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R: show, hide drops the selection with the notice, unavailable)
 
 ### CTRL-12 · Reset returns to the opening picture
@@ -192,7 +192,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:569-598`, `675-686`; `viewer/catalog/visibility.js`
-- **Expected:** hemisphere `right`, reveal(`hemisphere`, `destrieux:left:30`) → `both`, selected, framed. Cortex hidden and region removed, reveal(`removed`) → cortex visible, selected. reveal(`hemisphere`, `hcp-mmp:left:1`) under Destrieux → failure notice, nothing selected. One fixed outcome per remaining reason, each ending with the region selected and framed (ids from the published `cdmd` manifest): internal structures hidden, reveal(`internal-hidden`, `aseg:left:17`) on the `aseg` detail → `internalVisible: true`; cord hidden, reveal(`spinal-cord-hidden`, `zanatomy:midline:cord`) → the cord shown; `destrieux:left:30` isolated, reveal(`isolated`, `destrieux:left:38`) → `isolatedRegion: null`; surface colour `mri`, reveal(`no-mri`, …) → `surfaceColor: 'tissue'`; detail `aseg`, reveal(`other-detail`, `nextbrain:left:48`) → detail `nextbrain` loaded; a system filter that excludes the region, reveal(`other-system`, …) → `internalSystem: null`.
+- **Expected:** hemisphere `right`, reveal(`hemisphere`, `destrieux:left:30`) → `both`, selected, framed. Cortex hidden and region removed, reveal(`removed`) → cortex visible, selected. reveal(`hemisphere`, `hcp-mmp:left:1`) under Destrieux → failure notice, nothing selected. One fixed outcome per remaining reason, each ending with the region selected and framed (ids from the published `cdmd` manifest): internal structures hidden, reveal(`internal-hidden`, `aseg:left:17`) on the `aseg` detail → `internalVisible: true`; cord hidden, reveal(`spinal-cord-hidden`, `pam50:left:gracile-fasciculus`) → the cord shown; `destrieux:left:30` isolated, reveal(`isolated`, `destrieux:left:38`) → `isolatedRegion: null`; surface colour `mri`, reveal(`no-mri`, …) → `surfaceColor: 'tissue'`; detail `aseg`, reveal(`other-detail`, `nextbrain:left:48`) → detail `nextbrain` loaded; a system filter that excludes the region, reveal(`other-system`, …) → `internalSystem: null`.
 - **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R: all reasons but `no-cut`, each one fixed outcome; `no-cut` is CTRL-19)
 
 ### CTRL-19 · A cut-only region is revealed by a coronal cut through its centre

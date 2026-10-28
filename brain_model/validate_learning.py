@@ -8,9 +8,11 @@ from .labels import cerebellum, nextbrain
 from .labels.volumes import load_on_grid, resample_nearest
 from .layers import neuropsych_domains
 from .layers.learning import (
+    below_floors,
     constituents,
     expand_nextbrain,
     family_order,
+    nextbrain_floors,
     read_definition,
     source_grids,
     source_groups,
@@ -36,10 +38,11 @@ def on_nextbrain_grid(config, path, grid):
 def validate_source_overlap(config, nextbrain_source):
     definition = read_definition(config)
     grid, table = nextbrain_source
-    covered = np.isin(
+    aseg = below_floors(
         on_nextbrain_grid(config, config["source_directory"] / "mri/aseg.mgz", grid),
-        [label for unit in definition["aseg"] for label in unit["labels"]],
+        grid.voxel_to_surface, definition["aseg"], nextbrain_floors(definition, nextbrain_source),
     )
+    covered = np.isin(aseg, [label for unit in definition["aseg"] for label in unit["labels"]])
     if definition["cerebnet"]:
         covered |= np.isin(
             on_nextbrain_grid(config, cerebellum.path(config), grid),

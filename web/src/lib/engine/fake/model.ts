@@ -166,6 +166,7 @@ export function createFakeModel({
     cabNp: (cabNp ?? null) as unknown as CabNpData | null,
     functionalRegions: (functionalRegions ?? null) as unknown as FunctionalRegionsData | null,
     domains: (domains ?? null) as unknown as DomainsData | null,
+    boundaryCertainty: null,
     defaultDetail,
     get settings() {
       return settings();
@@ -364,7 +365,7 @@ export function createFakeModel({
       envelopes = true;
     },
     async ensureSpinalCord() {
-      if (!(manifest.supplemental_layers ?? []).some((layer) => layer.id === 'zanatomy')) {
+      if (!(manifest.supplemental_layers ?? []).some((layer) => layer.id === 'pam50')) {
         throw new Error('This anatomy does not publish a spinal cord.');
       }
       for (const layer of manifest.supplemental_layers ?? []) layers.add(layer.id);

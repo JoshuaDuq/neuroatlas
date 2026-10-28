@@ -18,7 +18,7 @@ const published = manifest as unknown as Manifest;
 const SULCUS = 'destrieux:left:30';
 const OTHER = 'destrieux:left:31';
 const HCP = 'hcp-mmp:left:1';
-const CORD = 'zanatomy:midline:cord';
+const CORD = 'pam50:left:gracile-fasciculus';
 
 let engine: FakeEngine;
 let cleanup: () => void;
@@ -544,7 +544,9 @@ describe('the spinal cord and reset', () => {
     anatomy.selectRegion(CORD);
     await anatomy.setSpinalCordVisible(false);
     expect(engine.model.state.selectedRegion).toBeNull();
-    expect(session.state.notice?.text).toBe('Selection cleared — Spinal cord is no longer shown.');
+    expect(session.state.notice?.text).toBe(
+      'Selection cleared — Gracile fasciculus is no longer shown.',
+    );
   });
 
   test('CTRL-12 a command still loading when Reset is pressed applies nothing after it', async () => {

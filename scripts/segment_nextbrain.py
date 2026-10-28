@@ -2,8 +2,9 @@
 
 Runs SuperSynth, then NextBrain's Bayesian segmentation once per hemisphere, on
 the subject's own orig.mgz. The two hemispheres are then joined on one 0.4 mm
-grid in the subject's surface RAS. A FreeSurfer step whose output is already in
-the work directory is not run again.
+grid in the subject's surface RAS, with a near-tie volume from the posteriors
+behind each label. A FreeSurfer step whose output is already in the work
+directory is not run again.
 """
 
 import argparse
@@ -23,7 +24,7 @@ from scipy.ndimage import map_coordinates
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from brain_model.labels import nextbrain
+from brain_model.labels import boundary_certainty, nextbrain
 from brain_model.labels.volumes import offset_by, resample_nearest
 from brain_model.sources import ROOT, read_config, sha256
 
@@ -44,6 +45,9 @@ ATLAS = {
     "tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2",
 }
 CROP_MARGIN_VOXELS = 20
+# What NextBrain writes per hemisphere: its labels and, through run_patched.py,
+# each voxel's winning posterior and runner-up.
+NEXTBRAIN_OUTPUTS = ("seg", "max_p", "second_p", "second_seg")
 WORKAROUNDS = {
     "conv3d_slices": (
         "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a "
@@ -139,7 +143,7 @@ def run_freesurfer(freesurfer, work, image, threads):
             "--model_file", SUPERSYNTH["path"], "--test_time_flipping",
         )
     for side in ("left", "right"):
-        if not (work / f"seg.{side}.nii.gz").exists():
+        if not all((work / f"{name}.{side}.nii.gz").exists() for name in NEXTBRAIN_OUTPUTS):
             fspython(
                 f"nextbrain-{side}",
                 packages / "ERC_bayesian_segmentation/scripts/segment_fireants.py",
@@ -240,6 +244,50 @@ def join_hemispheres(config, work):
     }
 
 
+def join_near_ties(config, work, labels, grid):
+    """The runner-up label wherever NextBrain's winner led it by less than the margin.
+
+    0 elsewhere, and where the runner-up is background. Each joined voxel reads the
+    hemisphere its label came from, through the same nearest-neighbour placement.
+    """
+    to_surface = nextbrain.scanner_to_surface(config)
+    margin = config[nextbrain.ATLAS_ID]["near_tie_margin"]
+    near_ties = np.zeros(labels.shape, np.int32)
+    for side, offset in (("left", 0), ("right", nextbrain.HEMISPHERE_OFFSET)):
+        image, own = read_hemisphere(work, side)
+        posteriors = {}
+        for name in NEXTBRAIN_OUTPUTS[1:]:
+            posterior = nib.load(work / f"{name}.{side}.nii.gz")
+            if posterior.shape != own.shape or not np.allclose(posterior.affine, image.affine):
+                raise ValueError(f"{name}.{side}.nii.gz is not on seg.{side}.nii.gz's grid")
+            posteriors[name] = np.asarray(posterior.dataobj)
+        winner, second = posteriors["max_p"], posteriors["second_p"]
+        runner = posteriors["second_seg"].astype(np.int32)
+        labelled = own > 0
+        if np.any(second[labelled] > winner[labelled]) or np.any(
+            (runner == own)[labelled & (second > 0)]
+        ):
+            raise ValueError(f"{side}: a runner-up outranks or repeats its winner")
+        tied = labelled & (runner > 0) & (winner - second < margin)
+        placement = (to_surface @ image.affine, grid, labels.shape)
+        placed, _ = resample_nearest(np.where(tied, runner + offset, 0), *placement)
+        source, _ = resample_nearest(own, *placement)
+        taken = (source > 0) & (labels == source + offset)
+        near_ties[taken] = placed[taken]
+    return near_ties, {
+        "margin": margin,
+        "rule": (
+            "the runner-up label wherever NextBrain's winning posterior led it by less "
+            "than the margin; 0 elsewhere and where the runner-up is background"
+        ),
+        "posteriors": (
+            "written by scripts/freesurfer/run_patched.py from segment_fireants.py's "
+            "label loop, beside a label update it leaves unchanged"
+        ),
+        "near_tie_voxels": int(np.count_nonzero(near_ties)),
+    }
+
+
 def read_freesurfer_lut(path):
     entries = {}
     for line in path.read_text().splitlines():
@@ -327,8 +375,11 @@ def main():
     run_freesurfer(args.freesurfer, work, image, args.threads)
 
     labels, grid, join = join_hemispheres(config, work)
+    near_ties, near_join = join_near_ties(config, work, labels, grid)
     volume_path, lut_path = nextbrain.paths(config)
+    near_path = boundary_certainty.path(config)
     write_volume(config, labels, grid, volume_path)
+    write_volume(config, near_ties, grid, near_path)
     write_lut(read_freesurfer_lut(work / "lut.txt"), lut_path)
 
     # Read back through the build's own loader, which asserts integrality, LUT
@@ -336,11 +387,13 @@ def main():
     regions = nextbrain.build_regions(config)
     kept = sum(region["voxel_count"] for region in regions)
     print(f"{volume_path.relative_to(ROOT)}: {len(regions)} regions, {kept:,} labelled "
-          f"voxels, {join['voxels_labelled_by_both_sides']:,} resolved at the midline")
+          f"voxels, {join['voxels_labelled_by_both_sides']:,} resolved at the midline, "
+          f"{near_join['near_tie_voxels']:,} near ties")
     if args.record:
-        record_sources(config, [volume_path, lut_path], {
+        record_sources(config, [volume_path, lut_path, near_path], {
             "crop": crop,
             "hemisphere_join": join,
+            "near_ties": near_join,
             "nextbrain_cpu_threads": logged_threads(work),
         })
     else:

@@ -7,6 +7,8 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
+import boundaryFile from '../../../../public/models/cdmd/boundary-certainty.json';
+import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
 import '../../app/layout.css';
@@ -18,7 +20,8 @@ const CERUBELLUM = 'aseg:left:8';
 const CHIASM = 'learning:midline:optic-chiasm';
 const INNOMINATA = 'learning:left:innominata';
 const THALAMUS = 'learning:left:thalamus';
-const NOTED = 'zanatomy:midline:cord'; // carries notes and no source label
+const NOTED = 'pam50:left:gracile-fasciculus'; // carries notes
+const STACKED = 'learning:left:caudate'; // three source labels
 
 beforeEach(() => page.viewport(1280, 800));
 
@@ -264,12 +267,12 @@ describe('commands', () => {
 });
 
 describe('source label', () => {
-  test('one id sits beside its atlas; a reference with none stacks under the label', async () => {
+  test('one id sits beside its atlas; three or more stack under the label', async () => {
     const screen = await render(Fixture, { regionId: V1 });
     const dd = () => root().querySelectorAll<HTMLElement>('dl.facts dd')[2]!;
     expect(dd().className).not.toContain('stacked');
     expect(dd().querySelector('.code')!.textContent).toBe('1');
-    await screen.rerender({ regionId: NOTED });
+    await screen.rerender({ regionId: STACKED });
     expect(dd().className).toContain('stacked');
   });
 
@@ -386,6 +389,65 @@ describe('evidence sections', () => {
     render(Fixture, { regionId: V1, lang: 'fr' });
     expect(section('Division fonctionnelle')).not.toBeUndefined();
     expect(section('Fonctions neuropsychologiques')).not.toBeUndefined();
+  });
+});
+
+describe('boundary certainty', () => {
+  // Right rostral VPL: fourteen rated neighbours, three of them soft.
+  const VPL = 'nextbrain:right:10394';
+  const rated = (id: string) =>
+    (boundaryFile as unknown as BoundaryCertainty).pairs
+      .filter(([a, b]) => a === id || b === id)
+      .map(([a, b, voxels, near]) => ({ id: a === id ? b : a, voxels, share: near / voxels }))
+      .sort((x, y) => y.voxels - x.voxels);
+
+  test('a NextBrain region lists its eight largest boundaries after the comparison, collapsed', async () => {
+    render(Fixture, { regionId: VPL });
+    const boundaries = section('Boundary certainty');
+    expect(boundaries.open).toBe(false);
+    expect(
+      document.querySelector('[data-slot=comparison]')!.compareDocumentPosition(boundaries) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    boundaries.open = true;
+    const expected = rated(VPL);
+    expect(expected.length).toBeGreaterThan(8);
+    const rows = [...boundaries.querySelectorAll('.network-row')];
+    expect(rows).toHaveLength(8);
+    expected.slice(0, 8).forEach((boundary, index) => {
+      const row = rows[index]!;
+      const soft = boundary.share >= 1 / 3;
+      expect(row.querySelector('.edge-glyph')!.getAttribute('data-soft')).toBe(String(soft));
+      expect(text(row)).toMatch(
+        new RegExp(`, ${soft ? 'soft' : 'firm'} .*${Math.round(boundary.share * 100)}%$`),
+      );
+    });
+    expect(text(boundaries)).toContain(`${expected.length - 8} smaller boundaries not listed.`);
+    expect(text(boundaries)).toContain('in 0.4 mm voxels');
+    expect(text(boundaries)).toContain('within 0.2 of each other');
+    await expectAxeClean();
+  });
+
+  test('a neighbour’s name selects it', async () => {
+    const calls: unknown[] = [];
+    render(Fixture, { regionId: VPL, calls });
+    section('Boundary certainty').open = true;
+    const first = rated(VPL)[0]!;
+    await userEvent.click(section('Boundary certainty').querySelector('.boundary-neighbour')!);
+    expect(calls).toEqual([`select:${first.id}`]);
+  });
+
+  test('a region with no rated boundary has no section', async () => {
+    render(Fixture, { regionId: V1 });
+    expect(section('Boundary certainty')).toBeUndefined();
+  });
+
+  test('French', async () => {
+    render(Fixture, { regionId: VPL, lang: 'fr' });
+    const boundaries = section('Certitude des limites');
+    boundaries.open = true;
+    expect(text(boundaries)).toContain('en voxels de 0,4 mm');
+    expect(text(boundaries)).toMatch(/Quasi-égalité sur \d+ % des limites évaluées/);
   });
 });
 

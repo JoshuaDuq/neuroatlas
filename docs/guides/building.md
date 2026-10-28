@@ -23,8 +23,9 @@ The build does not remove files it no longer writes. Remove obsolete files from 
 These steps are needed only when changing or reconstructing sources. They require tools outside the Python environment:
 
 - `scripts/reconstruct_subject.py`: FreeSurfer 8.2 and a FreeSurfer licence. It writes a reconstruction and `reconstruction.json`; run `prepare_subject.py` afterward to record sources and project annotations. Pass `--rerecord` if recorded checksums have changed. A reconstruction changes checksums, so rebuild all assets for that anatomy.
-- `scripts/segment_nextbrain.py`: FreeSurfer 8.2; approximately 20 minutes of CPU per brain. `--record` registers the result.
+- `scripts/segment_nextbrain.py`: FreeSurfer 8.2; approximately 20 minutes of CPU per brain. It writes the labels and a near-tie volume from NextBrain's posteriors, which boundary certainty is built from. `--record` registers the result.
 - `scripts/segment_cerebellum.py`: FastSurfer v2.6.0 and its pinned environment; approximately 8 minutes of CPU per brain. Use `--record` to register the result.
+- `scripts/segment_spinal_cord.py`: the Spinal Cord Toolbox 7.3 (its own installer, in `~/sct_7.3` or `$SCT_DIR`), with its cord model and PAM50 pinned by checksum; approximately 10 minutes of CPU per brain. `--record` registers the result.
 - `scripts/tractseg_cdmd.py`: MRtrix3 3.0.8, TractSeg 2.10, torch and pretrained weights. See [Diffusion and tracts](tracts.md#cdmds-tractseg-bundles-and-fa) for the method and packaging commands.
 
 For the repository's configured tool locations and command options, inspect the scripts before running them. On macOS arm64, `scripts/freesurfer/` contains the memory workarounds used for FreeSurfer 8.2; sliced convolutions may change floating-point results.

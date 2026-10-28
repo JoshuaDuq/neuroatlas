@@ -7,7 +7,7 @@ export const en = {
   nextbrain: 'NextBrain histological atlas',
   cerebnet: 'FastSurfer CerebNet cerebellar lobules',
   wmparc: 'FreeSurfer white-matter parcellation',
-  zanatomy: 'Z-Anatomy spinal cord reference',
+  pam50: 'PAM50 cord atlas on this spinal cord',
 };
 
 export const fr: typeof en = {
@@ -19,5 +19,5 @@ export const fr: typeof en = {
   nextbrain: 'Atlas histologique NextBrain',
   cerebnet: 'Lobules cérébelleux FastSurfer CerebNet',
   wmparc: 'Parcellisation de la substance blanche FreeSurfer',
-  zanatomy: 'Moelle épinière de référence Z-Anatomy',
+  pam50: 'Atlas médullaire PAM50 sur cette moelle',
 };

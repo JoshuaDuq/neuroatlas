@@ -176,7 +176,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/ui/panels/inspector.js:31-43`
-- **Expected:** `{ atlas: 'destrieux', source_label_id: 16 }` → `{ atlas: 'Destrieux', ids: '16', stacked: false }`. NextBrain `[161, 10161]` → `ids: '161, 10161'`, not stacked; `[1,2,3]` → stacked. 52 ids in fr → `atlas: 'NextBrain · 52 étiquettes'`, `ids: null`, `all` the full list (cdmd `learning:left:thalamus` has 52). `{ atlas: 'zanatomy' }` → `ids: null`, stacked.
+- **Expected:** `{ atlas: 'destrieux', source_label_id: 16 }` → `{ atlas: 'Destrieux', ids: '16', stacked: false }`. NextBrain `[161, 10161]` → `ids: '161, 10161'`, not stacked; `[1,2,3]` → stacked. 52 ids in fr → `atlas: 'NextBrain · 52 étiquettes'`, `ids: null`, `all` the full list (cdmd `learning:left:thalamus` has 52). `{ atlas: 'pam50' }` → `ids: null`, stacked.
 - **Covered by:** `src/lib/core/panels/inspector.test.ts` (R)
 
 ## Circuits

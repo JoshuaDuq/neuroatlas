@@ -770,6 +770,30 @@
    "pages": "350-60",
    "corrections": []
   },
+  "pmid:11960898": {
+   "pmid": "11960898",
+   "pmcid": null,
+   "doi": "10.1093/brain/awf113",
+   "doi_source": "pubmed",
+   "title": "Subcortical aphasia and neglect in acute stroke: the role of cortical hypoperfusion",
+   "authors": [
+    "Hillis AE",
+    "Wityk RJ",
+    "Barker PB",
+    "Beauchamp NJ",
+    "Gailloud P",
+    "Murphy K",
+    "Cooper O",
+    "Metter EJ"
+   ],
+   "year": 2002,
+   "pubdate": "2002 May",
+   "journal": "Brain",
+   "volume": "125",
+   "issue": "Pt 5",
+   "pages": "1094-104",
+   "corrections": []
+  },
   "pmid:11994752": {
    "pmid": "11994752",
    "pmcid": null,
@@ -1071,6 +1095,28 @@
    "pages": "58-63",
    "corrections": []
   },
+  "pmid:15635411": {
+   "pmid": "15635411",
+   "pmcid": null,
+   "doi": "10.1038/nature03086",
+   "doi_source": "pubmed",
+   "title": "A mechanism for impaired fear recognition after amygdala damage",
+   "authors": [
+    "Adolphs R",
+    "Gosselin F",
+    "Buchanan TW",
+    "Tranel D",
+    "Schyns P",
+    "Damasio AR"
+   ],
+   "year": 2005,
+   "pubdate": "2005 Jan 06",
+   "journal": "Nature",
+   "volume": "433",
+   "issue": "7021",
+   "pages": "68-72",
+   "corrections": []
+  },
   "pmid:15716470": {
    "pmid": "15716470",
    "pmcid": null,
@@ -1287,6 +1333,26 @@
    "pages": "6282-7",
    "corrections": []
   },
+  "pmid:16801352": {
+   "pmid": "16801352",
+   "pmcid": "PMC2077748",
+   "doi": "10.1136/jnnp.2005.086983",
+   "doi_source": "pubmed",
+   "title": "Structural anatomy of pure and hemianopic alexia",
+   "authors": [
+    "Leff AP",
+    "Spitsyna G",
+    "Plant GT",
+    "Wise RJ"
+   ],
+   "year": 2006,
+   "pubdate": "2006 Sep",
+   "journal": "J Neurol Neurosurg Psychiatry",
+   "volume": "77",
+   "issue": "9",
+   "pages": "1004-7",
+   "corrections": []
+  },
   "pmid:16997333": {
    "pmid": "16997333",
    "pmcid": null,
@@ -1481,6 +1547,25 @@
    "volume": "132",
    "issue": "Pt 3",
    "pages": "617-27",
+   "corrections": []
+  },
+  "pmid:19010953": {
+   "pmid": "19010953",
+   "pmcid": "PMC2602747",
+   "doi": "10.1136/jnnp.2007.140715",
+   "doi_source": "pubmed",
+   "title": "Motor neglect associated with loss of action inhibition",
+   "authors": [
+    "Coulthard E",
+    "Rudd A",
+    "Husain M"
+   ],
+   "year": 2008,
+   "pubdate": "2008 Dec",
+   "journal": "J Neurol Neurosurg Psychiatry",
+   "volume": "79",
+   "issue": "12",
+   "pages": "1401-4",
    "corrections": []
   },
   "pmid:19353229": {
@@ -2137,6 +2222,28 @@
    "pages": "2760-7",
    "corrections": []
   },
+  "pmid:24556336": {
+   "pmid": "24556336",
+   "pmcid": "PMC4004427",
+   "doi": "10.1016/j.bandl.2014.01.004",
+   "doi_source": "pubmed",
+   "title": "The neuroanatomy of pure apraxia of speech in stroke",
+   "authors": [
+    "Graff-Radford J",
+    "Jones DT",
+    "Strand EA",
+    "Rabinstein AA",
+    "Duffy JR",
+    "Josephs KA"
+   ],
+   "year": 2014,
+   "pubdate": "2014 Feb",
+   "journal": "Brain Lang",
+   "volume": "129",
+   "issue": null,
+   "pages": "43-6",
+   "corrections": []
+  },
   "pmid:24600385": {
    "pmid": "24600385",
    "pmcid": "PMC3931231",
@@ -2159,6 +2266,26 @@
    "volume": "8",
    "issue": null,
    "pages": "8",
+   "corrections": []
+  },
+  "pmid:24729106": {
+   "pmid": "24729106",
+   "pmcid": "PMC3987254",
+   "doi": "10.1136/bcr-2013-201233",
+   "doi_source": "pubmed",
+   "title": "Invisibility of moving objects: a core symptom of motion blindness",
+   "authors": [
+    "Otsuka-Hirota N",
+    "Yamamoto H",
+    "Miyashita K",
+    "Nagatsuka K"
+   ],
+   "year": 2014,
+   "pubdate": "2014 Apr 12",
+   "journal": "BMJ Case Rep",
+   "volume": "2014",
+   "issue": null,
+   "pages": null,
    "corrections": []
   },
   "pmid:25726260": {
@@ -2221,6 +2348,28 @@
    "volume": "30",
    "issue": "1",
    "pages": "63-70",
+   "corrections": []
+  },
+  "pmid:26099457": {
+   "pmid": "26099457",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2015.06.040",
+   "doi_source": "pubmed",
+   "title": "White matter atlas of the human spinal cord with estimation of partial volume effect",
+   "authors": [
+    "Lévy S",
+    "Benhamou M",
+    "Naaman C",
+    "Rainville P",
+    "Callot V",
+    "Cohen-Adad J"
+   ],
+   "year": 2015,
+   "pubdate": "2015 Oct 01",
+   "journal": "Neuroimage",
+   "volume": "119",
+   "issue": null,
+   "pages": "262-71",
    "corrections": []
   },
   "pmid:26685156": {
@@ -2317,6 +2466,25 @@
    "pages": "257-66",
    "corrections": []
   },
+  "pmid:27170566": {
+   "pmid": "27170566",
+   "pmcid": "PMC4898318",
+   "doi": "10.1212/wnl.0000000000002741",
+   "doi_source": "pubmed",
+   "title": "Network localization of hemichorea-hemiballismus",
+   "authors": [
+    "Laganiere S",
+    "Boes AD",
+    "Fox MD"
+   ],
+   "year": 2016,
+   "pubdate": "2016 Jun 07",
+   "journal": "Neurology",
+   "volume": "86",
+   "issue": "23",
+   "pages": "2187-95",
+   "corrections": []
+  },
   "pmid:27182489": {
    "pmid": "27182489",
    "pmcid": "PMC4857225",
@@ -2411,6 +2579,30 @@
    "pages": "8872-81",
    "corrections": []
   },
+  "pmid:27720818": {
+   "pmid": "27720818",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2016.10.009",
+   "doi_source": "pubmed",
+   "title": "SCT: Spinal Cord Toolbox, an open-source software for processing spinal cord MRI data",
+   "authors": [
+    "De Leener B",
+    "Lévy S",
+    "Dupont SM",
+    "Fonov VS",
+    "Stikov N",
+    "Louis Collins D",
+    "Callot V",
+    "Cohen-Adad J"
+   ],
+   "year": 2017,
+   "pubdate": "2017 Jan 15",
+   "journal": "Neuroimage",
+   "volume": "145",
+   "issue": "Pt A",
+   "pages": "24-43",
+   "corrections": []
+  },
   "pmid:27807627": {
    "pmid": "27807627",
    "pmcid": null,
@@ -2427,6 +2619,33 @@
    "volume": "222",
    "issue": "5",
    "pages": "2059-2070",
+   "corrections": []
+  },
+  "pmid:27815400": {
+   "pmid": "27815400",
+   "pmcid": "PMC5177681",
+   "doi": "10.1212/wnl.0000000000003404",
+   "doi_source": "pubmed",
+   "title": "A human brain network derived from coma-causing brainstem lesions",
+   "authors": [
+    "Fischer DB",
+    "Boes AD",
+    "Demertzi A",
+    "Evrard HC",
+    "Laureys S",
+    "Edlow BL",
+    "Liu H",
+    "Saper CB",
+    "Pascual-Leone A",
+    "Fox MD",
+    "Geerling JC"
+   ],
+   "year": 2016,
+   "pubdate": "2016 Dec 06",
+   "journal": "Neurology",
+   "volume": "87",
+   "issue": "23",
+   "pages": "2427-2434",
    "corrections": []
   },
   "pmid:28506806": {
@@ -2545,6 +2764,28 @@
    "pages": "3095-3114",
    "corrections": []
   },
+  "pmid:29061527": {
+   "pmid": "29061527",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2017.10.041",
+   "doi_source": "pubmed",
+   "title": "PAM50: Unbiased multimodal template of the brainstem and spinal cord aligned with the ICBM152 space",
+   "authors": [
+    "De Leener B",
+    "Fonov VS",
+    "Collins DL",
+    "Callot V",
+    "Stikov N",
+    "Cohen-Adad J"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Jan 15",
+   "journal": "Neuroimage",
+   "volume": "165",
+   "issue": null,
+   "pages": "170-179",
+   "corrections": []
+  },
   "pmid:29074767": {
    "pmid": "29074767",
    "pmcid": null,
@@ -2642,6 +2883,29 @@
    "volume": "151",
    "issue": null,
    "pages": "349-363",
+   "corrections": []
+  },
+  "pmid:29681885": {
+   "pmid": "29681885",
+   "pmcid": "PMC5897518",
+   "doi": "10.3389/fneur.2018.00224",
+   "doi_source": "pubmed",
+   "title": "Right Hemisphere Regions Critical for Expression of Emotion Through Prosody",
+   "authors": [
+    "Patel S",
+    "Oishi K",
+    "Wright A",
+    "Sutherland-Foggio H",
+    "Saxena S",
+    "Sheppard SM",
+    "Hillis AE"
+   ],
+   "year": 2018,
+   "pubdate": "2018",
+   "journal": "Front Neurol",
+   "volume": "9",
+   "issue": null,
+   "pages": "224",
    "corrections": []
   },
   "pmid:29758339": {
@@ -2757,6 +3021,61 @@
    "pages": "e0213528",
    "corrections": []
   },
+  "pmid:31099831": {
+   "pmid": "31099831",
+   "pmcid": "PMC6536848",
+   "doi": "10.1093/brain/awz112",
+   "doi_source": "pubmed",
+   "title": "Network localization of cervical dystonia based on causal brain lesions",
+   "authors": [
+    "Corp DT",
+    "Joutsa J",
+    "Darby RR",
+    "Delnooz CCS",
+    "van de Warrenburg BPC",
+    "Cooke D",
+    "Prudente CN",
+    "Ren J",
+    "Reich MM",
+    "Batla A",
+    "Bhatia KP",
+    "Jinnah HA",
+    "Liu H",
+    "Fox MD"
+   ],
+   "year": 2019,
+   "pubdate": "2019 Jun 01",
+   "journal": "Brain",
+   "volume": "142",
+   "issue": "6",
+   "pages": "1660-1674",
+   "corrections": []
+  },
+  "pmid:31383259": {
+   "pmid": "31383259",
+   "pmcid": "PMC6684265",
+   "doi": "10.7554/elife.46075",
+   "doi_source": "pubmed",
+   "title": "Anosognosia for hemiplegia as a tripartite disconnection syndrome",
+   "authors": [
+    "Pacella V",
+    "Foulon C",
+    "Jenkinson PM",
+    "Scandola M",
+    "Bertagnoli S",
+    "Avesani R",
+    "Fotopoulou A",
+    "Moro V",
+    "Thiebaut de Schotten M"
+   ],
+   "year": 2019,
+   "pubdate": "2019 Aug 06",
+   "journal": "Elife",
+   "volume": "8",
+   "issue": null,
+   "pages": null,
+   "corrections": []
+  },
   "pmid:31473352": {
    "pmid": "31473352",
    "pmcid": null,
@@ -2824,6 +3143,28 @@
    "volume": "91",
    "issue": "5",
    "pages": "547-559",
+   "corrections": []
+  },
+  "pmid:32410965": {
+   "pmid": "32410965",
+   "pmcid": "PMC7201993",
+   "doi": "10.3389/fnsys.2020.00021",
+   "doi_source": "pubmed",
+   "title": "Multiple Network Disconnection in Anosognosia for Hemiplegia",
+   "authors": [
+    "Monai E",
+    "Bernocchi F",
+    "Bisio M",
+    "Bisogno AL",
+    "Salvalaggio A",
+    "Corbetta M"
+   ],
+   "year": 2020,
+   "pubdate": "2020",
+   "journal": "Front Syst Neurosci",
+   "volume": "14",
+   "issue": null,
+   "pages": "21",
    "corrections": []
   },
   "pmid:32576080": {
@@ -3086,6 +3427,27 @@
    "pages": "104813",
    "corrections": []
   },
+  "pmid:36126517": {
+   "pmid": "36126517",
+   "pmcid": "PMC9486662",
+   "doi": "10.1016/j.nicl.2022.103193",
+   "doi_source": "pubmed",
+   "title": "Distinguishing transient from persistent tactile agnosia after partial anterior circulation infarcts - Behavioral and neuroimaging evidence for white matter disconnection",
+   "authors": [
+    "Missimer JH",
+    "Abela E",
+    "Pastore-Wapp M",
+    "Wiest R",
+    "Weder BJ"
+   ],
+   "year": 2022,
+   "pubdate": "2022",
+   "journal": "Neuroimage Clin",
+   "volume": "36",
+   "issue": null,
+   "pages": "103193",
+   "corrections": []
+  },
   "pmid:36178249": {
    "pmid": "36178249",
    "pmcid": "PMC9842927",
@@ -3217,6 +3579,75 @@
    "pages": "322-337",
    "corrections": []
   },
+  "pmid:38100330": {
+   "pmid": "38100330",
+   "pmcid": "PMC10793567",
+   "doi": "10.1093/cercor/bhad486",
+   "doi_source": "pubmed",
+   "title": "A neural circuit for spatial orientation derived from brain lesions",
+   "authors": [
+    "Roseman M",
+    "Elias U",
+    "Kletenik I",
+    "Ferguson MA",
+    "Fox MD",
+    "Horowitz Z",
+    "Marshall GA",
+    "Spiers HJ",
+    "Arzy S"
+   ],
+   "year": 2024,
+   "pubdate": "2024 Jan 14",
+   "journal": "Cereb Cortex",
+   "volume": "34",
+   "issue": "1",
+   "pages": null,
+   "corrections": []
+  },
+  "pmid:38234234": {
+   "pmid": "38234234",
+   "pmcid": "PMC10863913",
+   "doi": "10.1002/acn3.51967",
+   "doi_source": "pubmed",
+   "title": "The neural correlates of topographical disorientation-a lesion analysis study",
+   "authors": [
+    "Blondiaux E",
+    "Diamantaras A",
+    "Schumacher R",
+    "Blanke O",
+    "Müri R",
+    "Heydrich L"
+   ],
+   "year": 2024,
+   "pubdate": "2024 Feb",
+   "journal": "Ann Clin Transl Neurol",
+   "volume": "11",
+   "issue": "2",
+   "pages": "520-524",
+   "corrections": []
+  },
+  "pmid:38423761": {
+   "pmid": "38423761",
+   "pmcid": "PMC11007473",
+   "doi": "10.1523/jneurosci.1922-23.2024",
+   "doi_source": "pubmed",
+   "title": "Focal Brain Lesions Causing Acquired Amusia Map to a Common Brain Network",
+   "authors": [
+    "Sihvonen AJ",
+    "Ferguson MA",
+    "Chen V",
+    "Soinila S",
+    "Särkämö T",
+    "Joutsa J"
+   ],
+   "year": 2024,
+   "pubdate": "2024 Apr 10",
+   "journal": "J Neurosci",
+   "volume": "44",
+   "issue": "15",
+   "pages": null,
+   "corrections": []
+  },
   "pmid:38433712": {
    "pmid": "38433712",
    "pmcid": "PMC10910281",
@@ -3259,6 +3690,78 @@
    "volume": "147",
    "issue": "6",
    "pages": "2203-2213",
+   "corrections": []
+  },
+  "pmid:39874684": {
+   "pmid": "39874684",
+   "pmcid": "PMC13110827",
+   "doi": "10.1016/j.media.2025.103473",
+   "doi_source": "pubmed",
+   "title": "Towards contrast-agnostic soft segmentation of the spinal cord",
+   "authors": [
+    "Bédard S",
+    "Karthik EN",
+    "Tsagkas C",
+    "Pravatà E",
+    "Granziera C",
+    "Smith A",
+    "Weber Ii KA",
+    "Cohen-Adad J"
+   ],
+   "year": 2025,
+   "pubdate": "2025 Apr",
+   "journal": "Med Image Anal",
+   "volume": "101",
+   "issue": null,
+   "pages": "103473",
+   "corrections": []
+  },
+  "pmid:39892656": {
+   "pmid": "39892656",
+   "pmcid": "PMC13229119",
+   "doi": "10.1016/j.bbr.2025.115453",
+   "doi_source": "pubmed",
+   "title": "The role of the intraparietal sulcus in numeracy: A review of parietal lesion cases",
+   "authors": [
+    "Duricy E",
+    "Durisko C",
+    "Fiez JA"
+   ],
+   "year": 2025,
+   "pubdate": "2025 Mar 28",
+   "journal": "Behav Brain Res",
+   "volume": "482",
+   "issue": null,
+   "pages": "115453",
+   "corrections": []
+  },
+  "pmid:40839673": {
+   "pmid": "40839673",
+   "pmcid": "PMC12353574",
+   "doi": "10.1097/j.pain.0000000000003618",
+   "doi_source": "pubmed",
+   "title": "Neuroanatomy and lesion networks of central poststroke pain",
+   "authors": [
+    "Karoam HA",
+    "Bruss J",
+    "Champoux K",
+    "Lemos MD",
+    "Faillenot I",
+    "Ciampi de Andrade D",
+    "Hwang K",
+    "Bayman E",
+    "Vaidya J",
+    "Gordon EM",
+    "Tranel D",
+    "Geerling JC",
+    "Boes AD"
+   ],
+   "year": 2025,
+   "pubdate": "2025 May 09",
+   "journal": "Pain",
+   "volume": "166",
+   "issue": "9",
+   "pages": "e303-e313",
    "corrections": []
   },
   "pmid:41193801": {

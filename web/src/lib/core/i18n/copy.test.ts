@@ -30,6 +30,8 @@ const KINDS: Record<string, string> = {
   'footer.kind': 'b',
   'footer.sourceFiles': 'nb',
   'footer.visibleRegions': 'n',
+  'boundary.summary': 'snn',
+  'boundary.more': 'n',
   'comparison.more': 'n',
   'domains.band': 'sl',
   'domains.lesionCheck': 'a',

@@ -47,8 +47,14 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
   Tournier, J.-D., Smith, R., Raffelt, D., Tabbara, R., Dhollander, T., Pietsch, M., Christiaens, D., Jeurissen, B., Yeh, C.-H., & Connelly, A. (2019). MRtrix3: A fast, flexible and open software framework for medical image processing and visualisation. *NeuroImage*, 202, 116137. [doi:10.1016/j.neuroimage.2019.116137](https://doi.org/10.1016/j.neuroimage.2019.116137). PMID 31473352. Version 3.0.8 (MPL-2.0) fits the CSD peaks TractSeg reads, aligns them to its template and fits CDMD's tensor FA.
 - **CerebNet.**
   Faber, J., Kügler, D., Bahrami, E., Heinz, L.-S., Timmann, D., Ernst, T. M., … Diedrichsen, J., & Reuter, M. (2022). CerebNet: A fast and reliable deep-learning pipeline for detailed cerebellum sub-segmentation. *NeuroImage*, 264, 119703. [doi:10.1016/j.neuroimage.2022.119703](https://doi.org/10.1016/j.neuroimage.2022.119703). PMID 36349595. CDMD's cerebellar lobules are FastSurfer v2.6.0's CerebNet segmentation (Apache-2.0) of its own T1.
-- **Z-Anatomy Open Anatomy Project.**
-  The Z-Anatomy open anatomical scene, licensed under CC BY-SA 4.0, incorporating BodyParts3D (CC BY-SA 2.1 JP). [z-anatomy.com](https://www.z-anatomy.com/)
+- **Spinal Cord Toolbox.**
+  De Leener, B., Lévy, S., Dupont, S. M., Fonov, V. S., Stikov, N., Collins, D. L., Callot, V., & Cohen-Adad, J. (2017). SCT: Spinal Cord Toolbox, an open-source software for processing spinal cord MRI data. *NeuroImage*, 145, 24–43. [doi:10.1016/j.neuroimage.2016.10.009](https://doi.org/10.1016/j.neuroimage.2016.10.009). PMID 27720818. Version 7.3 (LGPL-3.0) segments CDMD's cord, labels its vertebrae and registers PAM50 to it.
+- **Contrast-agnostic cord segmentation.**
+  Bédard, S., Karthik, E. N., Tsagkas, C., Pravatà, E., Granziera, C., Smith, A., Weber II, K. A., & Cohen-Adad, J. (2025). Towards contrast-agnostic soft segmentation of the spinal cord. *Medical Image Analysis*, 101, 103473. [doi:10.1016/j.media.2025.103473](https://doi.org/10.1016/j.media.2025.103473). PMID 39874684.
+- **PAM50.**
+  De Leener, B., Fonov, V. S., Collins, D. L., Callot, V., Stikov, N., & Cohen-Adad, J. (2018). PAM50: Unbiased multimodal template of the brainstem and spinal cord aligned with the ICBM152 space. *NeuroImage*, 165, 170–179. [doi:10.1016/j.neuroimage.2017.10.041](https://doi.org/10.1016/j.neuroimage.2017.10.041). PMID 29061527.
+- **PAM50 white-matter atlas.**
+  Lévy, S., Benhamou, M., Naaman, C., Rainville, P., Callot, V., & Cohen-Adad, J. (2015). White matter atlas of the human spinal cord with estimation of partial volume effect. *NeuroImage*, 119, 262–271. [doi:10.1016/j.neuroimage.2015.06.040](https://doi.org/10.1016/j.neuroimage.2015.06.040). PMID 26099457.
 
 ## Licences
 
@@ -61,7 +67,7 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 | `cab-np.json` | CAB-NP (Rutgers, Yale) | Non-commercial |
 | `neuropsych-domains.json`, area scores | Neurosynth | ODbL 1.0 |
 | NextBrain-derived files | FreeSurfer 8.2 | None named beyond FreeSurfer's |
-| `spinal-cord.glb` | Z-Anatomy, BodyParts3D | CC BY-SA 4.0 |
+| `spinal-cord.glb` | PAM50 (Spinal Cord Toolbox) on CDMD's cord | MIT |
 | Viewer and pipeline code | This repository | MIT ([`LICENSE`](https://github.com/JoshuaDuq/neuroatlas/blob/main/LICENSE)) |
 
 The MIT licence covers code only, not data.
@@ -100,9 +106,9 @@ Non-commercial only. Redistribution is allowed without permission when no financ
 
 Derived from Neurosynth under [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/) and shared under it. Public use must attribute Neurosynth (Yarkoni et al. 2011); derived databases must stay ODbL.
 
-### CC BY-SA 4.0 (`spinal-cord.glb`)
+### MIT (`spinal-cord.glb`)
 
-Attribute Z-Anatomy and BodyParts3D, and share adaptations under the same licence. The cord is a standalone file so the copyleft does not reach the rest of the project. Full terms: [`Z-Anatomy.txt`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/Z-Anatomy.txt).
+PAM50 and its white-matter atlas are distributed through the Spinal Cord Toolbox's OSF project, which declares the MIT licence; the PAM50 repository itself names none. Keep the copyright notice with the cord. Full terms: [`PAM50.txt`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/PAM50.txt).
 
 ## Intended use
 

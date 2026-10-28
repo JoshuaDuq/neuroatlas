@@ -1,15 +1,13 @@
-"""The reference cord is a closed source-derived assembly in anatomical posture."""
+"""This brain's cord: SCT's segmentation with PAM50's regions registered to it."""
 
-from itertools import pairwise
-
+import nibabel as nib
 import numpy as np
 import pytest
-import trimesh
-from scipy.spatial import cKDTree
 
+from brain_model.build import build_structure_layer
 from brain_model.layers import spinal_cord
-from brain_model.sources import ROOT, read_config
-from brain_model.surfaces.geometry import to_gltf
+from brain_model.sources import read_config
+from brain_model.validate import validate_cord
 
 
 @pytest.fixture(scope="module")
@@ -17,261 +15,101 @@ def published(tmp_path_factory):
     config = read_config("cdmd")
     assert spinal_cord.is_declared(config)
     config["output_directory"] = tmp_path_factory.mktemp("models")
-    layer, regions = spinal_cord.build(config)
-    scene = trimesh.load_scene(config["output_directory"] / layer["file"], process=False)
-    return config, layer, {region["id"]: region for region in regions}, scene
+    grid = spinal_cord.load(config)
+    grid.labels.flags.writeable = False
+    built, regions = build_structure_layer(
+        config, grid, sorted(spinal_cord.label_table(config)),
+        spinal_cord.describer(config), "spinal-cord.glb",
+    )
+    layer = spinal_cord.layer(config, built, regions, config["output_directory"] / built["file"])
+    return config, grid, layer, {region["id"]: region for region in regions}
 
 
-@pytest.fixture(scope="module")
-def parts(published):
-    return spinal_cord.parts(published[0])
-
-
-def centreline(vertices, bins=24):
-    """Centroid and mean radius of each axial slab, inferior to superior."""
-    edges = np.linspace(vertices[:, 2].min(), vertices[:, 2].max(), bins + 1)
-    track = []
-    for low, high in pairwise(edges):
-        slab = vertices[(vertices[:, 2] >= low) & (vertices[:, 2] < high)]
-        if len(slab) < 4:
-            continue
-        centre = slab.mean(axis=0)
-        track.append((*centre, np.linalg.norm(slab[:, :2] - centre[:2], axis=1).mean()))
-    return np.array(track)
-
-
-def test_every_published_part_is_its_source_surface_unchanged(published, parts):
-    _, layer, regions, scene = published
-    assert layer["region_count"] == len(parts) == len(regions)
-    for part in parts:
-        mesh = scene.geometry[f"{spinal_cord.ATLAS_ID}:{part['key']}"]
-        np.testing.assert_allclose(mesh.vertices, to_gltf(part["mesh"].vertices), atol=3e-8)
-        np.testing.assert_array_equal(mesh.faces, part["mesh"].faces)
-        assert mesh.is_watertight and mesh.is_winding_consistent and mesh.volume > 0
-
-
-def test_the_cord_publishes_58_regions_without_the_accessory_nucleus(published):
-    _, layer, regions, _ = published
-    assert layer["region_count"] == 58
-    assert {"zanatomy:left:anterior-horn", "zanatomy:right:posterior-horn",
-            "zanatomy:left:lateral-corticospinal-tract", "zanatomy:midline:central-canal"} <= set(regions)
-    assert "zanatomy:midline:anterior-horn" not in regions
-    assert not any("accessory" in region["source_name"].lower() for region in regions.values())
-
-
-def test_a_split_structure_divides_into_its_two_mirrored_halves(published):
-    config, _, _, _ = published
-    native, _ = spinal_cord.source_geometry(config)
-    midline = native["midline:cord"].vertices[:, 0].mean()
-    split = [s for s in config["spinal_cord"]["structures"] if s["hemisphere"] == "split"]
-    assert len(split) == 23
-    for structure in split:
-        source = native[spinal_cord.key_of(structure)]
-        halves = spinal_cord.split_faces(source, midline)
-        assert set(halves) == {"left", "right"}
-        np.testing.assert_array_equal(np.sort(np.concatenate(list(halves.values()))),
-                                      np.arange(len(source.faces)))
-        volume = 0.0
-        for side, faces in halves.items():
-            half = spinal_cord.compact(source, faces)
-            assert half.is_watertight and half.volume > 0, f"{side} {structure['id']}"
-            # RAS: the subject's left is negative x.
-            assert (half.vertices[:, 0].mean() < midline) == (side == "left")
-            volume += half.volume
-        assert volume == pytest.approx(source.volume, rel=1e-9)
-
-
-def test_cord_keeps_the_sagittal_curve_a_straightened_template_discards(published):
-    """The reason this layer is not PAM50, stated as a measurement.
-
-    PAM50 is straightened to be a template: its centreline wanders 1.5 mm over
-    475 mm, so it can only publish as a rod. An anatomical cord follows the
-    vertebral canal through cervical lordosis, thoracic kyphosis and lumbar
-    lordosis, and the apex of that curve is nowhere near either end.
-    """
-    config, _, _, _ = published
-    native, _ = spinal_cord.source_geometry(config)
-    track = centreline(native["midline:cord"].vertices)
-    anterior = track[:, 1]
-    assert anterior.max() - anterior.min() > 40, "the cord is nearly straight"
-    apex = int(np.argmin(anterior))
-    assert 0.25 < apex / len(track) < 0.75, "the curve has no interior apex"
-
-
-def test_cord_tapers_into_a_conus_and_thickens_at_both_enlargements(published):
-    config, _, _, _ = published
-    native, _ = spinal_cord.source_geometry(config)
-    track = centreline(native["midline:cord"].vertices)
-    radius = track[:, 3]
-    assert radius[0] < 0.2 * radius.max(), "the inferior end does not taper to a conus"
-    # Above that taper the cord is thinnest in mid-thorax, with the lumbosacral
-    # enlargement below the waist and the cervical enlargement above it.
-    body = radius[int(np.argmax(radius >= 0.9 * radius.max())):]
-    waist = int(np.argmin(body))
-    assert 0 < waist < len(body) - 1, "the cord has no interior thoracic waist"
-    assert body[:waist].max() > 1.1 * body[waist], "no lumbosacral enlargement"
-    assert body[waist:].max() > 1.1 * body[waist], "no cervical enlargement"
-
-
-def depth_outside(cord, points, bin_mm=0.25, margin_mm=0.05):
-    """How far each point lies outside the cord's axial section at its own height; 0 inside.
-
-    A first pass shares one section per height bin; points that pass near an
-    outline, or near either end where the cord closes, are re-measured exactly.
-    """
-    def measure(heights, subset):
-        depth, near = np.zeros(len(subset)), np.zeros(len(subset), bool)
-        for z in np.unique(heights):
-            at = np.flatnonzero(heights == z)
-            segments = trimesh.intersections.mesh_plane(cord, [0, 0, 1], [0, 0, z])
-            if len(segments) == 0:
-                depth[at], near[at] = np.inf, True
-                continue
-            a, b, p = segments[:, 0, :2], segments[:, 1, :2], subset[at, :2]
-            rise = b[:, 1] - a[:, 1]
-            crosses = (a[None, :, 1] > p[:, 1:2]) != (b[None, :, 1] > p[:, 1:2])
-            meet = a[None, :, 0] + (p[:, 1:2] - a[None, :, 1]) * (b[None, :, 0] - a[None, :, 0]) \
-                / np.where(rise == 0, 1e-300, rise)[None, :]
-            inside = (crosses & (p[:, 0:1] < meet)).sum(axis=1) % 2 == 1
-            edge, offset = b - a, p[:, None, :] - a[None, :, :]
-            t = np.clip((offset * edge[None]).sum(-1) / np.maximum((edge * edge).sum(-1), 1e-300)[None], 0, 1)
-            gap = np.linalg.norm(offset - t[..., None] * edge[None], axis=-1).min(axis=1)
-            depth[at], near[at] = np.where(inside, 0.0, gap), ~inside | (gap < margin_mm)
-        return depth, near
-
-    depth, near = measure(np.round(points[:, 2] / bin_mm) * bin_mm, points)
-    ends = (points[:, 2] < cord.bounds[0, 2] + 3) | (points[:, 2] > cord.bounds[1, 2] - 3)
-    recheck = np.flatnonzero(near | ends)
-    depth[recheck] = measure(points[recheck, 2], points[recheck])[0]
-    return depth
-
-
-def test_internal_structures_sit_inside_the_cord_that_surrounds_them(published):
-    """A tract or nucleus straying outside the cord would cap beside it, in space.
-
-    Superficial tracts share the cord's outline, so flush counts as inside:
-    Z-Anatomy draws the anterior spinocerebellar tract about 6 micrometres proud of it.
-    The last half millimetre is skipped because every structure tapers into the
-    conus tip with the cord, where the cord's section is a point.
-    """
-    config, _, _, _ = published
-    native, _ = spinal_cord.source_geometry(config)
-    cord = native["midline:cord"]
-    inner = [s for s in config["spinal_cord"]["structures"] if "tissue" in s and s["id"] != "cord"]
-    assert len(inner) == 27
-    for structure in inner:
-        vertices = native[spinal_cord.key_of(structure)].vertices
-        depth = depth_outside(cord, vertices[vertices[:, 2] > cord.bounds[0, 2] + 0.5])
-        assert depth.max() <= 0.01, f"{structure['id']} leaves the cord by {depth.max():.4f} mm"
-
-
-def test_the_whole_assembly_moves_by_one_rigid_translation(published):
-    config, layer, _, _ = published
-    transform = np.asarray(layer["template_to_surface_ras_mm"])
-    np.testing.assert_array_equal(transform[:3, :3], np.eye(3))
-    archive = np.load(ROOT / config["spinal_cord"]["source"])
-    placed, _ = spinal_cord.source_geometry(config)
-    for structure in config["spinal_cord"]["structures"]:
-        key = spinal_cord.key_of(structure)
-        shift = np.asarray(placed[key].vertices) - archive[f"{key}/vertices"]
-        assert np.abs(shift - transform[:3, 3]).max() < 1e-9, f"{key} moved on its own"
-
-
-def test_roots_and_ganglia_stay_attached_to_the_cord_they_leave(published):
-    config, _, _, _ = published
-    native, _ = spinal_cord.source_geometry(config)
-    cord = native["midline:cord"]
-    surface = cKDTree(cord.vertices)
-    for key in ["left:anterior-root", "right:posterior-root", "midline:cauda-equina"]:
-        gap = surface.query(native[key].vertices)[0].min()
-        assert gap < 3.0, f"{key} is detached from the cord"
-
-
-def test_structures_of_the_cord_declare_their_tissue_and_family(published):
-    config, _, regions, _ = published
-    tissue = {region["source_name"]: region.get("tissue") for region in regions.values()}
-    assert tissue["White matter of spinal cord"] == "white"
-    assert tissue["Lateral corticospinal tract"] == "white"
-    assert tissue["Nucleus proprius"] == "gray"
-    assert tissue["Central canal"] == "fluid"
-    # Roots leave the cord; they keep the tissue rule every other structure uses.
-    assert tissue["Anterior root of spinal nerve.l"] is None
-    families = config["spinal_cord"]["families"]
-    for region in regions.values():
-        assert region.get("tissue") in {None, "white", "gray", "fluid"}
-        assert set(region["aliases"]) == {"en", "fr"}
-        assert region["display_names"]["en"] and region["display_names"]["fr"]
-        if region["id"] == "zanatomy:midline:cord":
-            # The whole cord heads the system rather than sitting in one of its families.
-            assert region["family"] is region["family_names"] is region["family_order"] is None
-            continue
-        assert region["family_names"] == families[region["family"]]
-        assert region["family_order"] == list(families).index(region["family"])
-
-
-def test_the_layer_declares_what_it_is_and_what_it_is_not(published):
-    _, layer, regions, _ = published
-    assert layer["license"] and layer["attribution"]
-    for region in regions.values():
-        assert region["supplemental"] is True
-        assert region["mri_registered"] is False
-        assert "not registered" in region["notes"]["en"]
-        assert region["system_names"]["en"] == "Spinal cord"
-        schematic = region.get("tissue") is not None and region["source_name"] != "White matter of spinal cord"
-        assert ("schematic" in region["notes"]["en"]) == schematic, region["id"]
-    medial = [r for r in regions.values() if r["source_name"] == "Medial vestibulospinal tract"]
-    assert len(medial) == 2
-    assert all("intermediate zone" in region["notes"]["en"] for region in medial)
-
-
-def test_validation_reports_the_published_assembly(published):
-    config, layer, regions, _ = published
-    report = spinal_cord.validate(config, layer)
-    assert report["source_shape_preserved"] and report["watertight"]
-    assert report["mri_registered"] is False
-    assert report["structure_count"] == len(config["spinal_cord"]["structures"])
-    assert report["region_count"] == len(regions) == 58
-
-
-def test_the_cord_is_placed_where_the_scan_reaches_below_the_brainstem():
+def centroid(grid, structure, side):
     config = read_config("cdmd")
-    assert spinal_cord.brainstem(config)[1] is None
-    assert spinal_cord.is_declared(config)
-    assert spinal_cord.omission(config) == []
-    spinal_cord.placement(config, spinal_cord.read_structures(config)[
-        spinal_cord.key_of(config["spinal_cord"]["structures"][0])
-    ])
+    index = next(s for s in config["spinal_cord"]["structures"] if s["id"] == structure)["atlas"]
+    label = index[0 if side == "left" else 1] + 1
+    return nib.affines.apply_affine(grid.voxel_to_surface, np.argwhere(grid.labels == label)).mean(axis=0)
 
 
-def test_no_cord_is_placed_where_the_scan_ends_inside_the_brainstem(monkeypatch):
-    # The removed SNAIL scan measured this cut: no signal below -75 mm, with 183
-    # brainstem voxels on its lowest slice.
+def test_every_pam50_region_is_published_once_on_each_side(published):
+    _, _, layer, regions = published
+    unresolved = set(read_config("cdmd")["spinal_cord"]["unresolved"]["atlas"])
+    assert layer["region_count"] == len(regions) == spinal_cord.ATLAS_REGIONS - len(unresolved)
+    assert {region["source_label_id"] for region in regions.values()} == set(range(36)) - unresolved
+    assert all(region["volume_label"] == region["source_label_id"] + 1 for region in regions.values())
+    assert {"pam50:left:lateral-corticospinal-tract", "pam50:right:dorsal-horn",
+            "pam50:left:gracile-fasciculus"} <= set(regions)
+    assert all(region["mri_registered"] and region["supplemental"] for region in regions.values())
+
+
+def test_the_regions_keep_the_cord_s_anatomical_arrangement(published):
+    """In surface RAS, x runs to the subject's right and y to the front."""
+    _, grid, _, _ = published
+    gracile = centroid(grid, "gracile-fasciculus", "left")
+    corticospinal = centroid(grid, "lateral-corticospinal-tract", "left")
+    ventral_horn = centroid(grid, "ventral-horn", "left")
+    midline = (gracile[0] + centroid(grid, "gracile-fasciculus", "right")[0]) / 2
+    # The dorsal columns lie behind the ventral horns; the lateral corticospinal
+    # tract lies further from the midline than the gracile fasciculus.
+    assert gracile[1] < ventral_horn[1]
+    assert abs(corticospinal[0] - midline) > abs(gracile[0] - midline)
+    for structure in ("gracile-fasciculus", "lateral-corticospinal-tract", "ventral-horn"):
+        assert centroid(grid, structure, "left")[0] < centroid(grid, structure, "right")[0]
+
+
+def test_the_published_cord_passes_validation_and_meets_sct_s_segmentation(published):
+    config, _, layer, _ = published
+    report = validate_cord(config, layer)
+    assert report["cord_agreement"]["dice"] >= config["spinal_cord"]["minimum_cord_dice"]
+    assert all(region["misclassified_voxel_centres"] == 0 for region in report["regions"])
+    assert report["vertebral_levels"][0] == "C1"
+
+
+def test_a_cord_short_of_the_dice_floor_is_refused(published):
+    config, _, layer, _ = published
+    strict = {**config, "spinal_cord": {**config["spinal_cord"], "minimum_cord_dice": 1.0}}
+    with pytest.raises(ValueError, match="below 1.0"):
+        validate_cord(strict, layer)
+
+
+def test_a_structure_list_that_misses_a_pam50_region_is_refused():
     config = read_config("cdmd")
-    stem, _ = spinal_cord.brainstem(config)
-    cut = {"surface_z_mm": -75.0, "brainstem_voxels": 183}
-    monkeypatch.setattr(spinal_cord, "brainstem", lambda config: (stem, cut))
-    cord = spinal_cord.read_structures(config)[
-        spinal_cord.key_of(config["spinal_cord"]["structures"][0])
-    ]
-    assert "-75 mm with 183 brainstem voxels" in spinal_cord.omission(config)[0]
-    with pytest.raises(ValueError, match="scan ends"):
-        spinal_cord.placement(config, cord)
+    structures = config["spinal_cord"]["structures"][:-1]
+    with pytest.raises(ValueError, match="every resolved PAM50 region once"):
+        spinal_cord.label_table({**config, "spinal_cord": {**config["spinal_cord"], "structures": structures}})
 
 
-@pytest.mark.parametrize("signal_below", [0, 1])
-def test_the_scan_edge_is_the_lowest_slice_holding_any_signal(tmp_path, signal_below):
-    import nibabel as nib
+def test_a_region_s_partner_is_the_same_region_on_the_other_side():
+    # PAM50 lists left (even index) before right; volume labels are index + 1.
+    assert spinal_cord.partner_of(1) == 2 and spinal_cord.partner_of(2) == 1
+    assert spinal_cord.partner_of(35) == 36 and spinal_cord.partner_of(36) == 35
 
-    (tmp_path / "mri").mkdir()
-    labels = np.zeros((6, 6, 6), np.int32)
-    labels[2:4, 2:5, 2:4] = spinal_cord.BRAINSTEM
-    intensity = np.where(labels > 0, 100, 0).astype(np.uint8)
-    # An MGH tkregister grid runs voxel j inferior, so j = 5 is one slice lower.
-    intensity[2:4, 5, 2:4] = 100 if signal_below else 0
-    for name, data in (("aseg", labels), ("orig", intensity)):
-        nib.save(nib.MGHImage(data, np.eye(4)), tmp_path / f"mri/{name}.mgz")
-    _, cut = spinal_cord.brainstem({"source_directory": tmp_path})
-    if signal_below:
-        assert cut is None
-    else:
-        assert cut["brainstem_voxels"] == 4
+
+def load_script():
+    """scripts/ is not a package, so the script is loaded by path."""
+    import importlib.util
+
+    from brain_model.sources import ROOT
+
+    spec = importlib.util.spec_from_file_location(
+        "segment_spinal_cord", ROOT / "scripts/segment_spinal_cord.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_an_unresolved_region_counts_toward_the_cord_but_takes_no_voxel(tmp_path):
+    segment = load_script()
+    shape = (3, 1, 1)
+    maps = np.zeros((*shape, spinal_cord.ATLAS_REGIONS), np.float32)
+    maps[0, 0, 0, [10, 4]] = [0.4, 0.3]   # unresolved leads: goes to the runner-up, 4
+    maps[1, 0, 0, [10, 4]] = [0.3, 0.1]   # cord only with the unresolved share counted
+    maps[2, 0, 0, 10] = 0.2                # below the cord threshold
+    affine = np.eye(4)
+    nib.save(nib.Nifti1Image(np.zeros(shape, np.float32), affine), tmp_path / "grid.nii.gz")
+    for index in range(spinal_cord.ATLAS_REGIONS):
+        nib.save(nib.Nifti1Image(maps[..., index], affine), tmp_path / f"PAM50_atlas_{index:02d}.nii.gz")
+    labels = segment.most_probable_regions(tmp_path / "grid.nii.gz", tmp_path, 0.4, [10, 11])
+    assert np.asarray(labels.dataobj).ravel().tolist() == [5, 5, 0]

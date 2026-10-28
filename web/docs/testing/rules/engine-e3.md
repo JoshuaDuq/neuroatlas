@@ -268,7 +268,7 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-sections.js:407-431`
-- **Expected:** two coplanar boxes, the later in band 2 → the later; skipping it → the first. The cord box (0.012 × 0.48 × 0.01 at (0.002, −0.3, 0.038)) cut through (0.002, −0.5, 0.038) along ±x, ±y, ±z and ±(1, 1, 1)/√3 → `zanatomy:midline:cord` each time. From either side of z = 0 a ray at (0.012, 0.009) hits, at x = 0.08 it does not; plane z = 0.06 → no hit.
+- **Expected:** two coplanar boxes, the later in band 2 → the later; skipping it → the first. The cord box (0.012 × 0.48 × 0.01 at (0.002, −0.3, 0.038)) cut through (0.002, −0.5, 0.038) along ±x, ±y, ±z and ±(1, 1, 1)/√3 → `pam50:midline:cord` each time. From either side of z = 0 a ray at (0.012, 0.009) hits, at x = 0.08 it does not; plane z = 0.06 → no hit.
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-28 · Hover and selection lift the cap of the region they name, and leave its colour

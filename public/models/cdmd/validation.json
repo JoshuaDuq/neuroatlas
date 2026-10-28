@@ -380,15 +380,296 @@
     ]
   },
   "spinal_cord": {
-    "source_shape_preserved": true,
-    "watertight": true,
-    "mri_registered": false,
-    "structure_count": 35,
-    "region_count": 58,
-    "triangle_count": 277236,
-    "volume_method": "Enclosed volume of the published closed surface",
-    "placement": "Rigid translation onto the brainstem; no rotation or scaling",
-    "division": "Mirrored objects publish their two disconnected halves; no triangle is cut"
+    "file": "spinal-cord.glb",
+    "sha256": "17b73d3c7b8fb9d843162deb6774dd91cc4c709df54b5d49295e7ecc8a133f5f",
+    "maximum_allowed_displacement_mm": 0.6,
+    "regions": [
+      {
+        "id": "pam50:right:dorsal-horn",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.24045428121563234,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 91.86252014057513
+      },
+      {
+        "id": "pam50:left:dorsal-horn",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23693147735438413,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 92.05500942352272
+      },
+      {
+        "id": "pam50:right:intermediate-zone",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23105979952599376,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 195.46701157324847
+      },
+      {
+        "id": "pam50:left:intermediate-zone",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23021436992536398,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 187.62470100931728
+      },
+      {
+        "id": "pam50:right:ventral-horn",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23583182624985177,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 136.13015132261842
+      },
+      {
+        "id": "pam50:left:ventral-horn",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23890214117392372,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 138.4498806471911
+      },
+      {
+        "id": "pam50:right:medial-longitudinal-fasciculus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2253033790051565,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 2.416703924496788
+      },
+      {
+        "id": "pam50:left:medial-longitudinal-fasciculus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.25313468072072115,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1.612830284982249
+      },
+      {
+        "id": "pam50:right:medial-reticulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23455525176670952,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 2.5978185914572904
+      },
+      {
+        "id": "pam50:left:medial-reticulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.22447969353677186,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1.9700147138535065
+      },
+      {
+        "id": "pam50:right:tectospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23229896965655727,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 48.569235438583725
+      },
+      {
+        "id": "pam50:left:tectospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21481884623755723,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 45.5342015250289
+      },
+      {
+        "id": "pam50:right:ventral-corticospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2235383741690408,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 40.27750059845416
+      },
+      {
+        "id": "pam50:left:ventral-corticospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.26191336281561906,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 34.785085315487024
+      },
+      {
+        "id": "pam50:right:ventral-reticulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.24953345805634033,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 19.37800554851379
+      },
+      {
+        "id": "pam50:left:ventral-reticulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.24583181242807595,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 18.736876547544252
+      },
+      {
+        "id": "pam50:right:lateral-vestibulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.22624992494589224,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 19.82376990407846
+      },
+      {
+        "id": "pam50:left:lateral-vestibulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23360302372752334,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 21.022929792151615
+      },
+      {
+        "id": "pam50:right:ventrolateral-reticulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23715950146344886,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.264447412074844
+      },
+      {
+        "id": "pam50:left:ventrolateral-reticulospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2523123585686086,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.850911143785682
+      },
+      {
+        "id": "pam50:right:spino-olivary-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.26595925208212257,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 81.96097205788872
+      },
+      {
+        "id": "pam50:left:spino-olivary-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23899088570327834,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 81.99210357303875
+      },
+      {
+        "id": "pam50:right:spinal-lemniscus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.24524949807549692,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 262.08789430677456
+      },
+      {
+        "id": "pam50:left:spinal-lemniscus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.260956845617827,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 263.86246059347394
+      },
+      {
+        "id": "pam50:right:rubrospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.24230942934127073,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 120.84000342463365
+      },
+      {
+        "id": "pam50:left:rubrospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.23490122537091843,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 122.53727886352429
+      },
+      {
+        "id": "pam50:right:ventral-spinocerebellar-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.24139940183516226,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 109.84097440446513
+      },
+      {
+        "id": "pam50:left:ventral-spinocerebellar-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.32212539728072137,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 100.99402639538958
+      },
+      {
+        "id": "pam50:right:lateral-corticospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.26821431511928584,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 288.7811316345686
+      },
+      {
+        "id": "pam50:left:lateral-corticospinal-tract",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2413337169153817,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 282.91801116339997
+      },
+      {
+        "id": "pam50:right:cuneate-fasciculus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2576683989856033,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 352.53375361654525
+      },
+      {
+        "id": "pam50:left:cuneate-fasciculus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.25042332153699387,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 349.39914759141504
+      },
+      {
+        "id": "pam50:right:gracile-fasciculus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2330546353277191,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 216.29862085548433
+      },
+      {
+        "id": "pam50:left:gracile-fasciculus",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21240195260727565,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 219.85096905421122
+      }
+    ],
+    "vertebral_levels": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5"
+    ],
+    "cord_agreement": {
+      "dice": 0.9672582956675119,
+      "atlas_mm3": 4463.0,
+      "segmentation_mm3": 4608.0,
+      "slices_compared": 65
+    }
   },
   "solid_envelopes": {
     "file": "tissue-envelopes.glb",
@@ -471,6 +752,7 @@
   "neuropsych_domains": {
     "assigned_areas": 273,
     "assigned_structures": 16,
+    "teaching_units": 16,
     "areas_per_domain": {
       "executive": 17,
       "working-memory": 79,
@@ -3011,7 +3293,7 @@
   },
   "learning_structures": {
     "file": "learning.glb",
-    "sha256": "6e68245ad01152f40f9f17034edb0e80e8ab63f497efefe81e4d8d0978162546",
+    "sha256": "e5daa0603371c7a4691620cebbf442639b6c3674785eed9bf27abe8d0fcebb33",
     "regions": [
       {
         "id": "learning:left:caudate",
@@ -3539,6 +3821,13 @@
         "misclassified_voxel_centres": 0
       },
       {
+        "id": "learning:caudal-medulla",
+        "source_atlas": "aseg",
+        "source_voxel_count": 1925,
+        "maximum_display_displacement_mm": 0.4857333089690249,
+        "misclassified_voxel_centres": 0
+      },
+      {
         "id": "learning:ventricles-left",
         "source_atlas": "aseg",
         "source_voxel_count": 7127,
@@ -3878,7 +4167,7 @@
       },
       {
         "unit": "medulla",
-        "cross_source_overlap_fraction": 0.002388149939540508
+        "cross_source_overlap_fraction": 0.003325272067714631
       },
       {
         "unit": "red-nucleus",
@@ -3904,7 +4193,99 @@
         "unit": "fastigial",
         "cross_source_overlap_fraction": 0.15460526315789475
       }
+    ],
+    "domain_units": [
+      {
+        "unit": "left:caudate",
+        "structure": "Left-Caudate",
+        "share": 0.883
+      },
+      {
+        "unit": "right:caudate",
+        "structure": "Right-Caudate",
+        "share": 0.909
+      },
+      {
+        "unit": "left:putamen",
+        "structure": "Left-Putamen",
+        "share": 0.924
+      },
+      {
+        "unit": "right:putamen",
+        "structure": "Right-Putamen",
+        "share": 0.922
+      },
+      {
+        "unit": "left:pallidum-external",
+        "structure": "Left-Pallidum",
+        "share": 0.893
+      },
+      {
+        "unit": "right:pallidum-external",
+        "structure": "Right-Pallidum",
+        "share": 0.875
+      },
+      {
+        "unit": "left:pallidum-internal",
+        "structure": "Left-Pallidum",
+        "share": 0.929
+      },
+      {
+        "unit": "right:pallidum-internal",
+        "structure": "Right-Pallidum",
+        "share": 0.863
+      },
+      {
+        "unit": "left:accumbens",
+        "structure": "Left-Accumbens-area",
+        "share": 0.601
+      },
+      {
+        "unit": "right:accumbens",
+        "structure": "Right-Accumbens-area",
+        "share": 0.565
+      },
+      {
+        "unit": "left:thalamus",
+        "structure": "Left-Thalamus-Proper",
+        "share": 0.87
+      },
+      {
+        "unit": "right:thalamus",
+        "structure": "Right-Thalamus-Proper",
+        "share": 0.843
+      },
+      {
+        "unit": "left:hippocampus",
+        "structure": "Left-Hippocampus",
+        "share": 0.946
+      },
+      {
+        "unit": "right:hippocampus",
+        "structure": "Right-Hippocampus",
+        "share": 0.944
+      },
+      {
+        "unit": "left:amygdala",
+        "structure": "Left-Amygdala",
+        "share": 0.861
+      },
+      {
+        "unit": "right:amygdala",
+        "structure": "Right-Amygdala",
+        "share": 0.865
+      }
     ]
+  },
+  "boundary_certainty": {
+    "file": "boundary-certainty.json",
+    "rated_pairs": 1738,
+    "pairs_below_minimum": 2387,
+    "share_of_interface_voxels_rated": 0.9910316142042483,
+    "median_near_tie_share": 0.19384888786975463,
+    "interface_weighted_near_tie_share": 0.2610112711981798,
+    "near_tie_voxels": 1061305,
+    "share_of_near_ties_against_a_face_neighbour": 0.9315267524415696
   },
   "white_matter": {
     "file": "white-matter.volume",
@@ -4061,6 +4442,7 @@
     "aseg.volume",
     "atlas-comparison.json",
     "atlas-overlaps.glb",
+    "boundary-certainty.json",
     "cab-np.json",
     "cortex-destrieux.glb",
     "cortex-hcp-mmp.glb",

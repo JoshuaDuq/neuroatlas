@@ -184,7 +184,7 @@ export class BrainSections extends EventTarget {
     // across empty space and the millimetre readout no longer tracks the brain.
     const cordShown = Boolean(this.model.state.spinalCordVisible);
     for (const layer of this.model.manifest.supplemental_layers ?? []) {
-      if (layer.id === 'zanatomy' && !cordShown) continue;
+      if (layer.id === 'pam50' && !cordShown) continue;
       if (!layer.bounds_ras_mm) continue;
       for (let axis = 0; axis < 3; axis++) {
         bounds[0][axis] = Math.floor(Math.min(bounds[0][axis]!, layer.bounds_ras_mm[0]![axis]!));
@@ -523,8 +523,12 @@ export class BrainSections extends EventTarget {
     const { volumes } = this;
     if (!volumes) throw new Error('The linked MRI has not loaded.');
     const labelId = volumes.segmentation.label(point);
+    // The linked segmentation is aseg; other atlases reuse its label numbers.
     const region = [...this.model.regions.values()].find(
-      (region) => region.kind === 'structure' && region.source_label_id === labelId,
+      (region) =>
+        region.atlas === 'aseg' &&
+        region.kind === 'structure' &&
+        region.source_label_id === labelId,
     );
     return {
       labelId,

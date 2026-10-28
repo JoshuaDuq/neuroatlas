@@ -79,8 +79,8 @@ test('CAT-07: a region without a label stops the catalogue from building', () =>
 });
 
 describe('the published cdmd anatomy', () => {
-  test('CAT-07: all 1289 regions have a non-empty name and group in English and French', () => {
-    assert.equal(manifest.regions.length, 1289);
+  test('CAT-07: all 1266 regions have a non-empty name and group in English and French', () => {
+    assert.equal(manifest.regions.length, 1266);
     for (const region of manifest.regions) {
       for (const lang of ['en', 'fr'] as const) {
         const label = labelOf(region, lang);
@@ -103,10 +103,11 @@ describe('the published cdmd anatomy', () => {
     assert.ok(manifest.regions.filter((r) => r.kind === 'cortex').every((r) => !beneathCortex(r)));
   });
 
-  test('CAT-18: the 58 spinal cord regions are the ones not registered to the MRI', () => {
-    const unregistered = manifest.regions.filter((region) => region.mri_registered === false);
-    assert.equal(unregistered.length, 58);
-    assert.ok(unregistered.every((region) => region.atlas === 'zanatomy'));
+  test('CAT-18: the 34 spinal cord regions are registered to the MRI, like every region', () => {
+    const cord = manifest.regions.filter((region) => region.atlas === 'pam50');
+    assert.equal(cord.length, 34);
+    assert.ok(cord.every((region) => region.mri_registered === true));
+    assert.ok(!manifest.regions.some((region) => region.mri_registered === false));
   });
 
   test('CAT-22: "Broca", "cunéus" and "cuneus" find the published rows', () => {
@@ -141,16 +142,16 @@ describe('the published cdmd anatomy', () => {
   test('CAT-22: the published search totals are fixed', () => {
     const total = (query: string, lang: Language) =>
       catalogs[lang].search(query, settings({ lang })).total;
-    assert.equal(total('s', 'en'), 779);
-    assert.equal(total('noyau', 'fr'), 241);
+    assert.equal(total('s', 'en'), 752);
+    assert.equal(total('noyau', 'fr'), 235);
     assert.equal(total('zzz', 'en'), 0);
     assert.equal(total('', 'en'), 0);
   });
 
-  test('CAT-24: a search for "s" is capped at 50 rows of 779', () => {
+  test('CAT-24: a search for "s" is capped at 50 rows of 752', () => {
     const found = catalogs.en.search('s', settings());
     assert.equal(found.rows.length, 50);
-    assert.equal(found.total, 779);
+    assert.equal(found.total, 752);
     assert.equal(catalogs.en.search('s', settings(), 5).rows.length, 5);
   });
 
@@ -172,7 +173,7 @@ describe('the published cdmd anatomy', () => {
       'structure:Corpus callosum': 5,
       'structure:Diencephalon': 4,
       'structure:Limbic': 4,
-      'structure:Spinal cord': 58,
+      'structure:Spinal cord': 34,
       'structure:Ventricles and CSF': 6,
     });
   });
@@ -227,11 +228,11 @@ describe('the published cdmd anatomy', () => {
     });
   });
 
-  test('CAT-27: the visible count is 238 on destrieux, 450 on hcp-mmp and 90 with the cortex hidden', () => {
+  test('CAT-27: the visible count is 214 on destrieux, 426 on hcp-mmp and 66 with the cortex hidden', () => {
     const count = (over: object) => catalogs.en.visibleCount(settings(over));
-    assert.equal(count({}), 238);
-    assert.equal(count({ atlas: 'hcp-mmp' }), 450);
-    assert.equal(count({ cortexVisible: false }), 90);
+    assert.equal(count({}), 214);
+    assert.equal(count({ atlas: 'hcp-mmp' }), 426);
+    assert.equal(count({ cortexVisible: false }), 66);
   });
 
   test('CAT-28: switching en, fr, en, fr gives the lists of a fresh catalogue; an unknown id has no entry', () => {

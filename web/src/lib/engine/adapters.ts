@@ -47,6 +47,7 @@ export function createEngineModel(atlas: BrainAtlas): EngineModel {
     cabNp: atlas.cabNp,
     functionalRegions: atlas.functionalRegions,
     domains: atlas.domains,
+    boundaryCertainty: atlas.boundaryCertainty,
     get defaultDetail() {
       return atlas.defaultDetail;
     },

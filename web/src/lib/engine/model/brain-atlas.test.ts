@@ -239,14 +239,14 @@ function cordFixture(loadCord: (region: Region) => Promise<{ scene: Group }>) {
     id: 'cord',
     label: 'Spinal cord',
     hemisphere: 'midline',
-    atlas: 'zanatomy',
+    atlas: 'pam50',
     source_label_id: 1,
     kind: 'structure',
     supplemental: true,
     mri_registered: false,
     system_names: { en: 'Spinal cord', fr: 'Moelle épinière' },
   } as Region;
-  atlas.manifest.supplemental_layers = [{ id: 'zanatomy', file: 'cord.glb' }] as never;
+  atlas.manifest.supplemental_layers = [{ id: 'pam50', file: 'cord.glb' }] as never;
   atlas.manifest.regions = [...atlas.manifest.regions, cord];
   atlas.regions.set(cord.id, cord);
   const loadBrain = atlas.loader.loadAsync.bind(atlas.loader);

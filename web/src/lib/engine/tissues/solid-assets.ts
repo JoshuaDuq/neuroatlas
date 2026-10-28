@@ -6,6 +6,8 @@ import type { Manifest } from '../../types/index.ts';
 import type { DisplaySettings, Region } from '../../types/index.ts';
 import type { CapLabelUniforms } from './cap-labels.ts';
 import { addCapLabels } from './cap-labels.ts';
+import { addBoundaryEdges } from './boundary-edges.ts';
+import type { EdgeUniforms } from './boundary-edges.ts';
 import { tissueColor } from '../render/materials.ts';
 import type { Appearance } from '../render/materials.ts';
 import { addMriAppearance } from '../render/mri-material.ts';
@@ -46,6 +48,7 @@ export type CapUserData = Pick<SolidUserData, 'tissueVariation'> &
 /** The registered MRI and cut labels the solids' materials read. */
 export interface SolidSourceAnatomy extends SolidAnatomy {
   capLabels: CapLabelUniforms;
+  capEdges: EdgeUniforms;
   mriUniforms: MriUniforms;
 }
 
@@ -197,6 +200,14 @@ export function addSolidSources(
     const material = createSolidMaterial(anatomy, appearance, sampled);
     addCapLabels(material, anatomy.capLabels);
     addMriAppearance(material, anatomy.mriUniforms, 'capLift');
+    addBoundaryEdges(material, anatomy.capEdges, {
+      volume: 'capLabelVolume',
+      shape: 'capLabelShape',
+      toLabels: 'capWorldToLabels',
+      // Every cap lies on the plane the label grid covers, meshed solids included.
+      enabled: 'capLabelsEnabled',
+      selected: 'capHighlightCodes.y',
+    });
     if (source.userData['mri_registered'] === false) material.userData['tissueRelief'].value = 0;
     sections.add(source, material, band);
   }

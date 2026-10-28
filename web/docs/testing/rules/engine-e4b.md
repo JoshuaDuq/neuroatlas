@@ -436,7 +436,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:291-317,776-788`
-- **Expected:** After `initialize()`, `cord.glb` not fetched, `spinalCordLoadState === 'unloaded'`, no `zanatomy` layer. `setSpinalCordVisible(true)` → fetched once, cord selectable. Hide, show → still fetched once.
+- **Expected:** After `initialize()`, `cord.glb` not fetched, `spinalCordLoadState === 'unloaded'`, no `pam50` layer. `setSpinalCordVisible(true)` → fetched once, cord selectable. Hide, show → still fetched once.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `src/lib/engine/model/spinal-cord.test.ts` (R, CDMD)
 
 ### ATLAS-48 · Showing the cord waits for it; hiding cancels; a failure is retried
@@ -445,34 +445,34 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:291-317,776-788`
-- **Expected:** Pending show → state `loading`, `spinalCordVisible === false`, `select(cord)` → /not visible/ (also when the flag is forced on). Finished → `ready`, visible, selectable, isolatable, and hide/undo restore it. Show then hide before the download ends → `spinalCordVisible === false`. First download throws "Spinal cord request failed: HTTP 503" → `setSpinalCordVisible(true)` rejects with it, state `error`, `spinalCordLoadError` that error, cortex still drawn; second attempt → `ready`. No `zanatomy` layer published → rejects `/does not publish a spinal cord/`.
+- **Expected:** Pending show → state `loading`, `spinalCordVisible === false`, `select(cord)` → /not visible/ (also when the flag is forced on). Finished → `ready`, visible, selectable, isolatable, and hide/undo restore it. Show then hide before the download ends → `spinalCordVisible === false`. First download throws "Spinal cord request failed: HTTP 503" → `setSpinalCordVisible(true)` rejects with it, state `error`, `spinalCordLoadError` that error, cortex still drawn; second attempt → `ready`. No `pam50` layer published → rejects `/does not publish a spinal cord/`.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `src/lib/engine/model/assets.test.ts` (S, published-or-not)
 
 ### ATLAS-49 · The published cord assembly is one supplemental system
 
-- **Rule:** CDMD publishes the cord as the `zanatomy` supplemental layer: every region of it is supplemental, not registered to the subject's MRI, and in the "Spinal cord" system. It carries what a straightened template cannot: grey horns, roots, ganglia and the cauda equina.
+- **Rule:** CDMD publishes the cord as the `pam50` supplemental layer: PAM50's tracts and grey matter registered to the subject's own segmented cord. Every region of it is supplemental, registered to the subject's MRI, on one side, and in the "Spinal cord" system.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/model/spinal-cord.test.js:47-62`; `public/models/cdmd/manifest.json`
-- **Expected:** 58 `zanatomy` regions = `supplemental_layers[0].region_count`; each `supplemental === true`, `mri_registered === false`, `system_names.en === 'Spinal cord'`. Present: `zanatomy:midline:cord`, `zanatomy:left:anterior-horn`, `zanatomy:left:posterior-horn`, `zanatomy:left:anterior-root`, `zanatomy:right:posterior-root`, `zanatomy:left:spinal-ganglion`, `zanatomy:midline:cauda-equina`.
+- **Expected:** 34 `pam50` regions = `supplemental_layers[0].region_count`; each `supplemental === true`, `mri_registered === true`, `system_names.en === 'Spinal cord'`, hemisphere left or right. Present on both sides: `gracile-fasciculus`, `lateral-corticospinal-tract`, `ventral-horn`, `dorsal-horn`.
 - **Covered by:** `src/lib/engine/model/spinal-cord.test.ts` (S)
 
-### ATLAS-50 · The cord can be selected and isolated at every detail level, and a root follows its side
+### ATLAS-50 · A cord tract can be selected and isolated at every detail level, and follows its side
 
-- **Rule:** Once shown, the cord is drawn, selectable and isolatable whatever the detail level, also with the cortex hidden, one hemisphere and the "Spinal cord" system chosen. The cord is midline, so no hemisphere hides it; a lateral root follows the hemisphere it belongs to. A hidden cord is not visible for the reason `spinal-cord-hidden` and cannot be selected.
+- **Rule:** Once shown, a cord tract is drawn, searchable, selectable and isolatable whatever the detail level, also with the cortex hidden, one hemisphere and the "Spinal cord" system chosen. Each tract follows the hemisphere it belongs to. A hidden cord is not visible for the reason `spinal-cord-hidden` and cannot be selected.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/spinal-cord.test.js:63-132`
-- **Expected:** CDMD cord shown, for each of aseg, nextbrain, learning: the cord mesh is drawn; cortex hidden, hemisphere left, system 'Spinal cord', select and isolate → visible [`zanatomy:midline:cord`]. Hemisphere left → `zanatomy:left:anterior-root` visible, `zanatomy:right:anterior-root` not; right → the reverse; the cord visible in both. Cord hidden → `visibilityOf(cord).reason === 'spinal-cord-hidden'`, `select` → "Region is not visible: zanatomy:midline:cord".
+- **Expected:** CDMD cord shown, for each of aseg, nextbrain, learning: `pam50:left:gracile-fasciculus` is drawn, found by "gracile fasciculus" (French "faisceau gracile"), and with cortex hidden, hemisphere left, system 'Spinal cord', select and isolate → visible [`pam50:left:gracile-fasciculus`]. Hemisphere left → the left gracile fasciculus visible, the right not; right → the reverse. Cord hidden → `reason === 'spinal-cord-hidden'`, `select` → "Region is not visible".
 - **Covered by:** `src/lib/engine/model/spinal-cord.test.ts` (R; its search assertions belong to the core catalogue area)
 
-### ATLAS-51 · Cord caps on the cut are tissue-coloured, unshaded and pickable down to the conus
+### ATLAS-51 · Cord caps are tissue-coloured, keep MRI colour and are pickable across any plane
 
-- **Rule:** Cut through, the cord's grey horns cap as grey matter and the cord as white matter, or in the published atlas colour under atlas colour. The cord is not the subject's tissue, so its caps carry no MRI shading or relief. A cut anywhere along the cord, even near the conus where the cord curves away from its box centre, can be picked.
+- **Rule:** Cut through, the cord's grey matter caps as grey and its tracts as white matter. The cord is the subject's own, so its caps stay drawn under MRI colour, where an unregistered solid would hide. A cut through a tract in any direction can be picked.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/model/spinal-cord.test.js:133-200`
-- **Expected:** Horn cap colour `tissue.gray` (#a68d80). Cord cap colour `tissue.white` (#e5dbc5) under tissue and network colour, the source material colour under atlas colour; `tissueVariation` 0 and `tissueRelief` 0 in all three. At 12 % of the cord's height, planes along x, y, z and (1, 1, 1)/√3, from both sides, a ray onto the plane picks `zanatomy:midline:cord`.
+- **Expected:** Ventral horn cap colour `tissue.gray`, gracile fasciculus cap `tissue.white` under tissue colour. Under MRI colour the gracile fasciculus cap stays visible; at half its height, planes along x, y, z and (1, 1, 1)/√3, from both sides, a ray onto the plane picks `pam50:left:gracile-fasciculus`.
 - **Covered by:** `src/lib/engine/model/spinal-cord.test.ts` (R). These exercise the cut's solids (`SolidSections`, `paintSolids`) and overlap the tissue area (TISSUE-).
 
 ## Solids the model holds, and disposal

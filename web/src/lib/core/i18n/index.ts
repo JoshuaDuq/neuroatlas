@@ -2,6 +2,7 @@
 import type { Language } from '../../types/index.ts';
 import * as app from './areas/app.ts';
 import * as atlases from './areas/atlases.ts';
+import * as boundary from './areas/boundary.ts';
 import * as circuits from './areas/circuits.ts';
 import * as clinical from './areas/clinical.ts';
 import * as comparison from './areas/comparison.ts';
@@ -37,6 +38,7 @@ export const TRANSLATIONS = {
   en: {
     app: app.en,
     atlases: atlases.en,
+    boundary: boundary.en,
     circuits: circuits.en,
     clinical: clinical.en,
     comparison: comparison.en,
@@ -71,6 +73,7 @@ export const TRANSLATIONS = {
   fr: {
     app: app.fr,
     atlases: atlases.fr,
+    boundary: boundary.fr,
     circuits: circuits.fr,
     clinical: clinical.fr,
     comparison: comparison.fr,
