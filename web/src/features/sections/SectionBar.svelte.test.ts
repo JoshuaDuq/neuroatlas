@@ -657,6 +657,17 @@ describe('the compact row', () => {
     const gutter = parseFloat(getComputedStyle(dock).getPropertyValue('--stage-gutter'));
     expect(dock.getBoundingClientRect().width).toBeCloseTo(390 - 2 * gutter, 0);
   });
+
+  test('a phone gives the position slider a line of its own, below the exact field', async () => {
+    await page.viewport(390, 844);
+    await mount({ phone: true }, { width: 390, height: 700 });
+    await cutPlane('coronal');
+    const slider = position().getBoundingClientRect();
+    expect(slider.top).toBeGreaterThanOrEqual(exact().getBoundingClientRect().bottom);
+    // Shared with the field, it was ~80 px: some 3 mm of cut a pixel.
+    const dock = document.querySelector<HTMLElement>('.stage-dock')!.getBoundingClientRect();
+    expect(slider.width).toBeGreaterThan(dock.width * 0.7);
+  });
 });
 
 describe('size and media', () => {

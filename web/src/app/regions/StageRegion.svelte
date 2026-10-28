@@ -245,7 +245,7 @@
           {tractReference}
         />
       {/snippet}
-      {#snippet lesionPopover()}
+      {#snippet lesionPopover({ close })}
         <LesionPopover
           lesion={world.lesion}
           lang={current.lang}
@@ -253,6 +253,8 @@
             world.excursions.chooseExplorer('anatomy');
             world.anatomy.selectRegion(null);
             app.ports.showDetail();
+            // The raised sheet leaves a phone's popover no stage to sit on.
+            if (app.media.phone) close();
           }}
         />
       {/snippet}

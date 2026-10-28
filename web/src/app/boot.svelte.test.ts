@@ -278,6 +278,14 @@ describe('the controllers', () => {
     expect(ports.showDetail).toHaveBeenCalled();
   });
 
+  test('place a lesion where the model was pressed, its report shown without raising the sheet', async () => {
+    const { app, ports } = await boot();
+    engine.emit('lesionPoint', { point: [10, 20, 30] });
+    expect(app.world!.lesion.sphere?.centre).toEqual([10, 20, 30]);
+    expect(ports.showDetailInPlace).toHaveBeenCalled();
+    expect(ports.showDetail).not.toHaveBeenCalled();
+  });
+
   test('say a lost graphics context and its return', async () => {
     const { app } = await boot();
     engine.emit('contextLost', undefined);

@@ -684,6 +684,52 @@
       input[type='range'] {
         height: 44px;
       }
+      /*
+       * The slider takes a line of its own. Sharing the row left it ~80px for 256 mm, so a finger's
+       * wobble leapt the cut by centimetres and its ends emptied the stage.
+       */
+      .section-bar[data-compact='true'] .section-bar-row:first-child {
+        display: grid;
+        grid-template-columns: auto auto auto minmax(0, 1fr) auto auto;
+        grid-template-areas:
+          'name number unit . more close'
+          'start range range range range end'
+          'details details details details details details';
+        column-gap: var(--space-2);
+        row-gap: 0;
+      }
+      .section-bar[data-compact='true'] .cut-position-row {
+        display: contents;
+      }
+      .section-bar-name {
+        grid-area: name;
+      }
+      .cut-end {
+        grid-area: start;
+      }
+      .section-bar[data-compact='true'] input[type='range'] {
+        grid-area: range;
+        width: auto;
+      }
+      input[type='range'] + .cut-end {
+        grid-area: end;
+        padding-right: var(--space-2);
+      }
+      .cut-number {
+        grid-area: number;
+      }
+      .cut-unit {
+        grid-area: unit;
+      }
+      .cut-more {
+        grid-area: more;
+      }
+      .section-bar :global(.cut-close) {
+        grid-area: close;
+      }
+      .cut-details {
+        grid-area: details;
+      }
       /* Folded, the status line still speaks; it is simply not drawn, unless it is a failure. */
       .section-bar:not([data-expanded='true'], [data-failed]) .cut-status {
         position: absolute;

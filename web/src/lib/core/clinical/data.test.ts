@@ -123,15 +123,23 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       .map((a) => a.id)
       .sort(),
     [
+      'aprosodia-frontal-parietal',
       'extinction-temporoparietal',
       'neglect-egocentric',
       'neglect-perceptual',
       'sound-localization-right-network',
+      'tactile-agnosia-persistence',
     ],
   );
   assert.ok(
     data.references.some((r) => r.method === 'meta-analysis'),
     'pooled lesion evidence is present',
+  );
+  assert.ok(
+    catalog
+      .forDeficit('akinetopsia')[0]
+      .evidence.some((e) => e.reference === 'otsuka-hirota-2014' && e.role === 'qualifying'),
+    'the unilateral motion-blindness case qualifies the bilateral-lesion example',
   );
   assert.equal(catalog.search('prosopagnosie', 'fr')[0].id, 'agnosia');
   assert.equal(catalog.search('set shifting', 'en')[0].id, 'executive');
@@ -139,9 +147,9 @@ function checkAnatomy(catalog: ClinicalCatalog) {
     catalog.forDeficit('apraxia').every((a) => a.evidence.some((e) => e.role === 'qualifying')),
     'contrary evidence accompanies apraxia claims',
   );
-  // Dronkers and Hillis each support one speech-apraxia site and qualify the other.
+  // Motor/premotor cases join the earlier insular and frontal findings, with qualifications.
   const speech = catalog.forDeficit('speech-apraxia');
-  assert.equal(speech.length, 2);
+  assert.equal(speech.length, 3);
   assert.ok(speech.every((a) => a.evidence.some((e) => e.role === 'qualifying')));
   assert.deepEqual(
     catalog
@@ -149,6 +157,7 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       .map((a) => a.id)
       .sort(),
     [
+      'agraphia-orthographic-long-term',
       'apraxia-finger',
       'dysphagia-insula',
       'emotion-prosody',
@@ -166,7 +175,7 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       .forRegion('nextbrain:left:458')
       .map((a) => a.deficit)
       .sort(),
-    ['central-pain', 'lateropulsion'],
+    ['central-pain', 'central-pain', 'lateropulsion'],
   );
   assert.deepEqual(
     catalog.forDeficit('amnesia').map((a) => a.id),
@@ -213,17 +222,44 @@ describe('published clinical content: fixed values', () => {
   const [, manifest] = manifests[0];
   const catalog = createClinicalCatalog(data, manifest);
 
-  test('CAT-50 · the published records are the revision of 2026-10-27: 6 groups, 70 deficits, 113 references, 96 associations', () => {
+  test('CAT-50 · the published records are the revision of 2026-10-27: 6 groups, 70 deficits, 131 references, 108 associations', () => {
     assert.equal(catalog.revised, '2026-10-27');
     assert.equal(data.groups.length, 6);
     assert.equal(data.deficits.length, 70);
-    assert.equal(data.references.length, 113);
-    assert.equal(data.associations.length, 96);
+    assert.equal(data.references.length, 131);
+    assert.equal(data.associations.length, 108);
+  });
+
+  test('reviewed motor-neglect and aprosodia findings preserve their mapping limits', () => {
+    assert.equal(catalog.paint('motor-neglect', 'motor-neglect-parietal').paint.colors.size, 0);
+    assert.deepEqual(catalog.mappedRegions('motor-neglect'), ['aseg:right:51']);
+    assert.deepEqual(
+      catalog.forDeficit('aprosodia').map((a) => a.id),
+      ['aprosodia-frontal-parietal', 'aprosodia-medial-frontal'],
+    );
+  });
+
+  test('the callosal alien-hand finding highlights anterior subdivisions and leaves posterior callosum uncoloured', () => {
+    assert.deepEqual(catalog.mappedRegions('alien-hand'), ['aseg:midline:254', 'aseg:midline:255']);
+    assert.ok(!catalog.paint('alien-hand').paint.colors.has('aseg:midline:251'));
+  });
+
+  test('the focal coma finding colours its brainstem landmark without colouring connected cortical nodes', () => {
+    assert.deepEqual(
+      [...catalog.paint('coma', 'coma-dorsolateral-pons').paint.colors.keys()],
+      ['learning:left:pons'],
+    );
+  });
+
+  test('the amusia connectivity finding stays uncoloured while its direct lesion landmarks remain available', () => {
+    assert.equal(catalog.paint('amusia', 'amusia-network').paint.colors.size, 0);
+    assert.deepEqual(catalog.mappedRegions('amusia'), ['destrieux:right:33', 'destrieux:right:34']);
   });
 
   test('CAT-45 · a published search ignores case and accents and ranks the named deficit first', () => {
     const ids = (query: string, lang: 'en' | 'fr') => catalog.search(query, lang).map((d) => d.id);
     assert.deepEqual(ids('amnesia', 'en'), ['amnesia']);
+    assert.deepEqual(ids('aphas', 'en'), ['aphasia', 'speech-apraxia']);
     assert.deepEqual(ids('AMNÉSIA', 'en'), ['amnesia']);
     assert.deepEqual(ids('memory', 'en'), [
       'agraphia',

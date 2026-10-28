@@ -173,13 +173,14 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       session.notify(failureNotice(error, session.state.lang, 'whiteMatter')),
     ),
     engine.on('pick', ({ id }) => world.anatomy.selectRegion(id)),
-    // The lesion's report is Anatomy's detail, which shows it once no region is selected.
+    // The lesion's report is Anatomy's detail, which shows it once no region is selected. A phone's
+    // sheet stays down so the brain stays in reach for the next press; Show the report raises it.
     engine.on('lesionPoint', ({ point }) => {
       world.excursions.chooseExplorer('anatomy');
       world.anatomy.selectRegion(null);
       world.lesion.place(point);
       flushSync();
-      ports.showDetail();
+      ports.showDetailInPlace();
     }),
     // The keys act once the model has loaded, never during a failed start.
     installKeymap({
