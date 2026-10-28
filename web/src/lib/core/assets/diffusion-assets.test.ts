@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import PUBLISHED from './published-files.ts';
 import { ASSET_BASE } from '../../../../build/site.ts';
 import { fetchDiffusionAsset, readDiffusionAsset } from './diffusion-assets.ts';
 import { publish, recordOf } from './published-test-support.ts';
@@ -21,6 +22,7 @@ describe('diffusion assets', () => {
   it('reads from the published root, not the app base', async () => {
     const bytes = new Uint8Array([1, 2]);
     publish({ 'diffusion/snail-subject-1/t1.nii.gz': recordOf(bytes) });
+    PUBLISHED.base = ASSET_BASE;
     vi.stubGlobal('location', { href: 'https://example.test/neuroatlas/' });
     vi.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response(bytes));
     const asset = await readDiffusionAsset('snail-subject-1/t1.nii.gz');

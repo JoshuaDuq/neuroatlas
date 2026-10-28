@@ -391,11 +391,11 @@ document, `location`, `history` and `window` directly.
 
 ### ASSET-10 · Published files come from the site root
 
-- **Rule:** The anatomy index, manifests and diffusion files are read from `/neuroatlas/`, the published root, wherever the page itself is served.
+- **Rule:** The anatomy index, manifests and diffusion files are read from `/`, the published root, wherever the page itself is served.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:102`; `viewer/diffusion/assets.js:3-6` (legacy used the app base, which was the root)
-- **Expected:** manifest URL `/neuroatlas/models/cdmd/manifest.json`; with `location` `…/neuroatlas/`, `readDiffusionAsset('snail-subject-1/t1.nii.gz').url` = `/neuroatlas/diffusion/snail-subject-1/t1.nii.gz`.
+- **Expected:** manifest URL `/models/cdmd/manifest.json`; with `location` `…/`, `readDiffusionAsset('snail-subject-1/t1.nii.gz').url` = `/diffusion/snail-subject-1/t1.nii.gz`.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R), `src/lib/core/assets/diffusion-assets.test.ts` (R)
 
 ### ASSET-11 · The anatomy index request
@@ -451,7 +451,7 @@ document, `location`, `history` and `window` directly.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `index.html:34-60`
-- **Expected:** atlas `hcp-mmp` → `cortex-hcp-mmp.glb`, anything else → `cortex-destrieux.glb`; detail `aseg` → `structures.glb`, `nextbrain` → `nextbrain.glb`, else `learning.glb`; `#anatomy=bert&atlas=hcp-mmp&detail=nextbrain` → exactly `…/neuroatlas/models/anatomies.json?v=index0000000000a`, `…/bert/cortex-hcp-mmp.glb?v=hcp0000000000000`, `…/bert/manifest.json?v=manifest00000000`, `…/bert/nextbrain.glb?v=fine000000000000`, keyed on `__planumAssets` by the plain URL; all under `/neuroatlas/`.
+- **Expected:** atlas `hcp-mmp` → `cortex-hcp-mmp.glb`, anything else → `cortex-destrieux.glb`; detail `aseg` → `structures.glb`, `nextbrain` → `nextbrain.glb`, else `learning.glb`; `#anatomy=bert&atlas=hcp-mmp&detail=nextbrain` → exactly `…/models/anatomies.json?v=index0000000000a`, `…/bert/cortex-hcp-mmp.glb?v=hcp0000000000000`, `…/bert/manifest.json?v=manifest00000000`, `…/bert/nextbrain.glb?v=fine000000000000`, keyed on `__planumAssets` by the plain URL; all under `/`.
 - **Covered by:** `src/boot/prefetch.test.ts` (R)
 
 ### ASSET-17 · The brain to prefetch
@@ -460,7 +460,7 @@ document, `location`, `history` and `window` directly.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `index.html:53-67`
-- **Expected:** empty hash, index `{"default":"bert"}` → 4 requests including `/neuroatlas/models/bert/manifest.json`.
+- **Expected:** empty hash, index `{"default":"bert"}` → 4 requests including `/models/bert/manifest.json`.
 - **Covered by:** `src/boot/prefetch.test.ts` (R)
 
 ### ASSET-18 · The index is handed over only after the brain has started
@@ -579,7 +579,7 @@ document, `location`, `history` and `window` directly.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:59-66`
-- **Expected:** navigate `/neuroatlas/` → one fetch of that URL with `no-cache`; redirected → second `fetch(request)`; rejected → `fetch(request)`.
+- **Expected:** navigate `/` → one fetch of that URL with `no-cache`; redirected → second `fetch(request)`; rejected → `fetch(request)`.
 - **Covered by:** `src/service-worker.test.ts` (R, no-cache only); redirect and failure fallbacks uncovered
 
 ### SW-10 · A second visit is served by the worker
@@ -595,12 +595,12 @@ document, `location`, `history` and `window` directly.
 
 ### BUILD-01 · Site paths
 
-- **Rule:** The live site and the development server serve from `/neuroatlas/`.
+- **Rule:** The live site and the development server serve from `/`.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `vite.config.js:9`
-- **Expected:** `ASSET_BASE` = `/neuroatlas/`; the service worker's map has `base` `/neuroatlas/`.
-- **Covered by:** `build/published-files.test.ts` (R, `ASSET_BASE` = `/neuroatlas/`); `.github/scripts/check-dist.mjs` (R, the worker's `base`)
+- **Expected:** `ASSET_BASE` = `/`; the service worker's map has `base` `/`.
+- **Covered by:** `build/published-files.test.ts` (R, `ASSET_BASE` = `/`); `.github/scripts/check-dist.mjs` (R, the worker's `base`)
 
 ### BUILD-02 · The site publishes its data
 
@@ -635,7 +635,7 @@ document, `location`, `history` and `window` directly.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `vite.config.js:13-24, 63-65, 84-90`; `scripts/published-version.mjs:10-45`
-- **Expected:** keys exactly `base`, `files`, `gunzipped`; `base` = `/neuroatlas/`; head map non-empty with every key starting `models/`; `sw.js` contains `planum-models`.
+- **Expected:** keys exactly `base`, `files`, `gunzipped`; `base` = `/`; head map non-empty with every key starting `models/`; `sw.js` contains `planum-models`.
 - **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build` in the `web-check` job)
 
 ### BUILD-06 · Charset first, prefetch before the stylesheet

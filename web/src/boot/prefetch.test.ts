@@ -41,10 +41,10 @@ describe('the head prefetch script', () => {
   it('ASSET-16 asks for each file at the version the build publishes for it, under the published root', () => {
     const { requested, window } = run('#anatomy=bert&atlas=hcp-mmp&detail=nextbrain');
     expect(requested.sort()).toEqual([
-      'https://example.org/neuroatlas/models/anatomies.json?v=index0000000000a',
-      'https://example.org/neuroatlas/models/bert/cortex-hcp-mmp.glb?v=hcp0000000000000',
-      'https://example.org/neuroatlas/models/bert/manifest.json?v=manifest00000000',
-      'https://example.org/neuroatlas/models/bert/nextbrain.glb?v=fine000000000000',
+      'https://example.org/models/anatomies.json?v=index0000000000a',
+      'https://example.org/models/bert/cortex-hcp-mmp.glb?v=hcp0000000000000',
+      'https://example.org/models/bert/manifest.json?v=manifest00000000',
+      'https://example.org/models/bert/nextbrain.glb?v=fine000000000000',
     ]);
     expect(Object.keys(window.__planumAssets!).sort()).toEqual(
       requested.map((url) => url.split('?')[0]).sort(),
@@ -161,11 +161,9 @@ describe('the head prefetch script', () => {
   });
 
   it('ASSET-16 fetches from the published root', () => {
-    expect(JSON.parse(prefetchScript(versions).match(/var root = ("[^"]+");/)![1]!)).toBe(
-      '/neuroatlas/',
-    );
+    expect(JSON.parse(prefetchScript(versions).match(/var root = ("[^"]+");/)![1]!)).toBe('/');
     for (const url of run('#anatomy=bert').requested) {
-      expect(new URL(url).pathname.startsWith('/neuroatlas/')).toBe(true);
+      expect(new URL(url).pathname.startsWith('/')).toBe(true);
     }
   });
 });

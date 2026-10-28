@@ -49,7 +49,7 @@ const worker = readFileSync(resolve(dist, 'sw.js'), 'utf8');
 assert.ok(worker.includes('planum-models'));
 const map = JSON.parse(worker.match(/^const PUBLISHED = (.*);$/m)[1]);
 assert.deepEqual(Object.keys(map), ['base', 'files', 'gunzipped']);
-assert.equal(map.base, '/neuroatlas/');
+assert.equal(map.base, '/');
 for (const [path, version] of Object.entries(map.files)) {
   assert.match(version, /^[0-9a-f]{16}$/, path);
   assert.ok(existsSync(resolve(published, path)), `${path} is published`);

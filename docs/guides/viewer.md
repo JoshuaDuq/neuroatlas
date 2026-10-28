@@ -4,7 +4,7 @@ The masthead selects the subject and display layers. The panel holds searchable 
 
 ## First steps
 
-1. Open the [viewer](https://joshuaduq.github.io/neuroatlas/) and search for a region in the **Anatomy** tab. Select a result or select it on the model to see its details.
+1. Open the [viewer](https://planumatlas.com/) and search for a region in the **Anatomy** tab. Select a result or select it on the model to see its details.
 2. Choose **Section** below the model and select a plane. Move the slider to explore the cut.
 3. Open **Linked MRI** from the section bar to compare the model with the subject's scan.
 4. Copy the page URL to share the view, or use **Save image** to export the stage.

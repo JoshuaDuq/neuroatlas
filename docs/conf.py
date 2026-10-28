@@ -89,7 +89,7 @@ intersphinx_mapping = {
 # ---------------------------------------------------------------------------
 html_theme = "furo"
 html_title = "Planum"
-html_baseurl = "https://joshuaduq.github.io/neuroatlas/docs/"
+html_baseurl = "https://planumatlas.com/docs/"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_permalinks_icon = "#"
@@ -166,7 +166,7 @@ html_theme_options = {
     "source_directory": "docs/",
 }
 
-html_context = {"viewer_url": "https://joshuaduq.github.io/neuroatlas/"}
+html_context = {"viewer_url": "https://planumatlas.com/"}
 
 
 def _drop_tuple_aliases(app, what, name, obj, options, lines):

@@ -10,7 +10,7 @@ npm ci
 npm run dev
 ```
 
-Open the address printed by Vite, normally `http://127.0.0.1:5173/neuroatlas/`. Run `npm run build` to build the static site in `web/dist/`, or `npm test` for the unit tests.
+Open the address printed by Vite, normally `http://127.0.0.1:5173/`. Run `npm run build` to build the static site in `web/dist/`, or `npm test` for the unit tests.
 
 ## Python pipeline
 

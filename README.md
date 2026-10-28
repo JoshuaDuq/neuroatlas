@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://joshuaduq.github.io/neuroatlas/">
+  <a href="https://planumatlas.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset=".github/assets/planum-dark.svg">
       <img src=".github/assets/planum-light.svg" alt="Planum" width="238">
@@ -11,16 +11,16 @@
 A browser atlas for neuroscience education and research.</p>
 
 <p align="center">
-  <a href="https://joshuaduq.github.io/neuroatlas/"><strong>Open the viewer</strong></a> ·
-  <a href="https://joshuaduq.github.io/neuroatlas/docs/">Documentation</a> ·
-  <a href="https://joshuaduq.github.io/neuroatlas/docs/validation.html">Validation and limits</a>
+  <a href="https://planumatlas.com/"><strong>Open the viewer</strong></a> ·
+  <a href="https://planumatlas.com/docs/">Documentation</a> ·
+  <a href="https://planumatlas.com/docs/validation.html">Validation and limits</a>
 </p>
 
-[![Destrieux regions and diffusion tracts in Planum](.github/assets/neuroatlas-destrieux.png)](https://joshuaduq.github.io/neuroatlas/)
+[![Destrieux regions and diffusion tracts in Planum](.github/assets/neuroatlas-destrieux.png)](https://planumatlas.com/)
 
 Planum displays a FreeSurfer reconstruction of MGH CDMD subject `sub_013`, alongside tracts derived from the same subject's diffusion scan. Select regions, dissect the model, make sections, and compare them with linked MRI. Explore cortical atlases, internal structures, functional maps, guided circuits and tract bundles in English or French.
 
-The anatomy represents one individual. Projected atlases, modelled segmentations, functional maps and tractography have distinct limitations; they are not measurements of this person's function or a clinical reference. **Planum is for research and education, not clinical decisions.** See [validation and limits](https://joshuaduq.github.io/neuroatlas/docs/validation.html).
+The anatomy represents one individual. Projected atlases, modelled segmentations, functional maps and tractography have distinct limitations; they are not measurements of this person's function or a clinical reference. **Planum is for research and education, not clinical decisions.** See [validation and limits](https://planumatlas.com/docs/validation.html).
 
 ## Run locally
 
@@ -32,7 +32,7 @@ npm ci
 npm run dev
 ```
 
-Open the address printed by Vite (normally `http://127.0.0.1:5173/neuroatlas/`). The repository is large because it includes model and diffusion data.
+Open the address printed by Vite (normally `http://127.0.0.1:5173/`). The repository is large because it includes model and diffusion data.
 
 ## Build and verify
 
@@ -53,8 +53,8 @@ uv sync --locked --group docs
 uv run sphinx-build -W -b html docs docs/_build/html
 ```
 
-See [installation](https://joshuaduq.github.io/neuroatlas/docs/install.html) and [building an anatomy](https://joshuaduq.github.io/neuroatlas/docs/guides/building.html) for prerequisites, source preparation and regeneration. The [embedding guide](https://joshuaduq.github.io/neuroatlas/docs/guides/embedding.html) explains how to use the Three.js components in another application.
+See [installation](https://planumatlas.com/docs/install.html) and [building an anatomy](https://planumatlas.com/docs/guides/building.html) for prerequisites, source preparation and regeneration. The [embedding guide](https://planumatlas.com/docs/guides/embedding.html) explains how to use the Three.js components in another application.
 
 ## Data and licences
 
-The code is MIT licensed; data have separate terms. In particular, HCP-MMP data have HCP use terms, CAB-NP is non-commercial, Julich-Brain is CC BY-NC-SA, Neurosynth-derived databases are ODbL, and the PAM50 cord atlas is MIT. TractSeg-derived bundles require attribution. See [references and licensing](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) for sources, citations and complete terms.
+The code is MIT licensed; data have separate terms. In particular, HCP-MMP data have HCP use terms, CAB-NP is non-commercial, Julich-Brain is CC BY-NC-SA, Neurosynth-derived databases are ODbL, and the PAM50 cord atlas is MIT. TractSeg-derived bundles require attribution. See [references and licensing](https://planumatlas.com/docs/reference/references.html) for sources, citations and complete terms.

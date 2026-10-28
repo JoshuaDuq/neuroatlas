@@ -85,6 +85,6 @@ reference/references
 :hidden:
 :caption: Project
 
-Open the viewer <https://joshuaduq.github.io/neuroatlas/>
+Open the viewer <https://planumatlas.com/>
 Source on GitHub <https://github.com/JoshuaDuq/neuroatlas>
 ```

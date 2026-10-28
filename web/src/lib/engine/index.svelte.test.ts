@@ -11,11 +11,8 @@ const diffusionRoot = outlineUrl.slice(0, outlineUrl.indexOf('cdmd-sub-013'));
 const fetchSite = globalThis.fetch.bind(globalThis);
 globalThis.fetch = (input, init) => {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-  const at = url.indexOf('/neuroatlas/diffusion/');
-  return fetchSite(
-    at < 0 ? input : diffusionRoot + url.slice(at + '/neuroatlas/diffusion/'.length),
-    init,
-  );
+  const at = url.indexOf('/diffusion/');
+  return fetchSite(at < 0 ? input : diffusionRoot + url.slice(at + '/diffusion/'.length), init);
 };
 
 // Booting the engine parses 35 MB of GLB on a software GL context. The rest of the engine contract runs

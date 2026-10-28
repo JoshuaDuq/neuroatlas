@@ -16,14 +16,14 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     // The trailing slash matters: relative URLs in the journeys resolve under the app.
-    baseURL: `${origin}/neuroatlas/`,
+    baseURL: `${origin}/`,
     // Software WebGL, as in the browser tests (vitest.config.ts).
     launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
     trace: 'retain-on-failure',
   },
   webServer: {
     command: 'node e2e/serve-site.mjs',
-    url: `${origin}/neuroatlas/`,
+    url: `${origin}/`,
     reuseExistingServer: !process.env.CI,
   },
 });

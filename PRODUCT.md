@@ -40,9 +40,10 @@ traced from its surfaces, solid behind a coronal cut and outlined in front. The
 user requested a clean, clinical, professional interface and selected a light
 clinical workspace.
 
-The planned domain is planumbrain.com. Until it is set up, the site stays at
-https://joshuaduq.github.io/neuroatlas/, which a grant proposal cites and must
-keep resolving; the repository therefore stays named `neuroatlas`.
+The custom domain is planumatlas.com. The former address,
+https://joshuaduq.github.io/neuroatlas/, is cited by a grant proposal and must
+keep resolving through GitHub Pages’ custom-domain redirect; the repository
+therefore stays named `neuroatlas`.
 
 ## Evidence on Hand
 

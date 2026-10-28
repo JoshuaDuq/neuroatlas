@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://joshuaduq.github.io/neuroatlas/sitemap.xml
+Sitemap: https://planumatlas.com/sitemap.xml

@@ -260,7 +260,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefix web
 
-      # The server (web/e2e/serve-site.mjs) serves web/dist at /neuroatlas/, as Pages does.
+      # The server (web/e2e/serve-site.mjs) serves web/dist at /, as the custom domain does.
       - name: Build the site
         run: npm run build --prefix web
 

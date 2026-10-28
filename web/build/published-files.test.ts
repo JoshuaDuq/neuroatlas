@@ -62,7 +62,7 @@ describe('the version maps the build writes', () => {
     const map = JSON.parse(worker.match(/^const PUBLISHED = (.*);$/m)![1]!);
     expect(Object.keys(map)).toEqual(['base', 'files', 'gunzipped']);
     expect(map).toEqual({
-      base: '/neuroatlas/',
+      base: '/',
       files: FILE_VERSIONS,
       gunzipped: { [FIXTURE_GZ.path]: FIXTURE_GZ.contentsVersion },
     });
@@ -91,7 +91,7 @@ describe('the version maps the build writes', () => {
       },
     };
     expect(workerVersions(published)).toEqual({
-      base: '/neuroatlas/',
+      base: '/',
       files: { 'models/a.glb': '0123456789abcdef', 'diffusion/b.trk.gz': 'fedcba9876543210' },
       gunzipped: { 'diffusion/b.trk.gz': 'aaaaaaaaaaaaaaaa' },
     });
@@ -117,12 +117,12 @@ describe('the head script the build injects', () => {
     expect(tags).toHaveLength(1);
     expect(tags[0]).toMatchObject({ tag: 'script', injectTo: 'head' });
     expect(tags[0]!.children).not.toMatch(/__PUBLISHED_VERSIONS__|__ASSET_BASE__/);
-    expect(tags[0]!.children).toContain('var root = "/neuroatlas/";');
+    expect(tags[0]!.children).toContain('var root = "/";');
     expect(tags[0]!.children).toContain('"models/anatomies.json":"c24aea467c0bc797"');
   });
 
-  it('BUILD-01 serves assets from /neuroatlas/', () => {
-    expect(ASSET_BASE).toBe('/neuroatlas/');
+  it('BUILD-01 serves assets from /', () => {
+    expect(ASSET_BASE).toBe('/');
   });
 });
 

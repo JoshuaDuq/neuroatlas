@@ -1,4 +1,4 @@
-// Serves the built site (`npm run build` in web/, into web/dist/) at /neuroatlas/, the way GitHub
+// Serves the built site (`npm run build` in web/, into web/dist/) at /, the way GitHub
 // Pages does.
 // Not `vite preview`, which sets different headers and answers unknown paths with index.html.
 import { createReadStream } from 'node:fs';
@@ -8,7 +8,7 @@ import { extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const site = fileURLToPath(new URL('../dist/', import.meta.url));
-const base = '/neuroatlas/';
+const base = '/';
 const port = Number(process.env.PORT ?? 4173);
 
 const types = {
