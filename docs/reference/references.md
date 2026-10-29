@@ -80,9 +80,9 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 | `neuropsych-domains.json`, area scores | Neurosynth | ODbL 1.0 |
 | NextBrain-derived files | FreeSurfer 8.2 | None named beyond FreeSurfer's |
 | `spinal-cord.glb` | PAM50 (Spinal Cord Toolbox) on CDMD's cord | MIT |
-| Viewer and pipeline code | This repository | MIT ([`LICENSE`](https://github.com/JoshuaDuq/neuroatlas/blob/main/LICENSE)) |
+| Viewer and pipeline code | This repository | AGPL-3.0-or-later ([`LICENSE`](https://github.com/JoshuaDuq/neuroatlas/blob/main/LICENSE), [`NOTICE`](https://github.com/JoshuaDuq/neuroatlas/blob/main/NOTICE)) |
 
-The MIT licence covers code only, not data.
+The AGPL covers code only, not data. Anyone who runs a modified version for others, including as a website, must offer them its source. Code committed before 29 October 2026 was published under the MIT License, and copies obtained under it keep those terms.
 
 ### FreeSurfer Software License (`fsaverage`)
 
