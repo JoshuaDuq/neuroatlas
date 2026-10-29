@@ -321,3 +321,70 @@ test('a moving camera draws every third point, the length filter included, and r
   assert.deepEqual(drawn(second.id), [0, 1, 1, 2, 3, 4]);
   viewer.dispose();
 });
+
+test('a lesion shows exactly its counted lines through the scanner transform, then restores ordinary tracts', async () => {
+  const loadTract = vi.fn<TractLoader>(async () => decoded());
+  const viewer = createNativeTractViewer(catalog, () => {}, loadTract);
+  await viewer.loadBundle(second);
+  viewer.setMinimum(20);
+  const transform = createReferenceTransform(
+    readRepoJson<{ scanner_ras_to_surface_ras: number[][] }>(
+      `public/diffusion/${catalog.reference_space}`,
+    ).scanner_ras_to_surface_ras,
+  );
+  const surface = new Vector3(0, 0, 0).applyMatrix4(transform);
+  const sphere = {
+    centre: [surface.x * 1000, -surface.z * 1000, surface.y * 1000] as const,
+    radius: 1,
+  };
+  await viewer.showLesionTract(first, sphere);
+  const lines = viewer.group.getObjectByName(first.id) as LineSegments;
+  const other = viewer.group.getObjectByName(second.id) as LineSegments;
+  assert.equal(lines.visible, true);
+  assert.equal(other.visible, false);
+  assert.deepEqual(
+    Array.from(lines.geometry.index!.array.slice(0, lines.geometry.drawRange.count)),
+    [0, 1, 1, 2],
+  );
+  assert.deepEqual(viewer.group.matrix.elements, transform.elements);
+  assert.equal(viewer.group.children.length, 2, 'does not load the outline or initial bundles');
+  viewer.setMotion(true);
+  assert.deepEqual(
+    Array.from(lines.geometry.index!.array.slice(0, lines.geometry.drawRange.count)),
+    [0, 2],
+  );
+  viewer.setMinimum(25);
+  assert.equal(lines.geometry.drawRange.count, 2, 'minimum length does not remove counted lines');
+  viewer.clearLesionTract();
+  assert.equal(lines.visible, false, 'a bundle loaded only for the lesion stays off afterward');
+  assert.equal(other.visible, true);
+  assert.deepEqual(
+    Array.from(other.geometry.index!.array.slice(0, other.geometry.drawRange.count)),
+    [3, 4],
+  );
+  viewer.dispose();
+});
+
+test('clearing or replacing a lesion selection prevents late bundles becoming visible', async () => {
+  let release!: (value: LoadedTract) => void;
+  const viewer = createNativeTractViewer(
+    catalog,
+    () => {},
+    (bundle) =>
+      bundle.file === first.file
+        ? new Promise((resolve) => {
+            release = resolve;
+          })
+        : Promise.resolve(decoded()),
+  );
+  const stale = viewer.showLesionTract(first, { centre: [0, 0, 0], radius: 100 });
+  await vi.waitFor(() => assert.ok(release));
+  await viewer.showLesionTract(second, { centre: [0, 0, 0], radius: 100 });
+  release(decoded());
+  await stale;
+  assert.equal(viewer.group.getObjectByName(first.id)!.visible, false);
+  assert.equal(viewer.group.getObjectByName(second.id)!.visible, true);
+  viewer.clearLesionTract();
+  assert.equal(viewer.anyVisible, false);
+  viewer.dispose();
+});

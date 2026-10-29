@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { flushSync } from 'svelte';
 import { FINDING_COLORS } from '../core/clinical/catalog.ts';
 import type {
@@ -52,6 +52,13 @@ const associations = [
 function heldLesion() {
   const pending: { sphere: LesionSphere; settle: (value: LesionMeasurement) => void }[] = [];
   const counts: { sphere: LesionSphere; settle: (value: TractCrossing[]) => void }[] = [];
+  const views: {
+    id: string;
+    sphere: LesionSphere;
+    settle: () => void;
+    reject: (error: Error) => void;
+  }[] = [];
+  const clearTract = vi.fn();
   const shown: (LesionSphere | null)[] = [];
   const placing: boolean[] = [];
   const lesion: EngineLesion = {
@@ -59,9 +66,19 @@ function heldLesion() {
     setPlacing: (next) => void placing.push(next),
     measure: (sphere) => new Promise((settle) => pending.push({ sphere, settle })),
     tractBundles: () => ['af-left'],
+    showTract: (id, sphere) =>
+      new Promise((settle, reject) => views.push({ id, sphere, settle, reject })),
+    clearTract,
     measureTracts: (sphere) => new Promise((settle) => counts.push({ sphere, settle })),
   };
-  return { lesion, pending, counts, shown, placing };
+  const cortex = {
+    opacity: 1,
+    seeThrough: 0.3,
+    setOpacity(next: number) {
+      cortex.opacity = next;
+    },
+  };
+  return { lesion, pending, counts, shown, placing, views, clearTract, cortex };
 }
 
 let stop = () => {};
@@ -72,6 +89,7 @@ function build(held = heldLesion()) {
   stop = $effect.root(() => {
     store = createLesionStore({
       lesion: held.lesion,
+      cortex: held.cortex,
       associations,
       domains,
       deficitGroup: () => 'language-number',
@@ -192,4 +210,111 @@ test('the engine places on a click only while the reader is placing', () => {
   store.setPlacing(false);
   flushSync();
   expect(placing).toEqual([false, true, false]);
+});
+
+test('selected streamlines follow the sphere and ignore outdated results after another selection or clear', async () => {
+  const { store, views, clearTract } = build();
+  store.place([0, 0, 0]);
+  store.showTract('af-left');
+  expect(store.selectedTract).toBe('af-left');
+  expect(store.tractView.status).toBe('loading');
+  store.previewRadius(20);
+  expect(views.at(-1)!.sphere.radius).toBe(20);
+  store.showTract('cst-left');
+  views.at(-1)!.settle();
+  await expect.poll(() => store.tractView.status).toBe('ready');
+  views[0]!.reject(new Error('stale failure'));
+  await Promise.resolve();
+  expect(store.selectedTract).toBe('cst-left');
+  expect(store.tractView.status).toBe('ready');
+  store.clearTract();
+  views[1]!.settle();
+  await Promise.resolve();
+  expect(store.selectedTract).toBe(null);
+  expect(store.tractView.status).toBe('idle');
+  expect(clearTract).toHaveBeenCalledOnce();
+});
+
+test('a placement keeps the selected bundle only while the sphere still reaches its side', () => {
+  const held = heldLesion();
+  held.lesion.tractBundles = (sphere) => (sphere.centre[0] < 0 ? ['af-left'] : []);
+  const { store, views, clearTract } = build(held);
+  store.place([-30, -10, 20]);
+  store.showTract('af-left');
+  store.place([-20, -10, 20]);
+  expect(views.map(({ id, sphere }) => [id, sphere.centre])).toEqual([
+    ['af-left', [-30, -10, 20]],
+    ['af-left', [-20, -10, 20]],
+  ]);
+  expect(clearTract).not.toHaveBeenCalled();
+  store.place([30, -10, 20]);
+  expect(views).toHaveLength(2);
+  expect(clearTract).toHaveBeenCalledOnce();
+  expect(store.selectedTract).toBe(null);
+  expect(store.tractView.status).toBe('idle');
+});
+
+test('removing the lesion gives the tracts back', () => {
+  const { store, clearTract } = build();
+  store.place([-30, -10, 20]);
+  store.showTract('af-left');
+  store.remove();
+  expect(clearTract).toHaveBeenCalledOnce();
+  expect(store.selectedTract).toBe(null);
+});
+
+test('showing streamlines makes an opaque cortex see-through until they are cleared', () => {
+  const { store, cortex } = build();
+  store.place([-30, -10, 20]);
+  store.showTract('af-left');
+  expect(cortex.opacity).toBe(0.3);
+  store.clearTract();
+  expect(cortex.opacity).toBe(1);
+});
+
+test('an opacity the reader chose meanwhile, or before, is kept', () => {
+  const { store, cortex } = build();
+  store.place([-30, -10, 20]);
+  store.showTract('af-left');
+  cortex.setOpacity(0.6);
+  store.clearTract();
+  expect(cortex.opacity).toBe(0.6);
+  store.showTract('af-left');
+  expect(cortex.opacity).toBe(0.6);
+  store.clearTract();
+  expect(cortex.opacity).toBe(0.6);
+});
+
+test('a recount that no longer crosses the drawn bundle clears it', async () => {
+  const { store, counts, clearTract } = build();
+  store.place([-30, -10, 20]);
+  store.countTracts();
+  counts[0]!.settle([{ id: 'af-left', crossing: 3, total: 9 }]);
+  await expect.poll(() => store.counted.status).toBe('ready');
+  store.showTract('af-left');
+  store.commitRadius(4);
+  counts.at(-1)!.settle([{ id: 'af-left', crossing: 0, total: 9 }]);
+  await expect.poll(() => store.selectedTract).toBe(null);
+  expect(clearTract).toHaveBeenCalledOnce();
+});
+
+test('a link restores the lesion, its colouring, and the bundle it draws, counted so its row shows', async () => {
+  const { store, pending, counts, views, cortex } = build();
+  const sphere = { centre: [-30, -10, 20] as const, radius: 12 };
+  store.restore(sphere, 'functions', 'af-left');
+  expect([store.sphere, store.radius, store.mode]).toEqual([sphere, 12, 'functions']);
+  expect(pending.map((entry) => entry.sphere)).toEqual([sphere]);
+  expect(counts.map((entry) => entry.sphere)).toEqual([sphere]);
+  expect(views.map(({ id, sphere }) => [id, sphere])).toEqual([['af-left', sphere]]);
+  expect([store.selectedTract, store.heldOpacity, cortex.opacity]).toEqual(['af-left', 1, 0.3]);
+});
+
+test('a link without a bundle clears the one drawn and counts nothing', () => {
+  const { store, counts, clearTract } = build();
+  store.place([-30, -10, 20]);
+  store.showTract('af-left');
+  store.restore({ centre: [-20, 0, 0], radius: 8 }, 'lesion', null);
+  expect(clearTract).toHaveBeenCalledOnce();
+  expect(store.selectedTract).toBe(null);
+  expect(counts).toHaveLength(0);
 });

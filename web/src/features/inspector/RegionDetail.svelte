@@ -17,6 +17,7 @@
   import type { Snippet } from 'svelte';
   import type {
     ArterialTerritories,
+    CerebellarFunctions,
     Explorer,
     Language,
     Region,
@@ -41,6 +42,7 @@
   import NetworkSection from './NetworkSection.svelte';
   import ReceptorSection from './ReceptorSection.svelte';
   import SupplySection from './SupplySection.svelte';
+  import CerebellarFunctionsSection from './CerebellarFunctionsSection.svelte';
   import RegionFacts from './RegionFacts.svelte';
   import './inspector.css';
 
@@ -69,6 +71,8 @@
     receptors: ReceptorFingerprints | null;
     /** The manifest's arterial territories, for each region's typical supply. */
     territories?: ArterialTerritories | null;
+    /** The manifest's functional cerebellar atlas, for each lobule's shares. */
+    cerebellarFunctions?: CerebellarFunctions | null;
     /** Takes no arguments: I1 wires `focusSelection()`, which frames with an animation (only the F key is immediate). */
     onfocus: () => void;
     /** Takes no arguments: I1 wires `isolateSelection`. */
@@ -105,6 +109,7 @@
     boundaryCertainty,
     receptors,
     territories = null,
+    cerebellarFunctions = null,
     onfocus,
     onisolate,
     onhide,
@@ -189,6 +194,7 @@
   <FunctionalSection {region} {lang} {functionalRegions} />
   <DomainSection {region} {lang} {domains} />
   <NetworkSection {region} {lang} colors={networkColors} {cabNp} />
+  <CerebellarFunctionsSection {region} {lang} functions={cerebellarFunctions} />
   <SupplySection {region} {lang} {territories} />
 </div>
 {@render relatedDeficits?.()}

@@ -5,8 +5,8 @@
 <script lang="ts">
   import { formatRas, withUnit } from '../../lib/core/format.ts';
   import { t } from '../../lib/core/i18n/index.ts';
-  import { LESION_RADIUS } from '../../lib/state/lesion.svelte.ts';
   import type { LesionStore } from '../../lib/state/lesion.svelte.ts';
+  import { LESION_RADIUS } from '../../lib/types/constants.ts';
   import type { Language } from '../../lib/types/index.ts';
   import RangeField from '../../lib/ui/RangeField.svelte';
 

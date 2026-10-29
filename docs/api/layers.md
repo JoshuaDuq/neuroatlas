@@ -58,9 +58,27 @@ This brain's cervical cord: SCT's segmentation, with PAM50's tracts and grey mat
 
 ## `brain_model.layers.comparison`
 
-Area-conserving Destrieux × HCP-MMP intersections on the pial tessellation. Runs alone with `--anatomy`.
+Area-conserving intersections between each pair of configured cortical atlases on the pial tessellation. Runs alone with `--anatomy`.
 
 ```{eval-rst}
 .. automodule:: brain_model.layers.comparison
+   :members:
+```
+
+## `brain_model.layers.arterial_territories`
+
+The Liu et al. (2023) arterial territory atlas, registered from its template: its regions, cut labels, per-vertex territories, region shares and checks.
+
+```{eval-rst}
+.. automodule:: brain_model.layers.arterial_territories
+   :members:
+```
+
+## `brain_model.layers.cerebellar_functions`
+
+The Nettekoven et al. (2024) functional cerebellar atlas, registered from the SUIT template and kept to the cerebellar cortex: its regions, cut labels, lobule shares and checks.
+
+```{eval-rst}
+.. automodule:: brain_model.layers.cerebellar_functions
    :members:
 ```

@@ -13,6 +13,7 @@
     lang = 'en',
     outlineAvailable = true,
     declared = true,
+    pairs = false,
   }: {
     engine: Pick<Engine, 'comparison'>;
     regionId?: string | null;
@@ -20,6 +21,8 @@
     outlineAvailable?: boolean;
     /** The manifest declares an atlas comparison. */
     declared?: boolean;
+    /** It declares all three pairs, as published, not only the first. */
+    pairs?: boolean;
   } = $props();
 
   const regions = manifest.regions as unknown as Region[];
@@ -28,6 +31,7 @@
     anatomy: manifest.anatomy,
     atlases: manifest.atlases,
     ...(declared && { atlas_comparison: manifest.atlas_comparison }),
+    ...(pairs && { atlas_comparisons: manifest.atlas_comparisons }),
   } as unknown as ComparisonManifest);
   const region = $derived(
     regionId ? (regions.find((entry) => entry.id === regionId) ?? null) : null,

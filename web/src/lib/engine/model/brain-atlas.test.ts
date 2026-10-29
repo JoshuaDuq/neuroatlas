@@ -105,6 +105,7 @@ const regions = [
     hemisphere: 'left',
     atlas: 'a',
     source_label_id: 0,
+    source_name: 'Unknown',
     kind: 'non-region',
   },
   {
@@ -583,7 +584,7 @@ test('hiding an isolated region releases isolation and undo restores it', async 
   atlas.hideRegions(['a-left']);
   assert.equal(atlas.state.isolatedRegion, null);
   await atlas.ensureEnvelopes();
-  assert.equal(atlas.visibleMeshes.length, 4);
+  assert.equal(atlas.visibleMeshes.length, 3);
   atlas.undoDissection();
   assert.equal(atlas.state.isolatedRegion, 'a-left');
   assert.equal(atlas.state.selectedRegion!.id, 'a-left');
@@ -662,7 +663,7 @@ test('switches one atlas at a time, caches geometry, and keeps shared anatomy', 
   const { atlas, loads } = fixture();
   await atlas.initialize('a');
   assert.equal(atlas.state.atlas, 'a');
-  assert.equal(atlas.visibleMeshes.length, 4);
+  assert.equal(atlas.visibleMeshes.length, 3);
   await atlas.setAtlas('b');
   assert.equal(atlas.visibleMeshes.length, 2);
   assert.ok(atlas.visibleMeshes.some((mesh) => mesh.userData['region_id'] === 'stem'));
@@ -913,7 +914,7 @@ test('isolation, visibility and reset preserve coordinates and restore the full 
   atlas.isolate();
   assert.deepEqual(atlas.visibleMeshes, [mesh]);
   atlas.reset();
-  assert.equal(atlas.visibleMeshes.length, 4);
+  assert.equal(atlas.visibleMeshes.length, 3);
   assert.ok(mesh!.position.equals(position));
   atlas.setCortexOpacity(0.3);
   assert.equal(mesh!.material.opacity, 0.3);
@@ -998,15 +999,15 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
     dissectionCanUndo: false,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
-  assert.equal(atlas.state.visibleMeshCount, 4);
-
-  atlas.setInternalVisible(false);
-  assert.equal(atlas.settings.internalVisible, false);
   assert.equal(atlas.state.visibleMeshCount, 3);
 
-  atlas.setInternalVisible(true);
-  assert.equal(atlas.settings.internalVisible, true);
-  assert.equal(atlas.state.visibleMeshCount, 4);
+  atlas.setCortexVisible(false);
+  assert.equal(atlas.settings.cortexVisible, false);
+  assert.equal(atlas.state.visibleMeshCount, 1);
+
+  atlas.setCortexVisible(true);
+  assert.equal(atlas.settings.cortexVisible, true);
+  assert.equal(atlas.state.visibleMeshCount, 3);
   atlas.dispose();
 });
 
@@ -1087,7 +1088,7 @@ test('isolation can be released without disturbing any other setting', async () 
   assert.equal(atlas.state.isolatedRegion, null);
   assert.equal(atlas.state.selectedRegion!.id, 'a-right', 'selection survives');
   assert.equal(atlas.state.cortexOpacity, 0.5, 'other settings are untouched');
-  assert.equal(atlas.visibleMeshes.length, 4);
+  assert.equal(atlas.visibleMeshes.length, 3);
   atlas.dispose();
 });
 
@@ -1122,6 +1123,8 @@ test('picking stops at the first surface and still reaches past a clipped one', 
   const { Plane } = await import('three');
   const { atlas } = fixture();
   await atlas.initialize('a');
+  // The medial wall is drawn only while the internal anatomy is hidden.
+  atlas.setInternalVisible(false);
   const far = atlas.visibleMeshes.find((mesh) => mesh.userData['region_id'] === 'a-wall');
   const kept = atlas.visibleMeshes.find((mesh) => mesh.userData['region_id'] === 'a-right');
   let farCasts = 0;
@@ -1139,7 +1142,7 @@ test('picking stops at the first surface and still reaches past a clipped one', 
   const ray = new Raycaster(new Vector3(-0.1, 0, 0), new Vector3(1, 0, 0));
   ray.firstHitOnly = true;
   const nearest = atlas.pick(ray);
-  assert.ok(nearest!.id === 'a-left' || nearest!.id === 'stem');
+  assert.equal(nearest!.id, 'a-left');
   assert.equal(farCasts, 0, 'a box behind the hit is not tested');
   assert.equal(keptCasts, 0, 'a box behind the hit is not tested');
 

@@ -31,6 +31,9 @@ export const en = {
     step: 'circuit step',
     lang: 'language',
     hidden: 'hidden parts',
+    lesion: 'lesion',
+    lesionmode: 'lesion colouring',
+    lesiontract: 'drawn tract',
   },
 };
 
@@ -66,5 +69,8 @@ export const fr: typeof en = {
     step: 'étape du circuit',
     lang: 'langue',
     hidden: 'parties masquées',
+    lesion: 'lésion',
+    lesionmode: 'coloration de la lésion',
+    lesiontract: 'faisceau tracé',
   },
 };

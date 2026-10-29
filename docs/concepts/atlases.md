@@ -7,6 +7,7 @@ Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manif
 | Destrieux (`aparc.a2009s`) | 148 parcels | Subject `.annot` | Native; no projection |
 | HCP-MMP1.0 | 360 areas | `fs_LR` → `fsaverage` | Nearest vertex on registered spheres |
 | Julich-Brain 3.1 | 278 areas | Colin27 → `fsaverage` | Nearest vertex on registered spheres |
+| Schaefer 2018 | 400 parcels | `fsaverage` (1,489 participants) | Nearest vertex on registered spheres |
 | Teaching set | 106 solids | NextBrain, aseg and CerebNet unions | Bounded smoothing |
 | FreeSurfer aseg | 32 structures | `aseg.mgz` | Marching cubes, bounded smoothing |
 | NextBrain | 514 labels, 292 meshed | Subject segmentation at 0.4 mm | Native |
@@ -18,6 +19,7 @@ Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manif
 | Neuropsychological functions | 70 functions | Neurosynth 7 | Per HCP-MMP area and aseg structure |
 | Receptor fingerprints | 36 fingerprints, 94 regions | Zilles and Palomero-Gallagher, EBRAINS | By the name of the area or structure measured |
 | Arterial territories | 15 branches per hemisphere | Liu et al. 2023 (1,298 stroke patients) | Template registered with SynthMorph; nearest neighbour |
+| Functional cerebellar regions | 16 regions per hemisphere, 4 domains | Nettekoven et al. 2024 (seven task fMRI datasets) | SUIT template registered with SynthMorph; nearest neighbour, kept to the cerebellar cortex |
 
 ## Destrieux
 
@@ -33,9 +35,15 @@ Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manif
 
 About a quarter of each hemisphere (24% on CDMD) is in seven gap maps, cortex the atlas has not yet mapped, mostly prefrontal and temporo-parietal. They and the two medial masks are unassigned, like the medial wall. Cut faces take the label of the nearest pial or white vertex inside the ribbon, as for HCP-MMP. The atlas is CC BY-NC-SA 4.0: non-commercial, shared alike.
 
-## Comparing Destrieux and HCP-MMP
+## Schaefer 2018
 
-The region detail lists overlaps with the other atlas. Each triangle gives one third of its area to each corner's cell, the same convention as the boundaries above, and joint label pairs sum those cells in float64 mm². A share is the pair area over the selected region's **whole** pial area, unassigned cells included, so the two directions differ: CDMD's left precentral gyrus shares about 447.8 mm² with area 4, 20.6% of the gyrus and 31.6% of area 4. Nothing is dropped or renormalised. Overlap is spatial, not functional equivalence.
+200 parcels per hemisphere from resting-state functional connectivity (Schaefer et al. 2018), estimated from 1,489 participants and published on `fsaverage`. They reach the subject like HCP-MMP1.0, by the nearest `fsaverage` vertex on the registered spheres; on CDMD every parcel survives the transfer, and no parcel leaves more than 1.6% of its area in a stray fragment.
+
+Parcels keep their published 7-network colours and group by that Yeo network. The 17-network order divides the same 400 parcels, and its names say where 175 of each hemisphere's 200 lie, where the 7-network names locate no visual or somatomotor parcel; each parcel is named from it, with CBIG's abbreviation table spelled out, for example *Default mode A, dorsal prefrontal cortex 1*. The build pairs the two orders on `fsaverage` and fails unless every parcel pairs one to one. The parcels are a group estimate registered onto this brain, not its measured function. Licensed MIT.
+
+## Comparing cortical atlases
+
+The region detail lists overlaps with another cortical atlas: each pair of Destrieux, HCP-MMP, Julich-Brain and Schaefer is published as its own file and loaded when first chosen. Each triangle gives one third of its area to each corner's cell, the same convention as the boundaries above, and joint label pairs sum those cells in float64 mm². A share is the pair area over the selected region's **whole** pial area, unassigned cells included, so the two directions differ: CDMD's left precentral gyrus shares about 447.8 mm² with area 4, 20.6% of the gyrus and 31.6% of area 4. Nothing is dropped or renormalised. Julich-Brain's gap maps and medial masks, and Schaefer's medial wall, count as unassigned, so on CDMD 34 of the 148 Destrieux regions lie mostly in Julich-Brain's unassigned cortex. Overlap is spatial, not functional equivalence, and carries no measurement from one atlas's region to another's.
 
 ## Internal anatomy
 
@@ -107,6 +115,22 @@ The atlas's ventricle label is a coarse mask that spills into periventricular wh
 - **Two levels.** Fifteen branches per hemisphere, each under one of four major arteries: anterior, middle and posterior cerebral, and vertebro-basilar. The atlas places the anterior choroidal and thalamoperforating territory under the posterior circulation, and Planum keeps it there.
 - **Label table.** The published table repeats three left codes for right branches and swaps the PCA sides at level two. The volume itself numbers each branch's left side odd and its right side even, which the script checks by position, so names and levels come from the label values, not the codes.
 - **Limits.** Typical territories, not this brain's vessels: collateral flow and variants such as a fetal posterior communicating artery move real territories by centimetres. The ACA rests on 29 cases, and the medial lenticulostriate and anterior thalamoperforating territories on anatomical knowledge. Border-zone probabilities are not published here. Licensed CC BY-SA 4.0.
+
+## Functional cerebellar regions
+
+The symmetric 32-region map of Nettekoven et al. (2024): a group atlas fused from seven task-based fMRI datasets, with 16 regions per hemisphere in four domains, motor, action, multiple demand, and social, linguistic and spatial. The atlas, the SUIT template and SUIT's own lobules (Diedrichsen et al. 2009) come from the authors' atlas collection, pinned by commit and checksum. `scripts/register_cerebellar_functions.py` registers the SUIT template to CDMD's skull-stripped T1, kept to aseg's infratentorial compartment as SUIT normalisation does, with SynthMorph (joint affine and deformable). Both atlases are carried across by nearest neighbour; the functional atlas is kept to aseg's cerebellar cortex. SUIT's lobules, carried by the same warp, score the registration against CDMD's own CerebNet lobules:
+
+| Check | Limit | CDMD |
+| :--- | :--- | :--- |
+| Lobule Dice with CerebNet, mean of 24 shared units | ≥ 0.6 | 0.65 (0.49 to 0.81) |
+| Cerebellar cortex the atlas reaches | ≥ 95% | 98.5% |
+| Labelled cortex on its own side | ≥ 97% | 99.5% |
+
+- **Header trap.** SUIT stores its label images LAS beside its RAS template on the same box, and SynthMorph's `apply` reads an image on the template's voxel grid: read directly, the hemispheres swap (2.5% on their own side). The script resamples each label image onto the template's grid by world position first and checks that every label keeps its place.
+- **Cut labels.** The Cerebellar functions cut labels give each cerebellar cortex voxel its region in the atlas's own colours, which group regions by functional similarity; other tissue keeps its FreeSurfer label. S3 and S4 are nearly as pale as FreeSurfer's cerebellar white matter.
+- **Shares.** Each cerebellar lobule, and aseg's cerebellar cortex, carries its share in each region and, counted separately, the share in none, by its voxels. Shares under 1% are left out of the list but not counted as unassigned. Left lobule V is about half M3, the region for movements of the hand on its own side.
+- **Names.** A region keeps its code with what holds on both sides of a symmetric atlas: M1 oculomotor, M2 tongue, M3 hand, M4 lower body, and the domain for the rest. What the paper found on one side only, such as right S1's language responses, stays in its description.
+- **Limits.** A group map, not this brain's measured function; the authors show that an individual's own localizer data place functional borders better. Registration from a group template places lobule borders a few millimetres off. Licensed CC BY-NC 3.0.
 
 ## Neuropsychological functions
 

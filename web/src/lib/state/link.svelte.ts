@@ -1,5 +1,6 @@
 import { createLinkWriter } from '../core/state/link-writer.ts';
 import type { Engine } from '../engine/api.ts';
+import type { LesionStore } from './lesion.svelte.ts';
 import type { ViewStore } from './view.svelte.ts';
 
 /**
@@ -13,17 +14,23 @@ import type { ViewStore } from './view.svelte.ts';
 export function createLink({
   engine,
   view,
+  lesion,
   write,
 }: {
   engine: Pick<Engine, 'on'>;
   view: ViewStore;
+  /** The placed lesion, which the link carries beside the view. */
+  lesion: Pick<LesionStore, 'sphere' | 'mode' | 'selectedTract'>;
   write: () => void;
 }) {
   const writer = createLinkWriter(write);
   $effect(() => engine.on('cameraSettled', () => writer.schedule(0)));
   $effect(() => {
-    // The view is this effect's whole input; the writer ignores its value.
+    // The view and the lesion are this effect's whole input; the writer ignores their values.
     void view.current;
+    void lesion.sphere;
+    void lesion.mode;
+    void lesion.selectedTract;
     writer.schedule();
     return writer.cancel;
   });

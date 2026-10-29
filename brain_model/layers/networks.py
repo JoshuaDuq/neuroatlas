@@ -1,6 +1,7 @@
 """Yeo resting-state networks, carried as a surface layer rather than an atlas."""
 
 import numpy as np
+from nibabel.freesurfer.io import read_annot
 
 from ..sources import declares
 
@@ -90,6 +91,30 @@ def verify_palette(ctab, names, maximum_jitter):
                 f"{name}: {drift} from the published {network} colour, "
                 f"more than the {maximum_jitter} Schaefer's jitter explains"
             )
+
+
+def seventeen_network_names(labels, names, labels_17, names_17):
+    """Each 7-network parcel's name in the 17-network order of the same 400 parcels.
+
+    The 17-network names say where most parcels lie; the 7-network ones leave
+    every visual and somatomotor parcel unlocated.
+    """
+    pairs = np.unique(np.column_stack([labels, labels_17]), axis=0)
+    if len(np.unique(pairs[:, 0])) != len(pairs) or len(np.unique(pairs[:, 1])) != len(pairs):
+        raise ValueError("The 7- and 17-network orders do not pair their parcels one to one")
+    if pairs.min() < 0:
+        raise ValueError("Every vertex must carry a Schaefer parcel label")
+    return {
+        names[seven].decode(): names_17[seventeen].decode() for seven, seventeen in pairs
+    }
+
+
+def published_seventeen_network_names(config, atlas, hemisphere):
+    """`seventeen_network_names` read from the published files the atlas was projected from."""
+    label = config["anatomy"].get("hcp_source_directory", config["source_directory"]) / "label"
+    labels, _, names = read_annot(label / f"{hemisphere}.{atlas['annotation']}.annot")
+    labels_17, _, names_17 = read_annot(label / f"{hemisphere}.{atlas['names_from']}.annot")
+    return seventeen_network_names(labels, names, labels_17, names_17)
 
 
 def annotation_path(directory, hemisphere):

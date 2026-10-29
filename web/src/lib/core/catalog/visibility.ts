@@ -14,6 +14,14 @@ import { labelOf } from './labels.ts';
 const isSurface = (region: Region) => region.kind === 'cortex' || region.kind === 'non-region';
 const isStructure = (region: Region) => region.kind === 'structure';
 const isTissue = (region: Region) => region.kind === 'tissue-region';
+// The build calls a label no area either the medial wall or, in Julich-Brain, a gap map: cortex
+// not yet mapped. The wall closes the surface across the corpus callosum, ventricles and
+// thalamus, so drawn with them it would cover real anatomy.
+const isMedialWall = (region: Region) => {
+  if (region.kind !== 'non-region') return false;
+  if (!region.source_name) throw new Error(`Non-region ${region.id} has no source name.`);
+  return !region.source_name.startsWith('GapMap-');
+};
 export const belongsToDetail = (region: Region, detail: string) =>
   region.supplemental === true || region.atlas === detail;
 // Gyral white matter is drawn on the white envelope's cut face, which the cortex controls hide.
@@ -48,6 +56,7 @@ export type HiddenReason =
   | 'hemisphere'
   | 'cortex-hidden'
   | 'internal-hidden'
+  | 'internal-shown'
   | 'spinal-cord-hidden'
   | 'removed'
   | 'isolated';
@@ -87,6 +96,7 @@ export function visibilityOf(region: Region, settings: DisplaySettings): Visibil
   if (isStructure(region) && settings.internalVisible === false) {
     return hidden('internal-hidden');
   }
+  if (isMedialWall(region) && settings.internalVisible !== false) return hidden('internal-shown');
   if (region.atlas === 'pam50' && settings.spinalCordVisible === false) {
     return hidden('spinal-cord-hidden');
   }

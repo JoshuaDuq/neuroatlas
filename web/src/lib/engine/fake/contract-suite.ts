@@ -477,16 +477,17 @@ export function defineEngineContract(
         assert.throws(() => engine.model.select(left.id), /not visible/);
       });
 
-      // Published CDMD, learning detail: 256 regions drawn, 150 of them cortex and 106 internal; a
-      // hemisphere shows its own and the midline.
+      // Published CDMD, learning detail: 254 regions drawn, 148 of them cortex and 106 internal; a
+      // hemisphere shows its own and the midline. The two medial walls stand in for the internal
+      // anatomy, so they are drawn only while it is hidden.
       it('draws the regions each hemisphere, cortex and internal setting shows', () => {
         const { engine, regions } = world();
         const { model } = engine;
         const drawn = () => [...regions.keys()].filter((id) => model.isRegionDrawn(id));
         const expected = {
-          both: { both: 256, cortex: 150, internal: 106, neither: 0 },
-          left: { both: 133, cortex: 75, internal: 58, neither: 0 },
-          right: { both: 133, cortex: 75, internal: 58, neither: 0 },
+          both: { both: 254, cortex: 150, internal: 106, neither: 0 },
+          left: { both: 132, cortex: 75, internal: 58, neither: 0 },
+          right: { both: 132, cortex: 75, internal: 58, neither: 0 },
         } as const;
         for (const hemisphere of ['both', 'left', 'right'] as const) {
           for (const [setting, cortex, internal] of [
@@ -543,7 +544,7 @@ export function defineEngineContract(
         model.clearIsolation();
         assert.equal(model.state.selectedRegion?.id, left.id, 'releasing keeps the selection');
         assert.equal(model.settings.cortexOpacity, 0.5, 'and every other setting');
-        assert.equal(model.state.visibleMeshCount, 256);
+        assert.equal(model.state.visibleMeshCount, 254);
         model.reset();
         model.setPaint(null);
         const releasers: [string, () => unknown][] = [

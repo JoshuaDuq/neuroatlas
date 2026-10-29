@@ -17,13 +17,15 @@
   "destrieux": "Atlas anatomique de Destrieux",
   "hcp-mmp": "Atlas multimodal HCP-MMP1.0",
   "julich": "Atlas cytoarchitectonique Julich-Brain",
+  "schaefer": "Parcellisation fonctionnelle Schaefer 2018",
   "learning": "Ensemble pédagogique : grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés",
   "aseg": "Segmentation sous-corticale FreeSurfer",
   "nextbrain": "Atlas histologique NextBrain",
   "cerebnet": "Lobules cérébelleux FastSurfer CerebNet",
   "wmparc": "Parcellisation de la substance blanche FreeSurfer",
   "pam50": "Atlas médullaire PAM50 sur cette moelle",
-  "arterial": "Atlas des territoires artériels (Liu et al. 2023)"
+  "arterial": "Atlas des territoires artériels (Liu et al. 2023)",
+  "nettekoven": "Atlas fonctionnel du cervelet (Nettekoven et al. 2024)"
  },
  "boundary": {
   "heading": "Certitude des limites",
@@ -214,6 +216,7 @@
    "[\"Alpha\"] → \"Recouvrement avec Alpha\"",
    "[\"\"] → \"Recouvrement avec \""
   ],
+  "partner": "Comparer avec",
   "denominator": "Parts de toute la surface piale de cette région.",
   "highlight": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Tracer le recouvrement avec Alpha, , Alpha de cette région\"",
@@ -240,7 +243,13 @@
   "exported": "Fichier CSV de la comparaison des atlas téléchargé.",
   "viewNote": "Désactivez les coupes pour tracer les recouvrements. Les mesures portent sur toute la région, y compris les parties masquées.",
   "methodHeading": "Méthode et sources",
-  "method": "Surface des triangles piaux originaux de ce sujet, avec les mêmes limites par milieux et centroïdes que dans le modèle. Les pourcentages incluent la surface non assignée et ne sont pas renormalisés. Les petits recouvrements restent dans le tableau et l’export. Les valeurs affichées sont arrondies<NNBSP>; le CSV conserve toute la précision. Les étiquettes HCP-MMP sont projetées depuis un atlas de groupe par les sphères recalées, sans mesure des limites chez cet individu. Il s’agit d’une correspondance spatiale, sans équivalence fonctionnelle."
+  "method": "Surface des triangles piaux originaux de ce sujet, avec les mêmes limites par milieux et centroïdes que dans le modèle. Les pourcentages incluent la surface non assignée et ne sont pas renormalisés. Les petits recouvrements restent dans le tableau et l’export. Les valeurs affichées sont arrondies<NNBSP>; le CSV conserve toute la précision.",
+  "projected": {
+   "hcp-mmp": "Les étiquettes HCP-MMP sont projetées depuis un atlas de groupe par les sphères recalées, sans mesure des limites chez cet individu.",
+   "julich": "Les aires de Julich-Brain sont projetées depuis une carte de probabilité maximale de groupe par les sphères recalées, sans mesure des limites chez cet individu<NNBSP>; ses cartes lacunaires, cortex non encore cartographié, comptent comme non assignées. Un recouvrement ne transfère pas les mesures de récepteurs d’une aire à une autre région.",
+   "schaefer": "Les parcelles de Schaefer sont une parcellisation de groupe au repos sur fsaverage, projetée par les sphères recalées, sans mesure des limites chez cet individu<NNBSP>; sa paroi médiane compte comme non assignée."
+  },
+  "correspondence": "Il s’agit d’une correspondance spatiale, sans équivalence fonctionnelle."
  },
  "cuts": {
   "cuttingPlane": "Plan de coupe",
@@ -308,10 +317,12 @@
   "domainsOtherLabels": "les fonctions neuropsychologiques ne colorent que les étiquettes HCP-MMP",
   "hcpDerived": "HCP dérivées",
   "julichDerived": "Julich-Brain dérivées",
+  "schaeferDerived": "Schaefer dérivées",
   "destrieuxNative": "Destrieux natives",
   "nextbrainWarped": "NextBrain recalées",
   "nextbrainSegmented": "NextBrain segmentées sur ce cerveau",
   "arterialRegistered": "territoires artériels typiques recalés sur ce cerveau",
+  "nettekovenRegistered": "régions fonctionnelles cérébelleuses de groupe recalées sur ce cerveau",
   "cutLabels": "Étiquettes de coupe"
  },
  "deficitKey": {
@@ -721,13 +732,15 @@
    "destrieux": "Destrieux",
    "hcp-mmp": "HCP-MMP",
    "julich": "Julich-Brain",
+   "schaefer": "Schaefer",
    "learning": "Ensemble pédagogique",
    "aseg": "FreeSurfer aseg",
    "nextbrain": "NextBrain",
    "cerebnet": "CerebNet",
    "wmparc": "wmparc",
    "pam50": "PAM50",
-   "arterial": "Territoires artériels"
+   "arterial": "Territoires artériels",
+   "nettekoven": "Fonctions cérébelleuses"
   },
   "subject": "Sujet",
   "atlas": "Atlas",
@@ -751,6 +764,7 @@
    "destrieux": "Régions des sillons et des gyrus, 74 par hémisphère",
    "hcp-mmp": "Aires multimodales, 180 par hémisphère (Glasser 2016)",
    "julich": "Aires cytoarchitectoniques issues de l’histologie, 139 par hémisphère (Amunts 2020)<NNBSP>; environ un quart du cortex n’est pas encore cartographié",
+   "schaefer": "Parcelles fonctionnelles de connectivité au repos, 200 par hémisphère, colorées par réseau de Yeo (Schaefer 2018)",
    "learning": "Grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés",
    "aseg": "Segmentation sous-corticale automatique standard de FreeSurfer",
    "nextbrain": "Atlas d’origine histologique, segmenté sur ce sujet à 0,4<NNBSP>mm"
@@ -852,6 +866,18 @@
    "[\"Alpha\"] → \"Non atteints<NNBSP>: Alpha\"",
    "[\"\"] → \"Non atteints<NNBSP>: \""
   ],
+  "tractsChoose": "Choisissez un faisceau pour n’afficher que ses trajectoires traversant la lésion.",
+  "showTract": [
+   "[\"Alpha\",\"\"] → \"Afficher les  trajectoires de Alpha traversant la lésion\"",
+   "[\"\",\"Alpha\"] → \"Afficher les Alpha trajectoires de  traversant la lésion\""
+  ],
+  "tractLoading": "Chargement du faisceau…",
+  "tractShown": [
+   "[\"Alpha\"] → \"Alpha<NNBSP>: trajectoires traversant la lésion affichées.\"",
+   "[\"\"] → \"<NNBSP>: trajectoires traversant la lésion affichées.\""
+  ],
+  "tractShowFailed": "Les trajectoires n’ont pas pu être affichées.",
+  "tractsCaveat": "Trajectoires reconstruites à partir de l’IRM de diffusion de ce cerveau, pas des axones<NNBSP>; une traversée n’est pas une mesure de déconnexion.",
   "noTracts": "Cette anatomie ne publie pas de faisceaux qui lui sont propres.",
   "findings": "Constats citant ces régions",
   "findingsNote": "Classés selon la part d’une région citée comprise dans la lésion. Un chevauchement avec une région citée, pas un déficit prédit.",
@@ -937,7 +963,10 @@
    "circuit": "circuit",
    "step": "étape du circuit",
    "lang": "langue",
-   "hidden": "parties masquées"
+   "hidden": "parties masquées",
+   "lesion": "lésion",
+   "lesionmode": "coloration de la lésion",
+   "lesiontract": "faisceau tracé"
   }
  },
  "menu": {
@@ -1188,6 +1217,15 @@
    "[\"\"] → \" ne se trouve dans aucun territoire de l’atlas.\""
   ],
   "caveat": "Territoires typiques, d’après la localisation des infarctus de 1<NNBSP>298 patients victimes d’AVC (Liu et al. 2023), recalés sur ce cerveau<NNBSP>: pas ses propres vaisseaux. La circulation collatérale et les variantes anatomiques déplacent les territoires réels de plusieurs centimètres."
+ },
+ "cerebellarFunctions": {
+  "heading": "Régions fonctionnelles (atlas de groupe)",
+  "basis": "Part des voxels de ce lobule dans chaque région fonctionnelle.",
+  "unassigned": [
+   "[\"Alpha\"] → \"Alpha ne se trouve dans aucune région que l’atlas trace sur ce cerveau.\"",
+   "[\"\"] → \" ne se trouve dans aucune région que l’atlas trace sur ce cerveau.\""
+  ],
+  "caveat": "Un atlas de groupe issu de sept jeux de données d’IRMf de tâches (Nettekoven et al. 2024), recalé sur ce cerveau depuis le gabarit SUIT<NNBSP>: pas la fonction mesurée de ce cerveau. Le recalage décale les limites de quelques millimètres, et les limites fonctionnelles individuelles diffèrent de celles du groupe."
  },
  "shortcuts": {
   "title": "Raccourcis clavier",

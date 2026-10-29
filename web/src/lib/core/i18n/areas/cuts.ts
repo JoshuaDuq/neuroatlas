@@ -59,10 +59,12 @@ export const en = {
   domainsOtherLabels: 'neuropsychological functions colour HCP-MMP labels only',
   hcpDerived: 'derived HCP labels',
   julichDerived: 'derived Julich-Brain labels',
+  schaeferDerived: 'derived Schaefer labels',
   destrieuxNative: 'native Destrieux labels',
   nextbrainWarped: 'warped NextBrain labels',
   nextbrainSegmented: 'NextBrain labels segmented on this brain',
   arterialRegistered: 'typical arterial territories registered onto this brain',
+  nettekovenRegistered: 'group functional cerebellar regions registered onto this brain',
   cutLabels: 'Cut labels',
 };
 
@@ -122,9 +124,11 @@ export const fr: typeof en = {
   domainsOtherLabels: 'les fonctions neuropsychologiques ne colorent que les étiquettes HCP-MMP',
   hcpDerived: 'HCP dérivées',
   julichDerived: 'Julich-Brain dérivées',
+  schaeferDerived: 'Schaefer dérivées',
   destrieuxNative: 'Destrieux natives',
   nextbrainWarped: 'NextBrain recalées',
   nextbrainSegmented: 'NextBrain segmentées sur ce cerveau',
   arterialRegistered: 'territoires artériels typiques recalés sur ce cerveau',
+  nettekovenRegistered: 'régions fonctionnelles cérébelleuses de groupe recalées sur ce cerveau',
   cutLabels: 'Étiquettes de coupe',
 };

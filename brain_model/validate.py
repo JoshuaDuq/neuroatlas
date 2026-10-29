@@ -23,6 +23,7 @@ from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
 from .labels.volumes import conformed_grid
 from .layers import (
     arterial_territories,
+    cerebellar_functions,
     cab_np,
     functional_regions,
     networks,
@@ -571,6 +572,10 @@ def expected_cortical_metadata(config, atlas):
             / "label"
             / f"{prefix}.{atlas['annotation']}.annot"
         )
+        other_names = (
+            networks.published_seventeen_network_names(config, atlas, prefix)
+            if "names_from" in atlas else None
+        )
         for label, count in zip(*np.unique(labels, return_counts=True)):
             name = "Unknown" if label == -1 else names[label].decode()
             region_id = f"{atlas['id']}:{hemisphere}:{label}"
@@ -583,11 +588,14 @@ def expected_cortical_metadata(config, atlas):
                 "label": f"{name.replace('_', ' ')} · {hemisphere}",
                 "kind": "non-region"
                 if name in {"Unknown", "unknown", "???", "Medial_wall", "CorpusCallosumMask",
-                            "BrainStemMask"} or name.startswith("GapMap-")
+                            "BrainStemMask", "Background+FreeSurfer_Defined_Medial_Wall"}
+                or name.startswith("GapMap-")
                 else "cortex",
                 "source_annotation_value": 0 if label == -1 else int(colors[label, 4]),
                 "source_vertex_count": int(count),
             }
+            if other_names is not None and regions[region_id]["kind"] == "cortex":
+                regions[region_id]["source_17_network_name"] = other_names[name]
     return regions
 
 
@@ -678,8 +686,9 @@ def validate_cut_only_regions(config, regions, nextbrain_source):
     for region_id, region in regions.items():
         if region["kind"] == "tissue-region":
             by_source.setdefault(region["atlas"], {})[region_id] = region
-    # Arterial territory regions are checked against their volume by arterial_territories.validate.
-    unknown = sorted(set(by_source) - {nextbrain.ATLAS_ID, white_matter.ATLAS_ID, arterial_territories.ATLAS_ID})
+    # Arterial territory and cerebellar functional regions are checked against their volumes by their layers.
+    unknown = sorted(set(by_source) - {nextbrain.ATLAS_ID, white_matter.ATLAS_ID, arterial_territories.ATLAS_ID,
+                                       cerebellar_functions.ATLAS_ID})
     if unknown:
         raise ValueError(f"Cut-only regions from an unknown source: {unknown}")
     white_matter.validate_regions(config, by_source.get(white_matter.ATLAS_ID, {}))
@@ -823,6 +832,7 @@ def validate_layers(config, manifest, tissues):
     cut = [atlas["id"] for atlas in config["atlases"]]
     fine = [nextbrain.ATLAS_ID] if "nextbrain" in declared else []
     fine += [arterial_territories.ATLAS_ID] if arterial_territories.LAYER in declared else []
+    fine += [cerebellar_functions.ATLAS_ID] if cerebellar_functions.LAYER in declared else []
     expected = {
         "networks": networks.metadata() if "networks" in declared else None,
         "cut_atlases": cut + fine,
@@ -838,6 +848,10 @@ def validate_layers(config, manifest, tissues):
             arterial_territories.metadata(config, arterial_territories.read_definition())
             if arterial_territories.LAYER in declared else None
         ),
+        "cerebellar_functions": (
+            cerebellar_functions.metadata(config, cerebellar_functions.read_definition())
+            if cerebellar_functions.LAYER in declared else None
+        ),
     }
     published = {
         "networks": manifest["networks"],
@@ -851,6 +865,7 @@ def validate_layers(config, manifest, tissues):
         "neurosynth_terms": manifest["neurosynth_terms"],
         "boundary_certainty": manifest.get("boundary_certainty"),
         "arterial_territories": manifest.get("arterial_territories"),
+        "cerebellar_functions": manifest.get("cerebellar_functions"),
     }
     differ = [key for key in expected if published[key] != expected[key]]
     if differ:
@@ -883,8 +898,9 @@ def validate_published_files(config, manifest):
     ]
     if "atlas_comparison" in manifest:
         # Its `sources` name the FreeSurfer inputs, not published files.
-        comparison = directory / manifest["atlas_comparison"]["file"]
-        documents.append(json.loads(comparison.read_text())["geometry"])
+        for declaration in manifest.get("atlas_comparisons", [manifest["atlas_comparison"]]):
+            comparison = directory / declaration["file"]
+            documents.append(json.loads(comparison.read_text())["geometry"])
     named = {"manifest.json"} | {name for document in documents for name in named_files(document)}
     present = {path.name for path in directory.iterdir()} - {"validation.json"}
     if present != named:
@@ -937,6 +953,8 @@ def main():
         "functional_regions": functional_regions.validate(config, manifest),
         **({"arterial_territories": arterial_territories.validate(config, manifest)}
            if arterial_territories.is_declared(config) else {}),
+        **({"cerebellar_functions": cerebellar_functions.validate(config, manifest)}
+           if cerebellar_functions.is_declared(config) else {}),
         "neuropsych_domains": neuropsych_domains.validate(config, manifest),
         "receptor_fingerprints": receptor_fingerprints.validate(config, manifest),
         **({"neurosynth_terms": neurosynth_terms.validate(config, manifest)}

@@ -811,3 +811,40 @@ describe('typical arterial supply', () => {
     );
   });
 });
+
+describe('functional cerebellar regions', () => {
+  const HEADING = 'Functional regions (group atlas)';
+
+  test('a lobule lists its regions by voxel share with their domain, and says it is a group map', async () => {
+    render(Fixture, { regionId: 'learning:lobule-v-left' });
+    const regions = section(HEADING);
+    expect(regions.open).toBe(false);
+    regions.open = true;
+    const rows = [...regions.querySelectorAll('.network-row')].map(text);
+    expect(rows[0]).toBe('M3 · hand · left Motor 49%');
+    // Its few shares across the midline say which side they are; this lobule has one.
+    expect(rows.some((row) => row.includes('· right'))).toBe(true);
+    expect(text(regions)).toContain('Share of this lobule’s voxels in each functional region.');
+    expect(text(regions)).toMatch(/\d+% lies in no region the atlas draws on this brain\./);
+    expect(text(regions)).toContain('not this brain’s measured function');
+    await expectAxeClean();
+  });
+
+  test('a functional region chosen on a cut says what the paper found it does; other regions have none', async () => {
+    const screen = await render(Fixture, { regionId: 'nettekoven:right:s2' });
+    section(HEADING).open = true;
+    expect(text(section(HEADING))).toContain('Social, linguistic and spatial');
+    expect(text(section(HEADING))).toContain('theory-of-mind task on the right');
+    await screen.rerender({ regionId: 'aseg:left:12' });
+    expect(section(HEADING)).toBeUndefined();
+  });
+
+  test('French', async () => {
+    render(Fixture, { regionId: 'learning:lobule-v-left', lang: 'fr' });
+    const regions = section('Régions fonctionnelles (atlas de groupe)');
+    regions.open = true;
+    expect(text(regions.querySelector('.network-row')!)).toMatch(
+      /^M3 · main · gauche Moteur 49\s?%$/,
+    );
+  });
+});

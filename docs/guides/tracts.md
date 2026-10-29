@@ -14,7 +14,7 @@ Streamline colour represents local direction:
 | Green | Anterior–posterior |
 | Blue | Inferior–superior |
 
-Each row reports a streamline count, mean length and range. Use the minimum-length slider to filter the display; **Export lengths CSV** exports loaded bundles with the active threshold. The CSV uses English bundle names regardless of interface language. Hidden bundles and bundles with no streamlines above the threshold have zero enabled streamlines and blank length statistics. Streamline counts are not axon counts, and polyline lengths are not measures of connection strength.
+Each row reports a streamline count, mean length and range. Use the minimum-length slider to filter the display; **Export lengths CSV** exports loaded bundles with the active threshold. The CSV uses English bundle names regardless of interface language. Hidden bundles and bundles with no streamlines above the threshold have zero enabled streamlines and blank length statistics. Streamline counts are not axon counts, and polyline lengths are not measures of connection strength. A placed lesion's report can draw one bundle's streamlines through the lesion; see [the viewer guide](viewer.md#lesion-report).
 
 ## Compare with MRI
 

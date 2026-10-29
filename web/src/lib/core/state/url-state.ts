@@ -5,8 +5,15 @@
  * checks what is checkable without that knowledge and passes the rest through
  * as opaque strings; `link-check.ts` judges those against the loaded anatomy.
  */
-import { CUTS, EXPLORERS, HEMISPHERES, SURFACE_COLORS } from '../../types/constants.ts';
-import type { LinkInput, LinkState, Orbit } from '../../types/index.ts';
+import {
+  CUTS,
+  EXPLORERS,
+  HEMISPHERES,
+  LESION_MODES,
+  LESION_RADIUS,
+  SURFACE_COLORS,
+} from '../../types/constants.ts';
+import type { LinkInput, LinkLesion, LinkState, Orbit } from '../../types/index.ts';
 
 type Defaults = Pick<
   LinkState,
@@ -33,6 +40,9 @@ type Defaults = Pick<
   | 'circuitStep'
   | 'orbit'
   | 'mriWindow'
+  | 'lesion'
+  | 'lesionMode'
+  | 'lesionTract'
 >;
 
 export const DEFAULTS: Defaults = {
@@ -59,6 +69,9 @@ export const DEFAULTS: Defaults = {
   circuitStep: 0,
   orbit: null,
   mriWindow: null,
+  lesion: null,
+  lesionMode: 'lesion',
+  lesionTract: null,
 };
 
 type Reader<T> = (value: string) => T | undefined;
@@ -173,6 +186,18 @@ const mriWindow: Reader<NonNullable<LinkState['mriWindow']>> = (value) => {
   return { center, width };
 };
 
+/** A lesion as `right,anterior,superior,radius`: a centre in the volume's range, a radius the slider can set. */
+const lesion: Reader<LinkLesion> = (value) => {
+  const list = numbers(value);
+  if (list?.length !== 4) return undefined;
+  const centre = list.slice(0, 3).map((n) => millimetres(String(n)));
+  const radius = list[3]!;
+  if (centre.includes(undefined) || !(radius >= LESION_RADIUS.min && radius <= LESION_RADIUS.max)) {
+    return undefined;
+  }
+  return { centre: centre as LinkLesion['centre'], radius };
+};
+
 /** Circuit steps are counted from one in the link, as the stepper shows them. */
 const circuitStep: Reader<number> = (value) => {
   const number = numberOf(value);
@@ -243,6 +268,11 @@ const FIELDS: Field[] = [
   field('circuit', 'circuit', nonempty),
   field('circuitStep', 'step', circuitStep, (value) => String(value + 1)),
   field('lang', 'lang', oneOf(['en', 'fr'] as const)),
+  field('lesion', 'lesion', lesion, ({ centre, radius }) =>
+    [...centre.map(tenths), radius].join(','),
+  ),
+  field('lesionMode', 'lesionmode', oneOf(LESION_MODES)),
+  field('lesionTract', 'lesiontract', nonempty),
 ];
 
 /** The link parameter each state field travels under. */

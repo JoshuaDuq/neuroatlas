@@ -1,6 +1,7 @@
 <!--
-  Overlap with the other cortical atlas (ui/panels/atlas-comparison.js): for a selected cortex
-  region, the regions of the other atlas it overlaps, by area and share of its whole pial surface.
+  Overlap with another cortical atlas (ui/panels/atlas-comparison.js): for a selected cortex
+  region, the regions of the chosen atlas it overlaps, by area and share of its whole pial surface.
+  Each declared pair is its own file, loaded the first time it is shown and kept.
   R1's `comparison` slot mounts it and keeps it mounted, so the panel's and the list's open state
   survive from one selection to the next (decision 39 on #4); it is `hidden`, not removed, when the
   manifest declares no comparison or the region is not cortex.
@@ -18,7 +19,7 @@
   import { createLatestRunner } from '../../lib/core/async/latest.ts';
   import { labelOf } from '../../lib/core/catalog/labels.ts';
   import {
-    comparedWith,
+    comparisonPartners,
     createComparisonCatalog,
     type ComparisonCatalog,
     type ComparisonData,
@@ -29,6 +30,7 @@
   import { failureNotice } from '../../lib/core/i18n/errors.ts';
   import { atlasSwitchLabel, t } from '../../lib/core/i18n/index.ts';
   import type { Engine } from '../../lib/engine/api.ts';
+  import ChoiceGroup from '../../lib/ui/ChoiceGroup.svelte';
   import Disclosure from '../../lib/ui/Disclosure.svelte';
   import { iconGraphic } from '../../lib/ui/IconButton.svelte';
   import StatusLine from '../../lib/ui/StatusLine.svelte';
@@ -58,6 +60,8 @@
 
   type Phase = 'idle' | 'loading' | 'ready' | 'error';
   interface Loaded {
+    /** The pair's file, which names it. */
+    file: string;
     data: ComparisonData;
     catalog: ComparisonCatalog;
   }
@@ -68,6 +72,10 @@
   let methodOpen = $state(false);
   let phase = $state<Phase>('idle');
   let loaded = $state.raw<Loaded | null>(null);
+  // Pairs already read, so choosing one again shows it at once.
+  const pairs = new Map<string, Loaded>();
+  /** The chosen partner for each atlas a region can belong to; the first declared pair otherwise. */
+  let chosen = $state<Record<string, string>>({});
   /** What failed, worded at render time so a language change rewords it. */
   let failure = $state.raw<{ error: unknown; operation: 'comparison' | 'overlap' } | null>(null);
   /** The mesh whose outline is drawn, and the one still being fetched. */
@@ -77,15 +85,20 @@
   let justLoaded = $state(false);
 
   const copy = $derived(t(lang, 'comparison'));
-  // Only the compared atlases have overlaps; another cortical atlas has no section.
-  const partner = $derived(comparedWith(region?.atlas));
-  const shown = $derived(
-    Boolean(manifest.atlas_comparison) && region?.kind === 'cortex' && partner !== null,
+  // Only atlases a declared pair compares have overlaps; another atlas has no section.
+  const partners = $derived(
+    region?.kind === 'cortex' ? comparisonPartners(manifest, region.atlas) : [],
   );
+  const pair = $derived(
+    partners.find((entry) => entry.atlas === chosen[region?.atlas ?? '']) ?? partners[0] ?? null,
+  );
+  const partner = $derived(pair?.atlas ?? null);
+  const shown = $derived(pair !== null);
   const sourceId = $derived(shown ? region!.id : null);
+  const partnerLabelId = `${uid}-partner`;
 
   const comparison = $derived.by(() => {
-    if (!loaded || !sourceId) return null;
+    if (!loaded || !sourceId || loaded.file !== pair!.declaration.file) return null;
     const result = loaded.catalog.comparisonFor(sourceId);
     if (!result) throw new Error(`No atlas comparison for region: ${sourceId}`);
     return result;
@@ -118,17 +131,25 @@
   }
 
   function load() {
-    phase = 'loading';
+    const file = pair!.declaration;
+    const cached = pairs.get(file.file);
     failure = null;
-    const file = manifest.atlas_comparison!;
+    if (cached) {
+      loader.cancel();
+      loaded = cached;
+      phase = 'ready';
+      return;
+    }
+    phase = 'loading';
     const url = new URL(file.file, new URL(manifestUrl, globalThis.location.href)).href;
     void loader.run(
       async (): Promise<Loaded> => {
         const data = (await readComparison(url, file.sha256)) as ComparisonData;
-        return { data, catalog: createComparisonCatalog(data, manifest) };
+        return { file: file.file, data, catalog: createComparisonCatalog(data, manifest) };
       },
       {
         onResult(value) {
+          pairs.set(value.file, value);
           loaded = value;
           phase = 'ready';
           justLoaded = true;
@@ -175,25 +196,28 @@
     );
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${manifest.anatomy.id}-${sourceId!.replaceAll(':', '-')}-atlas-comparison.csv`;
+    link.download = `${manifest.anatomy.id}-${sourceId!.replaceAll(':', '-')}-${partner}-atlas-comparison.csv`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     announce(copy.exported);
   }
 
-  // The data loads once, the first time the panel is shown, though the disclosure is still closed.
+  // Each pair loads the first time it is shown, though the disclosure is still closed; a pair that
+  // failed stays failed until Retry.
+  let requested: string | null = null;
   $effect(() => {
-    if (shown) {
-      untrack(() => {
-        if (phase === 'idle') load();
-      });
-    }
+    const file = pair?.declaration.file ?? null;
+    untrack(() => {
+      if (file === null || file === requested) return;
+      requested = file;
+      load();
+    });
   });
 
-  // A new subject drops the highlight and an old overlap failure; a failed load stays until Retry.
+  // A new subject or partner drops the highlight and an old overlap failure.
   let previousSource: string | null = null;
   $effect(() => {
-    const id = sourceId;
+    const id = sourceId && `${sourceId} ${partner}`;
     untrack(() => {
       if (id === previousSource) return;
       previousSource = id;
@@ -251,6 +275,18 @@
 
 <div class="evidence-section comparison" hidden={!shown} bind:this={root}>
   <Disclosure variant="section" summary={heading} bind:open>
+    {#if partners.length > 1}
+      <p id={partnerLabelId} class="comparison-partner-label">{copy.partner}</p>
+      <ChoiceGroup
+        labelledby={partnerLabelId}
+        class="comparison-partner"
+        options={partners.map((entry) => ({
+          value: entry.atlas,
+          label: atlasSwitchLabel(entry.atlas, lang),
+        }))}
+        bind:value={() => partner!, (next) => (chosen = { ...chosen, [region!.atlas!]: next })}
+      />
+    {/if}
     {#key lang}
       <StatusLine
         class="detail-note comparison-status{status === copy.ready ? ' visually-hidden' : ''}"
@@ -301,7 +337,13 @@
         </div>
         <div class="comparison-method">
           <Disclosure summary={copy.methodHeading} bind:open={methodOpen}>
-            <p class="detail-note">{copy.method}</p>
+            <p class="detail-note">
+              {[
+                copy.method,
+                ...loaded!.data.atlases.flatMap((atlas) => copy.projected[atlas] ?? []),
+                copy.correspondence,
+              ].join(' ')}
+            </p>
             <div class="comparison-sources">
               {#each manifest.atlases.filter( (atlas) => loaded!.data.atlases.includes(atlas.id) ) as atlas (atlas.id)}
                 <a href={atlas.citation} target="_blank" rel="noopener noreferrer"
@@ -320,6 +362,16 @@
 
 <style>
   @layer features {
+    .comparison-partner-label {
+      margin: 0 0 var(--space-2);
+      font-size: var(--text-caption);
+      font-weight: 500;
+      line-height: var(--lh-caption);
+      color: var(--text-secondary);
+    }
+    :global(.segmented.choice-group.comparison-partner) {
+      margin-bottom: var(--space-3);
+    }
     .comparison-list {
       list-style: none;
       margin: 0;

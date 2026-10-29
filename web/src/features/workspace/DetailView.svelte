@@ -143,6 +143,7 @@
         {boundaryCertainty}
         {receptors}
         territories={manifest.arterial_territories ?? null}
+        cerebellarFunctions={manifest.cerebellar_functions ?? null}
         onfocus={() => anatomy.focusSelection()}
         onisolate={anatomy.isolateSelection}
         onhide={() => void anatomy.hideSelection()}

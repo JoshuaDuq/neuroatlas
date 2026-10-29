@@ -314,7 +314,11 @@ def test_both_hemispheres_white_matter_is_drawn_in_one_colour():
     assert table[2] == ("Left-Cerebral-White-Matter", [245, 245, 245])
 
 
-def test_network_annotations_are_projected_exactly_when_declared(monkeypatch):
+def test_every_projected_atlas_annotation_is_projected_without_a_declared_layer(monkeypatch):
+    # Schaefer is a cortical atlas as well as the networks layer's source, so an
+    # anatomy declaring no layers still needs it on its own surface.
+    from brain_model.sources import read_config
+
     prepare = load_prepare_subject()
     projected = []
     monkeypatch.setattr(
@@ -323,11 +327,8 @@ def test_network_annotations_are_projected_exactly_when_declared(monkeypatch):
     )
     config = {"anatomy": {"id": "x", "project_hcp_from": "fsaverage", "layers": []}}
     prepare.transfer_annotations(config, {"sources": []})
-    assert projected == ["HCPMMP1", "JulichBrain3.1"]
-    projected.clear()
-    config["anatomy"]["layers"] = ["networks"]
-    prepare.transfer_annotations(config, {"sources": []})
-    assert projected == ["HCPMMP1", "JulichBrain3.1", "Schaefer2018_400Parcels_7Networks_order"]
+    native = {"aparc.a2009s"}
+    assert set(projected) == {a["annotation"] for a in read_config()["atlases"]} - native
 
 
 def test_a_projection_whose_source_annotation_is_missing_is_refused(tmp_path):

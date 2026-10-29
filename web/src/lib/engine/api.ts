@@ -607,6 +607,10 @@ export interface EngineLesion {
     sphere: LesionSphere,
     onBundle?: (counted: number, total: number) => void,
   ): Promise<TractCrossing[]>;
+  /** Draw only the streamlines of one bundle that `measureTracts` counts for this sphere, alone on the stage; a later call replaces it. */
+  showTract(id: string, sphere: LesionSphere): Promise<void>;
+  /** Give the tracts back their ordinary display. */
+  clearTract(): void;
 }
 
 // ---------------------------------------------------------------------------

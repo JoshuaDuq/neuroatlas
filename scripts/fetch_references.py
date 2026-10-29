@@ -2,8 +2,8 @@
 
 The identifiers come from data/neuropsychology.yaml, data/circuits.yaml,
 config/functional-regions.yaml, config/neuropsych-domains.yaml,
-config/receptor-fingerprints.yaml, config/arterial-territories.yaml and
-docs/reference/references.md. PubMed gives each
+config/receptor-fingerprints.yaml, config/arterial-territories.yaml,
+config/cerebellar-functions.yaml and docs/reference/references.md. PubMed gives each
 PMID's title, authors, issue year, DOI and erratum links; Bookshelf gives each NBK
 chapter's; Crossref supplies a DOI that PubMed lacks and the DOI of each correction
 notice. Abstracts are not stored. The reference tests read only the written file.
@@ -93,9 +93,10 @@ def cited_identifiers():
             pmid = str(source["pmid"])
             pmids.add(pmid)
             dois[pmid] = source["doi"].removeprefix("https://doi.org/")
-    territories = yaml.safe_load((ROOT / "config/arterial-territories.yaml").read_text())
-    pmids.add(str(territories["pmid"]))
-    dois[str(territories["pmid"])] = territories["doi"].removeprefix("https://doi.org/")
+    for config in ("arterial-territories", "cerebellar-functions"):
+        source = yaml.safe_load((ROOT / f"config/{config}.yaml").read_text())
+        pmids.add(str(source["pmid"]))
+        dois[str(source["pmid"])] = source["doi"].removeprefix("https://doi.org/")
     for line in (ROOT / "docs/reference/references.md").read_text().splitlines():
         doi, pmid = DOI_IN_MARKDOWN.search(line), PMID_IN_MARKDOWN.search(line)
         if doi and not pmid:

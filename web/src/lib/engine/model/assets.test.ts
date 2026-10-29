@@ -21,8 +21,9 @@ for (const { id: published } of anatomies.anatomies) {
       await atlas.initialize('destrieux');
       const detail = manifest.detail_levels.find((level) => level.id === atlas.defaultDetail)!;
       assert.equal(atlas.state.detail, 'learning');
-      // 148 Destrieux parcels plus the two non-region surfaces; a published cord waits to be shown.
-      assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count);
+      // 148 Destrieux parcels; the two medial walls wait for the internal anatomy to be hidden and a
+      // published cord waits to be shown.
+      assert.equal(atlas.visibleMeshes.length, 148 + detail.region_count);
       // A scan that ends inside the medulla (SNAIL's) publishes no reference cord to show.
       if (manifest.supplemental_layers?.length) {
         const [cord] = manifest.supplemental_layers;
@@ -31,7 +32,7 @@ for (const { id: published } of anatomies.anatomies) {
           ['pam50'],
         );
         await atlas.setSpinalCordVisible(true);
-        assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + cord!.region_count);
+        assert.equal(atlas.visibleMeshes.length, 148 + detail.region_count + cord!.region_count);
         await atlas.setSpinalCordVisible(false);
       } else {
         await assert.rejects(atlas.setSpinalCordVisible(true), /does not publish a spinal cord/);

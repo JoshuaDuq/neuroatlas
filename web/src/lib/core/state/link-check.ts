@@ -15,6 +15,8 @@ export interface KnownLinkIds {
   /** Each circuit's step count. */
   circuits: ReadonlyMap<string, number>;
   spinalCord: boolean;
+  /** The anatomy's own tract bundles a lesion reaches; none on an anatomy without tracts of its own. */
+  lesionBundles(lesion: NonNullable<LinkState['lesion']>): readonly string[];
 }
 
 /**
@@ -57,5 +59,13 @@ export function checkLink(
     reject('circuitStep');
   }
   if (state.spinalCordVisible && !known.spinalCord) reject('spinalCordVisible');
+  // A lesion's colouring and drawn tract mean nothing without it; the tract must be one it reaches.
+  if ('lesionMode' in state && !state.lesion) reject('lesionMode');
+  if (
+    'lesionTract' in state &&
+    !(state.lesion && known.lesionBundles(state.lesion).includes(state.lesionTract!))
+  ) {
+    reject('lesionTract');
+  }
   return { state, rejected };
 }

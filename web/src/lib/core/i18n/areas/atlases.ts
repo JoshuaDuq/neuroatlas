@@ -2,6 +2,7 @@ export const en = {
   destrieux: 'Destrieux anatomical atlas',
   'hcp-mmp': 'HCP-MMP1.0 multimodal atlas',
   julich: 'Julich-Brain cytoarchitectonic atlas',
+  schaefer: 'Schaefer 2018 functional parcellation',
   learning:
     'Teaching set: overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published',
   aseg: 'FreeSurfer subcortical segmentation',
@@ -10,12 +11,14 @@ export const en = {
   wmparc: 'FreeSurfer white-matter parcellation',
   pam50: 'PAM50 cord atlas on this spinal cord',
   arterial: 'Arterial territory atlas (Liu et al. 2023)',
+  nettekoven: 'Functional cerebellar atlas (Nettekoven et al. 2024)',
 };
 
 export const fr: typeof en = {
   destrieux: 'Atlas anatomique de Destrieux',
   'hcp-mmp': 'Atlas multimodal HCP-MMP1.0',
   julich: 'Atlas cytoarchitectonique Julich-Brain',
+  schaefer: 'Parcellisation fonctionnelle Schaefer 2018',
   learning:
     'Ensemble pédagogique : grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés',
   aseg: 'Segmentation sous-corticale FreeSurfer',
@@ -24,4 +27,5 @@ export const fr: typeof en = {
   wmparc: 'Parcellisation de la substance blanche FreeSurfer',
   pam50: 'Atlas médullaire PAM50 sur cette moelle',
   arterial: 'Atlas des territoires artériels (Liu et al. 2023)',
+  nettekoven: 'Atlas fonctionnel du cervelet (Nettekoven et al. 2024)',
 };

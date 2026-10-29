@@ -34,6 +34,7 @@ const KINDS: Record<string, string> = {
   'boundary.more': 'n',
   'receptors.note': 'snnsn',
   'territories.unassigned': 's',
+  'cerebellarFunctions.unassigned': 's',
   'comparison.more': 'n',
   'domains.band': 'sl',
   'domains.lesionCheck': 'a',

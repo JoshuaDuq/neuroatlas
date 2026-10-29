@@ -106,13 +106,38 @@ export interface Manifest {
   neurosynth_terms?: ManifestFile & Record<string, unknown>;
   boundary_certainty?: ManifestFile & Record<string, unknown>;
   arterial_territories?: ArterialTerritories;
+  cerebellar_functions?: CerebellarFunctions;
   receptor_fingerprints?: ManifestFile & Record<string, unknown>;
   volumes?: ManifestFile;
   tissues?: ManifestFile;
   atlas_comparison?: ManifestFile;
+  atlas_comparisons?: (ManifestFile & { atlases: readonly [string, string] })[];
   boundary_convention?: string;
   limitations?: string[];
   provenance?: Record<string, unknown>;
+}
+
+/** One functional region of the cerebellar atlas, the same on both sides. */
+export interface CerebellarFunctionRegion {
+  id: string;
+  domain: string;
+  name: string;
+  name_fr: string;
+  description: string;
+  description_fr: string;
+  color: Rgb;
+}
+
+/** `manifest.cerebellar_functions`: the registered Nettekoven et al. (2024) group atlas. */
+export interface CerebellarFunctions {
+  id: 'nettekoven';
+  label: string;
+  citation: string;
+  license: string;
+  domains: Record<string, { name: string; name_fr: string }>;
+  regions: CerebellarFunctionRegion[];
+  registration: Record<string, unknown>;
+  method: string;
 }
 
 /** One branch territory of the arterial territory atlas. */

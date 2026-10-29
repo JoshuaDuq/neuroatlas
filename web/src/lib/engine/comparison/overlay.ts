@@ -52,7 +52,7 @@ export interface ComparisonOverlay {
   /** The highlighted pair's mesh, for the outline pass; empty while cleared or hidden. */
   readonly outlined: OverlapMesh[];
   /** Resolves false when a newer request, a clear or a disposal superseded this one. */
-  highlight(id: string): Promise<boolean>;
+  highlight(id: string, source?: string): Promise<boolean>;
   clear(): void;
   setVisible(visible: boolean): void;
   dispose(): void;
@@ -67,6 +67,8 @@ export function createComparisonOverlay(loadScene: () => Promise<Object3D>): Com
   let active: string | null = null;
   let request = 0;
   let disposed = false;
+  let source = '';
+  let generation = 0;
 
   function clear() {
     request++;
@@ -76,9 +78,10 @@ export function createComparisonOverlay(loadScene: () => Promise<Object3D>): Com
 
   function load(): Promise<void> {
     if (!loading) {
+      const currentGeneration = generation;
       loading = loadScene()
         .then((scene) => {
-          if (disposed) {
+          if (disposed || currentGeneration !== generation) {
             releaseScene(scene);
             return;
           }
@@ -91,7 +94,7 @@ export function createComparisonOverlay(loadScene: () => Promise<Object3D>): Com
           group.add(scene);
         })
         .catch((error: unknown) => {
-          loading = null;
+          if (currentGeneration === generation) loading = null;
           throw error;
         });
     }
@@ -103,8 +106,17 @@ export function createComparisonOverlay(loadScene: () => Promise<Object3D>): Com
     get outlined() {
       return active && group.visible ? [meshes.get(active)!] : [];
     },
-    async highlight(id) {
+    async highlight(id, nextSource = '') {
       if (disposed) throw new Error('The atlas comparison has been disposed.');
+      if (source !== nextSource) {
+        clear();
+        generation++;
+        // Each release removes the scene from the group.
+        while (group.children.length) releaseScene(group.children[0]!);
+        meshes.clear();
+        loading = null;
+        source = nextSource;
+      }
       const current = ++request;
       await load();
       if (disposed || request !== current) return false;

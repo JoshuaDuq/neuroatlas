@@ -1,3 +1,4 @@
+import type { LESION_MODES } from './constants.ts';
 import type { CutMode, Hemisphere, SurfaceColor } from './display.ts';
 import type { Region } from './region.ts';
 import type { Explorer, Language } from './session.ts';
@@ -7,6 +8,12 @@ export interface Orbit {
   position: [number, number, number];
   target: [number, number, number];
   up?: [number, number, number];
+}
+
+/** A placed lesion: its centre in RAS millimetres, to a tenth, and its radius in millimetres. */
+export interface LinkLesion {
+  centre: [number, number, number];
+  radius: number;
 }
 
 /** MRI level and window over the scan's uint8 intensities. */
@@ -49,6 +56,10 @@ export interface LinkState {
   mriWindow: MriWindow | null;
   lang: Language;
   hiddenRegions: string[];
+  lesion: LinkLesion | null;
+  lesionMode: (typeof LESION_MODES)[number];
+  /** The tract bundle whose streamlines through the lesion are drawn. */
+  lesionTract: string | null;
 }
 
 /**

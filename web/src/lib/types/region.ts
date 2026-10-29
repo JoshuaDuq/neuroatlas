@@ -22,12 +22,18 @@ export interface Region {
   source_annotation_value?: number;
   source_vertex_count?: number;
   source_published_name?: string;
+  /** A Schaefer parcel's name in the 17-network order, which divides the same parcels. */
+  source_17_network_name?: string;
   source_atlas?: string;
   networks?: { network: string; fraction: number }[];
   /** Typical arterial territory shares of the region's voxels or vertices, largest first. */
   territories?: { territory: string; fraction: number }[];
   /** The share of the region in no territory, counted, so slivers left out of `territories` are not in it. */
   territory_unassigned?: number;
+  /** A cerebellar lobule's shares in each functional region of the registered group atlas, largest first. */
+  cerebellar_functions?: { region: string; fraction: number }[];
+  /** The share of the lobule in no functional region, counted rather than inferred. */
+  cerebellar_functions_unassigned?: number;
   vertex_count?: number;
   triangle_count?: number;
   surface_area_mm2?: number;

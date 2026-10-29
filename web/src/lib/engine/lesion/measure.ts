@@ -139,25 +139,34 @@ export function tissueInSphere(
 }
 
 /** The streamlines with at least one point within the sphere; `offsets` start each one, then end the last. */
-export function streamlinesCrossing(
+export function streamlineMembership(
   points: Float32Array,
   offsets: Uint32Array,
   { centre, radius }: Sphere,
-): number {
+): Uint8Array {
   requireRadius(radius);
   const r2 = radius * radius;
   const [cx, cy, cz] = centre;
-  let crossing = 0;
+  const membership = new Uint8Array(offsets.length - 1);
   for (let line = 0; line + 1 < offsets.length; line++) {
     for (let p = offsets[line]! * 3; p < offsets[line + 1]! * 3; p += 3) {
       const dx = points[p]! - cx,
         dy = points[p + 1]! - cy,
         dz = points[p + 2]! - cz;
       if (dx * dx + dy * dy + dz * dz <= r2) {
-        crossing++;
+        membership[line] = 1;
         break;
       }
     }
   }
-  return crossing;
+  return membership;
+}
+
+/** Count the same membership used by the selected tract view. */
+export function streamlinesCrossing(
+  points: Float32Array,
+  offsets: Uint32Array,
+  sphere: Sphere,
+): number {
+  return streamlineMembership(points, offsets, sphere).reduce((count, inside) => count + inside, 0);
 }

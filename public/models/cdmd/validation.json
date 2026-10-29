@@ -140,6 +140,52 @@
       "maximum_sulcal_depth_error": 0.0002399056183541859,
       "maximum_concavity_error": 9.097095416077394e-06,
       "maximum_ribbon_T1_error": 0.0012587347925716585
+    },
+    {
+      "file": "cortex-schaefer.glb",
+      "sha256": "dd3b508056a90a6cb09f0a6b42b11abbe6c8ed2ca95d95b2d04c6fe647f8b2de",
+      "mesh_count": 402,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 108347,
+          "source_triangles": 216690,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 326075,
+          "maximum_parent_plane_error_mm": 5.551115123125783e-15,
+          "maximum_parent_area_error_mm2": 4.440892098500626e-16,
+          "source_surface_area_mm2": 85619.41153096381,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 108379,
+          "source_triangles": 216754,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 325579,
+          "maximum_parent_plane_error_mm": 5.745404152435185e-15,
+          "maximum_parent_area_error_mm2": 4.440892098500626e-16,
+          "source_surface_area_mm2": 85458.88731549797,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "field_ranges": {
+        "_SULC": [
+          -14.046584129333496,
+          17.397871017456055
+        ],
+        "_CONCAVITY": [
+          -0.610621988773346,
+          0.5810176730155945
+        ],
+        "_T1": [
+          38.98631286621094,
+          203.2353057861328
+        ]
+      },
+      "maximum_glb_coordinate_error_mm": 5.038289517018546e-06,
+      "maximum_normal_component_error": 1.5287834975175052e-05,
+      "maximum_sulcal_depth_error": 0.0002399056183541859,
+      "maximum_concavity_error": 9.098729212675405e-06,
+      "maximum_ribbon_T1_error": 0.0012587347925716585
     }
   ],
   "ribbon_labels": [
@@ -169,6 +215,15 @@
       "wedges": 296,
       "holes": 0,
       "pinches": 149
+    },
+    {
+      "file": "ribbon-schaefer.labels",
+      "sha256": "8863adb08d3a7442e53b094bd4a576a737e3eadac3dac9be8b5fad5799d39075",
+      "vertex_count": 216726,
+      "region_count": 402,
+      "wedges": 402,
+      "holes": 0,
+      "pinches": 231
     }
   ],
   "structures": {
@@ -814,7 +869,41 @@
       "cerebral_tissue_unassigned": 0.0122,
       "hemisphere_agreement": 0.996
     },
-    "regions_with_shares": 1457
+    "regions_with_shares": 1857
+  },
+  "cerebellar_functions": {
+    "checks": {
+      "lobule_dice": {
+        "left_I_IV": 0.4944,
+        "right_I_IV": 0.5141,
+        "left_V": 0.4943,
+        "right_V": 0.5208,
+        "left_VI": 0.6677,
+        "right_VI": 0.6688,
+        "left_CrusI": 0.7216,
+        "right_CrusI": 0.7307,
+        "left_CrusII": 0.672,
+        "right_CrusII": 0.7387,
+        "left_VIIb": 0.5429,
+        "right_VIIb": 0.6504,
+        "left_VIIIa": 0.6742,
+        "right_VIIIa": 0.6612,
+        "left_VIIIb": 0.6074,
+        "right_VIIIb": 0.6977,
+        "left_IX": 0.763,
+        "right_IX": 0.7752,
+        "left_X": 0.4852,
+        "right_X": 0.6205,
+        "vermis_VII": 0.7985,
+        "vermis_VIII": 0.8117,
+        "vermis_IX": 0.6908,
+        "vermis_X": 0.6124
+      },
+      "lobule_dice_mean": 0.6506,
+      "cerebellar_cortex_covered": 0.9849,
+      "side_agreement": 0.9952
+    },
+    "regions_with_shares": 27
   },
   "neuropsych_domains": {
     "assigned_areas": 273,
@@ -4457,6 +4546,24 @@
         }
       },
       "label_count": 483
+    },
+    "schaefer": {
+      "file": "tissues-schaefer.volume",
+      "sha256": "dd117a48c1d9ac0645dd4a68a739ab848737ef61ea274a39e9f3b0776c520efc",
+      "decoded_sha256": "f41773b1e3e1c5842b1f66c51f65db01ab09b3ab3943b11ae1fd19c20f006c0b",
+      "non_cortical_voxels_identical_to_destrieux": true,
+      "cortical_voxels_match_nearest_vertex_labels": true,
+      "hemispheres": {
+        "left": {
+          "ribbon_voxels": 181550,
+          "cortical_voxels_outside_ribbon": 47
+        },
+        "right": {
+          "ribbon_voxels": 179697,
+          "cortical_voxels_outside_ribbon": 69
+        }
+      },
+      "label_count": 587
     }
   },
   "transforms": {
@@ -4539,17 +4646,29 @@
     "white_matter",
     "spinal_cord",
     "neurosynth_terms",
-    "arterial_territories"
+    "arterial_territories",
+    "cerebellar_functions"
   ],
   "published_files": [
     "aseg.volume",
+    "atlas-comparison-destrieux-julich.json",
+    "atlas-comparison-destrieux-schaefer.json",
+    "atlas-comparison-hcp-mmp-julich.json",
+    "atlas-comparison-hcp-mmp-schaefer.json",
+    "atlas-comparison-julich-schaefer.json",
     "atlas-comparison.json",
+    "atlas-overlaps-destrieux-julich.glb",
+    "atlas-overlaps-destrieux-schaefer.glb",
+    "atlas-overlaps-hcp-mmp-julich.glb",
+    "atlas-overlaps-hcp-mmp-schaefer.glb",
+    "atlas-overlaps-julich-schaefer.glb",
     "atlas-overlaps.glb",
     "boundary-certainty.json",
     "cab-np.json",
     "cortex-destrieux.glb",
     "cortex-hcp-mmp.glb",
     "cortex-julich.glb",
+    "cortex-schaefer.glb",
     "functional-regions.json",
     "learning.glb",
     "manifest.json",
@@ -4561,6 +4680,7 @@
     "ribbon-destrieux.labels",
     "ribbon-hcp-mmp.labels",
     "ribbon-julich.labels",
+    "ribbon-schaefer.labels",
     "spinal-cord.glb",
     "structures.glb",
     "tissue-envelopes.glb",
@@ -4569,7 +4689,9 @@
     "tissues-destrieux.volume",
     "tissues-hcp-mmp.volume",
     "tissues-julich.volume",
+    "tissues-nettekoven.volume",
     "tissues-nextbrain.volume",
+    "tissues-schaefer.volume",
     "volumes.json",
     "white-matter.volume"
   ],

@@ -17,13 +17,15 @@
   "destrieux": "Destrieux anatomical atlas",
   "hcp-mmp": "HCP-MMP1.0 multimodal atlas",
   "julich": "Julich-Brain cytoarchitectonic atlas",
+  "schaefer": "Schaefer 2018 functional parcellation",
   "learning": "Teaching set: overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published",
   "aseg": "FreeSurfer subcortical segmentation",
   "nextbrain": "NextBrain histological atlas",
   "cerebnet": "FastSurfer CerebNet cerebellar lobules",
   "wmparc": "FreeSurfer white-matter parcellation",
   "pam50": "PAM50 cord atlas on this spinal cord",
-  "arterial": "Arterial territory atlas (Liu et al. 2023)"
+  "arterial": "Arterial territory atlas (Liu et al. 2023)",
+  "nettekoven": "Functional cerebellar atlas (Nettekoven et al. 2024)"
  },
  "boundary": {
   "heading": "Boundary certainty",
@@ -214,6 +216,7 @@
    "[\"Alpha\"] → \"Overlap with Alpha\"",
    "[\"\"] → \"Overlap with \""
   ],
+  "partner": "Compare with",
   "denominator": "Shares of this region’s full pial surface.",
   "highlight": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Highlight overlap with Alpha, , Alpha of this region\"",
@@ -240,7 +243,13 @@
   "exported": "Atlas comparison CSV downloaded.",
   "viewNote": "Turn off sections to outline overlaps. Measurements use the full region, including hidden parts.",
   "methodHeading": "Method and sources",
-  "method": "Surface area on this subject’s original pial triangles, using the same midpoint/centroid boundaries as the viewer. Percentages include unassigned area and are not rescaled. Small overlaps remain in the table and export. Values shown are rounded; CSV retains full precision. HCP-MMP labels are projected from a group atlas through registered spheres, not measured boundaries in this individual. This is spatial correspondence, not functional equivalence."
+  "method": "Surface area on this subject’s original pial triangles, using the same midpoint/centroid boundaries as the viewer. Percentages include unassigned area and are not rescaled. Small overlaps remain in the table and export. Values shown are rounded; CSV retains full precision.",
+  "projected": {
+   "hcp-mmp": "HCP-MMP labels are projected from a group atlas through registered spheres, not measured boundaries in this individual.",
+   "julich": "Julich-Brain areas are projected from a group maximum-probability map through registered spheres, not measured boundaries in this individual; its gap maps, cortex not yet mapped, count as unassigned. An overlap does not carry an area’s receptor measurements to another region.",
+   "schaefer": "Schaefer parcels are a group resting-state parcellation on fsaverage, projected through registered spheres, not measured boundaries in this individual; its medial wall counts as unassigned."
+  },
+  "correspondence": "This is spatial correspondence, not functional equivalence."
  },
  "cuts": {
   "cuttingPlane": "Cutting plane",
@@ -308,10 +317,12 @@
   "domainsOtherLabels": "neuropsychological functions colour HCP-MMP labels only",
   "hcpDerived": "derived HCP labels",
   "julichDerived": "derived Julich-Brain labels",
+  "schaeferDerived": "derived Schaefer labels",
   "destrieuxNative": "native Destrieux labels",
   "nextbrainWarped": "warped NextBrain labels",
   "nextbrainSegmented": "NextBrain labels segmented on this brain",
   "arterialRegistered": "typical arterial territories registered onto this brain",
+  "nettekovenRegistered": "group functional cerebellar regions registered onto this brain",
   "cutLabels": "Cut labels"
  },
  "deficitKey": {
@@ -721,13 +732,15 @@
    "destrieux": "Destrieux",
    "hcp-mmp": "HCP-MMP",
    "julich": "Julich-Brain",
+   "schaefer": "Schaefer",
    "learning": "Teaching set",
    "aseg": "FreeSurfer aseg",
    "nextbrain": "NextBrain",
    "cerebnet": "CerebNet",
    "wmparc": "wmparc",
    "pam50": "PAM50",
-   "arterial": "Arterial territories"
+   "arterial": "Arterial territories",
+   "nettekoven": "Cerebellar functions"
   },
   "subject": "Subject",
   "atlas": "Atlas",
@@ -751,6 +764,7 @@
    "destrieux": "Sulcal and gyral regions, 74 per hemisphere",
    "hcp-mmp": "Multimodal areas, 180 per hemisphere (Glasser 2016)",
    "julich": "Cytoarchitectonic areas from histology, 139 per hemisphere (Amunts 2020); about a quarter of the cortex is not yet mapped",
+   "schaefer": "Resting-state functional parcels, 200 per hemisphere, coloured by Yeo network (Schaefer 2018)",
    "learning": "Overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published",
    "aseg": "FreeSurfer’s standard automatic subcortical segmentation",
    "nextbrain": "Histology-based atlas, segmented on this subject at 0.4<NNBSP>mm"
@@ -852,6 +866,18 @@
    "[\"Alpha\"] → \"Not reached: Alpha\"",
    "[\"\"] → \"Not reached: \""
   ],
+  "tractsChoose": "Choose a bundle to draw only its streamlines through the lesion.",
+  "showTract": [
+   "[\"Alpha\",\"\"] → \"Draw the  streamlines of Alpha through the lesion\"",
+   "[\"\",\"Alpha\"] → \"Draw the Alpha streamlines of  through the lesion\""
+  ],
+  "tractLoading": "Loading the bundle…",
+  "tractShown": [
+   "[\"Alpha\"] → \"Drawing Alpha through the lesion.\"",
+   "[\"\"] → \"Drawing  through the lesion.\""
+  ],
+  "tractShowFailed": "The streamlines could not be drawn.",
+  "tractsCaveat": "Reconstructed streamlines from this brain’s diffusion scan, not axons; a crossing is not a measure of disconnection.",
   "noTracts": "This anatomy publishes no tracts of its own.",
   "findings": "Findings citing these regions",
   "findingsNote": "Ranked by how much of a cited region lies inside. Overlap with a cited region, not a predicted deficit.",
@@ -937,7 +963,10 @@
    "circuit": "circuit",
    "step": "circuit step",
    "lang": "language",
-   "hidden": "hidden parts"
+   "hidden": "hidden parts",
+   "lesion": "lesion",
+   "lesionmode": "lesion colouring",
+   "lesiontract": "drawn tract"
   }
  },
  "menu": {
@@ -1188,6 +1217,15 @@
    "[\"\"] → \" lies in no territory the atlas draws.\""
   ],
   "caveat": "Typical territories from where infarcts fell in 1,298 stroke patients (Liu et al. 2023), registered onto this brain: not this brain’s own vessels. Collateral flow and variant anatomy move real territories by centimetres."
+ },
+ "cerebellarFunctions": {
+  "heading": "Functional regions (group atlas)",
+  "basis": "Share of this lobule’s voxels in each functional region.",
+  "unassigned": [
+   "[\"Alpha\"] → \"Alpha lies in no region the atlas draws on this brain.\"",
+   "[\"\"] → \" lies in no region the atlas draws on this brain.\""
+  ],
+  "caveat": "A group atlas from seven task-based fMRI datasets (Nettekoven et al. 2024), registered onto this brain from the SUIT template: not this brain’s measured function. Registration places borders a few millimetres off, and individual functional borders differ from the group’s."
  },
  "shortcuts": {
   "title": "Keyboard shortcuts",

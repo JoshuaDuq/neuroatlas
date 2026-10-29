@@ -11,8 +11,8 @@ anatomy: cdmd
 freesurfer_build: freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45
 
 # Every anatomy lists the optional layers it publishes, out of networks,
-# nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms and
-# arterial_territories. Build and
+# nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms,
+# arterial_territories and cerebellar_functions. Build and
 # validate fail when a declared layer's input is missing and publish no layer
 # that is undeclared.
 anatomies:
@@ -43,7 +43,7 @@ anatomies:
     # fewest surface defect holes (14); its own diffusion scan gives the tracts
     # their frame.
     source_url: https://doi.org/10.6084/m9.figshare.c.5315474.v1
-    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms, arterial_territories]
+    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms, arterial_territories, cerebellar_functions]
     # Reconstructed here with FreeSurfer 8.2 from the T1 the
     # published FreeSurfer 6 run imported (voxel for voxel). With that run's
     # aseg, NextBrain's left amygdala met it at Dice 0.793, below the floor.
@@ -253,7 +253,7 @@ appearance:
     intensity: 0.9
 atlas_comparison:
   enabled_anatomies: [cdmd]
-  atlases: [destrieux, hcp-mmp]
+  atlases: [destrieux, hcp-mmp, julich, schaefer]
 atlases:
   - id: destrieux
     label: Destrieux anatomical atlas
@@ -273,6 +273,15 @@ atlases:
     annotation: JulichBrain3.1
     citation: https://doi.org/10.1126/science.abb4588
     license_file: ../licenses/Julich-Brain-CC-BY-NC-SA-4.0.pdf
+  # Schaefer 2018's 400 parcels in their published 7-network colours, projected like
+  # HCP-MMP1.0. The 17-network order divides the same parcels and names where most of
+  # them lie, which the 7-network names leave out for every visual and somatomotor
+  # parcel; the build pairs the two on fsaverage and fails unless one to one. MIT.
+  - id: schaefer
+    label: Schaefer 2018 functional parcellation
+    annotation: Schaefer2018_400Parcels_7Networks_order
+    names_from: Schaefer2018_400Parcels_17Networks_order
+    citation: https://doi.org/10.1093/cercor/bhx179
 # A cut-label atlas with no cortical surface counterpart, published by the
 # anatomies that declare the `nextbrain` layer. The volume is produced once per
 # brain by scripts/segment_nextbrain.py, which needs FreeSurfer 8.2.

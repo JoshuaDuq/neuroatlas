@@ -1,6 +1,7 @@
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
 import type { Engine } from '../engine/api.ts';
+import type { LesionStore } from '../state/lesion.svelte.ts';
 import type { SessionStore } from '../state/session.svelte.ts';
 import type { Explorer } from '../types/index.ts';
 
@@ -12,11 +13,14 @@ import type { Explorer } from '../types/index.ts';
 export function createExplorerChoice({
   engine,
   session,
+  lesion,
   anatomy,
   render,
 }: {
   engine: Pick<Engine, 'model' | 'tracts'>;
   session: Pick<SessionStore, 'state' | 'setExplorer'>;
+  /** The lesion's streamlines belong to its report on Anatomy. */
+  lesion: Pick<LesionStore, 'selectedTract' | 'clearTract'>;
   /** The brain on screen. */
   anatomy: () => string;
   render: () => void;
@@ -29,6 +33,8 @@ export function createExplorerChoice({
     },
     chooseExplorer(value: Explorer) {
       const previous = session.state.explorer;
+      // Before Tracts holds the opacity, so it holds the reader's own.
+      if (value !== 'anatomy' && lesion.selectedTract !== null) lesion.clearTract();
       session.setExplorer(value);
       if (previous === 'diffusion' && value !== 'diffusion' && beforeTractsOpacity !== null) {
         const opacity = beforeTractsOpacity;

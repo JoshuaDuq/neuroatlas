@@ -97,12 +97,20 @@ export function createScene() {
     openMri: vi.fn((): unknown => excursions.openLessonMri()),
   };
 
+  // A lesion whose streamlines a test can mark as drawn.
+  const lesion = {
+    selectedTract: null as string | null,
+    clearTract: vi.fn(() => {
+      lesion.selectedTract = null;
+    }),
+  };
   const excursions = createExcursions(
     { engine, session, lesson, view },
-    { anatomy, domains, clinical, circuits, commands, reader, shell, mri, panels, render },
+    { anatomy, domains, clinical, circuits, commands, reader, shell, mri, panels, render, lesion },
   );
   return {
     engine,
+    lesion,
     session,
     lesson,
     view,

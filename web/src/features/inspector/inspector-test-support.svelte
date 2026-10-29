@@ -14,6 +14,7 @@
   import type { ReceptorFingerprints } from '../../lib/core/catalog/receptor-fingerprints.ts';
   import type {
     ArterialTerritories,
+    CerebellarFunctions,
     Explorer,
     Language,
     Region,
@@ -71,6 +72,7 @@
   boundaryCertainty={boundaryFile as unknown as BoundaryCertainty}
   receptors={receptorFile as unknown as ReceptorFingerprints}
   territories={manifest.arterial_territories as unknown as ArterialTerritories}
+  cerebellarFunctions={manifest.cerebellar_functions as unknown as CerebellarFunctions}
   onfocus={() => calls.push('focus')}
   onisolate={() => calls.push('isolate')}
   onhide={() => calls.push('hide')}

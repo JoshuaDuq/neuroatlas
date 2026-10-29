@@ -23,6 +23,8 @@ const known: KnownLinkIds = {
   deficits: new Set(['aphasia']),
   circuits: new Map([['visual', 4]]),
   spinalCord: true,
+  // The left bundle while the sphere reaches the left of the midline.
+  lesionBundles: ({ centre: [x], radius }) => (x - radius < 0 ? ['af-left'] : []),
 };
 
 const check = (hash: string) => checkLink(decodeState(hash).state, known);
@@ -84,4 +86,15 @@ test('the cord field is not applied where the subject publishes no cord; hiding 
   assert.deepEqual(state, { hemisphere: 'left' });
   assert.deepEqual(checkLink(decodeState('#cord=0').state, { ...known, spinalCord }).rejected, []);
   assert.deepEqual(checkLink(decodeState('#cord=1').state, known).rejected, []);
+});
+
+test('a lesion’s colouring and drawn tract need the lesion, and the tract one it reaches', () => {
+  assert.deepEqual(
+    check('lesion=-30,0,10,8&lesionmode=functions&lesiontract=af-left').rejected,
+    [],
+  );
+  assert.deepEqual(check('lesion=30,0,10,8&lesiontract=af-left').rejected, ['lesiontract']);
+  const orphan = check('lesionmode=functions&lesiontract=af-left');
+  assert.deepEqual(orphan.rejected, ['lesionmode', 'lesiontract']);
+  assert.deepEqual(orphan.state, {});
 });

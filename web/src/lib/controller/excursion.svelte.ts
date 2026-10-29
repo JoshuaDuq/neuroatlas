@@ -23,6 +23,7 @@ import type { SceneCommands } from '../core/state/scene-commands.ts';
 import type { AppContext } from './context.ts';
 import { createLessons } from './lesson.ts';
 import type { MriDialog, SceneReader, Shell } from './lesson.ts';
+import type { LesionStore } from '../state/lesion.svelte.ts';
 import { createExplorerChoice, createModes } from './modes.ts';
 import type { Language, Notice } from '../types/index.ts';
 
@@ -64,6 +65,7 @@ export interface ExcursionDeps {
   };
   /** Apply pending state to the page: the legacy `render()`. Framing reads the page it has drawn. */
   render: () => void;
+  lesion: Pick<LesionStore, 'selectedTract' | 'clearTract'>;
 }
 
 /**
@@ -83,6 +85,7 @@ export function createExcursions(
     mri,
     panels,
     render,
+    lesion,
   }: ExcursionDeps,
 ) {
   const { engine, session, lesson, view } = ctx;
@@ -101,6 +104,7 @@ export function createExcursions(
   const explorerChoice = createExplorerChoice({
     engine,
     session,
+    lesion,
     anatomy: () => view.current.anatomy,
     render,
   });

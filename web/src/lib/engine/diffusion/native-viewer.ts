@@ -4,6 +4,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { readDiffusionAsset } from '../../core/assets/diffusion-assets.ts';
 import type { TractBundle, TractCatalog } from '../../core/diffusion/catalogs.ts';
 import { rasToWorld, worldToRas } from '../slices/coordinates.ts';
+import type { LesionSphere } from '../api.ts';
+import { streamlineMembership } from '../lesion/measure.ts';
 import type { Ras } from '../slices/coordinates.ts';
 import {
   MOTION_STRIDE,
@@ -35,6 +37,8 @@ interface LoadedBundle {
   moving: BufferGeometry;
   lengths: Float64Array;
   offsets: Uint32Array;
+  /** Ordinary tract visibility, retained while the lesion isolates a bundle. */
+  visible: boolean;
 }
 
 interface ReferenceSpace {
@@ -66,18 +70,47 @@ export function createNativeTractViewer(
   let outlineVisible = true;
   let outlineOpacity = catalog.brain_outline.opacity;
   let clippingPlanes: Plane[] = [];
+  let reference: Promise<void> | null = null;
+  let lesionRequest = 0;
+  let selected: { id: string; membership: Uint8Array | null } | null = null;
+
+  function loadReference(): Promise<void> {
+    reference ??= readDiffusionAsset(catalog.reference_space).then(({ buffer }) => {
+      const space = JSON.parse(new TextDecoder().decode(buffer)) as ReferenceSpace;
+      if (space.anatomy !== catalog.anatomy) {
+        throw new Error('The tract reference space belongs to a different anatomy.');
+      }
+      group.matrixAutoUpdate = false;
+      group.matrix.copy(createReferenceTransform(space.scanner_ras_to_surface_ras));
+      group.updateWorldMatrix(true, true, true);
+    });
+    reference.catch(() => (reference = null));
+    return reference;
+  }
+
+  function refresh(entry: LoadedBundle): void {
+    const membership =
+      selected?.id === entry.bundle.id ? (selected.membership ?? undefined) : undefined;
+    filterTractGeometry(entry.still, entry.offsets, entry.lengths, minimum, 1, membership);
+    filterTractGeometry(
+      entry.moving,
+      entry.offsets,
+      entry.lengths,
+      minimum,
+      MOTION_STRIDE,
+      membership,
+    );
+    entry.lines.visible = selected
+      ? selected.id === entry.bundle.id && selected.membership !== null
+      : entry.visible;
+  }
 
   async function loadOutline(): Promise<void> {
     if (outline) return;
-    const [asset, spaceAsset] = await Promise.all([
+    const [asset] = await Promise.all([
       readDiffusionAsset(catalog.brain_outline.file),
-      readDiffusionAsset(catalog.reference_space),
+      loadReference(),
     ]);
-    const space = JSON.parse(new TextDecoder().decode(spaceAsset.buffer)) as ReferenceSpace;
-    if (space.anatomy !== catalog.anatomy) {
-      throw new Error('The tract reference space belongs to a different anatomy.');
-    }
-    const transform = createReferenceTransform(space.scanner_ras_to_surface_ras);
     const result = await new GLTFLoader().parseAsync(asset.buffer, '');
     if (disposed) throw new Error('Tract viewer disposed during outline loading.');
     outline = result.scene;
@@ -94,8 +127,6 @@ export function createNativeTractViewer(
         depthWrite: false,
       });
     });
-    group.matrixAutoUpdate = false;
-    group.matrix.copy(transform);
     group.add(outline);
     group.updateWorldMatrix(true, true, true);
     invalidate();
@@ -115,6 +146,7 @@ export function createNativeTractViewer(
     lines.matrixAutoUpdate = false;
     lines.matrix.copy(RAS_MM_TO_WORLD);
     lines.matrixWorldNeedsUpdate = true;
+    lines.visible = false;
     group.add(lines);
     bundles.set(bundle.id, {
       bundle,
@@ -123,16 +155,14 @@ export function createNativeTractViewer(
       moving,
       lengths,
       offsets: tract.offsetPt0,
+      visible: false,
     });
     invalidate();
   }
 
   /** A bundle requested again while it downloads shares the one load, so it is added once. */
-  function loadBundle(bundle: TractBundle): Promise<void> {
-    if (bundles.has(bundle.id)) {
-      setVisible(bundle.id, true);
-      return Promise.resolve();
-    }
+  function ensureBundle(bundle: TractBundle): Promise<void> {
+    if (bundles.has(bundle.id)) return Promise.resolve();
     let pending = loading.get(bundle.id);
     if (!pending) {
       pending = addBundle(bundle).finally(() => loading.delete(bundle.id));
@@ -141,10 +171,16 @@ export function createNativeTractViewer(
     return pending;
   }
 
+  async function loadBundle(bundle: TractBundle): Promise<void> {
+    await ensureBundle(bundle);
+    setVisible(bundle.id, true);
+  }
+
   function setVisible(id: string, visible: boolean): void {
     const entry = bundles.get(id);
     if (!entry) throw new RangeError(`Unknown tract bundle: ${id}`);
-    entry.lines.visible = visible;
+    entry.visible = visible;
+    refresh(entry);
     invalidate();
   }
 
@@ -172,6 +208,34 @@ export function createNativeTractViewer(
       }
     },
     loadBundle,
+    async showLesionTract(bundle: TractBundle, sphere: LesionSphere): Promise<void> {
+      const ask = ++lesionRequest;
+      selected = { id: bundle.id, membership: null };
+      for (const entry of bundles.values()) entry.lines.visible = false;
+      invalidate();
+      await Promise.all([loadReference(), ensureBundle(bundle)]);
+      if (ask !== lesionRequest || disposed) return;
+      const entry = bundles.get(bundle.id)!;
+      const centre = worldToRas(
+        rasToWorld(sphere.centre).applyMatrix4(group.matrix.clone().invert()),
+      );
+      selected = {
+        id: bundle.id,
+        membership: streamlineMembership(
+          entry.still.getAttribute('position').array as Float32Array,
+          entry.offsets,
+          { centre, radius: sphere.radius },
+        ),
+      };
+      refresh(entry);
+      invalidate();
+    },
+    clearLesionTract(): void {
+      lesionRequest++;
+      selected = null;
+      for (const entry of bundles.values()) refresh(entry);
+      invalidate();
+    },
     hasBundle(id: string) {
       return bundles.has(id);
     },
@@ -203,11 +267,8 @@ export function createNativeTractViewer(
     setMinimum(value: number) {
       // Checked up front, so an empty or part-filtered set never keeps a value that loading rejects.
       requireMinimum(value);
-      for (const entry of bundles.values()) {
-        filterTractGeometry(entry.still, entry.offsets, entry.lengths, value);
-        filterTractGeometry(entry.moving, entry.offsets, entry.lengths, value, MOTION_STRIDE);
-      }
       minimum = value;
+      for (const entry of bundles.values()) refresh(entry);
       invalidate();
     },
     /** Draw the coarser lines while the camera moves; the scene redraws at rest with every point. */
@@ -217,18 +278,19 @@ export function createNativeTractViewer(
         entry.lines.geometry = moving ? entry.moving : entry.still;
     },
     snapshot(): TractSnapshot[] {
-      return [...bundles.values()].map(({ bundle, lines, lengths }) => ({
+      return [...bundles.values()].map(({ bundle, visible, lengths }) => ({
         id: bundle.id,
         catalogId: bundle.id,
         name: bundle.name.en!,
         label: bundle.name,
         file: bundle.file.split('/').at(-1)!,
-        visible: lines.visible,
+        visible,
         ...summarizeLengths(lengths, minimum),
       }));
     },
     dispose() {
       disposed = true;
+      lesionRequest++;
       group.traverse((object) => {
         if (object instanceof Mesh || object instanceof LineSegments) {
           object.geometry.dispose();

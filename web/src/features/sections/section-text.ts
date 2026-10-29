@@ -77,9 +77,11 @@ export function sectionSentences(input: SentenceInput): { said: string; shown: s
     {
       'hcp-mmp': copy.hcpDerived,
       julich: copy.julichDerived,
+      schaefer: copy.schaeferDerived,
       destrieux: copy.destrieuxNative,
       nextbrain: input.nextbrainSegmented ? copy.nextbrainSegmented : copy.nextbrainWarped,
       arterial: copy.arterialRegistered,
+      nettekoven: copy.nettekovenRegistered,
     }[state.cutAtlas] ?? state.cutAtlas;
   // A cut is sampled from a label volume, so its network colour is per parcel while the surface's is
   // per vertex. CAB-NP groups HCP-MMP areas: other labels have none.

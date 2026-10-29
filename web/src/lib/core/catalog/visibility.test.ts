@@ -113,6 +113,15 @@ test('hiding internal anatomy hides structures but keeps cortex', () => {
   assert.equal(visibilityOf(region(), settings({ internalVisible: false })).visible, true);
 });
 
+test('the medial wall stands in for internal anatomy only while it is hidden', () => {
+  const wall = region({ kind: 'non-region', source_name: 'Unknown' });
+  assert.deepEqual(visibilityOf(wall, settings()), { visible: false, reason: 'internal-shown' });
+  assert.equal(visibilityOf(wall, settings({ internalVisible: false })).visible, true);
+  // A gap map is cortex no area has claimed yet, so it stays whatever internal anatomy does.
+  const gapMap = region({ kind: 'non-region', source_name: 'GapMap-Frontal-I.1' });
+  assert.equal(visibilityOf(gapMap, settings()).visible, true);
+});
+
 test('fully transparent cortex counts as hidden', () => {
   assert.deepEqual(visibilityOf(region(), settings({ cortexOpacity: 0 })), {
     visible: false,
@@ -129,9 +138,9 @@ test('isolating a region hides every other region, structures included', () => {
 });
 
 test('unlabelled cortex follows the cortex rules like any other patch', () => {
-  const wall = region({ kind: 'non-region' });
-  assert.equal(visibilityOf(wall, settings()).visible, true);
-  assert.deepEqual(visibilityOf(wall, settings({ cortexVisible: false })), {
+  const gapMap = region({ kind: 'non-region', source_name: 'GapMap-Frontal-II' });
+  assert.equal(visibilityOf(gapMap, settings()).visible, true);
+  assert.deepEqual(visibilityOf(gapMap, settings({ cortexVisible: false })), {
     visible: false,
     reason: 'cortex-hidden',
   });

@@ -1,5 +1,5 @@
 {
- "fetched": "2026-10-28",
+ "fetched": "2026-10-29",
  "sources": "PubMed efetch, Bookshelf esummary and Crossref; no abstracts",
  "year": "PubMed's journal-issue publication year (PubDate, or the first year of a MedlineDate range), not the online-first year; for a Bookshelf chapter, the book's publication year",
  "records": {
@@ -1353,6 +1353,23 @@
    "pages": "1004-7",
    "corrections": []
   },
+  "pmid:16904911": {
+   "pmid": "16904911",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2006.05.056",
+   "doi_source": "pubmed",
+   "title": "A spatially unbiased atlas template of the human cerebellum",
+   "authors": [
+    "Diedrichsen J"
+   ],
+   "year": 2006,
+   "pubdate": "2006 Oct 15",
+   "journal": "Neuroimage",
+   "volume": "33",
+   "issue": "1",
+   "pages": "127-38",
+   "corrections": []
+  },
   "pmid:16997333": {
    "pmid": "16997333",
    "pmcid": null,
@@ -1588,6 +1605,27 @@
    "volume": "256",
    "issue": "7",
    "pages": "1146-51",
+   "corrections": []
+  },
+  "pmid:19457380": {
+   "pmid": "19457380",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2009.01.045",
+   "doi_source": "pubmed",
+   "title": "A probabilistic MR atlas of the human cerebellum",
+   "authors": [
+    "Diedrichsen J",
+    "Balsters JH",
+    "Flavell J",
+    "Cussans E",
+    "Ramnani N"
+   ],
+   "year": 2009,
+   "pubdate": "2009 May 15",
+   "journal": "Neuroimage",
+   "volume": "46",
+   "issue": "1",
+   "pages": "39-46",
    "corrections": []
   },
   "pmid:19698727": {
@@ -3757,6 +3795,29 @@
    "volume": "147",
    "issue": "6",
    "pages": "2203-2213",
+   "corrections": []
+  },
+  "pmid:39333089": {
+   "pmid": "39333089",
+   "pmcid": "PMC11436828",
+   "doi": "10.1038/s41467-024-52371-w",
+   "doi_source": "pubmed",
+   "title": "A hierarchical atlas of the human cerebellum for functional precision mapping",
+   "authors": [
+    "Nettekoven C",
+    "Zhi D",
+    "Shahshahani L",
+    "Pinho AL",
+    "Saadon-Grosman N",
+    "Buckner RL",
+    "Diedrichsen J"
+   ],
+   "year": 2024,
+   "pubdate": "2024 Sep 27",
+   "journal": "Nat Commun",
+   "volume": "15",
+   "issue": "1",
+   "pages": "8376",
    "corrections": []
   },
   "pmid:39874684": {

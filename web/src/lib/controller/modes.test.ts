@@ -59,6 +59,7 @@ describe('leaving Tracts', () => {
     const { chooseExplorer } = createExplorerChoice({
       engine: scene.engine,
       session: scene.session,
+      lesion: scene.lesion,
       anatomy: () => 'another-subject',
       render: scene.render,
     });
@@ -67,6 +68,30 @@ describe('leaving Tracts', () => {
     assert.deepEqual(overlay(scene), []);
     chooseExplorer('anatomy');
     assert.equal(scene.engine.model.settings.cortexOpacity, 0.7);
+  });
+});
+
+describe('a lesion’s streamlines', () => {
+  test('clear before Tracts holds the opacity, so leaving Tracts gives back the reader’s own', () => {
+    const scene = createScene();
+    scene.lesion.selectedTract = 'af-left';
+    scene.engine.model.setCortexOpacity(0.35);
+    // The lesion gives back the opaque cortex it made see-through.
+    scene.lesion.clearTract.mockImplementationOnce(() => {
+      scene.lesion.selectedTract = null;
+      scene.engine.model.setCortexOpacity(1);
+    });
+    scene.excursions.chooseExplorer('diffusion');
+    expect(scene.lesion.clearTract).toHaveBeenCalledOnce();
+    scene.excursions.chooseExplorer('anatomy');
+    assert.equal(scene.engine.model.settings.cortexOpacity, 1);
+  });
+
+  test('stay drawn while Anatomy is chosen again', () => {
+    const scene = createScene();
+    scene.lesion.selectedTract = 'af-left';
+    scene.excursions.chooseExplorer('anatomy');
+    expect(scene.lesion.clearTract).not.toHaveBeenCalled();
   });
 });
 

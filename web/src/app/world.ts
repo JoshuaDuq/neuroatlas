@@ -71,6 +71,13 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
     });
     const lesion = createLesionStore({
       lesion: engine.lesion,
+      cortex: {
+        get opacity() {
+          return engine.model.settings.cortexOpacity;
+        },
+        setOpacity: (opacity) => engine.model.setCortexOpacity(opacity),
+        seeThrough: engine.tracts.defaultOpacity,
+      },
       associations: clinical.associations,
       domains,
       deficitGroup: (id) => clinical.get(id).group,
@@ -80,7 +87,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
     const catalog = createCatalogStore(regions, view);
     // Before the first restore: a link that loads hidden regions then says their count once.
     const speech = announceView(view, (region, current) => regions.label(region.id, current).name);
-    const link = createLink({ engine, view, write: () => links.write() });
+    const link = createLink({ engine, view, lesion, write: () => links.write() });
     const context: AppContext = { engine, engineState, session, lesson, view, catalog, link };
 
     const excursions = createExcursions(context, {
@@ -101,6 +108,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
         openMri: ports.openLessonMri,
       },
       render: flushSync,
+      lesion,
     });
     const anatomy = createAnatomyCommands(context, {
       commands,
@@ -118,6 +126,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       session,
       lesson,
       view,
+      lesion,
       link,
       commands,
       clinical,

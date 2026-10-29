@@ -11,7 +11,7 @@ from nibabel.freesurfer.io import read_annot, read_geometry, write_annot
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from brain_model.layers import networks
-from brain_model.sources import ROOT, declares, read_config, sha256, write_json
+from brain_model.sources import ROOT, read_config, sha256, write_json
 from brain_model.surfaces.registration import resample_surface_labels
 
 PROCEDURE = (
@@ -41,12 +41,11 @@ SUBJECT_FILES = [
 ]
 
 # Published annotations that live in the projection source's label directory
-# and travel to this brain the same way, each with the report it writes and
-# the layer, if any, that must be declared for it to be projected.
+# and travel to this brain the same way, each with the report it writes.
 PROJECTED_ANNOTATIONS = [
-    ("HCPMMP1", "hcp-registration.json", None),
-    ("JulichBrain3.1", "julich-registration.json", None),
-    (networks.ANNOTATION, "network-registration.json", "networks"),
+    ("HCPMMP1", "hcp-registration.json"),
+    ("JulichBrain3.1", "julich-registration.json"),
+    (networks.ANNOTATION, "network-registration.json"),
 ]
 
 
@@ -191,8 +190,7 @@ def transfer_annotations(config, provenance, rerecord=False):
         return {}
     return {
         name: transfer_annotation(config, provenance, name, report, rerecord)
-        for name, report, layer in PROJECTED_ANNOTATIONS
-        if layer is None or declares(config, layer)
+        for name, report in PROJECTED_ANNOTATIONS
     }
 
 

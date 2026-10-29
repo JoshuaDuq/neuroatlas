@@ -152,16 +152,28 @@
       "sha256": "351848da486c2b178ef825640c076fcbcf054095bed0c91d5854d2c593e5c1ee",
       "url": "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/Parcellations/FreeSurfer5.3/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
       "citation": "https://doi.org/10.1093/cercor/bhx179",
-      "license": "MIT (ThomasYeoLab/CBIG)",
-      "optional": true
+      "license": "MIT (ThomasYeoLab/CBIG)"
     },
     {
       "path": "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
       "sha256": "595444aecc3b59a8a6838b2e5c7f2052e88e25b1c5f833c5a6bdb984e3fa978f",
       "url": "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/Parcellations/FreeSurfer5.3/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
       "citation": "https://doi.org/10.1093/cercor/bhx179",
-      "license": "MIT (ThomasYeoLab/CBIG)",
-      "optional": true
+      "license": "MIT (ThomasYeoLab/CBIG)"
+    },
+    {
+      "path": "data/fsaverage/label/lh.Schaefer2018_400Parcels_17Networks_order.annot",
+      "sha256": "4121084967a6fb51bafe4ee1dd0e79aabfad90b20424866a6b46069efc1f2d51",
+      "url": "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/Parcellations/FreeSurfer5.3/fsaverage/label/lh.Schaefer2018_400Parcels_17Networks_order.annot",
+      "citation": "https://doi.org/10.1093/cercor/bhx179",
+      "license": "MIT (ThomasYeoLab/CBIG)"
+    },
+    {
+      "path": "data/fsaverage/label/rh.Schaefer2018_400Parcels_17Networks_order.annot",
+      "sha256": "515c9de716435fcedf7062c8116fb4e039e74b21a37191fa715d6c7712b62dad",
+      "url": "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/Parcellations/FreeSurfer5.3/fsaverage/label/rh.Schaefer2018_400Parcels_17Networks_order.annot",
+      "citation": "https://doi.org/10.1093/cercor/bhx179",
+      "license": "MIT (ThomasYeoLab/CBIG)"
     },
     {
       "path": "data/cab-np/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt",
@@ -1318,6 +1330,96 @@
       "procedure": "scripts/register_arterial_territories.py: SynthMorph registration of the atlas template to brain.mgz, nearest-neighbour transfer",
       "citation": "https://doi.org/10.1038/s41597-022-01923-0",
       "license": "CC BY-SA 4.0"
+    },
+    {
+      "path": "data/cdmd/mri/cerebellar-functions.mgz",
+      "sha256": "56e68c3a4abb2b8002c7859a5ec6787e6228af0ff97628fd65dde72585862a3c",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/tpl-SUIT/tpl-SUIT_T1w.nii",
+          "sha256": "9c84dd5d2dc3373d9d876ab675b1143d7c8397fd64bce7563650783c93ff530f"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Nettekoven_2024/atl-NettekovenSym32_space-SUIT_dseg.nii",
+          "sha256": "82f06b102bafac7b3ba7b641fd4ab1d8d7034a1d88fca163d3b49e79c9aa1476"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Nettekoven_2024/atl-NettekovenSym32.lut",
+          "sha256": "33a723b32cb861623a8459865454c9efb142bdb3ce2390ea5f29a586cfab0e24"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Diedrichsen_2009/atl-Anatom_space-SUIT_dseg.nii",
+          "sha256": "cd9485752b10c385eb630a5d062cc9c8832fd1b94df1a11fec78c67b0a94ee96"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Diedrichsen_2009/atl-Anatom.tsv",
+          "sha256": "dc682c847972bd37badaa979526cf22a25bc79cdf50f4f49c107391c517fe7ad"
+        }
+      ],
+      "procedure": "scripts/register_cerebellar_functions.py: SynthMorph registration of the SUIT template to brain.mgz's infratentorial compartment, nearest-neighbour transfer",
+      "citation": "https://doi.org/10.1038/s41467-024-52371-w",
+      "license": "CC BY-NC 3.0"
+    },
+    {
+      "path": "data/cdmd/mri/cerebellar-lobules-suit.mgz",
+      "sha256": "5d58d66b914c856edbae627282e87c81d9b876543c8778595c4e10078e37118d",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/tpl-SUIT/tpl-SUIT_T1w.nii",
+          "sha256": "9c84dd5d2dc3373d9d876ab675b1143d7c8397fd64bce7563650783c93ff530f"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Nettekoven_2024/atl-NettekovenSym32_space-SUIT_dseg.nii",
+          "sha256": "82f06b102bafac7b3ba7b641fd4ab1d8d7034a1d88fca163d3b49e79c9aa1476"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Nettekoven_2024/atl-NettekovenSym32.lut",
+          "sha256": "33a723b32cb861623a8459865454c9efb142bdb3ce2390ea5f29a586cfab0e24"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Diedrichsen_2009/atl-Anatom_space-SUIT_dseg.nii",
+          "sha256": "cd9485752b10c385eb630a5d062cc9c8832fd1b94df1a11fec78c67b0a94ee96"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Diedrichsen_2009/atl-Anatom.tsv",
+          "sha256": "dc682c847972bd37badaa979526cf22a25bc79cdf50f4f49c107391c517fe7ad"
+        }
+      ],
+      "procedure": "scripts/register_cerebellar_functions.py: SynthMorph registration of the SUIT template to brain.mgz's infratentorial compartment, nearest-neighbour transfer",
+      "citation": "https://doi.org/10.1038/s41467-024-52371-w",
+      "license": "CC BY-NC 3.0"
+    },
+    {
+      "path": "data/cdmd/cerebellar-registration.json",
+      "sha256": "73a8ac9842e50ed8e6301482fa4a6d9246260f16a3563038b2635279060aa1db",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/tpl-SUIT/tpl-SUIT_T1w.nii",
+          "sha256": "9c84dd5d2dc3373d9d876ab675b1143d7c8397fd64bce7563650783c93ff530f"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Nettekoven_2024/atl-NettekovenSym32_space-SUIT_dseg.nii",
+          "sha256": "82f06b102bafac7b3ba7b641fd4ab1d8d7034a1d88fca163d3b49e79c9aa1476"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Nettekoven_2024/atl-NettekovenSym32.lut",
+          "sha256": "33a723b32cb861623a8459865454c9efb142bdb3ce2390ea5f29a586cfab0e24"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Diedrichsen_2009/atl-Anatom_space-SUIT_dseg.nii",
+          "sha256": "cd9485752b10c385eb630a5d062cc9c8832fd1b94df1a11fec78c67b0a94ee96"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/DiedrichsenLab/cerebellar_atlases/6857dfa732de6dd60c94da2f84d0b15ccf316618/Diedrichsen_2009/atl-Anatom.tsv",
+          "sha256": "dc682c847972bd37badaa979526cf22a25bc79cdf50f4f49c107391c517fe7ad"
+        }
+      ],
+      "procedure": "scripts/register_cerebellar_functions.py: SynthMorph registration of the SUIT template to brain.mgz's infratentorial compartment, nearest-neighbour transfer",
+      "citation": "https://doi.org/10.1038/s41467-024-52371-w",
+      "license": "CC BY-NC 3.0"
     }
   ]
 }

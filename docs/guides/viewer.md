@@ -7,7 +7,7 @@ The masthead selects the subject and display layers. The panel holds searchable 
 1. Open the [viewer](https://planumatlas.com/) and search for a region in the **Anatomy** tab. Select a result or select it on the model to see its details.
 2. Choose **Section** below the model and select a plane. Move the slider to explore the cut.
 3. Open **Linked MRI** from the section bar to compare the model with the subject's scan.
-4. Copy the page URL to share the view, or use **Save image** to export the stage.
+4. Copy the page URL to share the view, or use **Save image** to export the stage. The URL carries a placed lesion, its colouring and the tract drawn through it.
 
 ## Masthead
 
@@ -34,7 +34,8 @@ Search by name, or browse the **Whole brain** or **By system**. Select a region 
 
 - Hemisphere, lobe or system, surface area or volume, centroid in RAS millimetres, and the source label.
 - **Focus**, **Isolate**, **Hide** and **Linked MRI**.
-- **Overlap with** the other cortical atlas (see below).
+- **Overlap with** another cortical atlas (see below).
+- **Functional regions (group atlas)**, for a cerebellar lobule: its share in each functional region of the registered Nettekoven et al. (2024) atlas, with each region's domain. A functional region chosen on a cut shows what the paper found it does. See [Atlases](../concepts/atlases.md#functional-cerebellar-regions).
 - **Boundary certainty**, for a NextBrain region: each rated neighbour, largest shared boundary first, with the share of that boundary where NextBrain nearly chose the other label. A name selects the neighbour without moving the camera. See [Atlases](../concepts/atlases.md#boundary-certainty).
 - **Functional division**, **Neuropsychological functions** and **Functional networks**, as disclosures that stay open between selections.
 - The deficits and guided-circuit landmarks that involve the region, each opening in its own tab.
@@ -45,14 +46,14 @@ The eye beside a row hides that region or group; **L** and **R** act on each sid
 
 ### Atlas overlap
 
-A Destrieux or HCP-MMP region lists the regions of the other atlas it shares pial surface with: the shared area in mm² and its share of the selected region's **whole** surface, with the unassigned remainder shown. The two directions therefore give different percentages. Activate a row to outline that intersection; a section turns outlines off. **Download CSV** exports every pair at full precision with checksums and citations. The method is in [Atlases](../concepts/atlases.md#comparing-destrieux-and-hcp-mmp).
+A Destrieux, HCP-MMP, Julich-Brain or Schaefer region lists the regions of another cortical atlas it shares pial surface with: the shared area in mm² and its share of the selected region's **whole** surface, with the unassigned remainder shown. **Compare with** chooses that atlas; each pair downloads the first time it is shown. The two directions give different percentages, and Julich-Brain's gap maps and Schaefer's medial wall count as unassigned. Activate a row to outline that intersection; a section turns outlines off. **Download CSV** exports every pair at full precision with checksums and citations, named after both atlases. An overlap is spatial: it does not carry one atlas's measurements, such as Julich-Brain's receptor fingerprints, to the other's regions. The method is in [Atlases](../concepts/atlases.md#comparing-cortical-atlases).
 
 ## Stage
 
 The dock at the bottom left holds four tools.
 
 - **View** holds the presets: oblique, left, right, anterior, posterior, superior, inferior.
-- **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels. With NextBrain cut labels, a selected NextBrain region is outlined on the cut: solid where its boundary is firm, dashed where soft, grey where unrated.
+- **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels. **Cerebellar functions** colours the cerebellar cortex by the registered group functional atlas. With NextBrain cut labels, a selected NextBrain region is outlined on the cut: solid where its boundary is firm, dashed where soft, grey where unrated.
 - **Display** holds hemisphere, cortex and its opacity, internal anatomy, spinal cord and **Reset view**.
 - **Lesion** places a sphere (3–30 mm radius): while it is open, a click on the brain or a cut face sets the centre. Cut first to place it at depth.
 
@@ -65,7 +66,7 @@ A placed lesion is Anatomy's detail. It opens on **What it reaches**, under the 
 
 Each row opens its function or deficit. **On the brain** switches between the lesion alone, the territories of the leading functions, and the regions cited by the findings, one colour per item in rank order; the atlas follows the choice.
 
-Below, **Findings in detail** lists each finding with its reached regions and mapping note, and marks a bilateral finding the lesion reaches on one side only. **Anatomy measured** gives the tissue volumes and each cortical region's share, on Destrieux or HCP-MMP; deep structures and gyral white matter follow. **Tracts** downloads the bundles on the sides the sphere reaches, plus the seven callosal segments, and counts the streamlines with a point inside.
+Below, **Findings in detail** lists each finding with its reached regions and mapping note, and marks a bilateral finding the lesion reaches on one side only. **Anatomy measured** gives the tissue volumes and each cortical region's share, on Destrieux or HCP-MMP; deep structures and gyral white matter follow. **Tracts** downloads the bundles on the sides the sphere reaches, plus the seven callosal segments, and counts the streamlines with a point inside. Activate a counted bundle to draw only those streamlines, over a see-through cortex; the lesion's footprint becomes see-through with it. They follow the sphere as it moves or grows, and activating the bundle again, removing the lesion or leaving Anatomy gives the tracts and the cortex back. They are reconstructed streamlines with a point inside the sphere: not axons, and not a measure of disconnection.
 
 The report measures overlap only: it predicts no deficit. Structures drawn only as meshes, such as the fornix, are not measured.
 

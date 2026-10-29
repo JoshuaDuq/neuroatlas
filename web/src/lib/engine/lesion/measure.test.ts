@@ -6,6 +6,7 @@ import {
   regionSizes,
   regionsInSphere,
   streamlinesCrossing,
+  streamlineMembership,
   tissueClass,
   tissueInSphere,
   voxelsInSphere,
@@ -190,5 +191,19 @@ test('sizes every labelled region of a volume in mm³, reached or not', () => {
       ['atlas:left:1', 16],
       ['atlas:left:2', 8],
     ]),
+  );
+});
+
+test('membership retains boundary points, excludes segment-only crossings, and agrees with the count', () => {
+  const points = new Float32Array([
+    -2, 0, 0, 2, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0, 0, 0.5, 0, 0, 3, 3, 3, 4, 4, 4,
+  ]);
+  const offsets = new Uint32Array([0, 2, 4, 6, 8]);
+  const sphere = { centre: [0, 0, 0] as const, radius: 1 };
+  const membership = streamlineMembership(points, offsets, sphere);
+  assert.deepEqual(Array.from(membership), [0, 1, 1, 0]);
+  assert.equal(
+    membership.reduce((sum, inside) => sum + inside, 0),
+    streamlinesCrossing(points, offsets, sphere),
   );
 });

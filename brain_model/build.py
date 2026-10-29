@@ -15,6 +15,7 @@ from .labels.volumes import conformed_grid, export_volumes
 from .layers import (
     arterial_territories,
     cab_np,
+    cerebellar_functions,
     comparison,
     functional_regions,
     learning,
@@ -46,9 +47,10 @@ from .surfaces.solids import export_solid_envelopes
 
 def cortical_region(atlas, hemisphere, label, name):
     # Julich-Brain marks its medial wall with two masks, and cortex it has not yet
-    # mapped with gap maps: neither is an area.
+    # mapped with gap maps; Schaefer names its medial wall a background: none is an area.
     non_region = name in {
-        "Unknown", "unknown", "???", "Medial_wall", "CorpusCallosumMask", "BrainStemMask"
+        "Unknown", "unknown", "???", "Medial_wall", "CorpusCallosumMask", "BrainStemMask",
+        "Background+FreeSurfer_Defined_Medial_Wall",
     } or name.startswith("GapMap-")
     display = name.replace("_", " ")
     return {
@@ -89,6 +91,12 @@ def require_layer_inputs(config):
             arterial_territories.DEFINITION,
             arterial_territories.volume_path(config),
             arterial_territories.report_path(config),
+        ],
+        "cerebellar_functions": lambda: [
+            cerebellar_functions.DEFINITION,
+            cerebellar_functions.volume_path(config),
+            cerebellar_functions.lobules_path(config),
+            cerebellar_functions.report_path(config),
         ],
     }
     missing = [
@@ -132,6 +140,10 @@ def build_cortex(config, atlas, field_ranges=None):
         labels, colors, names = read_annot(
             source / "label" / f"{prefix}.{atlas['annotation']}.annot"
         )
+        other_names = (
+            networks.published_seventeen_network_names(config, atlas, prefix)
+            if "names_from" in atlas else None
+        )
         partition = partition_surface(vertices, faces, labels)
         sulcal_depth = partition_vertex_field(
             faces, labels, read_morph_data(source / "surf" / f"{prefix}.sulc")
@@ -163,6 +175,8 @@ def build_cortex(config, atlas, field_ranges=None):
                 0 if label == -1 else int(colors[label, 4])
             )
             region["source_vertex_count"] = int(np.count_nonzero(labels == label))
+            if other_names is not None and region["kind"] == "cortex":
+                region["source_17_network_name"] = other_names[name]
             geometry = compact_region(partition, label)
             mesh = add_region(scene, *geometry, region, color)
             indices = np.unique(partition.faces[partition.labels == label])
@@ -337,6 +351,8 @@ def cut_atlases(config):
         )
     if arterial_territories.is_declared(config):
         atlases.append(arterial_territories.cut_atlas(arterial_territories.read_definition()))
+    if cerebellar_functions.is_declared(config):
+        atlases.append(cerebellar_functions.cut_atlas(cerebellar_functions.read_definition()))
     return atlases
 
 
@@ -534,10 +550,16 @@ def main():
         path = config["output_directory"] / built["file"]
         cord_layers = [spinal_cord.layer(config, built, cord_regions, path)]
         regions.extend(cord_regions)
+    if arterial_territories.is_declared(config) or cerebellar_functions.is_declared(config):
+        grids = territory_grids(config)
     if arterial_territories.is_declared(config):
         territories = arterial_territories.read_definition()
         regions.extend(arterial_territories.build_regions(config, territories))
-        arterial_territories.compose(config, territories, regions, *territory_grids(config))
+        arterial_territories.compose(config, territories, regions, *grids)
+    if cerebellar_functions.is_declared(config):
+        cerebellar = cerebellar_functions.read_definition()
+        regions.extend(cerebellar_functions.build_regions(config, cerebellar))
+        cerebellar_functions.compose(config, cerebellar, regions, grids[0])
     manifest = {
         "supplemental_layers": cord_layers,
         "volumes": {"file": "volumes.json"},
@@ -576,6 +598,11 @@ def main():
             if arterial_territories.is_declared(config)
             else {}
         ),
+        **(
+            {"cerebellar_functions": cerebellar_functions.metadata(config, cerebellar)}
+            if cerebellar_functions.is_declared(config)
+            else {}
+        ),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
@@ -605,6 +632,7 @@ def main():
             *receptor_fingerprints.limitations(),
             *white_matter.limitations(config),
             *(arterial_territories.limitations() if arterial_territories.is_declared(config) else []),
+            *(cerebellar_functions.limitations() if cerebellar_functions.is_declared(config) else []),
         ],
         "provenance": provenance,
     }
@@ -612,7 +640,7 @@ def main():
     if nextbrain.ATLAS_ID in tissues["atlases"]:
         nextbrain.mark_uncut(manifest["regions"], tissues["atlases"][nextbrain.ATLAS_ID])
     if comparison.is_enabled(config):
-        manifest["atlas_comparison"] = comparison.export_comparison(config, manifest)
+        comparison.attach_comparisons(config, manifest)
     write_json(config["output_directory"] / "manifest.json", manifest)
     published = write_anatomy_index(config)
     print(f"Exported {len(regions)} meshes including explicit non-region surfaces.")

@@ -36,9 +36,13 @@ export function filterTractGeometry(
   lengths: Float64Array,
   minimum: number,
   stride = 1,
+  membership?: Uint8Array,
 ): void {
   if (!Number.isFinite(minimum) || minimum < 1) {
     throw new RangeError('Minimum streamline length must be at least 1 mm.');
+  }
+  if (membership && membership.length !== lengths.length) {
+    throw new RangeError('Streamline membership must match the number of lines.');
   }
   const index = geometry.index!;
   const indices = index.array as Uint32Array;
@@ -49,7 +53,7 @@ export function filterTractGeometry(
     throw new RangeError(`The index holds too few segments for stride ${stride}.`);
   let count = 0;
   for (let line = 0; line < lengths.length; line++) {
-    if (lengths[line]! < minimum) continue;
+    if (membership ? !membership[line] : lengths[line]! < minimum) continue;
     const last = offsets[line + 1]! - 1;
     for (let point = offsets[line]!; point < last; point += stride) {
       indices[count++] = point;

@@ -59,6 +59,7 @@ const syntheticRegions = [
     hemisphere: 'left',
     atlas: 'a',
     source_label_id: 0,
+    source_name: 'Unknown',
     kind: 'non-region',
   },
   {

@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from brain_model.layers.networks import (
+    ANNOTATION,
     NETWORKS,
     NONE,
     composition,
@@ -134,3 +135,42 @@ def test_the_published_palette_sits_within_the_configured_jitter():
     colors[parcel, 0] = red + jitter + 1 if red < 128 else red - jitter - 1
     with pytest.raises(ValueError, match="jitter"):
         verify_palette(colors, names, jitter)
+
+
+def test_each_seven_network_parcel_takes_its_seventeen_network_name():
+    from brain_model.layers.networks import seventeen_network_names
+
+    names = [b"Medial", b"7Networks_LH_Vis_1", b"7Networks_LH_Default_PFC_1"]
+    names_17 = [b"Medial", b"17Networks_LH_DefaultA_PFCd_1", b"17Networks_LH_VisCent_ExStr_1"]
+    assert seventeen_network_names([0, 1, 1, 2], names, [0, 2, 2, 1], names_17) == {
+        "Medial": "Medial",
+        "7Networks_LH_Vis_1": "17Networks_LH_VisCent_ExStr_1",
+        "7Networks_LH_Default_PFC_1": "17Networks_LH_DefaultA_PFCd_1",
+    }
+
+
+@pytest.mark.parametrize(
+    "labels_17",
+    [
+        [0, 1, 2, 2],  # a 7-network parcel split between two 17-network parcels
+        [0, 1, 1, 1],  # two 7-network parcels merged into one
+    ],
+)
+def test_orders_that_do_not_divide_the_same_parcels_are_rejected(labels_17):
+    from brain_model.layers.networks import seventeen_network_names
+
+    names = [b"Medial", b"7Networks_LH_Vis_1", b"7Networks_LH_Vis_2"]
+    with pytest.raises(ValueError, match="one to one"):
+        seventeen_network_names([0, 1, 2, 1], names, labels_17, names)
+
+
+def test_the_published_orders_pair_every_parcel():
+    from brain_model.layers.networks import published_seventeen_network_names
+    from brain_model.sources import read_config
+
+    config = read_config()
+    atlas = next(a for a in config["atlases"] if "names_from" in a)
+    for prefix in ("lh", "rh"):
+        names = published_seventeen_network_names(config, atlas, prefix)
+        assert len(names) == 201
+        assert all(n.startswith("17Networks_") for k, n in names.items() if network_of(k))

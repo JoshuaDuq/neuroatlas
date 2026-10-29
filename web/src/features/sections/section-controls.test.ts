@@ -259,8 +259,10 @@ test('the cut labels are the manifest’s, and NextBrain is known to be segmente
     'destrieux',
     'hcp-mmp',
     'julich',
+    'schaefer',
     'nextbrain',
     'arterial',
+    'nettekoven',
   ]);
   expect(controls.nextbrainSegmented).toBe(true);
 });

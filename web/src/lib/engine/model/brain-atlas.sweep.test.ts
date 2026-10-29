@@ -335,7 +335,7 @@ test('ATLAS-40 reset keeps the atlas, the detail level and the paint, and cancel
   assert.equal(model.settings.hemisphere, 'both');
   assert.equal(model.settings.cortexOpacity, 1);
   assert.equal(model.settings.isolatedRegion, null);
-  assert.equal(model.state.visibleMeshCount, 4);
+  assert.equal(model.state.visibleMeshCount, 3);
   assert.equal(events.filter((event) => event === 'selectionchange:null').length, 1);
   model.dispose();
 });
@@ -403,10 +403,12 @@ test('ATLAS-17 the cortex and internal switches take only a boolean, and drop th
     name: 'TypeError',
     message: 'Internal anatomy visibility must be boolean.',
   });
+  const drawn = () => model.visibleMeshes.map((mesh: Stub) => mesh.userData.region_id).sort();
+  // The medial wall closes the surface only while the structures it would cover are hidden.
   model.setInternalVisible(false);
-  assert.equal(model.state.visibleMeshCount, 3);
+  assert.deepEqual(drawn(), ['a-left', 'a-right', 'a-wall']);
   model.setInternalVisible(true);
-  assert.equal(model.state.visibleMeshCount, 4);
+  assert.deepEqual(drawn(), ['a-left', 'a-right', 'stem']);
   model.setCortexVisible(false);
   assert.deepEqual(
     model.visibleMeshes.map((mesh: Stub) => mesh.userData.region_id),

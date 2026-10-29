@@ -1,11 +1,8 @@
 import type { Language, Manifest, Region } from '../../types/index.ts';
 import { labelOf } from '../catalog/labels.ts';
 
-const ATLASES = ['destrieux', 'hcp-mmp'] as const;
+const ATLASES = ['destrieux', 'hcp-mmp', 'julich', 'schaefer'] as const;
 
-/** The atlas a region of one compared atlas is measured against; null for an atlas not compared. */
-export const comparedWith = (atlas: string | undefined): string | null =>
-  atlas === ATLASES[0] ? ATLASES[1] : atlas === ATLASES[1] ? ATLASES[0] : null;
 const HEMISPHERES = ['left', 'right'];
 const MARGINAL_TOLERANCE = 1e-10;
 const isRecord = (value: unknown) =>
@@ -42,7 +39,35 @@ export interface ComparisonData {
 /** The manifest fields the comparison reads. */
 export type ComparisonManifest = Pick<Manifest, 'regions' | 'anatomy' | 'atlases'> & {
   atlas_comparison?: Manifest['atlas_comparison'];
+  atlas_comparisons?: Manifest['atlas_comparisons'];
 };
+
+/** Each declaration identifies an independently measured pair on the same pial surface. */
+export function comparisonDeclarations(manifest: ComparisonManifest) {
+  return (
+    manifest.atlas_comparisons ??
+    (manifest.atlas_comparison
+      ? [{ ...manifest.atlas_comparison, atlases: ['destrieux', 'hcp-mmp'] as const }]
+      : [])
+  );
+}
+
+/** The atlases a region of `atlas` is measured against, in the manifest's order, with each pair's file. */
+export function comparisonPartners(manifest: ComparisonManifest, atlas: string | undefined) {
+  return comparisonDeclarations(manifest).flatMap((declaration) =>
+    atlas !== undefined && declaration.atlases.includes(atlas)
+      ? [{ atlas: declaration.atlases.find((other) => other !== atlas)!, declaration }]
+      : [],
+  );
+}
+
+export function comparisonDeclaration(manifest: ComparisonManifest, atlases: readonly string[]) {
+  return comparisonDeclarations(manifest).find(
+    (entry) =>
+      entry.atlases.length === atlases.length &&
+      entry.atlases.every((atlas, index) => atlas === atlases[index]),
+  );
+}
 
 export interface ComparisonRow {
   regionId: string;
@@ -75,16 +100,11 @@ function validateFile(value: unknown, description: string) {
 
 const isAtlas = (atlas: string | undefined): atlas is (typeof ATLASES)[number] =>
   (ATLASES as readonly (string | undefined)[]).includes(atlas);
+const isComparedIn = (atlases: readonly string[], atlas: string | undefined) =>
+  (atlases as readonly (string | undefined)[]).includes(atlas);
 
-function indexRegions(manifest: ComparisonManifest) {
-  requireComparison(
-    isRecord(manifest) &&
-      isRecord(manifest.anatomy) &&
-      isText(manifest.anatomy.id) &&
-      isText(manifest.anatomy.subject),
-    'missing subject identity',
-  );
-  validateFile(manifest.atlas_comparison, 'declared comparison');
+function indexRegions(manifest: ComparisonManifest, comparedAtlases: readonly string[]) {
+  validateFile(comparisonDeclaration(manifest, comparedAtlases), 'declared comparison');
   requireComparison(Array.isArray(manifest.regions), 'missing manifest regions');
   const regions = new Map<string, Region>();
   for (const region of manifest.regions) {
@@ -92,7 +112,7 @@ function indexRegions(manifest: ComparisonManifest) {
       isRecord(region) && isText(region.id) && !regions.has(region.id),
       'invalid or duplicate manifest region',
     );
-    if (isAtlas(region.atlas)) {
+    if (isComparedIn(comparedAtlases, region.atlas)) {
       requireComparison(
         ['cortex', 'non-region'].includes(region.kind) &&
           HEMISPHERES.includes(region.hemisphere) &&
@@ -111,6 +131,13 @@ function indexRegions(manifest: ComparisonManifest) {
 }
 
 function validateIdentity(data: ComparisonData, manifest: ComparisonManifest) {
+  requireComparison(
+    isRecord(manifest) &&
+      isRecord(manifest.anatomy) &&
+      isText(manifest.anatomy.id) &&
+      isText(manifest.anatomy.subject),
+    'missing subject identity',
+  );
   requireComparison(isRecord(data) && data.schema_version === 1, 'expected schema_version 1');
   requireComparison(
     data.anatomy_id === manifest.anatomy.id,
@@ -118,8 +145,10 @@ function validateIdentity(data: ComparisonData, manifest: ComparisonManifest) {
   );
   requireComparison(
     Array.isArray(data.atlases) &&
-      data.atlases.length === ATLASES.length &&
-      data.atlases.every((atlas, index) => atlas === ATLASES[index]),
+      data.atlases.length === 2 &&
+      data.atlases.every(isAtlas) &&
+      ATLASES.indexOf(data.atlases[0] as (typeof ATLASES)[number]) <
+        ATLASES.indexOf(data.atlases[1] as (typeof ATLASES)[number]),
     'invalid atlas order or identity',
   );
   requireComparison(data.surface === 'pial', 'expected the original pial surface');
@@ -128,7 +157,7 @@ function validateIdentity(data: ComparisonData, manifest: ComparisonManifest) {
   validateFile(data.geometry, 'overlap geometry');
 }
 
-function validateSources(sources: ComparisonData['sources']) {
+function validateSources(sources: ComparisonData['sources'], comparedAtlases: readonly string[]) {
   requireComparison(
     Array.isArray(sources) && sources.length === HEMISPHERES.length,
     'missing hemisphere source provenance',
@@ -144,14 +173,14 @@ function validateSources(sources: ComparisonData['sources']) {
     hemispheres.add(source.hemisphere);
     validateFile(source.pial, `${source.hemisphere} pial source`);
     requireComparison(
-      Array.isArray(source.annotations) && source.annotations.length === ATLASES.length,
+      Array.isArray(source.annotations) && source.annotations.length === 2,
       `missing ${source.hemisphere} annotations`,
     );
     const atlases = new Set<string>();
     for (const annotation of source.annotations) {
       validateFile(annotation, `${source.hemisphere} annotation source`);
       requireComparison(
-        isAtlas(annotation.atlas) && !atlases.has(annotation.atlas),
+        comparedAtlases.includes(annotation.atlas) && !atlases.has(annotation.atlas),
         `invalid or duplicate ${source.hemisphere} annotation atlas`,
       );
       atlases.add(annotation.atlas);
@@ -159,16 +188,20 @@ function validateSources(sources: ComparisonData['sources']) {
   }
 }
 
-function validateAtlasAssets(assets: ComparisonData['atlas_assets'], manifest: ComparisonManifest) {
+function validateAtlasAssets(
+  assets: ComparisonData['atlas_assets'],
+  manifest: ComparisonManifest,
+  comparedAtlases: readonly string[],
+) {
   requireComparison(
-    Array.isArray(assets) && assets.length === ATLASES.length && Array.isArray(manifest.atlases),
+    Array.isArray(assets) && assets.length === 2 && Array.isArray(manifest.atlases),
     'missing cortical asset provenance',
   );
   const atlases = new Set<string>();
   for (const asset of assets) {
     validateFile(asset, 'cortical atlas asset');
     requireComparison(
-      isAtlas(asset.atlas) && !atlases.has(asset.atlas),
+      comparedAtlases.includes(asset.atlas) && !atlases.has(asset.atlas),
       'invalid or duplicate cortical atlas asset',
     );
     atlases.add(asset.atlas);
@@ -183,14 +216,20 @@ function validateAtlasAssets(assets: ComparisonData['atlas_assets'], manifest: C
   }
 }
 
-function indexTotals(totals: ComparisonData['totals'], regions: ReadonlyMap<string, Region>) {
+function indexTotals(
+  totals: ComparisonData['totals'],
+  regions: ReadonlyMap<string, Region>,
+  comparedAtlases: readonly string[],
+) {
   requireComparison(isRecord(totals), 'missing per-region area totals');
-  const measured = [...regions.values()].filter((region) => isAtlas(region.atlas));
+  const measured = [...regions.values()].filter((region) =>
+    isComparedIn(comparedAtlases, region.atlas),
+  );
   const areas = new Map(Object.entries(totals));
   requireComparison(areas.size === measured.length, 'incomplete per-region area totals');
   for (const [id, area] of areas) {
     requireComparison(
-      isAtlas(regions.get(id)?.atlas) && isArea(area),
+      isComparedIn(comparedAtlases, regions.get(id)?.atlas) && isArea(area),
       `unknown region or invalid total for ${id}`,
     );
   }
@@ -210,6 +249,7 @@ function indexPairs(
   pairs: ComparisonData['pairs'],
   totals: ReadonlyMap<string, number>,
   regions: ReadonlyMap<string, Region>,
+  comparedAtlases: readonly string[],
 ) {
   requireComparison(Array.isArray(pairs) && pairs.length > 0, 'missing overlap pairs');
   const rows = new Map<string, Contribution[]>([...totals.keys()].map((id) => [id, []]));
@@ -217,16 +257,14 @@ function indexPairs(
   const meshIds = new Set<string>();
   for (const pair of pairs) {
     requireComparison(
-      isRecord(pair) &&
-        Array.isArray(pair.region_ids as unknown) &&
-        pair.region_ids.length === ATLASES.length,
+      isRecord(pair) && Array.isArray(pair.region_ids as unknown) && pair.region_ids.length === 2,
       'invalid overlap region identifiers',
     );
     const endpoints = pair.region_ids.map((id: string) => regions.get(id));
     requireComparison(
       endpoints.every(
         (region: Region | undefined, index: number) =>
-          region?.atlas === ATLASES[index] && totals.has(region.id),
+          region?.atlas === comparedAtlases[index] && totals.has(region.id),
       ) && endpoints[0]!.hemisphere === endpoints[1]!.hemisphere,
       'overlap region atlas or hemisphere mismatch',
     );
@@ -273,7 +311,7 @@ function encodeCsv(records: readonly Record<string, unknown>[]) {
 }
 
 function provenanceOf(data: ComparisonData, manifest: ComparisonManifest) {
-  const comparison = manifest.atlas_comparison!;
+  const comparison = comparisonDeclaration(manifest, data.atlases)!;
   const provenance: Record<string, unknown> = {
     schema_version: data.schema_version,
     anatomy_id: data.anatomy_id,
@@ -298,20 +336,22 @@ export type ComparisonCatalog = ReturnType<typeof createComparisonCatalog>;
 
 /** Whole-pial area comparisons. Unassigned labels contribute to both directional margins. */
 export function createComparisonCatalog(data: ComparisonData, manifest: ComparisonManifest) {
-  const regions = indexRegions(manifest);
   validateIdentity(data, manifest);
-  validateSources(data.sources);
-  validateAtlasAssets(data.atlas_assets, manifest);
-  const totals = indexTotals(data.totals, regions);
-  const contributions = indexPairs(data.pairs, totals, regions);
+  const regions = indexRegions(manifest, data.atlases);
+  validateSources(data.sources, data.atlases);
+  validateAtlasAssets(data.atlas_assets, manifest, data.atlases);
+  const totals = indexTotals(data.totals, regions, data.atlases);
+  const contributions = indexPairs(data.pairs, totals, regions, data.atlases);
   const provenance = provenanceOf(data, manifest);
   const regionOf = (id: string) => {
     const region = regions.get(id);
     if (!region) throw new Error(`Unknown region: ${id}`);
     return region;
   };
-  const compared = (region: Region) => isAtlas(region.atlas) && region.kind === 'cortex';
-  const targetAtlasOf = (region: Region) => (region.atlas === ATLASES[0] ? ATLASES[1] : ATLASES[0]);
+  const compared = (region: Region) =>
+    isComparedIn(data.atlases, region.atlas) && region.kind === 'cortex';
+  const targetAtlasOf = (region: Region) =>
+    data.atlases.find((atlas) => atlas !== region.atlas)! as (typeof ATLASES)[number];
 
   return {
     comparisonFor(regionId: string): Comparison | null {

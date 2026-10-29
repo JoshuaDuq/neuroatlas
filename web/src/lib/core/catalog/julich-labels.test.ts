@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { comparedWith } from '../comparison/catalog.ts';
+import { comparisonPartners } from '../comparison/catalog.ts';
 import { julichLabel } from './julich-labels.ts';
 import { readModel } from './test-support.ts';
 import type { Manifest } from '../../types/index.ts';
@@ -36,8 +36,31 @@ test('every published Julich-Brain area has a lobe, and gap maps are not areas',
   assert.equal(unassigned.length, 18);
 });
 
-test('only Destrieux and HCP-MMP are compared, each against the other', () => {
-  assert.equal(comparedWith('destrieux'), 'hcp-mmp');
-  assert.equal(comparedWith('hcp-mmp'), 'destrieux');
-  assert.equal(comparedWith('julich'), null);
+test('each published cortical atlas is compared with every other', () => {
+  const manifest = readModel<Manifest>('cdmd/manifest.json');
+  const partners = (atlas: string) =>
+    comparisonPartners(manifest, atlas).map(({ atlas: other, declaration }) => [
+      other,
+      declaration.file,
+    ]);
+  assert.deepEqual(partners('destrieux'), [
+    ['hcp-mmp', 'atlas-comparison.json'],
+    ['julich', 'atlas-comparison-destrieux-julich.json'],
+    ['schaefer', 'atlas-comparison-destrieux-schaefer.json'],
+  ]);
+  assert.deepEqual(partners('schaefer'), [
+    ['destrieux', 'atlas-comparison-destrieux-schaefer.json'],
+    ['hcp-mmp', 'atlas-comparison-hcp-mmp-schaefer.json'],
+    ['julich', 'atlas-comparison-julich-schaefer.json'],
+  ]);
+  assert.deepEqual(partners('aseg'), []);
+});
+
+test('a manifest declaring only the first pair compares Destrieux and HCP-MMP alone', () => {
+  const { atlas_comparisons: _, ...manifest } = readModel<Manifest>('cdmd/manifest.json');
+  assert.deepEqual(
+    comparisonPartners(manifest, 'destrieux').map(({ atlas }) => atlas),
+    ['hcp-mmp'],
+  );
+  assert.deepEqual(comparisonPartners(manifest, 'julich'), []);
 });

@@ -37,6 +37,14 @@ export const en = {
   tractsFailed: 'The tracts could not be counted.',
   ofTotal: (crossing: string, total: string) => `${crossing} of ${total}`,
   notReached: (names: string) => `Not reached: ${names}`,
+  tractsChoose: 'Choose a bundle to draw only its streamlines through the lesion.',
+  showTract: (bundle: string, crossing: string) =>
+    `Draw the ${crossing} streamlines of ${bundle} through the lesion`,
+  tractLoading: 'Loading the bundle…',
+  tractShown: (bundle: string) => `Drawing ${bundle} through the lesion.`,
+  tractShowFailed: 'The streamlines could not be drawn.',
+  tractsCaveat:
+    'Reconstructed streamlines from this brain’s diffusion scan, not axons; a crossing is not a measure of disconnection.',
   noTracts: 'This anatomy publishes no tracts of its own.',
   findings: 'Findings citing these regions',
   findingsNote:
@@ -116,6 +124,14 @@ export const fr: typeof en = {
   tractsFailed: 'Les faisceaux n’ont pas pu être comptés.',
   ofTotal: (crossing: string, total: string) => `${crossing} sur ${total}`,
   notReached: (names: string) => `Non atteints : ${names}`,
+  tractsChoose: 'Choisissez un faisceau pour n’afficher que ses trajectoires traversant la lésion.',
+  showTract: (bundle: string, crossing: string) =>
+    `Afficher les ${crossing} trajectoires de ${bundle} traversant la lésion`,
+  tractLoading: 'Chargement du faisceau…',
+  tractShown: (bundle: string) => `${bundle} : trajectoires traversant la lésion affichées.`,
+  tractShowFailed: 'Les trajectoires n’ont pas pu être affichées.',
+  tractsCaveat:
+    'Trajectoires reconstruites à partir de l’IRM de diffusion de ce cerveau, pas des axones ; une traversée n’est pas une mesure de déconnexion.',
   noTracts: 'Cette anatomie ne publie pas de faisceaux qui lui sont propres.',
   findings: 'Constats citant ces régions',
   findingsNote:

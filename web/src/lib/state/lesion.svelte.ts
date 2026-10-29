@@ -3,6 +3,8 @@ import type { ClinicalAssociation } from '../core/clinical/types.ts';
 import { SLIGHT_SHARE, findingsPaint, rankFindings } from '../core/lesion/findings.ts';
 import { functionReach, functionsPaint, lesionProfile } from '../core/lesion/functions.ts';
 import type { LesionPaint } from '../core/state/paint.ts';
+import { LESION_RADIUS } from '../types/constants.ts';
+import type { LESION_MODES } from '../types/constants.ts';
 import type {
   EngineLesion,
   LesionMeasurement,
@@ -10,9 +12,6 @@ import type {
   TractCrossing,
   Vec3,
 } from '../engine/api.ts';
-
-/** The radius slider, in millimetres. */
-export const LESION_RADIUS = { min: 3, max: 30, initial: 10 } as const;
 
 export type Measured =
   | { status: 'measuring' }
@@ -25,8 +24,14 @@ export type Counted =
   | { status: 'ready'; crossings: TractCrossing[] }
   | { status: 'error'; error: unknown };
 
-/** What colours the brain beside the lesion: nothing, its functions' territories, or its findings' regions. */
-export type LesionMode = 'lesion' | 'functions' | 'deficits';
+/** The one bundle whose crossing streamlines are drawn alone, as the engine has answered it. */
+export type TractView =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'ready' }
+  | { status: 'error'; error: unknown };
+
+export type LesionMode = (typeof LESION_MODES)[number];
 
 const tenth = (value: number) => Math.round(value * 10) / 10;
 
@@ -36,11 +41,18 @@ const tenth = (value: number) => Math.round(value * 10) / 10;
  */
 export function createLesionStore({
   lesion,
+  cortex,
   associations,
   domains,
   deficitGroup,
 }: {
   lesion: EngineLesion;
+  /** The cortex's opacity, and the see-through one the tracts are drawn under, as the Tracts tab does. */
+  cortex: {
+    readonly opacity: number;
+    setOpacity(opacity: number): void;
+    readonly seeThrough: number;
+  };
   associations: readonly ClinicalAssociation[];
   domains: Pick<NeuropsychDomains, 'groups' | 'domains' | 'regions'>;
   deficitGroup: (deficit: string) => string;
@@ -51,6 +63,11 @@ export function createLesionStore({
   let measured = $state.raw<Measured | null>(null);
   let counted = $state.raw<Counted>({ status: 'idle' });
   let mode = $state<LesionMode>('lesion');
+  let selectedTract = $state<string | null>(null);
+  let tractView = $state.raw<TractView>({ status: 'idle' });
+  let viewRequest = 0;
+  // The opacity an opaque cortex had before the streamlines made it see-through.
+  let heldOpacity: number | null = null;
   // Once the reader has asked for the tracts, each later placement counts them too.
   let tractsWanted = false;
   let request = 0;
@@ -127,7 +144,11 @@ export function createLesionStore({
       })
       .then(
         (crossings) => {
-          if (ask === request) counted = { status: 'ready', crossings };
+          if (ask !== request) return;
+          counted = { status: 'ready', crossings };
+          // A bundle the lesion no longer crosses has nothing left to draw.
+          const drawn = crossings.some(({ id, crossing }) => id === selectedTract && crossing > 0);
+          if (selectedTract !== null && !drawn) clearTract();
         },
         (error: unknown) => {
           if (ask !== request) return;
@@ -135,6 +156,45 @@ export function createLesionStore({
           console.error(error);
         },
       );
+  }
+
+  function showTract(id: string, current: LesionSphere): void {
+    const ask = ++viewRequest;
+    // Following the sphere keeps the bundle's lines up rather than flashing a load.
+    if (selectedTract !== id || tractView.status === 'error') tractView = { status: 'loading' };
+    selectedTract = id;
+    if (heldOpacity === null && cortex.opacity === 1) {
+      heldOpacity = cortex.opacity;
+      cortex.setOpacity(cortex.seeThrough);
+    }
+    lesion.showTract(id, current).then(
+      () => {
+        if (ask === viewRequest) tractView = { status: 'ready' };
+      },
+      (error: unknown) => {
+        if (ask !== viewRequest) return;
+        tractView = { status: 'error', error };
+        console.error(error);
+      },
+    );
+  }
+
+  function clearTract(): void {
+    viewRequest++;
+    selectedTract = null;
+    tractView = { status: 'idle' };
+    lesion.clearTract();
+    // An opacity the reader chose since is theirs to keep.
+    if (heldOpacity !== null && cortex.opacity === cortex.seeThrough)
+      cortex.setOpacity(heldOpacity);
+    heldOpacity = null;
+  }
+
+  /** The selection follows the sphere while the sphere still reaches the bundle's side. */
+  function follow(current: LesionSphere): void {
+    if (selectedTract === null) return;
+    if (lesion.tractBundles(current).includes(selectedTract)) showTract(selectedTract, current);
+    else clearTract();
   }
 
   return {
@@ -171,6 +231,17 @@ export function createLesionStore({
     get mode() {
       return mode;
     },
+    /** The bundle whose crossing streamlines the stage draws alone, or null for the ordinary tracts. */
+    get selectedTract() {
+      return selectedTract;
+    },
+    get tractView() {
+      return tractView;
+    },
+    /** The reader's own cortex opacity while the streamlines hold it see-through, for a link to carry. */
+    get heldOpacity() {
+      return heldOpacity;
+    },
     /** The functions' territories or the findings' regions on the brain, as the mode asks. */
     get paint() {
       return paint;
@@ -178,23 +249,42 @@ export function createLesionStore({
     place([right, anterior, superior]: Vec3): void {
       sphere = { centre: [tenth(right), tenth(anterior), tenth(superior)], radius };
       measure(sphere);
+      follow(sphere);
     },
     /** The slider moving: the stage follows, and the measurement waits for `commitRadius`. */
     previewRadius(next: number): void {
       radius = next;
-      if (sphere) sphere = { ...sphere, radius: next };
+      if (!sphere) return;
+      sphere = { ...sphere, radius: next };
+      follow(sphere);
     },
     commitRadius(next: number): void {
       radius = next;
       if (!sphere) return;
       sphere = { ...sphere, radius: next };
       measure(sphere);
+      follow(sphere);
     },
     setPlacing(next: boolean): void {
       placing = next;
     },
     setMode(next: LesionMode): void {
       mode = next;
+    },
+    showTract(id: string): void {
+      if (!sphere) throw new Error('Place a lesion before showing its streamlines.');
+      showTract(id, sphere);
+    },
+    clearTract,
+    /** A link's lesion: placed, coloured and, with a bundle, counted and drawn, as the reader left it. */
+    restore(next: LesionSphere, nextMode: LesionMode, tract: string | null): void {
+      radius = next.radius;
+      sphere = next;
+      mode = nextMode;
+      tractsWanted = tract !== null;
+      if (selectedTract !== null && selectedTract !== tract) clearTract();
+      measure(sphere);
+      if (tract !== null) showTract(tract, sphere);
     },
     countTracts(): void {
       tractsWanted = true;
@@ -207,6 +297,7 @@ export function createLesionStore({
       counted = { status: 'idle' };
       mode = 'lesion';
       tractsWanted = false;
+      if (selectedTract !== null) clearTract();
     },
   };
 }

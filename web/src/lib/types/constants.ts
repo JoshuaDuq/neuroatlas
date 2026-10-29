@@ -28,6 +28,12 @@ export const EXPLORERS = ['anatomy', 'functions', 'deficits', 'circuits', 'diffu
 /** The workspace's modes (ui/chrome/workspace.js:6): the same list as the explorers. */
 export const MODES = EXPLORERS;
 
+/** What colours the brain beside a placed lesion: nothing, its functions' territories, or its findings' regions. */
+export const LESION_MODES = ['lesion', 'functions', 'deficits'] as const;
+
+/** A placed lesion's radius slider, in millimetres. */
+export const LESION_RADIUS = { min: 3, max: 30, initial: 10 } as const;
+
 /**
  * The compact interface. CSS cannot share it (custom media is not native), so
  * the literal is repeated in phone.css, stage.css, dialogs.css and masthead.css;

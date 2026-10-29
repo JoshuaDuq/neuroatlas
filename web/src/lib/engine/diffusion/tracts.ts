@@ -29,6 +29,9 @@ export interface Tracts extends EngineTracts {
       ids: readonly string[],
       onBundle?: (counted: number, total: number) => void,
     ): Promise<TractCrossing[]>;
+    /** One bundle's streamlines that `crossing` counts, shown over the brain whether or not the overlay is. */
+    showCrossing(id: string, sphere: LesionSphere): Promise<void>;
+    clearCrossing(): void;
   } | null;
   setClippingPlanes(planes: Plane[]): void;
   /** Whether the camera is moving, so the lines it draws are the coarser ones. */
@@ -53,9 +56,10 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
   let ready = false;
   let loading: Promise<void> | null = null;
   let overlayVisible = false;
+  let crossingShown = false;
 
   function showGroup(): void {
-    engine.group.visible = matchingAnatomy ? overlayVisible : active;
+    engine.group.visible = matchingAnatomy ? overlayVisible || crossingShown : active;
     scene.invalidate();
   }
 
@@ -128,7 +132,22 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
       return engine.bounds;
     },
     defaultOpacity: catalog.overlay_cortex_opacity,
-    own: matchingAnatomy ? { bundles: catalog.bundles, crossing } : null,
+    own: matchingAnatomy
+      ? {
+          bundles: catalog.bundles,
+          crossing,
+          async showCrossing(id, sphere) {
+            crossingShown = true;
+            showGroup();
+            await engine.showLesionTract(bundleOf(id), sphere);
+          },
+          clearCrossing() {
+            crossingShown = false;
+            engine.clearLesionTract();
+            showGroup();
+          },
+        }
+      : null,
     snapshot: engine.snapshot,
     hasBundle: engine.hasBundle,
 

@@ -8,6 +8,10 @@ import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
 import raw from '../../../../public/models/cdmd/atlas-comparison.json?raw';
+import rawDestrieuxJulich from '../../../../public/models/cdmd/atlas-comparison-destrieux-julich.json?raw';
+import rawHcpJulich from '../../../../public/models/cdmd/atlas-comparison-hcp-mmp-julich.json?raw';
+import rawDestrieuxSchaefer from '../../../../public/models/cdmd/atlas-comparison-destrieux-schaefer.json?raw';
+import rawJulichSchaefer from '../../../../public/models/cdmd/atlas-comparison-julich-schaefer.json?raw';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
@@ -121,6 +125,107 @@ describe('when it is shown', () => {
     serve();
     await mount();
     expect(summaryOf(panel()).children).toHaveLength(0);
+  });
+});
+
+describe('choosing the atlas compared with', () => {
+  const PAIR_FILES: Record<string, string> = {
+    'atlas-comparison.json': raw,
+    'atlas-comparison-destrieux-julich.json': rawDestrieuxJulich,
+    'atlas-comparison-hcp-mmp-julich.json': rawHcpJulich,
+    'atlas-comparison-destrieux-schaefer.json': rawDestrieuxSchaefer,
+    'atlas-comparison-julich-schaefer.json': rawJulichSchaefer,
+  };
+  const V1_JULICH = 'julich:left:8'; // Area hOc1 (V1, 17, CalcS)
+  function servePairs() {
+    return vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const name = String(input).split('/').at(-1)!;
+      return name in PAIR_FILES
+        ? Promise.resolve(new Response(PAIR_FILES[name]))
+        : original(input, init);
+    });
+  }
+  const fetched = (fetch: ReturnType<typeof servePairs>) =>
+    fetch.mock.calls
+      .map(([input]) => String(input).split('/').at(-1)!)
+      .filter((name) => name in PAIR_FILES);
+  const radio = (name: string) => page.getByRole('radio', { name });
+
+  test('offers every atlas a pair declares, loads each pair once, and keeps it', async () => {
+    const fetch = servePairs();
+    await render(Fixture, { engine: createEngine(), regionId: SFG, pairs: true });
+    await expect.poll(() => rows().length).toBeGreaterThan(0);
+    await open();
+    expect(text(summaryOf(panel()))).toBe('Overlap with HCP-MMP');
+    await expect.element(radio('HCP-MMP')).toBeChecked();
+    const hcpRows = rows().map(text);
+    await userEvent.click(radio('Julich-Brain'));
+    await expect.poll(() => text(summaryOf(panel()))).toBe('Overlap with Julich-Brain');
+    await expect.poll(() => rows().map(text)).not.toEqual(hcpRows);
+    expect(rows().length).toBeGreaterThan(0);
+    await userEvent.click(radio('HCP-MMP'));
+    await expect.poll(() => rows().map(text)).toEqual(hcpRows);
+    expect(fetched(fetch)).toEqual([
+      'atlas-comparison.json',
+      'atlas-comparison-destrieux-julich.json',
+    ]);
+  });
+
+  test('a Julich-Brain area is compared with Destrieux or HCP-MMP, with its own method note', async () => {
+    servePairs();
+    await render(Fixture, { engine: createEngine(), regionId: V1_JULICH, pairs: true });
+    await expect.poll(() => rows().length).toBeGreaterThan(0);
+    await open();
+    expect(text(summaryOf(panel()))).toBe('Overlap with Destrieux');
+    await userEvent.click(radio('HCP-MMP'));
+    await expect.poll(() => text(summaryOf(panel()))).toBe('Overlap with HCP-MMP');
+    await userEvent.click(page.getByText('Method and sources'));
+    const method = root().querySelector('.comparison-method .detail-note')!;
+    expect(text(method)).toContain('HCP-MMP labels are projected');
+    expect(text(method)).toContain('its gap maps, cortex not yet mapped, count as unassigned');
+  });
+
+  test('a Schaefer parcel is compared with the three other atlases, its medial wall unassigned', async () => {
+    const fetch = servePairs();
+    await render(Fixture, { engine: createEngine(), regionId: 'schaefer:left:1', pairs: true });
+    await expect.poll(() => rows().length).toBeGreaterThan(0);
+    await open();
+    expect(text(summaryOf(panel()))).toBe('Overlap with Destrieux');
+    expect([...root().querySelectorAll('[role=radio]')].map((radio) => text(radio))).toEqual([
+      'Destrieux',
+      'HCP-MMP',
+      'Julich-Brain',
+    ]);
+    await userEvent.click(radio('Julich-Brain'));
+    await expect.poll(() => text(summaryOf(panel()))).toBe('Overlap with Julich-Brain');
+    await userEvent.click(page.getByText('Method and sources'));
+    expect(text(root().querySelector('.comparison-method .detail-note')!)).toContain(
+      'its medial wall counts as unassigned',
+    );
+    expect(fetched(fetch)).toEqual([
+      'atlas-comparison-destrieux-schaefer.json',
+      'atlas-comparison-julich-schaefer.json',
+    ]);
+  });
+
+  test('a region compared with one atlas offers no choice', async () => {
+    serve();
+    await render(Fixture, { engine: createEngine(), regionId: SFG });
+    await expect.poll(() => rows().length).toBeGreaterThan(0);
+    expect(root().querySelector('[role=radiogroup]')).toBe(null);
+  });
+
+  test('changing the atlas drops the outline drawn from the other pair', async () => {
+    servePairs();
+    const engine = createEngine();
+    await render(Fixture, { engine, regionId: SFG, pairs: true });
+    await expect.poll(() => rows().length).toBeGreaterThan(0);
+    await open();
+    await userEvent.click(rows()[0]!);
+    await expect.poll(() => rows()[0]!.getAttribute('aria-pressed')).toBe('true');
+    await userEvent.click(radio('Julich-Brain'));
+    await expect.poll(() => text(summaryOf(panel()))).toBe('Overlap with Julich-Brain');
+    expect(rows().some((row) => row.getAttribute('aria-pressed') === 'true')).toBe(false);
   });
 });
 
@@ -632,7 +737,7 @@ describe('Download CSV', () => {
 
   test('saves every overlap, named for the subject and the region', async () => {
     const file = await download('en');
-    expect(file.name).toBe('cdmd-destrieux-left-16-atlas-comparison.csv');
+    expect(file.name).toBe('cdmd-destrieux-left-16-hcp-mmp-atlas-comparison.csv');
     expect(file.text.endsWith('\r\n')).toBe(true);
     const lines = file.text.trimEnd().split('\r\n');
     expect(lines).toHaveLength(1 + 23);

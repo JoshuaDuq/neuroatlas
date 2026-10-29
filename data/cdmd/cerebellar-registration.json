@@ -1,0 +1,66 @@
+{
+  "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+  "method": "mri_synthmorph register -m joint (SUIT template \u2192 brain.mgz kept to aseg's infratentorial compartment, dilated 4 voxels), then apply -m nearest to each atlas on the template's grid",
+  "source": {
+    "repository": "https://github.com/DiedrichsenLab/cerebellar_atlases",
+    "commit": "6857dfa732de6dd60c94da2f84d0b15ccf316618",
+    "files": {
+      "template": [
+        "tpl-SUIT/tpl-SUIT_T1w.nii",
+        "9c84dd5d2dc3373d9d876ab675b1143d7c8397fd64bce7563650783c93ff530f"
+      ],
+      "atlas": [
+        "Nettekoven_2024/atl-NettekovenSym32_space-SUIT_dseg.nii",
+        "82f06b102bafac7b3ba7b641fd4ab1d8d7034a1d88fca163d3b49e79c9aa1476"
+      ],
+      "lut": [
+        "Nettekoven_2024/atl-NettekovenSym32.lut",
+        "33a723b32cb861623a8459865454c9efb142bdb3ce2390ea5f29a586cfab0e24"
+      ],
+      "lobules": [
+        "Diedrichsen_2009/atl-Anatom_space-SUIT_dseg.nii",
+        "cd9485752b10c385eb630a5d062cc9c8832fd1b94df1a11fec78c67b0a94ee96"
+      ],
+      "lobule_names": [
+        "Diedrichsen_2009/atl-Anatom.tsv",
+        "dc682c847972bd37badaa979526cf22a25bc79cdf50f4f49c107391c517fe7ad"
+      ]
+    }
+  },
+  "checks": {
+    "lobule_dice": {
+      "left_I_IV": 0.4944,
+      "right_I_IV": 0.5141,
+      "left_V": 0.4943,
+      "right_V": 0.5208,
+      "left_VI": 0.6677,
+      "right_VI": 0.6688,
+      "left_CrusI": 0.7216,
+      "right_CrusI": 0.7307,
+      "left_CrusII": 0.672,
+      "right_CrusII": 0.7387,
+      "left_VIIb": 0.5429,
+      "right_VIIb": 0.6504,
+      "left_VIIIa": 0.6742,
+      "right_VIIIa": 0.6612,
+      "left_VIIIb": 0.6074,
+      "right_VIIIb": 0.6977,
+      "left_IX": 0.763,
+      "right_IX": 0.7752,
+      "left_X": 0.4852,
+      "right_X": 0.6205,
+      "vermis_VII": 0.7985,
+      "vermis_VIII": 0.8117,
+      "vermis_IX": 0.6908,
+      "vermis_X": 0.6124
+    },
+    "lobule_dice_mean": 0.6506,
+    "cerebellar_cortex_covered": 0.9849,
+    "side_agreement": 0.9952
+  },
+  "acceptance": {
+    "lobule_dice_mean_min": 0.6,
+    "cerebellar_cortex_covered_min": 0.95,
+    "side_agreement_min": 0.97
+  }
+}

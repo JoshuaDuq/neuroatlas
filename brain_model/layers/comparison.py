@@ -3,6 +3,7 @@
 import argparse
 import json
 from collections import defaultdict
+from itertools import combinations
 from typing import NamedTuple
 
 import numpy as np
@@ -54,17 +55,21 @@ def is_enabled(config):
     return config["anatomy"]["id"] in config["atlas_comparison"]["enabled_anatomies"]
 
 
-def comparison_atlases(config, manifest):
+def comparison_atlases(config, manifest, selected=None):
     if not is_enabled(config):
         raise ValueError("Atlas comparison is not enabled for this anatomy.")
     if config["anatomy"]["id"] != manifest["anatomy"]["id"]:
         raise ValueError("Comparison source and published anatomy must match.")
-    selected = config["atlas_comparison"]["atlases"]
-    if selected != ["destrieux", "hcp-mmp"]:
-        raise ValueError("Comparison requires ordered Destrieux and HCP-MMP atlases.")
+    selected = ["destrieux", "hcp-mmp"] if selected is None else list(selected)
+    if (len(selected) != 2 or len(set(selected)) != 2
+            or any(atlas not in config["atlas_comparison"]["atlases"] for atlas in selected)):
+        raise ValueError("Comparison requires two distinct configured cortical atlases.")
     atlases = {atlas["id"]: atlas for atlas in manifest["atlases"]}
     if len(atlases) != len(manifest["atlases"]):
         raise ValueError("Published atlas identities must be unique.")
+    unpublished = [atlas for atlas in selected if atlas not in atlases]
+    if unpublished:
+        raise ValueError(f"Comparison atlases have no published cortical surface: {unpublished}")
     return [atlases[atlas] for atlas in selected]
 
 
@@ -174,9 +179,9 @@ def export_hemisphere(config, manifest, atlases, prefix, scene):
     return pairs, source
 
 
-def export_comparison(config, manifest):
+def export_comparison(config, manifest, selected=None):
     """Write only comparison assets; return their manifest declaration."""
-    atlases = comparison_atlases(config, manifest)
+    atlases = comparison_atlases(config, manifest, selected)
     verify_comparison_sources(config, manifest, atlases)
     output = config["output_directory"]
     assets = [
@@ -200,9 +205,11 @@ def export_comparison(config, manifest):
     for pair in pairs:
         for region_id in pair["region_ids"]:
             totals[region_id] += pair["area_mm2"]
-    geometry = output / "atlas-overlaps.glb"
+    atlas_ids = [atlas["id"] for atlas in atlases]
+    suffix = "" if atlas_ids == ["destrieux", "hcp-mmp"] else "-" + "-".join(atlas_ids)
+    geometry = output / f"atlas-overlaps{suffix}.glb"
     write_scene(scene, geometry)
-    sidecar = output / "atlas-comparison.json"
+    sidecar = output / f"atlas-comparison{suffix}.json"
     write_json(
         sidecar,
         {
@@ -222,12 +229,31 @@ def export_comparison(config, manifest):
     return {"file": sidecar.name, "sha256": sha256(sidecar)}
 
 
+def export_comparisons(config, manifest):
+    """Publish every configured pair, keeping each pair's full-area marginals."""
+    selected = config["atlas_comparison"]["atlases"]
+    if len(selected) < 2 or len(set(selected)) != len(selected):
+        raise ValueError("Comparison atlases must be distinct and contain at least two entries.")
+    return [
+        {"atlases": list(pair), **export_comparison(config, manifest, pair)}
+        for pair in combinations(selected, 2)
+    ]
+
+
+def attach_comparisons(config, manifest):
+    """Declare every pair, and the first under the single-pair key the viewer reads."""
+    manifest["atlas_comparisons"] = export_comparisons(config, manifest)
+    manifest["atlas_comparison"] = {
+        key: manifest["atlas_comparisons"][0][key] for key in ("file", "sha256")
+    }
+    return manifest["atlas_comparison"]
+
+
 def publish_comparison(config):
     """Attach a comparison to an existing publication without rebuilding anatomy."""
     path = config["output_directory"] / "manifest.json"
     manifest = json.loads(path.read_text())
-    pointer = export_comparison(config, manifest)
-    manifest["atlas_comparison"] = pointer
+    pointer = attach_comparisons(config, manifest)
     write_json(path, manifest)
     return pointer
 

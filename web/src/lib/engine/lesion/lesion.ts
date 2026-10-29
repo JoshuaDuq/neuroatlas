@@ -17,6 +17,7 @@ export interface LesionOptions {
     readonly visibleMeshes: readonly Mesh[];
     readonly regions: ReadonlyMap<string, Region>;
     readonly clippingPlanes: readonly Plane[];
+    readonly state: { readonly cortexOpacity: number };
   };
   /** The published label tables, which the cut also reads. */
   tissues: { loadMetadata(): Promise<void>; readonly metadata: TissueMetadata | null };
@@ -30,6 +31,8 @@ export interface LesionOptions {
       ids: readonly string[],
       onBundle?: (counted: number, total: number) => void,
     ): Promise<TractCrossing[]>;
+    showCrossing(id: string, sphere: LesionSphere): Promise<void>;
+    clearCrossing(): void;
   } | null;
   invalidate: () => void;
   /** Download and decode one label volume. */
@@ -63,6 +66,7 @@ export function createLesion({
   const volumes = new Map<string, Promise<Loaded>>();
   let shown: LesionSphere | null = null;
   let placing = false;
+  let tractShown = false;
 
   function load(id: string, record: VolumeFile & { labels: readonly MeasuredLabel[] }) {
     let loading = volumes.get(id);
@@ -85,7 +89,9 @@ export function createLesion({
     });
 
   function redraw(): void {
-    marking.show(shown, cortex(), model.clippingPlanes);
+    // Its streamlines run through the footprint, which then lets them show as the cortex does.
+    const opacity = tractShown ? model.state.cortexOpacity : 1;
+    marking.show(shown, cortex(), model.clippingPlanes, opacity);
     invalidate();
   }
 
@@ -144,6 +150,18 @@ export function createLesion({
       const ids = lesion.tractBundles(sphere);
       if (!tracts) return [];
       return tracts.crossing(sphere, ids, onBundle);
+    },
+    async showTract(id, sphere) {
+      requireRadius(sphere);
+      if (!tracts) throw new Error('This anatomy has no tracts of its own to show.');
+      tractShown = true;
+      redraw();
+      await tracts.showCrossing(id, sphere);
+    },
+    clearTract() {
+      tracts?.clearCrossing();
+      tractShown = false;
+      redraw();
     },
   };
 

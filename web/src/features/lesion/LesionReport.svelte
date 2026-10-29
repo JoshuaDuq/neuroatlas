@@ -6,6 +6,7 @@
   it was measured on folds away underneath. It measures overlap and says so; it predicts nothing.
 -->
 <script lang="ts">
+  import { untrack } from 'svelte';
   import '../inspector/inspector.css';
   import { networkCss } from '../../lib/core/catalog/networks.ts';
   import { count, decimal, grouped, withUnit } from '../../lib/core/format.ts';
@@ -21,6 +22,7 @@
   import type { Language } from '../../lib/types/index.ts';
   import ChoiceGroup from '../../lib/ui/ChoiceGroup.svelte';
   import Disclosure from '../../lib/ui/Disclosure.svelte';
+  import StatusLine from '../../lib/ui/StatusLine.svelte';
   import Swatch from '../../lib/ui/Swatch.svelte';
 
   let {
@@ -78,7 +80,8 @@
   let deepOpen = $state(false);
   let whiteOpen = $state(false);
   let territoriesOpen = $state(false);
-  let tractsOpen = $state(false);
+  // Open on a report that comes back while its streamlines are drawn, so the drawn row is in view.
+  let tractsOpen = $state(untrack(() => lesion.selectedTract !== null));
   let detailOpen = $state(false);
 
   const cortex = $derived(measurement && regionRows(measurement.regions, shownAtlas));
@@ -87,6 +90,16 @@
   const territories = $derived(measurement && territoryRows(measurement.regions));
   const counted = $derived(lesion.counted);
   const tracts = $derived(counted.status === 'ready' ? tractRows(counted.crossings) : null);
+  const tractView = $derived(lesion.tractView);
+  const tractStatus = $derived(
+    lesion.selectedTract === null
+      ? ''
+      : tractView.status === 'loading'
+        ? copy.tractLoading
+        : tractView.status === 'ready'
+          ? copy.tractShown(bundleName(lesion.selectedTract))
+          : '',
+  );
   const findings = $derived(lesion.findings);
   const profile = $derived(lesion.profile);
   // Each row's colour while its kind is on the brain.
@@ -411,24 +424,49 @@
         {:else if counted.status === 'error'}
           <p class="detail-note lesion-error" role="alert">{copy.tractsFailed}</p>
         {:else if tracts}
-          <p class="detail-note">{copy.tractsNote}</p>
-          <ul class="network-list">
+          <p class="detail-note">
+            {copy.tractsNote}. {tracts.crossed.length ? copy.tractsChoose : ''}
+          </p>
+          {#key lang}
+            <StatusLine
+              class="detail-note lesion-tract-status{tractView.status === 'ready'
+                ? ' visually-hidden'
+                : ''}"
+              text={tractStatus}
+            />
+          {/key}
+          {#if tractView.status === 'error'}
+            <p class="detail-note lesion-error" role="alert">{copy.tractShowFailed}</p>
+          {/if}
+          <ul class="lesion-tracts" aria-busy={tractView.status === 'loading'}>
             {#each tracts.crossed as bundle (bundle.id)}
-              <li class="network-row lesion-row">
-                <span class="network-row-name">
-                  {bundleName(bundle.id)}
-                  <span class="lesion-row-volume">
-                    {copy.ofTotal(grouped(bundle.crossing), grouped(bundle.total))}
+              <li>
+                <button
+                  type="button"
+                  class="lesion-tract"
+                  aria-pressed={lesion.selectedTract === bundle.id}
+                  aria-label={copy.showTract(bundleName(bundle.id), grouped(bundle.crossing))}
+                  onclick={() =>
+                    lesion.selectedTract === bundle.id
+                      ? lesion.clearTract()
+                      : lesion.showTract(bundle.id)}
+                >
+                  <span class="lesion-tract-name">
+                    {bundleName(bundle.id)}
+                    <span class="lesion-row-volume">
+                      {copy.ofTotal(grouped(bundle.crossing), grouped(bundle.total))}
+                    </span>
                   </span>
-                </span>
-                <Swatch kind="bar" share={bundle.share} />
-                <span class="network-share measure">{share(bundle.share)}</span>
+                  <Swatch kind="bar" share={bundle.share} />
+                  <span class="measure">{share(bundle.share)}</span>
+                </button>
               </li>
             {/each}
           </ul>
           {#if tracts.missed.length}
             <p class="detail-note">{copy.notReached(tracts.missed.map(bundleName).join(', '))}</p>
           {/if}
+          <p class="detail-note">{copy.tractsCaveat}</p>
         {/if}
       </Disclosure>
     </div>
@@ -595,6 +633,72 @@
       box-shadow: inset 0 0 0 1px var(--thumb-ring);
       color: var(--text-primary);
       font-weight: 500;
+    }
+    /* A row draws its bundle's crossing streamlines alone, as a comparison row outlines its overlap. */
+    .lesion-tracts {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .lesion-tract {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(32px, 56px) 3rem;
+      align-items: start;
+      gap: var(--space-2);
+      box-sizing: border-box;
+      width: calc(100% + 2 * var(--panel-inset));
+      min-height: var(--row-height);
+      margin-inline: calc(-1 * var(--panel-inset));
+      padding: calc((var(--row-height) - var(--lh-ui)) / 2) var(--panel-inset);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-primary);
+      font: inherit;
+      font-size: var(--text-ui);
+      line-height: var(--lh-ui);
+      text-align: left;
+      cursor: pointer;
+    }
+    .lesion-tract-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .lesion-tract .measure {
+      text-align: right;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .lesion-tract[aria-pressed='true'] {
+      background: var(--accent-wash);
+      color: var(--accent);
+    }
+    .lesion-tract[aria-pressed='true'] .lesion-tract-name {
+      font-weight: 600;
+    }
+    .lesion-tract[aria-pressed='true'] .measure,
+    .lesion-tract[aria-pressed='true'] .lesion-row-volume {
+      color: var(--accent);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .lesion-tract:hover {
+        background: var(--surface-hover);
+      }
+      .lesion-tract[aria-pressed='true']:hover {
+        background: var(--accent-wash);
+      }
+    }
+    .lesion-tract:focus-visible {
+      outline-offset: -2px;
+    }
+    @media (pointer: coarse) {
+      .lesion-tract {
+        min-height: 44px;
+      }
+    }
+    .lesion-report :global(.lesion-tract-status:empty) {
+      display: none;
     }
     .lesion-findings {
       margin: var(--space-2) 0 0;

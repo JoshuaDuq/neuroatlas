@@ -5,6 +5,8 @@ export interface FakeLesion extends EngineLesion {
   /** What the stage draws, and whether a click places it. */
   readonly shown: LesionSphere | null;
   readonly placing: boolean;
+  /** The bundle whose crossing streamlines are drawn alone. */
+  readonly shownTract: { id: string; sphere: LesionSphere } | null;
 }
 
 const EMPTY: LesionMeasurement = {
@@ -36,12 +38,16 @@ export function createFakeLesion({
 }): FakeLesion {
   let shown: LesionSphere | null = null;
   let placing = false;
+  let shownTract: FakeLesion['shownTract'] = null;
   const lesion: FakeLesion = {
     get shown() {
       return shown;
     },
     get placing() {
       return placing;
+    },
+    get shownTract() {
+      return shownTract;
     },
     show(sphere) {
       if (sphere) requireRadius(sphere);
@@ -64,6 +70,16 @@ export function createFakeLesion({
         onBundle?.(index + 1, ids.length);
         return { id, crossing: 0, total: 4 };
       });
+    },
+    async showTract(id, sphere) {
+      requireRadius(sphere);
+      if (!bundles?.some((bundle) => bundle.id === id)) {
+        throw new RangeError(`Unknown tract bundle: ${id}`);
+      }
+      shownTract = { id, sphere };
+    },
+    clearTract() {
+      shownTract = null;
     },
   };
   return lesion;

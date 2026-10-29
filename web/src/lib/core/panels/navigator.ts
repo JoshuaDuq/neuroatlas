@@ -52,7 +52,7 @@ export function nextEnabledIndex(
 /** The vocabulary a region's group name comes from. */
 export function vocabularyOf(region: Pick<Region, 'kind' | 'atlas'>): Vocabulary {
   if (region.kind === 'structure' || region.kind === 'tissue-region') return 'system';
-  return region.atlas === 'hcp-mmp' ? 'network' : 'lobe';
+  return region.atlas === 'hcp-mmp' || region.atlas === 'schaefer' ? 'network' : 'lobe';
 }
 
 /** Group names that two vocabularies use at once, such as a Limbic lobe beside the Limbic system. */

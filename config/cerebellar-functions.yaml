@@ -1,0 +1,155 @@
+# Functional regions of the cerebellum (Nettekoven et al. 2024): a group atlas
+# fused from seven task-based fMRI datasets, drawn on the SUIT cerebellar
+# template. scripts/register_cerebellar_functions.py registers that template to
+# this brain with SynthMorph, carries the atlas across by nearest neighbour and
+# keeps it to this brain's cerebellar cortex; the build reads the result. It is
+# a group map placed on this brain, not this brain's measured function.
+label: Functional cerebellar regions (Nettekoven et al. 2024)
+citation: Nettekoven C, Zhi D, Shahshahani L, Pinho AL, Saadon-Grosman N, Buckner RL, Diedrichsen J (2024) A hierarchical atlas of the human cerebellum for functional precision mapping. Nat Commun 15:8376
+doi: https://doi.org/10.1038/s41467-024-52371-w
+pmid: 39333089
+# tpl-SUIT/LICENSE covers the SUIT template "and atlases"; the atlas's own page
+# names the same licence.
+license: CC BY-NC 3.0
+source:
+  repository: https://github.com/DiedrichsenLab/cerebellar_atlases
+  commit: 6857dfa732de6dd60c94da2f84d0b15ccf316618
+  files:
+    template: [tpl-SUIT/tpl-SUIT_T1w.nii, 9c84dd5d2dc3373d9d876ab675b1143d7c8397fd64bce7563650783c93ff530f]
+    atlas: [Nettekoven_2024/atl-NettekovenSym32_space-SUIT_dseg.nii, 82f06b102bafac7b3ba7b641fd4ab1d8d7034a1d88fca163d3b49e79c9aa1476]
+    lut: [Nettekoven_2024/atl-NettekovenSym32.lut, 33a723b32cb861623a8459865454c9efb142bdb3ce2390ea5f29a586cfab0e24]
+    # SUIT's own lobules (Diedrichsen et al. 2009), carried by the same warp to
+    # score it against this brain's CerebNet lobules; not published.
+    lobules: [Diedrichsen_2009/atl-Anatom_space-SUIT_dseg.nii, cd9485752b10c385eb630a5d062cc9c8832fd1b94df1a11fec78c67b0a94ee96]
+    lobule_names: [Diedrichsen_2009/atl-Anatom.tsv, dc682c847972bd37badaa979526cf22a25bc79cdf50f4f49c107391c517fe7ad]
+# Measured on CDMD on 2026-10-29: lobule Dice 0.65 (0.49 to 0.81), 98.5% of
+# the cerebellar cortex covered, 98.9% of labels on their own side. Group
+# template registration places lobule borders a few millimetres off; the
+# limits reject a failed registration, not a millimetre's drift.
+acceptance:
+  lobule_dice_mean_min: 0.6
+  cerebellar_cortex_covered_min: 0.95
+  side_agreement_min: 0.97
+# The paper's four domains, named by the tasks that activate them.
+domains:
+  motor: {name: Motor, name_fr: Moteur}
+  action: {name: Action, name_fr: Action}
+  demand: {name: Multiple demand, name_fr: Demande multiple}
+  social: {name: "Social, linguistic and spatial", name_fr: "Social, linguistique et spatial"}
+# The symmetric 32-region map: atlas values 1 to 16 are these regions on the
+# left, 17 to 32 the same on the right. A name holds on both sides; what the
+# paper found on one side, or only as a tendency, stays in the description.
+# Colours are the atlas's own, which group regions by functional similarity.
+regions:
+  - id: m1
+    domain: motor
+    name: M1 · oculomotor
+    name_fr: M1 · oculomoteur
+    description: The oculomotor vermis, most active for saccades, and also during reading, film watching and visual search.
+    description_fr: Le vermis oculomoteur, le plus actif lors des saccades, et aussi pendant la lecture, un film ou la recherche visuelle.
+    color: [128, 78, 160]
+  - id: m2
+    domain: motor
+    name: M2 · tongue
+    name_fr: M2 · langue
+    description: A lateral part most active for tongue movements and a vermal part active for several body movements.
+    description_fr: Une partie latérale la plus active lors des mouvements de la langue et une partie vermienne active pour plusieurs mouvements du corps.
+    color: [157, 41, 224]
+  - id: m3
+    domain: motor
+    name: M3 · hand
+    name_fr: M3 · main
+    description: Selectively active for movements of the hand on its own side.
+    description_fr: Sélectivement active lors des mouvements de la main du même côté.
+    color: [101, 182, 249]
+  - id: m4
+    domain: motor
+    name: M4 · lower body
+    name_fr: M4 · bas du corps
+    description: Most active for movements of the lower body, such as foot flexion and contraction of the gluteal muscles.
+    description_fr: La plus active lors des mouvements du bas du corps, comme la flexion du pied et la contraction des fessiers.
+    color: [98, 255, 118]
+  - id: a1
+    domain: action
+    name: A1 · action
+    name_fr: A1 · action
+    description: Active when actions are observed, and especially for tasks that require spatial simulation, such as mental rotation.
+    description_fr: Active lors de l’observation d’actions, et surtout pour les tâches de simulation spatiale, comme la rotation mentale.
+    color: [138, 137, 255]
+  - id: a2
+    domain: action
+    name: A2 · action
+    name_fr: A2 · action
+    description: A classic action-observation region, with little response to tasks that neither show nor perform an action.
+    description_fr: Une région classique d’observation de l’action, peu active pour les tâches qui ne montrent ni n’exécutent d’action.
+    color: [83, 78, 225]
+  - id: a3
+    domain: action
+    name: A3 · action
+    name_fr: A3 · action
+    description: Active when actions are observed and also when movements are imagined.
+    description_fr: Active lors de l’observation d’actions et aussi lors de mouvements imaginés.
+    color: [95, 255, 255]
+  - id: d1
+    domain: demand
+    name: D1 · multiple demand
+    name_fr: D1 · demande multiple
+    description: Active for executive control, such as updating, shifting and inhibition; the most medial part of Crus I and II.
+    description_fr: Active lors du contrôle exécutif, comme la mise à jour, l’alternance et l’inhibition ; la partie la plus médiane des Crus I et II.
+    color: [174, 62, 73]
+  - id: d2
+    domain: demand
+    name: D2 · multiple demand
+    name_fr: D2 · demande multiple
+    description: Active for executive control; the innermost layer of the demand regions, repeated in lobule IX.
+    description_fr: Active lors du contrôle exécutif ; la couche la plus interne des régions de demande, répétée dans le lobule IX.
+    color: [255, 107, 179]
+  - id: d3
+    domain: demand
+    name: D3 · multiple demand
+    name_fr: D3 · demande multiple
+    description: Active for executive control; the outermost layer of the demand regions, with vermal parts in lobules IV and IX.
+    description_fr: Active lors du contrôle exécutif ; la couche la plus externe des régions de demande, avec des parties vermiennes dans les lobules IV et IX.
+    color: [240, 83, 255]
+  - id: d4
+    domain: demand
+    name: D4 · multiple demand
+    name_fr: D4 · demande multiple
+    description: The smallest region, functionally closest to D1; the most lateral of the demand regions.
+    description_fr: La plus petite région, fonctionnellement la plus proche de D1 ; la plus latérale des régions de demande.
+    color: [208, 30, 130]
+  - id: s1
+    domain: social
+    name: S1 · social, linguistic, spatial
+    name_fr: S1 · social, linguistique, spatial
+    description: The most medial of these regions, in the depth of the horizontal fissure; on the right, most active for language, such as verb generation.
+    description_fr: La plus médiane de ces régions, au fond de la fissure horizontale ; à droite, la plus active pour le langage, comme la génération de verbes.
+    color: [251, 194, 33]
+  - id: s2
+    domain: social
+    name: S2 · social, linguistic, spatial
+    name_fr: S2 · social, linguistique, spatial
+    description: Most active for social processing, such as a theory-of-mind task on the right and an animated film on the left; active at rest.
+    description_fr: La plus active pour le traitement social, comme une tâche de théorie de l’esprit à droite et un film d’animation à gauche ; active au repos.
+    color: [219, 255, 72]
+  - id: s3
+    domain: social
+    name: S3 · social, linguistic, spatial
+    name_fr: S3 · social, linguistique, spatial
+    description: Overlaps S2 and S4 so much that it can be told apart from them only in an individual's own data; active at rest.
+    description_fr: Recouvre tant S2 et S4 qu’on ne l’en distingue que dans les données propres d’un individu ; active au repos.
+    color: [216, 255, 199]
+  - id: s4
+    domain: social
+    name: S4 · social, linguistic, spatial
+    name_fr: S4 · social, linguistique, spatial
+    description: The most lateral tips of Crus I and II; most active for imagination and self-projection, such as imagining walking through a familiar home.
+    description_fr: Les extrémités les plus latérales des Crus I et II ; la plus active pour l’imagination et la projection de soi, comme se promener en pensée dans un lieu familier.
+    color: [255, 255, 211]
+  - id: s5
+    domain: social
+    name: S5 · social, linguistic, spatial
+    name_fr: S5 · social, linguistique, spatial
+    description: Active for imagination, spatial working memory and action observation, between this domain and the action regions.
+    description_fr: Active pour l’imagination, la mémoire de travail spatiale et l’observation d’actions, entre ce domaine et les régions d’action.
+    color: [82, 188, 93]

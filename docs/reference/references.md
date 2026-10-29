@@ -45,6 +45,14 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
   Tournier, J.-D., Smith, R., Raffelt, D., Tabbara, R., Dhollander, T., Pietsch, M., Christiaens, D., Jeurissen, B., Yeh, C.-H., & Connelly, A. (2019). MRtrix3: A fast, flexible and open software framework for medical image processing and visualisation. *NeuroImage*, 202, 116137. [doi:10.1016/j.neuroimage.2019.116137](https://doi.org/10.1016/j.neuroimage.2019.116137). PMID 31473352. Version 3.0.8 (MPL-2.0) fits the CSD peaks TractSeg reads, aligns them to its template and fits CDMD's tensor FA.
 - **CerebNet.**
   Faber, J., Kügler, D., Bahrami, E., Heinz, L.-S., Timmann, D., Ernst, T. M., … Diedrichsen, J., & Reuter, M. (2022). CerebNet: A fast and reliable deep-learning pipeline for detailed cerebellum sub-segmentation. *NeuroImage*, 264, 119703. [doi:10.1016/j.neuroimage.2022.119703](https://doi.org/10.1016/j.neuroimage.2022.119703). PMID 36349595. CDMD's cerebellar lobules are FastSurfer v2.6.0's CerebNet segmentation (Apache-2.0) of its own T1.
+- **Arterial territories.**
+  Liu, C.-F., Hsu, J., Xu, X., Kim, G., Sheppard, S. M., Meier, E. L., Miller, M. I., Hillis, A. E., & Faria, A. V. (2023). Digital 3D Brain MRI Arterial Territories Atlas. *Scientific Data*, 10(1), 74. [doi:10.1038/s41597-022-01923-0](https://doi.org/10.1038/s41597-022-01923-0). PMID 36739282. The atlas and its template b0, from the authors' [repository](https://github.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation) at commit `159df3a`.
+- **SUIT cerebellar template.**
+  Diedrichsen, J. (2006). A spatially unbiased atlas template of the human cerebellum. *NeuroImage*, 33(1), 127–138. [doi:10.1016/j.neuroimage.2006.05.056](https://doi.org/10.1016/j.neuroimage.2006.05.056). PMID 16904911. The template registered to each brain for the functional cerebellar atlas.
+- **SUIT cerebellar lobules.**
+  Diedrichsen, J., Balsters, J. H., Flavell, J., Cussans, E., & Ramnani, N. (2009). A probabilistic MR atlas of the human cerebellum. *NeuroImage*, 46(1), 39–46. [doi:10.1016/j.neuroimage.2009.01.045](https://doi.org/10.1016/j.neuroimage.2009.01.045). PMID 19457380. Carried by the same registration only to score it against CerebNet; not published.
+- **Functional cerebellar atlas.**
+  Nettekoven, C., Zhi, D., Shahshahani, L., Pinho, A. L., Saadon-Grosman, N., Buckner, R. L., & Diedrichsen, J. (2024). A hierarchical atlas of the human cerebellum for functional precision mapping. *Nature Communications*, 15, 8376. [doi:10.1038/s41467-024-52371-w](https://doi.org/10.1038/s41467-024-52371-w). PMID 39333089. The symmetric 32-region map, from the Diedrichsen lab's [cerebellar atlas collection](https://github.com/DiedrichsenLab/cerebellar_atlases) at commit `6857dfa`.
 - **Julich-Brain.**
   Amunts, K., Mohlberg, H., Bludau, S., & Zilles, K. (2020). Julich-Brain: A 3D probabilistic atlas of the human brain's cytoarchitecture. *Science*, 369(6506), 988–992. [doi:10.1126/science.abb4588](https://doi.org/10.1126/science.abb4588). PMID 32732281. The maps are version 3.1 (Amunts, Mohlberg, Bludau, Caspers, Lewis, Eickhoff & Pieperhoff, EBRAINS, [doi:10.25493/KNSN-XB4](https://doi.org/10.25493/KNSN-XB4)), on `fsaverage`.
 - **Spinal Cord Toolbox.**
@@ -66,6 +74,9 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 | HCP-MMP-derived files | Human Connectome Project | WU-Minn HCP Open Access Data Use Terms |
 | `cab-np.json` | CAB-NP (Rutgers, Yale) | Non-commercial |
 | `cortex-julich.glb`, `ribbon-julich.labels`, `tissues-julich.volume` | Julich-Brain 3.1 (EBRAINS) | CC BY-NC-SA 4.0 |
+| `tissues-arterial.volume`, the cortex meshes' `_TERRITORY` attribute, arterial regions and territory shares in `manifest.json` | Liu et al. 2023 | CC BY-SA 4.0 |
+| `tissues-nettekoven.volume`, cerebellar functional regions and shares in `manifest.json` | Nettekoven et al. 2024 on the SUIT template (Diedrichsen lab) | CC BY-NC 3.0 |
+| `cortex-schaefer.glb`, `ribbon-schaefer.labels`, `tissues-schaefer.volume` | Schaefer 2018 (ThomasYeoLab/CBIG) | MIT |
 | `neuropsych-domains.json`, area scores | Neurosynth | ODbL 1.0 |
 | NextBrain-derived files | FreeSurfer 8.2 | None named beyond FreeSurfer's |
 | `spinal-cord.glb` | PAM50 (Spinal Cord Toolbox) on CDMD's cord | MIT |
@@ -106,6 +117,14 @@ Non-commercial only. Redistribution is allowed without permission when no financ
 ### CC BY-NC-SA 4.0 (Julich-Brain)
 
 Non-commercial, and shared alike: the Julich-Brain files derived for each brain stay under CC BY-NC-SA 4.0, with the dataset and Amunts et al. (2020) credited and the changes stated (projection to the subject; gap maps and medial masks left unassigned). Full terms: [`Julich-Brain-CC-BY-NC-SA-4.0.pdf`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/Julich-Brain-CC-BY-NC-SA-4.0.pdf).
+
+### CC BY-SA 4.0 (arterial territories)
+
+Attribution, and shared alike: the arterial territory files derived for each brain stay under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), with Liu et al. (2023) credited and the changes stated (registration of the atlas's template to the subject, nearest-neighbour transfer, and per-vertex and per-region territories drawn from it). The atlas's label file names CC BY-SA 4.0 but links the CC BY legal code; Planum takes the stricter reading. The rest of each cortex mesh keeps its own source's terms.
+
+### CC BY-NC 3.0 (functional cerebellar atlas)
+
+Non-commercial, with attribution: the SUIT template and the atlases distributed with it, the Nettekoven et al. (2024) map included, are under [CC BY-NC 3.0 Unported](https://creativecommons.org/licenses/by-nc/3.0/) ([licence file](https://github.com/DiedrichsenLab/cerebellar_atlases/blob/6857dfa732de6dd60c94da2f84d0b15ccf316618/tpl-SUIT/LICENSE)). The files derived for each brain credit Nettekoven et al. (2024) and Diedrichsen (2006) and state the changes: registration to the subject and restriction to its cerebellar cortex.
 
 ### Open Database License (`neuropsych-domains.json`)
 

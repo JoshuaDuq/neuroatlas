@@ -112,11 +112,12 @@ export function createLesionMarking() {
   return {
     group,
     applyTheme,
-    /** Draw `sphere` against the drawn cortex, clipped as the cortex is; null removes it. */
+    /** Draw `sphere` against the drawn cortex, clipped as the cortex is, its footprint at `opacity`; null removes it. */
     show(
       sphere: LesionSphere | null,
       cortex: readonly SurfaceMesh[],
       planes: readonly Plane[],
+      opacity: number,
     ): void {
       surface.geometry.dispose();
       ring.geometry.dispose();
@@ -135,6 +136,9 @@ export function createLesionMarking() {
       else geometry.computeVertexNormals();
       surface.geometry = geometry;
       paint.clippingPlanes = [...planes];
+      paint.opacity = opacity;
+      paint.transparent = opacity < 1;
+      paint.depthWrite = opacity === 1;
       paint.needsUpdate = true;
 
       const points = Array.from({ length: RING_SEGMENTS + 1 }, (_, i) => {

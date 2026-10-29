@@ -12,6 +12,7 @@ import type { SceneCommands } from '../core/state/scene-commands.ts';
 import { PARAMS, decodeState, encodeState } from '../core/state/url-state.ts';
 import type { Engine, MoveOptions } from '../engine/api.ts';
 import { VIEW_DIRECTIONS, viewForRestoredCut } from '../engine/render/camera-views.ts';
+import type { LesionStore } from '../state/lesion.svelte.ts';
 import type { LinkStore } from '../state/link.svelte.ts';
 import type { LessonStore, SessionStore } from '../state/session.svelte.ts';
 import type { ViewStore } from '../state/view.svelte.ts';
@@ -48,6 +49,10 @@ export interface LinksOptions {
   session: SessionStore;
   lesson: LessonStore;
   view: ViewStore;
+  lesion: Pick<
+    LesionStore,
+    'sphere' | 'mode' | 'selectedTract' | 'heldOpacity' | 'restore' | 'remove'
+  >;
   /** The writer from `createLink`: hold, release, schedule and cancel. */
   link: Pick<LinkStore, 'hold' | 'release' | 'schedule' | 'cancel'>;
   commands: Pick<
@@ -79,6 +84,7 @@ export function createLinks({
   session,
   lesson,
   view,
+  lesion,
   link,
   commands,
   clinical,
@@ -117,6 +123,7 @@ export function createLinks({
     deficits: new Set(clinical.search('', 'en').map((deficit) => deficit.id)),
     circuits: new Map(circuits.all.map((circuit) => [circuit.id, circuit.steps.length])),
     spinalCord: publishesSpinalCord(model.manifest),
+    lesionBundles: (sphere) => engine.lesion.tractBundles(sphere),
   };
 
   /** The plane is not session state. It still belongs in the link (app.js:1754). */
@@ -149,6 +156,11 @@ export function createLinks({
       circuitStep: current.lesson.circuit ? current.lesson.step : 0,
       orbit: camera.orbitLink(),
       mriWindow: sections.mriWindowLink(),
+      // The see-through cortex the drawn streamlines asked for comes back with them.
+      cortexOpacity: lesion.heldOpacity ?? current.cortexOpacity,
+      lesion: lesion.sphere && { centre: [...lesion.sphere.centre], radius: lesion.sphere.radius },
+      lesionMode: lesion.mode,
+      lesionTract: lesion.selectedTract,
     };
   }
 
@@ -292,6 +304,11 @@ export function createLinks({
         lesson.close();
       }
       const { explorer, selectedFunction, selectedDeficit } = session.state;
+      // The drawn streamlines belong to the lesion's report, on Anatomy.
+      const tract = explorer === 'anatomy' ? (valid.lesionTract ?? null) : null;
+      if (valid.lesionTract && !tract) notApplied.push(PARAMS.lesionTract!);
+      if (valid.lesion) lesion.restore(valid.lesion, valid.lesionMode ?? 'lesion', tract);
+      else if (lesion.sphere) lesion.remove();
       // A lesson linked without its landmark opens on it, as choosing that step does; leaving it
       // returns to the rest of the link.
       if (explorer === 'circuits' && valid.circuit && !valid.selectedRegion) {
@@ -310,7 +327,9 @@ export function createLinks({
       if (
         (explorer === 'functions' && selectedFunction) ||
         (explorer === 'deficits' && selectedDeficit) ||
-        (explorer === 'circuits' && valid.circuit)
+        (explorer === 'circuits' && valid.circuit) ||
+        // The lesion's report is Anatomy's detail while no region is selected.
+        (explorer === 'anatomy' && valid.lesion && !valid.selectedRegion)
       ) {
         hooks.showDetail();
       }

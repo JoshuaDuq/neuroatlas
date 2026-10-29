@@ -259,8 +259,8 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
 
     const comparison: EngineComparison = {
       async highlight(id, source) {
-        geometry ??= source;
-        const applied = await overlay.highlight(id);
+        geometry = source;
+        const applied = await overlay.highlight(id, `${source.file}:${source.sha256}`);
         if (applied) presentation.outline();
         return applied;
       },
@@ -296,6 +296,8 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
         measure: lesion.measure,
         tractBundles: lesion.tractBundles,
         measureTracts: lesion.measureTracts,
+        showTract: lesion.showTract,
+        clearTract: lesion.clearTract,
       },
 
       applyTheme() {

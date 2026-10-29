@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
+import type { BufferGeometry, Mesh, MeshStandardMaterial } from 'three';
+import { test, vi } from 'vitest';
 import { Volume } from '../slices/volume.ts';
 import type { VolumeFile } from '../slices/volume.ts';
 import type { TissueMetadata } from '../tissues/gpu-sections.ts';
@@ -57,7 +58,7 @@ const metadata = {
   ),
 } as unknown as TissueMetadata;
 
-function lesion() {
+function lesion(tracts: Parameters<typeof createLesion>[0]['tracts'] = null) {
   const files = new Map(
     [...Object.values(metadata.atlases), metadata.white_matter!].map((entry) => [
       entry.file,
@@ -65,10 +66,15 @@ function lesion() {
     ]),
   );
   return createLesion({
-    model: { visibleMeshes: [], regions: new Map(), clippingPlanes: [] },
+    model: {
+      visibleMeshes: [],
+      regions: new Map(),
+      clippingPlanes: [],
+      state: { cortexOpacity: 0.2 },
+    },
     tissues: { loadMetadata: async () => {}, metadata },
     baseUrl: 'https://example.test/',
-    tracts: null,
+    tracts,
     invalidate: () => {},
     loadVolume: async (file: VolumeFile) =>
       new Volume(file, new Uint16Array(files.get(file.file)!)),
@@ -111,4 +117,25 @@ test('has no tracts to count on an anatomy whose tracts are another subject’s'
   const sphere = { centre: [1, 0, 0], radius: 1 } as const;
   assert.deepEqual(domain.tractBundles(sphere), []);
   assert.deepEqual(await domain.measureTracts(sphere), []);
+});
+
+test('its footprint lets the streamlines show through while they are drawn, then is opaque again', async () => {
+  const tracts = {
+    bundles: [{ id: 'af-left' }],
+    crossing: async () => [],
+    showCrossing: vi.fn(async () => {}),
+    clearCrossing: vi.fn(),
+  };
+  const domain = lesion(tracts);
+  const sphere = { centre: [1, 0, 0], radius: 1 } as const;
+  domain.show(sphere);
+  const paint = () =>
+    (domain.group.children[0] as Mesh<BufferGeometry, MeshStandardMaterial>).material;
+  assert.equal(paint().opacity, 1);
+  await domain.showTract('af-left', sphere);
+  assert.deepEqual(tracts.showCrossing.mock.calls, [['af-left', sphere]]);
+  assert.deepEqual([paint().opacity, paint().transparent, paint().depthWrite], [0.2, true, false]);
+  domain.clearTract();
+  assert.equal(tracts.clearCrossing.mock.calls.length, 1);
+  assert.deepEqual([paint().opacity, paint().transparent, paint().depthWrite], [1, false, true]);
 });

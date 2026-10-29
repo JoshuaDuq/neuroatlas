@@ -186,6 +186,9 @@ def test_export_pins_sources_and_original_assets_without_rebuilding(comparison_s
     pointer = publish_comparison(config)
     manifest = json.loads((output / "manifest.json").read_text())
     assert manifest.pop("atlas_comparison") == pointer
+    assert manifest.pop("atlas_comparisons") == [
+        {"atlases": ["destrieux", "hcp-mmp"], **pointer}
+    ]
     assert manifest == original
     assert pointer == {
         "file": "atlas-comparison.json",
@@ -350,3 +353,31 @@ def test_published_geometry_contains_only_the_exact_joint_cells():
             assert pairs[mesh_id]["area_mm2"] == pytest.approx(area, rel=1e-14)
             tolerance = bounds[result.partition.labels == code].sum() + 1e-10 * area
             assert abs(mesh.area * 1e6 - area) <= tolerance
+
+
+def test_three_atlases_publish_pairwise_comparisons_with_identical_marginals(comparison_subject):
+    from copy import deepcopy
+    from brain_model.layers.comparison import export_comparisons
+
+    config, manifest = comparison_subject
+    julich = {**manifest['atlases'][1], 'id': 'julich', 'file': 'cortex-julich.glb'}
+    manifest['atlases'].append(julich)
+    manifest['regions'].extend([
+        {**deepcopy(region), 'id': region['id'].replace('hcp-mmp:', 'julich:'), 'atlas': 'julich'}
+        for region in manifest['regions'] if region['atlas'] == 'hcp-mmp'
+    ])
+    (config['output_directory'] / julich['file']).write_bytes(b'julich asset')
+    config['atlas_comparison']['atlases'].append('julich')
+    declarations = export_comparisons(config, manifest)
+    assert [entry['atlases'] for entry in declarations] == [
+        ['destrieux', 'hcp-mmp'], ['destrieux', 'julich'], ['hcp-mmp', 'julich']
+    ]
+    records = [json.loads((config['output_directory'] / entry['file']).read_text()) for entry in declarations]
+    assert declarations[0]['file'] == 'atlas-comparison.json'
+    assert len({record['geometry']['file'] for record in records}) == 3
+    for record in records:
+        for region_id, total in record['totals'].items():
+            assert sum(pair['area_mm2'] for pair in record['pairs'] if region_id in pair['region_ids']) == pytest.approx(total)
+    assert records[0]['totals']['destrieux:left:1'] == records[1]['totals']['destrieux:left:1']
+    assert records[0]['totals']['hcp-mmp:left:3'] == records[2]['totals']['hcp-mmp:left:3']
+    assert records[0]['totals']['destrieux:left:0'] == records[1]['totals']['destrieux:left:0']

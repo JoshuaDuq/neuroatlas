@@ -57,4 +57,4 @@ See [installation](https://planumatlas.com/docs/install.html) and [building an a
 
 ## Data and licences
 
-The code is MIT licensed; data have separate terms. In particular, HCP-MMP data have HCP use terms, CAB-NP is non-commercial, Julich-Brain is CC BY-NC-SA, Neurosynth-derived databases are ODbL, and the PAM50 cord atlas is MIT. TractSeg-derived bundles require attribution. See [references and licensing](https://planumatlas.com/docs/reference/references.html) for sources, citations and complete terms.
+The code is MIT licensed; data have separate terms. In particular, HCP-MMP data have HCP use terms, CAB-NP is non-commercial, Julich-Brain is CC BY-NC-SA, the Nettekoven cerebellar atlas and SUIT template are CC BY-NC 3.0, the arterial territory atlas is CC BY-SA 4.0, Neurosynth-derived databases are ODbL, and the Schaefer parcellation and PAM50 cord atlas are MIT. TractSeg-derived bundles require attribution. See [references and licensing](https://planumatlas.com/docs/reference/references.html) for sources, citations and complete terms.

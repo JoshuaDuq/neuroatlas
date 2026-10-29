@@ -57,10 +57,20 @@ function setup(
     } as never,
     render() {},
   });
+  // The lesion store as links reads and restores it.
+  const lesion = {
+    sphere: null as { centre: readonly [number, number, number]; radius: number } | null,
+    mode: 'lesion' as const,
+    selectedTract: null as string | null,
+    heldOpacity: null as number | null,
+    restore: vi.fn(),
+    remove: vi.fn(),
+  };
   const links = createLinks({
     engine,
     session,
     lesson,
+    lesion,
     view: {
       get current() {
         return {
@@ -93,7 +103,7 @@ function setup(
     followLanguage: (lang) => followed.push(lang),
     page: page as never,
   });
-  return { followed, engine, session, lesson, links, page, calls, link, commands };
+  return { followed, engine, session, lesson, links, page, calls, link, commands, lesion };
 }
 
 describe('writing the link', () => {
@@ -232,6 +242,60 @@ describe('restoring a link', () => {
     expect(release).toHaveBeenCalledOnce();
     expect(() => links.report(null)).not.toThrow();
     expect(session.state.notice).toBeNull();
+  });
+});
+
+describe('a lesion in the link', () => {
+  it('carries the lesion, its colouring and the drawn tract, with the cortex opacity the reader chose', () => {
+    const { links, lesion, calls } = setup({ cortexOpacity: 0.16 });
+    Object.assign(lesion, {
+      sphere: { centre: [-54.1, -6, 46.1], radius: 10 },
+      mode: 'functions',
+      selectedTract: 'arcuate-left',
+      heldOpacity: 1,
+    });
+    links.write();
+    const hash = calls.at(-1)![1] as string;
+    expect(hash).toContain('lesion=-54.1,-6,46.1,10&lesionmode=functions&lesiontract=arcuate-left');
+    expect(hash).not.toContain('opacity=');
+  });
+
+  it('restores the lesion and draws the tract it reaches, on Anatomy, its report shown', async () => {
+    const showDetail = vi.fn();
+    const { links, lesion } = setup({}, undefined, { hooks: { showDetail } });
+    const notApplied = await links.restore(
+      decodeState('lesion=-30,-10,20,12&lesionmode=deficits&lesiontract=arcuate-left'),
+      {},
+    );
+    expect(notApplied).toEqual([]);
+    expect(lesion.restore.mock.calls).toEqual([
+      [{ centre: [-30, -10, 20], radius: 12 }, 'deficits', 'arcuate-left'],
+    ]);
+    expect(showDetail).toHaveBeenCalledOnce();
+    await links.restore(decodeState('lesion=-30,-10,20,12&region=destrieux:left:16'), {});
+    expect(showDetail).toHaveBeenCalledOnce();
+  });
+
+  it('places the lesion but names a tract it cannot reach, or one shown off Anatomy, as not applied', async () => {
+    const { links, lesion } = setup();
+    expect(
+      await links.restore(decodeState('lesion=30,-10,20,12&lesiontract=arcuate-left'), {}),
+    ).toEqual(['lesiontract']);
+    expect(
+      await links.restore(
+        decodeState('lesion=-30,-10,20,12&lesiontract=arcuate-left&tab=functions'),
+        {},
+      ),
+    ).toEqual(['lesiontract']);
+    expect(lesion.restore.mock.calls.map(([, , tract]) => tract)).toEqual([null, null]);
+  });
+
+  it('takes away a lesion the link does not name', async () => {
+    const { links, lesion } = setup();
+    lesion.sphere = { centre: [0, 0, 0], radius: 10 };
+    await links.restore(decodeState('hemi=left'), {});
+    expect(lesion.remove).toHaveBeenCalledOnce();
+    expect(lesion.restore).not.toHaveBeenCalled();
   });
 });
 

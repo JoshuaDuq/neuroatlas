@@ -3,6 +3,7 @@ export const en = {
     destrieux: 'Destrieux',
     'hcp-mmp': 'HCP-MMP',
     julich: 'Julich-Brain',
+    schaefer: 'Schaefer',
     learning: 'Teaching set',
     aseg: 'FreeSurfer aseg',
     nextbrain: 'NextBrain',
@@ -10,6 +11,7 @@ export const en = {
     wmparc: 'wmparc',
     pam50: 'PAM50',
     arterial: 'Arterial territories',
+    nettekoven: 'Cerebellar functions',
   },
   subject: 'Subject',
   atlas: 'Atlas',
@@ -30,6 +32,8 @@ export const en = {
     'hcp-mmp': 'Multimodal areas, 180 per hemisphere (Glasser 2016)',
     julich:
       'Cytoarchitectonic areas from histology, 139 per hemisphere (Amunts 2020); about a quarter of the cortex is not yet mapped',
+    schaefer:
+      'Resting-state functional parcels, 200 per hemisphere, coloured by Yeo network (Schaefer 2018)',
     learning:
       'Overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published',
     aseg: 'FreeSurfer’s standard automatic subcortical segmentation',
@@ -55,6 +59,7 @@ export const fr: typeof en = {
     destrieux: 'Destrieux',
     'hcp-mmp': 'HCP-MMP',
     julich: 'Julich-Brain',
+    schaefer: 'Schaefer',
     learning: 'Ensemble pédagogique',
     aseg: 'FreeSurfer aseg',
     nextbrain: 'NextBrain',
@@ -62,6 +67,7 @@ export const fr: typeof en = {
     wmparc: 'wmparc',
     pam50: 'PAM50',
     arterial: 'Territoires artériels',
+    nettekoven: 'Fonctions cérébelleuses',
   },
   subject: 'Sujet',
   atlas: 'Atlas',
@@ -80,6 +86,8 @@ export const fr: typeof en = {
     'hcp-mmp': 'Aires multimodales, 180 par hémisphère (Glasser 2016)',
     julich:
       'Aires cytoarchitectoniques issues de l’histologie, 139 par hémisphère (Amunts 2020)\u202f; environ un quart du cortex n’est pas encore cartographié',
+    schaefer:
+      'Parcelles fonctionnelles de connectivité au repos, 200 par hémisphère, colorées par réseau de Yeo (Schaefer 2018)',
     learning:
       'Grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés',
     aseg: 'Segmentation sous-corticale automatique standard de FreeSurfer',

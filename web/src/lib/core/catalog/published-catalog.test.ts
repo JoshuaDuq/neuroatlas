@@ -78,8 +78,8 @@ test('CAT-07: a region without a label stops the catalogue from building', () =>
 });
 
 describe('the published cdmd anatomy', () => {
-  test('CAT-07: all 1592 regions have a non-empty name and group in English and French', () => {
-    assert.equal(manifest.regions.length, 1592);
+  test('CAT-07: all 2026 regions have a non-empty name and group in English and French', () => {
+    assert.equal(manifest.regions.length, 2026);
     for (const region of manifest.regions) {
       for (const lang of ['en', 'fr'] as const) {
         const label = labelOf(region, lang);
@@ -124,7 +124,7 @@ describe('the published cdmd anatomy', () => {
     assert.deepEqual(ids('cunéus', 'fr'), ids('cuneus', 'fr'));
     assert.ok(catalogs.fr.search('cuneus', french).rows.some((r) => r.label.name === 'Cunéus'));
     const english = catalogs.en.search('cuneus', settings());
-    assert.equal(english.total, 16);
+    assert.equal(english.total, 36);
     assert.deepEqual(
       english.rows.slice(0, 5).map((row) => row.region.id),
       [
@@ -141,16 +141,16 @@ describe('the published cdmd anatomy', () => {
   test('CAT-22: the published search totals are fixed', () => {
     const total = (query: string, lang: Language) =>
       catalogs[lang].search(query, settings({ lang })).total;
-    assert.equal(total('s', 'en'), 934);
+    assert.equal(total('s', 'en'), 1344);
     assert.equal(total('noyau', 'fr'), 235);
     assert.equal(total('zzz', 'en'), 0);
     assert.equal(total('', 'en'), 0);
   });
 
-  test('CAT-24: a search for "s" is capped at 50 rows of 934', () => {
+  test('CAT-24: a search for "s" is capped at 50 rows of 1344', () => {
     const found = catalogs.en.search('s', settings());
     assert.equal(found.rows.length, 50);
-    assert.equal(found.total, 934);
+    assert.equal(found.total, 1344);
     assert.equal(catalogs.en.search('s', settings(), 5).rows.length, 5);
   });
 
@@ -292,9 +292,9 @@ describe('the published cdmd anatomy', () => {
     assert.equal(validateCabNp(structuredClone(cabNp), regionsById).id, 'cab-np');
   });
 
-  test('CAT-32: all 871 regions with network shares have a counting basis', () => {
+  test('CAT-32: all 1271 regions with network shares have a counting basis', () => {
     const withNetworks = manifest.regions.filter((region) => networksOf(region).length > 0);
-    assert.equal(withNetworks.length, 871);
+    assert.equal(withNetworks.length, 1271);
     for (const region of withNetworks) assert.ok(networkBasis(region), region.id);
   });
 

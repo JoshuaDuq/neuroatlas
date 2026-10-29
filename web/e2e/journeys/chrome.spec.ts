@@ -32,7 +32,9 @@ test('data bar, comparison CSV, saved PNG and full screen on one load', async ({
   await summary.click();
   const csv = page.waitForEvent('download');
   await panel.getByRole('button', { name: 'Download CSV' }).click();
-  expect((await csv).suggestedFilename()).toBe('cdmd-hcp-mmp-left-1-atlas-comparison.csv');
+  expect((await csv).suggestedFilename()).toBe(
+    'cdmd-hcp-mmp-left-1-destrieux-atlas-comparison.csv',
+  );
 
   // Save image downloads a PNG of the real stage.
   const save = page.getByRole('button', { name: 'Save image (PNG)' });

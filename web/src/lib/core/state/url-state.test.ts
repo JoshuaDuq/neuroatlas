@@ -413,6 +413,9 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
     circuit: 'visual',
     circuitStep: 1,
     lang: 'fr',
+    lesion: { centre: [1, 2, 3], radius: 4 },
+    lesionMode: 'functions',
+    lesionTract: 't',
   });
   assert.deepEqual(
     written.split('&').map((pair) => pair.split('=')[0]),
@@ -445,11 +448,14 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
       'circuit',
       'step',
       'lang',
+      'lesion',
+      'lesionmode',
+      'lesiontract',
     ],
   );
   assert.equal(
     written,
-    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=cab-np&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr',
+    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=cab-np&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr&lesion=1,2,3,4&lesionmode=functions&lesiontract=t',
   );
   assert.deepEqual(PARAMS, {
     anatomy: 'anatomy',
@@ -479,6 +485,9 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
     circuit: 'circuit',
     circuitStep: 'step',
     lang: 'lang',
+    lesion: 'lesion',
+    lesionMode: 'lesionmode',
+    lesionTract: 'lesiontract',
     hiddenRegions: 'hidden',
   });
 });
@@ -547,4 +556,23 @@ test('STATE-17 a fixed corpus of links reads back as the same scene once written
     );
     assert.deepEqual(decoded(written), withoutDefaults, hash);
   }
+});
+
+test('a lesion travels as its centre to a tenth and its radius, with its colouring and drawn tract', () => {
+  const state: Partial<LinkInput> = {
+    lesion: { centre: [-54.1, -6, 46.1], radius: 10 },
+    lesionMode: 'deficits',
+    lesionTract: 'af-left',
+  };
+  const hash = encodeState(state);
+  assert.equal(hash, 'lesion=-54.1,-6,46.1,10&lesionmode=deficits&lesiontract=af-left');
+  assert.deepEqual(decoded(hash), state);
+  assert.equal(encodeState({ lesion: null, lesionMode: 'lesion', lesionTract: null }), '');
+});
+
+test('a lesion outside the volume or the radius slider is not guessed at', () => {
+  for (const value of ['1,2,3', '1,2,3,2', '1,2,3,31', '600,0,0,10', '1,2,x,10', '1,2,3,10,4']) {
+    assert.deepEqual(decodeState(`lesion=${value}`), { state: {}, rejected: ['lesion'] }, value);
+  }
+  assert.deepEqual(decodeState('lesionmode=paint').rejected, ['lesionmode']);
 });

@@ -41,12 +41,22 @@ function build({ announce }: { announce: boolean }) {
       });
       const catalog = createCatalog(published);
       if (announce) announceView(view, (selected) => catalog.label(selected.id, view.current).name);
+      // No lesion is placed in these scenes.
+      const lesion = {
+        sphere: null,
+        mode: 'lesion' as const,
+        selectedTract: null,
+        heldOpacity: null,
+        restore() {},
+        remove() {},
+      };
       parts.links = createLinks({
         engine,
         session,
         lesson,
         view,
-        link: createLink({ engine, view, write: () => {} }),
+        lesion,
+        link: createLink({ engine, view, lesion, write: () => {} }),
         commands: createSceneCommands({
           model: engine.model,
           sections: engine.sections,
