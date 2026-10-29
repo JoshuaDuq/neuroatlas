@@ -1,10 +1,74 @@
 # Planum documentation
 
 ```{rst-class} hero-lede
-Explore an individual brain in the browser, from cortical regions to internal anatomy and diffusion tracts.
+A real human brain, explored in your browser: cut it, measure it, follow its tracts, and see what each region is known for.
 ```
 
-Planum combines a 3D viewer with a Python pipeline that converts FreeSurfer reconstructions into viewable assets. The published anatomy is MGH CDMD subject `sub_013`. Planum is for research and education; it is **not clinical anatomy**.
+Planum shows MGH CDMD subject `sub_013`, reconstructed from its own T1 scan with FreeSurfer 8.2, with tracts from the same person's diffusion scan. Every region, cut face and number traces back to that data or to a cited atlas. A Python pipeline builds the assets; a browser viewer displays them, with nothing to install. Planum is for research and education; it is **not clinical anatomy**.
+
+```{figure} ../.github/assets/readme/tracts.webp
+:alt: Diffusion tract bundles inside a translucent Destrieux-coloured brain, with the Tracts panel listing streamline counts and lengths
+:class: hero-figure
+:target: https://planumatlas.com/#anatomy=cdmd&lang=en&detail=learning&atlas=destrieux&cuts=destrieux&tab=diffusion
+
+Tracts from the subject's own diffusion scan inside its Destrieux-coloured cortex. Select the image to open this view.
+```
+
+## What you can do
+
+::::{container} feature-grid
+
+:::{container} feature
+[![A coronal section through the hippocampal formation with capped solids](../.github/assets/readme/sections.webp)](guides/viewer.md#stage)
+
+**[Cut it open](guides/viewer.md#stage)**
+
+Sagittal, coronal, axial or oblique sections, each solid capped and coloured from the label volume.
+:::
+
+:::{container} feature
+[![Linked MRI in three planes with a shared crosshair](../.github/assets/readme/linked-mri.webp)](guides/viewer.md#linked-mri)
+
+**[Check it against the scan](guides/viewer.md#linked-mri)**
+
+The subject's own T1 in three planes around a shared crosshair, with the label under the cursor.
+:::
+
+:::{container} feature
+[![The Neurosynth map for language on HCP-MMP areas](../.github/assets/readme/functions.webp)](guides/functions-and-deficits.md#functions)
+
+**[See where a function is studied](guides/functions-and-deficits.md#functions)**
+
+70 curated functions from Neurosynth meta-analyses, each area ranked by its consistency.
+:::
+
+:::{container} feature
+[![Hemispatial neglect on the right hemisphere, one colour per finding](../.github/assets/readme/deficits.webp)](guides/functions-and-deficits.md#deficits)
+
+**[Map what damage is associated with](guides/functions-and-deficits.md#deficits)**
+
+70 acquired deficits, each finding with its population, evidence and limits.
+:::
+
+:::{container} feature
+[![The memory tour on the left hippocampal formation](../.github/assets/readme/circuits.webp)](guides/circuits.md)
+
+**[Take a guided tour](guides/circuits.md)**
+
+Nine tours, from vision to praxis, that reveal and frame each landmark.
+:::
+
+:::{container} feature
+[![A lesion sphere on the left subcentral gyrus with its report](../.github/assets/readme/lesion.webp)](guides/viewer.md#lesion-report)
+
+**[Ask what a lesion would reach](guides/viewer.md#lesion-report)**
+
+A 3–30 mm sphere's overlap with functions, deficits, tissue and tracts. It predicts no deficit.
+:::
+
+::::
+
+Search or browse 148 Destrieux parcels, 360 HCP-MMP areas, 278 Julich-Brain areas and 514 NextBrain labels, down to a 34-region cervical cord. Compare atlases by shared surface, colour the cortex by functional network, and share any view as a link: the address bar holds the selection, camera, section and display. The viewer works in English and French, by keyboard, and on phones.
 
 ## Find your way
 
@@ -22,13 +86,6 @@ Planum combines a 3D viewer with a Python pipeline that converts FreeSurfer reco
 
 [Developer reference](api/index.md)
 : Browse the Python pipeline API or [embed the viewer components](guides/embedding.md) in a Three.js application.
-
-```{figure} ../.github/assets/neuroatlas-destrieux.png
-:alt: Inferior view of Destrieux regions and diffusion tracts in Planum
-:class: hero-figure
-
-Destrieux regions and diffusion tracts from CDMD subject `sub_013`.
-```
 
 The anatomy represents one individual; its folds and asymmetries are not normative. Atlas projections and segmentations are estimates. See [Anatomies](concepts/anatomies.md) and [References and licensing](reference/references.md) for provenance and data terms.
 

@@ -260,6 +260,24 @@ figcaption {
 }
 figcaption p { text-align: left; }
 
+/* The index's feature grid: a screenshot, a linked title and one line each. */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.5rem;
+  margin: 1.25rem 0 2rem;
+}
+.feature > p { margin: 0.5rem 0 0; color: var(--color-foreground-secondary); font-size: 0.9375rem; }
+.feature > p:first-child { margin: 0; }
+.feature > p:nth-child(2) { margin-top: 0.75rem; color: var(--color-foreground-primary); font-size: 1rem; }
+.feature > p:nth-child(2) a { text-decoration: none; }
+.feature img {
+  display: block;
+  width: 100%;
+  border: var(--rule);
+  border-radius: var(--radius-panel);
+}
+
 /* The index's entry list: ruled rows, a link and one line each. */
 dl.myst {
   margin: 0;
@@ -371,4 +389,5 @@ article table th, article table td { padding: 0.65rem 0.75rem; vertical-align: t
   article h1 { font-size: 1.75rem; }
   article h2 { margin-top: 2rem; }
   figure { margin-inline: 0; }
+  .feature-grid { grid-template-columns: 1fr; }
 }
