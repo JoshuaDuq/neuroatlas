@@ -61,6 +61,12 @@ The dock at the bottom left holds four tools.
 
 A placed lesion is Anatomy's detail. It opens on **What it reaches**, under the six groups the Functions and Deficits tabs share, strongest group first.
 
+```{figure} ../../.github/assets/readme/lesion.webp
+:alt: A 10 mm lesion sphere on the left subcentral gyrus, with the report listing the sensorimotor functions and deficits it overlaps
+
+A 10 mm sphere on the left subcentral gyrus. The report ranks the functions and deficits it overlaps; it measures overlap only.
+```
+
 - **Functions** whose territories the lesion overlaps. A territory is a function's HCP-MMP areas and structures at z ≥ 3, on the sides the lesion reaches. Each function shows the share of its territory inside the lesion; bars are scaled to the largest share.
 - **Deficits** with a finding whose cited region the lesion reaches, with the largest share reached.
 
@@ -72,11 +78,23 @@ The report measures overlap only: it predicts no deficit. Structures drawn only 
 
 A cut adds the section bar above the dock: a slider and a millimetre field for the position, tilt and azimuth for an oblique plane, **Reverse side**, **Linked MRI**, and × to return to the full brain. Positions are surface RAS millimetres: +R right, +A anterior, +S superior. Each solid is capped where the plane meets it, and the cap samples the label volume of the chosen cut labels.
 
+```{figure} ../../.github/assets/readme/sections.webp
+:alt: A coronal section through the left hippocampal formation, with each solid capped by its labels and the section bar below
+
+A coronal cut at −20 mm with the left hippocampal formation selected. Each solid is capped, and the caps sample the label volume.
+```
+
 An anatomy without a segmented cord publishes no spinal cord; Display says so.
 
 ### Linked MRI
 
 **Linked MRI** (region detail, section bar, or <kbd>M</kbd>) opens the subject's T1 in three orthogonal sections around a shared crosshair, with window and level, a segmentation overlay, voxel label readout and PNG export. The slices always show the full original scan; dissection does not change them.
+
+```{figure} ../../.github/assets/readme/linked-mri.webp
+:alt: Linked MRI: sagittal, coronal and axial T1 sections around a shared crosshair, with the voxel's label and the window and level controls
+
+Linked MRI at the coronal cut above: the subject's T1 in three planes, with the label under the crosshair.
+```
 
 ## Status bar
 

@@ -1,0 +1,33 @@
+Planum
+Copyright (C) 2026 Joshua Duquette
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Code committed before 29 October 2026 was published under the MIT License;
+copies obtained under it keep those terms.
+
+Scope
+
+The AGPL covers the source code of the build pipeline and the web viewer
+only. It does not cover the neuroimaging data or the assets derived from it:
+everything under data/, public/models/ and public/diffusion/ stays under the
+terms of its origin, listed in README.md and docs/reference/references.md, with
+the full texts in public/models/licenses/. Those terms include the FreeSurfer
+Software License, the HCP Open Access Data Use Terms, the non-commercial CAB-NP
+License, CC BY-NC-SA 4.0 (Julich-Brain), CC BY-NC 3.0 (Nettekoven cerebellar
+atlas, SUIT), CC BY-SA 4.0 (arterial territories), ODbL 1.0 (Neurosynth), MIT
+(Schaefer, PAM50) and CC0 1.0.
+
+Planum is for research and education. It is not a medical device and must
+not be used for diagnosis, treatment or any other clinical decision.

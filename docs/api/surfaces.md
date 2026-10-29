@@ -2,45 +2,45 @@
 
 Cortical geometry, sphere registration, envelopes, ribbons and shading.
 
-## `brain_model.surfaces.geometry`
+## Geometry
 
-Coordinate conversion, marching cubes, bounded smoothing and the solid misclassification check.
+`brain_model.surfaces.geometry`: Coordinate conversion, marching cubes, bounded smoothing and the solid misclassification check.
 
 ```{eval-rst}
 .. automodule:: brain_model.surfaces.geometry
    :members:
 ```
 
-## `brain_model.surfaces.registration`
+## Registration
 
-Label transfer through registered spheres, by nearest vertex, never interpolated.
+`brain_model.surfaces.registration`: Label transfer through registered spheres, by nearest vertex, never interpolated.
 
 ```{eval-rst}
 .. automodule:: brain_model.surfaces.registration
    :members:
 ```
 
-## `brain_model.surfaces.solids`
+## Solids
 
-Closed native pial and white envelopes for cuts.
+`brain_model.surfaces.solids`: Closed native pial and white envelopes for cuts.
 
 ```{eval-rst}
 .. automodule:: brain_model.surfaces.solids
    :members:
 ```
 
-## `brain_model.surfaces.ribbons`
+## Ribbons
 
-Per-vertex labels that close the cortical ribbon into solids.
+`brain_model.surfaces.ribbons`: Per-vertex labels that close the cortical ribbon into solids.
 
 ```{eval-rst}
 .. automodule:: brain_model.surfaces.ribbons
    :members:
 ```
 
-## `brain_model.surfaces.shading`
+## Shading
 
-Shading fields from source morphometry; positions never change.
+`brain_model.surfaces.shading`: Shading fields from source morphometry; positions never change.
 
 ```{eval-rst}
 .. automodule:: brain_model.surfaces.shading
