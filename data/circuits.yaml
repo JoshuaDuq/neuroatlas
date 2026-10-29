@@ -1,4 +1,4 @@
-revised: '2026-10-24'
+revised: '2026-10-29'
 context_margin_mm: 12
 references:
   - id: visual-pathways
@@ -138,6 +138,220 @@ references:
     pmid: '29519468'
     pmcid: PMC8139361
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8139361/
+  - id: object-localizer
+    title: Object-related activity revealed by functional magnetic resonance imaging in human occipital cortex
+    citation: Malach et al. · Proceedings of the National Academy of Sciences · 1995
+    pmid: '7667258'
+    pmcid: PMC41110
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC41110/
+  - id: object-agnosia
+    title: 'The functional neuroanatomy of object agnosia: a case study'
+    citation: Konen et al. · Neuron · 2011
+    pmid: '21745637'
+    pmcid: PMC4896507
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4896507/
+  - id: reading-network
+    title: A review and synthesis of the first 20 years of PET and fMRI studies of heard speech, spoken language and reading
+    citation: Price · NeuroImage · 2012
+    pmid: '22584224'
+    pmcid: PMC3398395
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3398395/
+  - id: reading-causal
+    title: Direct intracranial, fMRI, and lesion evidence for the causal role of left inferotemporal cortex in reading
+    citation: Gaillard et al. · Neuron · 2006
+    pmid: '16630832'
+    url: https://pubmed.ncbi.nlm.nih.gov/16630832/
+  - id: reading-lesions
+    title: Structural anatomy of pure and hemianopic alexia
+    citation: Leff et al. · Journal of Neurology, Neurosurgery & Psychiatry · 2006
+    pmid: '16801352'
+    pmcid: PMC2077748
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2077748/
+  - id: reach-feedback
+    title: 'Multiple parietal reach regions in humans: cortical representations for visual and proprioceptive feedback during on-line reaching'
+    citation: Filimon et al. · Journal of Neuroscience · 2009
+    pmid: '19261891'
+    pmcid: PMC3407568
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3407568/
+  - id: reach-lesions
+    title: 'Cortical control of visually guided reaching: evidence from patients with optic ataxia'
+    citation: Karnath & Perenin · Cerebral Cortex · 2005
+    pmid: '15716470'
+    url: https://pubmed.ncbi.nlm.nih.gov/15716470/
+  - id: navigation-map
+    title: 'The cognitive map in humans: spatial navigation and beyond'
+    citation: Epstein et al. · Nature Neuroscience · 2017
+    pmid: '29073650'
+    pmcid: PMC6028313
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6028313/
+  - id: navigation-lesions
+    title: Pure topographic disorientation due to right retrosplenial lesion
+    citation: Takahashi et al. · Neurology · 1997
+    pmid: '9270578'
+    url: https://pubmed.ncbi.nlm.nih.gov/9270578/
+  - id: adaptive-control
+    title: Multi-task connectivity reveals flexible hubs for adaptive task control
+    citation: Cole et al. · Nature Neuroscience · 2013
+    pmid: '23892552'
+    pmcid: PMC3758404
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3758404/
+  - id: control-systems
+    title: Distinct brain networks for adaptive and stable task control in humans
+    citation: Dosenbach et al. · Proceedings of the National Academy of Sciences · 2007
+    pmid: '17576922'
+    pmcid: PMC1904171
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC1904171/
+  - id: control-lesions
+    title: Lesion mapping of cognitive control and value-based decision making in the prefrontal cortex
+    citation: Gläscher et al. · Proceedings of the National Academy of Sciences · 2012
+    pmid: '22908286'
+    pmcid: PMC3437894
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3437894/
+  - id: corticospinal-anatomy
+    title: "The corticospinal tract from the viewpoint of brain rehabilitation"
+    citation: Jang · Journal of Rehabilitation Medicine · 2014
+    pmid: '24531325'
+    url: https://pubmed.ncbi.nlm.nih.gov/24531325/
+  - id: corticospinal-brainstem
+    title: "Somatotopic arrangement and location of the corticospinal tract in the brainstem of the human brain"
+    citation: Jang · Yonsei Medical Journal · 2011
+    pmid: '21623594'
+    pmcid: PMC3104450
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3104450/
+  - id: motor-weakness
+    title: "Shared and distinct voxel-based lesion-symptom mappings for spasticity and impaired movement in the hemiparetic upper limb"
+    citation: Frenkel-Toledo et al. · Scientific Reports · 2022
+    pmid: '35715476'
+    pmcid: PMC9206020
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC9206020/
+  - id: pain-activation
+    title: "Localization of pain-related brain activation: a meta-analysis of neuroimaging data"
+    citation: Duerden & Albanese · Human Brain Mapping · 2013
+    pmid: '22131304'
+    pmcid: PMC6869965
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6869965/
+  - id: pain-specificity
+    title: "A multisensory investigation of the functional significance of the \"pain matrix\""
+    citation: Mouraux et al. · NeuroImage · 2011
+    pmid: '20932917'
+    url: https://pubmed.ncbi.nlm.nih.gov/20932917/
+  - id: pain-dissociation
+    title: "Asymbolia for pain: a sensory-limbic disconnection syndrome"
+    citation: Berthier, Starkstein & Leiguarda · Annals of Neurology · 1988
+    pmid: '3415199'
+    url: https://pubmed.ncbi.nlm.nih.gov/3415199/
+  - id: face-system
+    title: "The distributed human neural system for face perception"
+    citation: Haxby, Hoffman & Gobbini · Trends in Cognitive Sciences · 2000
+    pmid: '10827445'
+    url: https://pubmed.ncbi.nlm.nih.gov/10827445/
+  - id: fear-lesions
+    title: "Impaired recognition of emotion in facial expressions following bilateral damage to the human amygdala"
+    citation: Adolphs et al. · Nature · 1994
+    pmid: '7990957'
+    url: https://pubmed.ncbi.nlm.nih.gov/7990957/
+  - id: fear-variability
+    title: "Recognition of facial emotion in nine individuals with bilateral amygdala damage"
+    citation: Adolphs et al. · Neuropsychologia · 1999
+    pmid: '10509833'
+    url: https://pubmed.ncbi.nlm.nih.gov/10509833/
+  - id: fear-gaze
+    title: "A mechanism for impaired fear recognition after amygdala damage"
+    citation: Adolphs et al. · Nature · 2005
+    pmid: '15635411'
+    url: https://pubmed.ncbi.nlm.nih.gov/15635411/
+  - id: reward-anatomy
+    title: "The reward circuit: linking primate anatomy and human imaging"
+    citation: Haber & Knutson · Neuropsychopharmacology · 2010
+    pmid: '19812543'
+    pmcid: PMC3055449
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3055449/
+  - id: valuation
+    title: "The valuation system: a coordinate-based meta-analysis of BOLD fMRI experiments examining neural correlates of subjective value"
+    citation: Bartra, McGuire & Kable · NeuroImage · 2013
+    pmid: '23507394'
+    pmcid: PMC3756836
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3756836/
+  - id: decision-lesions
+    title: "Insensitivity to future consequences following damage to human prefrontal cortex"
+    citation: Bechara et al. · Cognition · 1994
+    pmid: '8039375'
+    url: https://pubmed.ncbi.nlm.nih.gov/8039375/
+  - id: decision-qualifier
+    title: "Different underlying impairments in decision-making following ventromedial and dorsolateral frontal lobe damage in humans"
+    citation: Fellows & Farah · Cerebral Cortex · 2005
+    pmid: '15217900'
+    url: https://pubmed.ncbi.nlm.nih.gov/15217900/
+  - id: auditory-space
+    title: "\"What\" and \"where\" in the human auditory system"
+    citation: Alain et al. · Proceedings of the National Academy of Sciences · 2001
+    pmid: '11572938'
+    pmcid: PMC59809
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC59809/
+  - id: auditory-space-lesions
+    title: "What and where in human audition: selective deficits following focal hemispheric lesions"
+    citation: Clarke et al. · Experimental Brain Research · 2002
+    pmid: '12373363'
+    url: https://pubmed.ncbi.nlm.nih.gov/12373363/
+  - id: auditory-space-limits
+    title: "Sound recognition and localization in man: specialized cortical networks and effects of acute circumscribed lesions"
+    citation: Adriani et al. · Experimental Brain Research · 2003
+    pmid: '14504861'
+    url: https://pubmed.ncbi.nlm.nih.gov/14504861/
+  - id: motion-mapping
+    title: Functional analysis of V3A and related areas in human visual cortex
+    citation: Tootell et al. · Journal of Neuroscience · 1997
+    pmid: '9278542'
+    pmcid: PMC6573277
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6573277/
+  - id: motion-lesions
+    title: Selective disturbance of movement vision after bilateral brain damage
+    citation: Zihl et al. · Brain · 1983
+    pmid: '6850272'
+    url: https://pubmed.ncbi.nlm.nih.gov/6850272/
+  - id: colour-coding
+    title: Decoding and reconstructing color from responses in human visual cortex
+    citation: Brouwer & Heeger · Journal of Neuroscience · 2009
+    pmid: '19890009'
+    pmcid: PMC2799419
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2799419/
+  - id: colour-clinical
+    title: A century of cerebral achromatopsia
+    citation: Zeki · Brain · 1990
+    pmid: '2276043'
+    url: https://pubmed.ncbi.nlm.nih.gov/2276043/
+  - id: number-systems
+    title: Three parietal circuits for number processing
+    citation: Dehaene et al. · Cognitive Neuropsychology · 2003
+    pmid: '20957581'
+    url: https://pubmed.ncbi.nlm.nih.gov/20957581/
+  - id: number-tasks
+    title: Differential contributions of the left and right inferior parietal lobules to number processing
+    citation: Chochon et al. · Journal of Cognitive Neuroscience · 1999
+    pmid: '10601743'
+    url: https://pubmed.ncbi.nlm.nih.gov/10601743/
+  - id: number-lesions
+    title: 'Cerebral pathways for calculation: double dissociation between rote verbal and quantitative knowledge of arithmetic'
+    citation: Dehaene & Cohen · Cortex · 1997
+    pmid: '9220256'
+    url: https://pubmed.ncbi.nlm.nih.gov/9220256/
+  - id: gaze-imaging
+    title: 'Cortical networks subserving pursuit and saccadic eye movements in humans: an FMRI study'
+    citation: Berman et al. · Human Brain Mapping · 1999
+    pmid: '10619415'
+    pmcid: PMC6873313
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6873313/
+  - id: gaze-parietal
+    title: Location of the human posterior eye field with functional magnetic resonance imaging
+    citation: Müri et al. · Journal of Neurology, Neurosurgery & Psychiatry · 1996
+    pmid: '8774415'
+    pmcid: PMC1073903
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC1073903/
+  - id: gaze-stroke
+    title: 'Parietal motor syndrome: a clinical description in 32 patients in the acute phase of pure parietal strokes studied prospectively'
+    citation: Ghika et al. · Clinical Neurology and Neurosurgery · 1998
+    pmid: '9879853'
+    url: https://pubmed.ncbi.nlm.nih.gov/9879853/
 
 circuits:
   - id: vision
@@ -838,3 +1052,853 @@ circuits:
           fr: Cette parcelle Destrieux couvre le gyrus entier. Le territoire lié aux outils en est la partie postérieure, près de MT.
         view: left
         plane: coronal
+
+  - id: objects
+    name: { en: Visual object recognition, fr: Reconnaissance visuelle des objets }
+    summary:
+      en: Compare early visual, lateral occipital and ventral temporal landmarks involved in seeing objects.
+      fr: Comparez les repères visuels précoces, occipitaux latéraux et temporaux ventraux impliqués dans la perception des objets.
+    route:
+      en: V1 · lateral occipital cortex · fusiform gyrus
+      fr: V1 · cortex occipital latéral · gyrus fusiforme
+    scope:
+      en: Three right-sided landmarks in a bilateral system. The order is a teaching sequence, not an isolated serial pathway. Functional object-selective territories do not follow these atlas borders.
+      fr: Trois repères droits dans un système bilatéral. L’ordre est pédagogique et ne représente pas une voie sérielle isolée. Les territoires fonctionnels sélectifs aux objets ne suivent pas ces limites d’atlas.
+    clinical:
+      en: Compare object agnosia evidence with the network effects in Konen’s single case. A focal right fusiform lesion affected responses beyond the lesion and in the opposite hemisphere; this does not establish fixed right-hemisphere dominance.
+      fr: Comparez les données sur l’agnosie des objets aux effets de réseau du cas unique de Konen. Une lésion fusiforme droite focale affectait les réponses au-delà de la lésion et dans l’hémisphère opposé ; cela n’établit pas une dominance droite fixe.
+    deficit: agnosia
+    references: [object-localizer, object-agnosia, cortical-parcellation]
+    steps:
+      - id: v1
+        region: hcp-mmp:right:1
+        source_name: R_V1_ROI
+        name: { en: Right primary visual cortex, fr: Cortex visuel primaire droit }
+        role: { en: Early visual representation, fr: Représentation visuelle précoce }
+        explanation:
+          en: Begin in V1 before comparing extrastriate object-related territories. Early visual responses alone do not explain recognition.
+          fr: Commencez en V1 avant de comparer les territoires extrastriés liés aux objets. Les réponses visuelles précoces ne suffisent pas à expliquer la reconnaissance.
+        mapping:
+          en: An HCP-MMP parcel mapped onto this surface, not an individual retinotopic or object-recognition localizer.
+          fr: Une parcelle HCP-MMP projetée sur cette surface, et non une localisation rétinotopique ou de reconnaissance des objets individuelle.
+        view: left
+        plane: coronal
+      - id: lateral-occipital
+        region: hcp-mmp:right:20
+        source_name: R_LO1_ROI
+        name: { en: Right lateral occipital area LO1, fr: Aire occipitale latérale LO1 droite }
+        role: { en: Lateral occipital landmark, fr: Repère occipital latéral }
+        explanation:
+          en: Malach and colleagues found lateral occipital responses favouring object images over textures. Use LO1 to locate part of lateral occipital visual cortex.
+          fr: Malach et ses collègues ont trouvé des réponses occipitales latérales privilégiant les images d’objets aux textures. LO1 repère une partie du cortex visuel occipital latéral.
+        mapping:
+          en: HCP-MMP LO1 is not synonymous with Malach’s functionally defined lateral occipital complex. Its border does not delimit object-selective activity.
+          fr: LO1 de HCP-MMP n’est pas synonyme du complexe occipital latéral défini fonctionnellement par Malach. Sa limite ne délimite pas l’activité sélective aux objets.
+        view: right
+        plane: axial
+      - id: fusiform
+        region: destrieux:right:21
+        source_name: G_oc-temp_lat-fusifor
+        name: { en: Right fusiform gyrus, fr: Gyrus fusiforme droit }
+        role: { en: Ventral temporal object processing, fr: Traitement temporal ventral des objets }
+        explanation:
+          en: In Konen’s patient, a right lateral fusiform lesion accompanied object agnosia and widespread reductions in object-related responses.
+          fr: Chez le patient de Konen, une lésion fusiforme latérale droite accompagnait une agnosie des objets et des réductions étendues des réponses liées aux objets.
+        mapping:
+          en: The whole gyrus exceeds the focal lesion and functional object-responsive regions. It does not identify a face-selective area or a unique object-recognition centre.
+          fr: Le gyrus entier dépasse la lésion focale et les régions fonctionnelles répondant aux objets. Il ne désigne ni une aire sélective aux visages ni un centre unique de reconnaissance des objets.
+        view: inferior
+        plane: coronal
+
+  - id: reading
+    name: { en: Reading network landmarks, fr: Repères du réseau de la lecture }
+    summary:
+      en: Locate visual word recognition alongside temporal and frontal language territories.
+      fr: Repérez la reconnaissance visuelle des mots et les territoires langagiers temporaux et frontaux.
+    route:
+      en: Visual cortex · ventral occipitotemporal cortex · temporal and inferior frontal language territories
+      fr: Cortex visuel · cortex occipitotemporal ventral · territoires langagiers temporaux et frontaux inférieurs
+    scope:
+      en: Selected left-sided landmarks, not a fixed sequence for every word or writing system. Reading recruits interacting visual, phonological and semantic processes, with additional cortical and white-matter contributions omitted here.
+      fr: Des repères gauches sélectionnés, et non une séquence fixe pour chaque mot ou système d’écriture. La lecture mobilise des processus visuels, phonologiques et sémantiques en interaction ; d’autres contributions corticales et de substance blanche sont omises ici.
+    clinical:
+      en: Gaillard’s surgical case supports a causal contribution of left ventral occipitotemporal cortex to reading. Leff’s stroke comparison distinguishes impaired whole-word recognition from reading difficulty due to visual-field loss; neither study makes all reading disorders equivalent.
+      fr: Le cas chirurgical de Gaillard soutient une contribution causale du cortex occipitotemporal ventral gauche à la lecture. La comparaison d’AVC de Leff distingue le trouble de reconnaissance des mots entiers des difficultés de lecture liées au champ visuel ; ces études ne rendent pas tous les troubles de lecture équivalents.
+    deficit: alexia
+    references: [reading-network, reading-causal, reading-lesions, cortical-parcellation]
+    steps:
+      - id: v1
+        region: hcp-mmp:left:1
+        source_name: L_V1_ROI
+        name: { en: Left primary visual cortex, fr: Cortex visuel primaire gauche }
+        role: { en: Visual input landmark, fr: Repère des entrées visuelles }
+        explanation:
+          en: V1 contributes early visual processing. Fluent reading requires additional processes beyond this initial cortical representation.
+          fr: V1 contribue au traitement visuel précoce. Une lecture fluide nécessite d’autres processus au-delà de cette représentation corticale initiale.
+        mapping:
+          en: This parcel represents the right visual hemifield. It is not the full visual input to reading, which also involves the opposite hemisphere.
+          fr: Cette parcelle représente l’hémichamp visuel droit. Elle ne constitue pas toute l’entrée visuelle de la lecture, qui implique aussi l’hémisphère opposé.
+        view: right
+        plane: coronal
+      - id: occipitotemporal
+        region: destrieux:left:61
+        source_name: S_oc-temp_lat
+        name: { en: Left lateral occipitotemporal sulcus, fr: Sillon occipitotemporal latéral gauche }
+        role: { en: Visual word recognition landmark, fr: Repère de reconnaissance visuelle des mots }
+        explanation:
+          en: Word-responsive tissue in left ventral occipitotemporal cortex was identified with fMRI and intracranial recordings in Gaillard’s patient; its removal produced a selective reading deficit.
+          fr: Des tissus répondant aux mots dans le cortex occipitotemporal ventral gauche ont été identifiés par IRMf et enregistrements intracrâniens chez le patient de Gaillard ; leur ablation a entraîné un déficit sélectif de lecture.
+        mapping:
+          en: The whole sulcal parcel is a broad landmark beside fusiform cortex. It does not reproduce the resection or isolate an individual visual word form area.
+          fr: La parcelle sulcale entière est un repère large voisin du cortex fusiforme. Elle ne reproduit pas la résection et n’isole pas une aire individuelle de la forme visuelle des mots.
+        view: inferior
+        plane: coronal
+      - id: middle-temporal
+        region: destrieux:left:38
+        source_name: G_temporal_middle
+        name: { en: Left middle temporal gyrus, fr: Gyrus temporal moyen gauche }
+        role: { en: Meaning-related processing, fr: Traitement lié au sens }
+        explanation:
+          en: Middle temporal territories participate in accessing word meaning as part of distributed semantic systems.
+          fr: Les territoires temporaux moyens participent à l’accès au sens des mots au sein de systèmes sémantiques distribués.
+        mapping:
+          en: The whole gyrus is shown; semantic responses vary with the task and do not occupy the entire parcel uniformly.
+          fr: Le gyrus entier est affiché ; les réponses sémantiques varient selon la tâche et n’occupent pas uniformément toute la parcelle.
+        view: left
+        plane: coronal
+      - id: inferior-frontal
+        region: destrieux:left:12
+        source_name: G_front_inf-Opercular
+        name: { en: Left inferior frontal pars opercularis, fr: Partie operculaire du gyrus frontal inférieur gauche }
+        role: { en: Phonological and articulatory processing, fr: Traitement phonologique et articulatoire }
+        explanation:
+          en: Inferior frontal regions contribute to phonological and articulatory processes, with demands differing between silent reading and reading aloud.
+          fr: Des régions frontales inférieures contribuent aux processus phonologiques et articulatoires, dont les exigences diffèrent entre lecture silencieuse et lecture à voix haute.
+        mapping:
+          en: This gyral parcel is broader than a task-responsive cluster. It is neither the whole reading network nor a single-purpose reading module.
+          fr: Cette parcelle gyrale dépasse un foyer répondant à une tâche. Elle n’est ni tout le réseau de la lecture ni un module réservé à la lecture.
+        view: left
+        plane: axial
+
+  - id: reaching
+    name: { en: Reaching and sensory feedback, fr: Atteinte d’une cible et rétroaction sensorielle }
+    summary:
+      en: Compare parietal contributions to visual and proprioceptive guidance of the arm.
+      fr: Comparez les contributions pariétales au guidage visuel et proprioceptif du bras.
+    route:
+      en: Parieto-occipital sulcus · precuneus · intraparietal sulcus
+      fr: Sillon pariéto-occipital · précunéus · sillon intrapariétal
+    scope:
+      en: Three left parietal landmarks in bilateral reaching systems. Filimon’s fMRI contrasts suggest different sensory contributions; they do not establish a serial pathway. Premotor, primary motor, cerebellar and descending pathways are not visited.
+      fr: Trois repères pariétaux gauches dans des systèmes bilatéraux d’atteinte d’une cible. Les contrastes IRMf de Filimon suggèrent des contributions sensorielles différentes ; ils n’établissent pas une voie sérielle. Les voies prémotrices, motrices primaires, cérébelleuses et descendantes ne sont pas parcourues.
+    clinical:
+      en: Compare optic ataxia evidence with Karnath and Perenin’s occipitoparietal lesion overlap, including medial extension through white matter. Misreaching cannot be assigned to one superior parietal parcel.
+      fr: Comparez les données sur l’ataxie optique au chevauchement lésionnel occipitopariétal de Karnath et Perenin, avec extension médiale par la substance blanche. Les erreurs d’atteinte d’une cible ne peuvent pas être attribuées à une seule parcelle pariétale supérieure.
+    deficit: optic-ataxia
+    references: [reach-feedback, reach-lesions]
+    steps:
+      - id: parieto-occipital
+        region: destrieux:left:66
+        source_name: S_parieto_occipital
+        name: { en: Left parieto-occipital sulcus, fr: Sillon pariéto-occipital gauche }
+        role: { en: Visual feedback landmark, fr: Repère de rétroaction visuelle }
+        explanation:
+          en: Filimon and colleagues found greater activity near the superior end of this sulcus when participants could see their reaching hand.
+          fr: Filimon et ses collègues ont trouvé davantage d’activité près de l’extrémité supérieure de ce sillon lorsque les participants voyaient leur main atteindre la cible.
+        mapping:
+          en: The whole sulcal parcel exceeds the superior functional focus. It does not identify a single human homologue of a macaque reach area.
+          fr: La parcelle sulcale entière dépasse le foyer fonctionnel supérieur. Elle ne désigne pas un homologue humain unique d’une aire d’atteinte de cible du macaque.
+        view: right
+        plane: sagittal
+      - id: precuneus
+        region: destrieux:left:30
+        source_name: G_precuneus
+        name: { en: Left precuneus, fr: Précunéus gauche }
+        role: { en: Limb-position feedback landmark, fr: Repère de rétroaction sur la position du membre }
+        explanation:
+          en: An anterior precuneus region responded during reaching with or without sight of the hand, consistent with proprioceptive contributions.
+          fr: Une région antérieure du précunéus répondait pendant l’atteinte de cible avec ou sans vision de la main, ce qui concorde avec des contributions proprioceptives.
+        mapping:
+          en: This parcel includes posterior territories beyond the anterior reach-responsive focus. It is not a map of limb position or a recorded proprioceptive signal.
+          fr: Cette parcelle inclut des territoires postérieurs au-delà du foyer antérieur répondant à l’atteinte de cible. Elle n’est ni une carte de position du membre ni un signal proprioceptif enregistré.
+        view: right
+        plane: sagittal
+      - id: intraparietal
+        region: destrieux:left:57
+        source_name: S_intrapariet_and_P_trans
+        name: { en: Left intraparietal and transverse parietal sulci, fr: Sillons intrapariétal et pariétal transverse gauches }
+        role: { en: Parietal sensorimotor integration, fr: Intégration sensorimotrice pariétale }
+        explanation:
+          en: Filimon’s anterior precuneus reach region extended into the medial intraparietal sulcus. Multiple parietal territories contribute under different sensory conditions.
+          fr: La région d’atteinte de cible du précunéus antérieur de Filimon s’étendait dans le sillon intrapariétal médial. Plusieurs territoires pariétaux contribuent selon les conditions sensorielles.
+        mapping:
+          en: The combined sulcal parcel is broader than medial intraparietal cortex. Shared reach responses do not establish a direct anatomical connection between these landmarks.
+          fr: La parcelle sulcale combinée dépasse le cortex intrapariétal médial. Des réponses communes à l’atteinte de cible n’établissent pas de connexion anatomique directe entre ces repères.
+        view: superior
+        plane: axial
+
+  - id: navigation
+    name: { en: Spatial navigation landmarks, fr: Repères de la navigation spatiale }
+    summary:
+      en: Relate scene processing and orientation to hippocampal spatial memory.
+      fr: Reliez le traitement des scènes et l’orientation à la mémoire spatiale hippocampique.
+    route:
+      en: Parahippocampal cortex · retrosplenial cortex · hippocampal formation
+      fr: Cortex parahippocampique · cortex rétrosplénial · formation hippocampique
+    scope:
+      en: Right-sided landmarks in a bilateral network. Navigation depends on strategy and also involves entorhinal, parietal, frontal and striatal systems. The sequence does not specify information flow.
+      fr: Des repères droits dans un réseau bilatéral. La navigation dépend de la stratégie et implique aussi des systèmes entorhinaux, pariétaux, frontaux et striataux. La séquence ne précise pas le flux d’information.
+    clinical:
+      en: Takahashi’s three patients could recognize familiar places but could not recall directions between them after right retrosplenial injury. This is one form of topographical disorientation, distinct from failure to recognize landmarks.
+      fr: Les trois patients de Takahashi reconnaissaient les lieux familiers mais ne pouvaient plus rappeler les directions entre eux après une atteinte rétrospléniale droite. C’est une forme de désorientation topographique, distincte d’une incapacité à reconnaître les repères.
+    deficit: topographical-disorientation
+    references: [navigation-map, navigation-lesions, memory-anatomy, cortical-parcellation]
+    steps:
+      - id: parahippocampal
+        region: destrieux:right:23
+        source_name: G_oc-temp_med-Parahip
+        name: { en: Right parahippocampal gyrus, fr: Gyrus parahippocampique droit }
+        role: { en: Scene and landmark processing, fr: Traitement des scènes et des repères }
+        explanation:
+          en: Posterior parahippocampal territories respond to scenes and environmental landmarks that can support navigation.
+          fr: Des territoires parahippocampiques postérieurs répondent aux scènes et aux repères environnementaux pouvant soutenir la navigation.
+        mapping:
+          en: The whole gyrus does not isolate the parahippocampal place area, which extends around the collateral sulcus and adjacent cortex.
+          fr: Le gyrus entier n’isole pas l’aire parahippocampique des lieux, qui s’étend autour du sillon collatéral et du cortex adjacent.
+        view: inferior
+        plane: coronal
+      - id: retrosplenial
+        region: hcp-mmp:right:14
+        source_name: R_RSC_ROI
+        name: { en: Right retrosplenial cortex parcel, fr: Parcelle du cortex rétrosplénial droit }
+        role: { en: Orientation using familiar landmarks, fr: Orientation à l’aide de repères familiers }
+        explanation:
+          en: Retrosplenial and nearby medial parietal territories help relate familiar surroundings to location and heading.
+          fr: Les territoires rétrospléniaux et pariétaux médiaux voisins aident à relier l’environnement familier à la position et à la direction.
+        mapping:
+          en: HCP-MMP RSC is not the whole functionally defined retrosplenial complex or Takahashi’s lesion extent. Functional scene responses also extend into nearby cortex.
+          fr: RSC de HCP-MMP n’est ni tout le complexe rétrosplénial défini fonctionnellement ni l’étendue des lésions de Takahashi. Les réponses fonctionnelles aux scènes s’étendent aussi au cortex voisin.
+        view: left
+        plane: sagittal
+      - id: hippocampus
+        region: learning:right:hippocampus
+        source_name: Hippocampal formation
+        name: { en: Right hippocampal formation, fr: Formation hippocampique droite }
+        role: { en: Map-related spatial memory, fr: Mémoire spatiale liée aux cartes }
+        explanation:
+          en: Human hippocampal activity is associated with map-based navigation and memory for spatial relationships. Other navigation strategies can recruit different systems.
+          fr: L’activité hippocampique humaine est associée à la navigation fondée sur des cartes et à la mémoire des relations spatiales. D’autres stratégies de navigation peuvent mobiliser des systèmes différents.
+        mapping:
+          en: This teaching union includes hippocampal and adjacent labels. It exceeds hippocampus proper and does not display place cells, spatial codes or subfield-specific activity.
+          fr: Cette union pédagogique inclut des étiquettes hippocampiques et adjacentes. Elle dépasse l’hippocampe proprement dit et n’affiche ni cellules de lieu, ni codes spatiaux, ni activité propre aux sous-champs.
+        view: right
+        plane: coronal
+
+  - id: control
+    name: { en: Cognitive control systems, fr: Systèmes de contrôle cognitif }
+    summary:
+      en: Compare lateral frontoparietal control with medial frontal and anterior insular landmarks.
+      fr: Comparez le contrôle frontopariétal latéral aux repères frontaux médiaux et insulaires antérieurs.
+    route:
+      en: Lateral prefrontal ↔ intraparietal territories; compare dorsal cingulate and anterior insula
+      fr: Territoires préfrontaux latéraux ↔ intrapariétaux ; comparez le cingulaire dorsal et l’insula antérieure
+    scope:
+      en: Four left-sided landmarks in bilateral control systems. Frontoparietal and cingulo-opercular networks are distinguishable in the cited studies; these landmarks do not form a single serial executive circuit. Their task-dependent functional relationships are not reconstructed here.
+      fr: Quatre repères gauches dans des systèmes de contrôle bilatéraux. Les réseaux frontopariétal et cingulo-operculaire sont distinguables dans les études citées ; ces repères ne forment pas un circuit exécutif sériel unique. Leurs relations fonctionnelles dépendantes de la tâche ne sont pas reconstruites ici.
+    clinical:
+      en: Gläscher’s lesion mapping linked response inhibition, conflict monitoring and switching to dorsolateral prefrontal and anterior cingulate damage, apart from the ventral prefrontal damage that impaired value-based decisions. These landmarks do not predict an individual patient’s executive profile.
+      fr: La cartographie lésionnelle de Gläscher reliait l’inhibition de la réponse, la surveillance des conflits et la flexibilité à des atteintes préfrontales dorsolatérales et cingulaires antérieures, distinctes des atteintes préfrontales ventrales qui altéraient les décisions fondées sur la valeur. Ces repères ne prédisent pas le profil exécutif individuel d’un patient.
+    deficit: executive
+    references: [adaptive-control, control-systems, control-lesions, cortical-parcellation]
+    steps:
+      - id: middle-frontal
+        region: destrieux:left:15
+        source_name: G_front_middle
+        name: { en: Left middle frontal gyrus, fr: Gyrus frontal moyen gauche }
+        role: { en: Lateral prefrontal control landmark, fr: Repère de contrôle préfrontal latéral }
+        explanation:
+          en: Lateral prefrontal regions participate in flexible task control. Cole and colleagues found that the frontoparietal network’s brain-wide functional connectivity shifted with task demands.
+          fr: Des régions préfrontales latérales participent au contrôle flexible des tâches. Cole et ses collègues ont trouvé que la connectivité fonctionnelle globale du réseau frontopariétal changeait selon les exigences de la tâche.
+        mapping:
+          en: The whole gyrus includes territories beyond dorsolateral prefrontal control regions. It does not reproduce a functional network assignment for this individual.
+          fr: Le gyrus entier inclut des territoires au-delà des régions de contrôle préfrontales dorsolatérales. Il ne reproduit pas une attribution de réseau fonctionnel pour cet individu.
+        view: left
+        plane: axial
+      - id: intraparietal
+        region: destrieux:left:57
+        source_name: S_intrapariet_and_P_trans
+        name: { en: Left intraparietal and transverse parietal sulci, fr: Sillons intrapariétal et pariétal transverse gauches }
+        role: { en: Frontoparietal control partner, fr: Partenaire du contrôle frontopariétal }
+        explanation:
+          en: Dosenbach and colleagues included intraparietal regions with dorsolateral prefrontal cortex in a network associated with adaptive task control.
+          fr: Dosenbach et ses collègues ont inclus des régions intrapariétales avec le cortex préfrontal dorsolatéral dans un réseau associé au contrôle adaptatif des tâches.
+        mapping:
+          en: This combined sulcal parcel is broader than the study’s functional regions and also contains territories involved in other networks and tasks.
+          fr: Cette parcelle sulcale combinée dépasse les régions fonctionnelles de l’étude et contient aussi des territoires impliqués dans d’autres réseaux et tâches.
+        view: superior
+        plane: axial
+      - id: dorsal-cingulate
+        region: hcp-mmp:left:62
+        source_name: L_d32_ROI
+        name: { en: Left dorsal cingulate area d32, fr: Aire cingulaire dorsale d32 gauche }
+        role: { en: Medial control landmark, fr: Repère de contrôle médial }
+        explanation:
+          en: Dorsal anterior cingulate and medial superior frontal regions contributed to a separate cingulo-opercular system, associated with sustained task-set signals in Dosenbach’s study.
+          fr: Des régions cingulaires antérieures dorsales et frontales supérieures médiales contribuaient à un système cingulo-operculaire distinct, associé à des signaux soutenus de maintien des règles de la tâche dans l’étude de Dosenbach.
+        mapping:
+          en: Area d32 is a selected HCP-MMP landmark in dorsal cingulate territory, not the study’s functional region or the whole medial frontal component.
+          fr: L’aire d32 est un repère HCP-MMP sélectionné dans le territoire cingulaire dorsal, et non la région fonctionnelle de l’étude ni toute la composante frontale médiale.
+        view: right
+        plane: sagittal
+      - id: anterior-insula
+        region: destrieux:left:18
+        source_name: G_insular_short
+        name: { en: Left short insular gyri, fr: Gyrus courts de l’insula gauche }
+        role: { en: Anterior insular control landmark, fr: Repère de contrôle insulaire antérieur }
+        explanation:
+          en: Anterior insula and frontal opercular regions joined the medial frontal component in Dosenbach’s cingulo-opercular network.
+          fr: Des régions insulaires antérieures et operculaires frontales rejoignaient la composante frontale médiale dans le réseau cingulo-operculaire de Dosenbach.
+        mapping:
+          en: The short insular gyri are a broad anterior insular landmark. This parcel neither isolates the functional focus nor includes the adjoining frontal operculum.
+          fr: Les gyrus courts de l’insula sont un repère insulaire antérieur large. Cette parcelle n’isole pas le foyer fonctionnel et n’inclut pas l’opercule frontal adjacent.
+        view: left
+        plane: coronal
+
+  - id: corticospinal
+    name: { en: Corticospinal descent and crossing, fr: Descente corticospinale et croisement }
+    summary:
+      en: Relate left motor cortex and brainstem landmarks to the right lateral corticospinal tract in the cord.
+      fr: Reliez le cortex moteur gauche et les repères du tronc cérébral au faisceau corticospinal latéral droit dans la moelle.
+    route:
+      en: Left motor cortex → left midbrain → caudal medullary crossing → right lateral corticospinal tract
+      fr: Cortex moteur gauche → mésencéphale gauche → croisement bulbaire caudal → faisceau corticospinal latéral droit
+    scope:
+      en: A schematic tour of the main crossed corticospinal route. Internal capsule, pons, most of the medullary course and spinal terminations are omitted. Uncrossed components and other descending systems also contribute to movement.
+      fr: Un parcours schématique de la principale voie corticospinale croisée. La capsule interne, le pont, la majeure partie du trajet bulbaire et les terminaisons spinales sont omis. Des composantes non croisées et d’autres systèmes descendants contribuent aussi au mouvement.
+    clinical:
+      en: Corticospinal injury is associated with impaired voluntary movement. Frenkel-Toledo’s stroke study linked arm paresis to corticospinal damage at corona radiata and capsular levels, but also to peri-Sylvian, putaminal and association-tract damage; a tract landmark alone does not predict weakness, spasticity or recovery.
+      fr: Une atteinte corticospinale est associée à un trouble du mouvement volontaire. L’étude d’AVC de Frenkel-Toledo reliait la parésie du bras à une atteinte corticospinale au niveau de la couronne rayonnante et de la capsule, mais aussi à des atteintes périsylviennes, putaminales et des faisceaux d’association ; un repère de faisceau seul ne prédit ni la faiblesse, ni la spasticité, ni la récupération.
+    deficit: hemiparesis
+    references: [corticospinal-anatomy, corticospinal-brainstem, motor-weakness, cortical-parcellation]
+    steps:
+      - id: motor-cortex
+        region: hcp-mmp:left:8
+        source_name: L_4_ROI
+        name: { en: Left primary motor cortex, fr: Cortex moteur primaire gauche }
+        role: { en: One cortical source, fr: Une source corticale }
+        explanation:
+          en: Primary motor cortex contributes corticospinal projections. Premotor and somatosensory cortices also contribute; the tract does not originate exclusively in area 4.
+          fr: Le cortex moteur primaire contribue aux projections corticospinales. Les cortex prémoteur et somatosensoriel y contribuent aussi ; le faisceau ne naît pas exclusivement de l’aire 4.
+        mapping:
+          en: The HCP-MMP area 4 parcel does not identify corticospinal neurons or separate hand, leg and face representations in this individual.
+          fr: La parcelle de l’aire 4 de HCP-MMP n’identifie pas les neurones corticospinaux et ne sépare pas les représentations de la main, de la jambe et du visage chez cet individu.
+        view: left
+        plane: axial
+      - id: midbrain
+        region: learning:left:midbrain
+        source_name: Midbrain territory
+        name: { en: Left midbrain territory, fr: Territoire mésencéphalique gauche }
+        role: { en: Descent before the crossing, fr: Descente avant le croisement }
+        explanation:
+          en: Corticospinal fibres descend through the cerebral peduncle on the same side as their cortical origin before reaching the lower brainstem.
+          fr: Les fibres corticospinales descendent par le pédoncule cérébral du même côté que leur origine corticale avant d’atteindre le tronc cérébral inférieur.
+        mapping:
+          en: This broad teaching territory does not isolate the cerebral peduncle or the corticospinal fibres within it. No tract is reconstructed between cortex and midbrain.
+          fr: Ce large territoire pédagogique n’isole ni le pédoncule cérébral ni ses fibres corticospinales. Aucun faisceau n’est reconstruit entre le cortex et le mésencéphale.
+        view: anterior
+        plane: axial
+      - id: crossing
+        region: learning:caudal-medulla
+        source_name: Caudal medulla
+        name: { en: Caudal medulla, fr: Bulbe caudal }
+        role: { en: Pyramidal decussation level, fr: Niveau de la décussation pyramidale }
+        explanation:
+          en: Most corticospinal fibres cross in the caudal medulla to form the opposite lateral corticospinal tract. This explains the change from left brain to right cord in this tour.
+          fr: La plupart des fibres corticospinales croisent dans le bulbe caudal pour former le faisceau corticospinal latéral opposé. Cela explique le passage du cerveau gauche à la moelle droite dans ce parcours.
+        mapping:
+          en: The caudal medullary teaching solid is a midline regional landmark, not a segmentation of the pyramids or their crossing axons.
+          fr: Le volume pédagogique bulbaire caudal est un repère régional médian, et non une segmentation des pyramides ou de leurs axones croisés.
+        view: anterior
+        plane: axial
+      - id: spinal-tract
+        region: pam50:right:lateral-corticospinal-tract
+        source_name: right lateral corticospinal tract
+        name: { en: Right lateral corticospinal tract, fr: Faisceau corticospinal latéral droit }
+        role: { en: Spinal descent after crossing, fr: Descente spinale après croisement }
+        explanation:
+          en: The crossed projection from left cortex descends on the right side of the cord and influences spinal motor circuits. Corticospinal connections include both interneuronal and direct motor-neuron routes.
+          fr: La projection croisée du cortex gauche descend du côté droit de la moelle et influence les circuits moteurs spinaux. Les connexions corticospinales incluent des voies par interneurones et des voies directes vers les motoneurones.
+        mapping:
+          en: This PAM50 atlas label is mapped into the spinal anatomy. It is not individual tractography, does not trace fibres from area 4 and does not show their synaptic targets.
+          fr: Cette étiquette de l’atlas PAM50 est projetée dans l’anatomie spinale. Ce n’est pas une tractographie individuelle ; elle ne trace pas les fibres depuis l’aire 4 et ne montre pas leurs cibles synaptiques.
+        view: anterior
+        plane: axial
+
+  - id: pain
+    name: { en: Pain-related cortical systems, fr: Systèmes corticaux liés à la douleur }
+    summary:
+      en: Compare insular and cingulate landmarks while distinguishing nociceptive input, pain experience and behavioural responses.
+      fr: Comparez les repères insulaires et cingulaires en distinguant les entrées nociceptives, l’expérience douloureuse et les réponses comportementales.
+    route:
+      en: Posterior insula · anterior insula · anterior midcingulate cortex
+      fr: Insula postérieure · insula antérieure · cortex cingulaire moyen antérieur
+    scope:
+      en: Three left cortical landmarks within distributed bilateral systems. Spinal, brainstem, thalamic and other cortical contributions are omitted. Mouraux’s multisensory experiment shows why activity in these broad territories cannot by itself establish pain-specific processing.
+      fr: Trois repères corticaux gauches au sein de systèmes bilatéraux distribués. Les contributions spinales, du tronc cérébral, thalamiques et d’autres cortex sont omises. L’expérience multisensorielle de Mouraux montre pourquoi une activité dans ces larges territoires ne suffit pas à établir un traitement propre à la douleur.
+    clinical:
+      en: Berthier’s six patients had inadequate protective and emotional responses to painful stimuli despite preserved primary sensation. Insular damage was present, with variable associated injury; the series does not isolate a sufficient lesion or one insular subregion.
+      fr: Les six patients de Berthier avaient des réponses protectrices et émotionnelles inadéquates aux stimuli douloureux malgré une sensibilité primaire préservée. Une atteinte insulaire était présente, avec lésions associées variables ; la série n’isole ni une lésion suffisante ni une sous-région insulaire unique.
+    deficit: pain-asymbolia
+    references: [pain-activation, pain-specificity, pain-dissociation]
+    steps:
+      - id: posterior-insula
+        region: destrieux:left:17
+        source_name: G_Ins_lg_and_S_cent_ins
+        name: { en: Left long insular gyri and central insular sulcus, fr: Gyrus longs et sillon central de l’insula gauche }
+        role: { en: Posterior insular landmark, fr: Repère insulaire postérieur }
+        explanation:
+          en: Duerden and Albanese’s meta-analysis identified posterior insular activation across studies using noxious stimulation.
+          fr: La méta-analyse de Duerden et Albanese a identifié une activation insulaire postérieure dans des études utilisant des stimulations nocives.
+        mapping:
+          en: The whole posterior insular parcel exceeds the reported dorsal posterior focus. It does not identify nociceptive neurons or measure perceived pain.
+          fr: La parcelle insulaire postérieure entière dépasse le foyer dorsal postérieur rapporté. Elle n’identifie pas les neurones nociceptifs et ne mesure pas la douleur perçue.
+        view: left
+        plane: coronal
+      - id: anterior-insula
+        region: destrieux:left:18
+        source_name: G_insular_short
+        name: { en: Left short insular gyri, fr: Gyrus courts de l’insula gauche }
+        role: { en: Anterior insular landmark, fr: Repère insulaire antérieur }
+        explanation:
+          en: Anterior insular responses are common in noxious-stimulus studies. These regions also participate in broader responses to salient events.
+          fr: Les réponses insulaires antérieures sont fréquentes dans les études de stimuli nocifs. Ces régions participent aussi à des réponses plus larges aux événements saillants.
+        mapping:
+          en: The short gyri do not isolate a pain-specific functional area. Their use in this and the control tour does not imply that the same neurons perform both tasks.
+          fr: Les gyrus courts n’isolent pas une aire fonctionnelle propre à la douleur. Leur présence dans ce parcours et celui du contrôle n’implique pas que les mêmes neurones assurent les deux tâches.
+        view: left
+        plane: coronal
+      - id: midcingulate
+        region: destrieux:left:7
+        source_name: G_and_S_cingul-Mid-Ant
+        name: { en: Left anterior midcingulate cortex, fr: Cortex cingulaire moyen antérieur gauche }
+        role: { en: Medial response-related landmark, fr: Repère médial lié aux réponses }
+        explanation:
+          en: Cingulate territories are recruited in noxious-stimulus experiments, alongside regions involved in salience and behavioural responses. Their activity is not a unique readout of pain.
+          fr: Des territoires cingulaires sont recrutés dans les expériences de stimuli nocifs, avec des régions impliquées dans la saillance et les réponses comportementales. Leur activité n’est pas un indicateur unique de douleur.
+        mapping:
+          en: This anatomical midcingulate parcel is a selected landmark near reported cingulate activations, not their meta-analytic cluster or a pain-intensity scale.
+          fr: Cette parcelle anatomique cingulaire moyenne est un repère sélectionné près des activations cingulaires rapportées, et non leur amas méta-analytique ni une échelle d’intensité douloureuse.
+        view: right
+        plane: sagittal
+
+  - id: emotion
+    name: { en: Faces and emotion recognition, fr: Visages et reconnaissance des émotions }
+    summary:
+      en: Compare temporal face-processing landmarks with both amygdalae and the role of visual sampling.
+      fr: Comparez les repères temporaux du traitement des visages aux deux amygdales et au rôle de l’exploration visuelle.
+    route:
+      en: Fusiform and superior temporal territories · bilateral amygdala
+      fr: Territoires fusiformes et temporaux supérieurs · amygdales bilatérales
+    scope:
+      en: Right temporal landmarks followed by both amygdalae, within a wider bilateral system. Identity, gaze and emotional expression recruit overlapping but distinguishable processes. This tour is not a serial face-to-fear pathway or a complete emotion network.
+      fr: Des repères temporaux droits suivis des deux amygdales, au sein d’un système bilatéral plus vaste. L’identité, le regard et l’expression émotionnelle mobilisent des processus qui se chevauchent mais restent distinguables. Ce parcours n’est ni une voie sérielle du visage à la peur ni un réseau émotionnel complet.
+    clinical:
+      en: Adolphs’s patient S.M. had bilateral amygdala damage and impaired facial fear recognition. Explicit instruction to look at the eyes restored her performance in the follow-up; the nine-patient series also showed substantial variability.
+      fr: La patiente S.M. d’Adolphs avait des lésions amygdaliennes bilatérales et une reconnaissance faciale de la peur déficitaire. L’instruction explicite de regarder les yeux rétablissait sa performance au suivi ; la série de neuf patients montrait aussi une variabilité importante.
+    deficit: emotion-recognition
+    references: [face-system, fear-lesions, fear-variability, fear-gaze]
+    steps:
+      - id: fusiform
+        region: destrieux:right:21
+        source_name: G_oc-temp_lat-fusifor
+        name: { en: Right fusiform gyrus, fr: Gyrus fusiforme droit }
+        role: { en: Face-form landmark, fr: Repère de la forme des visages }
+        explanation:
+          en: Haxby’s distributed model emphasizes fusiform contributions to relatively stable facial information used to recognize individuals.
+          fr: Le modèle distribué de Haxby souligne les contributions fusiformes aux informations faciales relativement stables utilisées pour reconnaître les individus.
+        mapping:
+          en: The whole gyrus does not isolate an individual fusiform face area. Its presence in the object tour reflects a broad anatomical label, not identical functional populations.
+          fr: Le gyrus entier n’isole pas une aire fusiforme des visages individuelle. Sa présence dans le parcours des objets reflète une étiquette anatomique large, et non des populations fonctionnelles identiques.
+        view: inferior
+        plane: coronal
+      - id: superior-temporal
+        region: destrieux:right:74
+        source_name: S_temporal_sup
+        name: { en: Right superior temporal sulcus, fr: Sillon temporal supérieur droit }
+        role: { en: Changeable facial information, fr: Informations faciales changeantes }
+        explanation:
+          en: Superior temporal sulcal regions contribute to processing changeable aspects of faces, including gaze and expression, in Haxby’s model.
+          fr: Des régions du sillon temporal supérieur contribuent au traitement des aspects changeants des visages, dont le regard et l’expression, dans le modèle de Haxby.
+        mapping:
+          en: The full sulcal parcel exceeds the posterior face-responsive territories. It does not measure gaze sensitivity or localize expression processing in this individual.
+          fr: La parcelle sulcale entière dépasse les territoires postérieurs répondant aux visages. Elle ne mesure pas la sensibilité au regard et ne localise pas le traitement des expressions chez cet individu.
+        view: right
+        plane: coronal
+      - id: left-amygdala
+        region: aseg:left:18
+        source_name: Left-Amygdala
+        name: { en: Left amygdala, fr: Amygdale gauche }
+        role: { en: Bilateral lesion context, fr: Contexte lésionnel bilatéral }
+        explanation:
+          en: The original S.M. case involved both amygdalae. Her fear-recognition difficulty cannot be assigned to the left amygdala alone.
+          fr: Le cas initial de S.M. concernait les deux amygdales. Sa difficulté de reconnaissance de la peur ne peut pas être attribuée à la seule amygdale gauche.
+        mapping:
+          en: This whole FreeSurfer amygdala label is not a nuclear subdivision or a reconstruction of S.M.’s lesion.
+          fr: Cette étiquette amygdalienne entière de FreeSurfer n’est ni une subdivision nucléaire ni une reconstruction de la lésion de S.M.
+        view: anterior
+        plane: coronal
+      - id: right-amygdala
+        region: aseg:right:54
+        source_name: Right-Amygdala
+        name: { en: Right amygdala, fr: Amygdale droite }
+        role: { en: Visual sampling and variability, fr: Exploration visuelle et variabilité }
+        explanation:
+          en: Compare the other side while considering the follow-up. S.M.’s improvement with eye-directed instructions and variability across bilateral-lesion cases argue against a simple obligatory fear-recognition centre.
+          fr: Comparez l’autre côté en considérant le suivi. L’amélioration de S.M. sur instruction de regarder les yeux et la variabilité des cas à lésions bilatérales vont à l’encontre d’un simple centre obligatoire de reconnaissance de la peur.
+        mapping:
+          en: A whole amygdala label cannot show eye-fixation behaviour, task responses or a right-specific causal effect from bilateral lesions.
+          fr: Une étiquette amygdalienne entière ne peut montrer ni les fixations oculaires, ni les réponses à la tâche, ni un effet causal propre au côté droit à partir de lésions bilatérales.
+        view: anterior
+        plane: coronal
+
+  - id: valuation
+    name: { en: Reward and value-based decisions, fr: Récompense et décisions fondées sur la valeur }
+    summary:
+      en: Compare midbrain, ventral striatal and ventromedial frontal landmarks in reward and valuation systems.
+      fr: Comparez les repères mésencéphaliques, striataux ventraux et frontaux ventromédians des systèmes de récompense et de valorisation.
+    route:
+      en: Ventral tegmental area · accumbens core · ventromedial frontal territory
+      fr: Aire tegmentale ventrale · cœur de l’accumbens · territoire frontal ventromédian
+    scope:
+      en: Three left-sided landmarks in bilateral systems with multiple loops. Haber and Knutson combine nonhuman-primate anatomy with human imaging; Bartra’s meta-analysis identifies BOLD correlates of subjective value, not a causal chain or dopamine measurement.
+      fr: Trois repères gauches dans des systèmes bilatéraux à boucles multiples. Haber et Knutson combinent anatomie des primates non humains et imagerie humaine ; la méta-analyse de Bartra identifie des corrélats BOLD de la valeur subjective, et non une chaîne causale ou une mesure de dopamine.
+    clinical:
+      en: Bechara’s ventromedial lesion findings concern decisions under uncertainty. Fellows and Farah found that dorsolateral lesions could also impair the gambling task, with reversal learning contributing to ventromedial impairment. The task is not specific to one region.
+      fr: Les résultats lésionnels ventromédians de Bechara concernent les décisions sous incertitude. Fellows et Farah ont trouvé que des lésions dorsolatérales pouvaient aussi altérer la tâche de jeu, l’apprentissage par inversion contribuant au déficit ventromédian. La tâche n’est pas propre à une seule région.
+    deficit: decision-making
+    references: [reward-anatomy, valuation, decision-lesions, decision-qualifier]
+    steps:
+      - id: vta
+        region: learning:left:vta
+        source_name: Ventral tegmental area
+        name: { en: Left ventral tegmental area, fr: Aire tegmentale ventrale gauche }
+        role: { en: Midbrain reward-related landmark, fr: Repère mésencéphalique lié à la récompense }
+        explanation:
+          en: The ventral tegmental area participates in midbrain systems that modulate ventral striatal and cortical reward processing.
+          fr: L’aire tegmentale ventrale participe aux systèmes mésencéphaliques qui modulent le traitement striatal ventral et cortical de la récompense.
+        mapping:
+          en: This regional label does not identify dopamine neurons, distinguish transmitter populations or measure reward-prediction errors.
+          fr: Cette étiquette régionale n’identifie pas les neurones dopaminergiques, ne distingue pas les populations par neurotransmetteur et ne mesure pas les erreurs de prédiction de récompense.
+        view: anterior
+        plane: axial
+      - id: accumbens
+        region: learning:left:accumbens
+        source_name: Nucleus accumbens core
+        name: { en: Left nucleus accumbens core, fr: Cœur du noyau accumbens gauche }
+        role: { en: Ventral striatal landmark, fr: Repère striatal ventral }
+        explanation:
+          en: Ventral striatal regions participate in reward processing. Bartra’s meta-analysis found consistent positive associations between subjective value and BOLD responses in anterior ventral striatum.
+          fr: Des régions striatales ventrales participent au traitement de la récompense. La méta-analyse de Bartra a trouvé des associations positives constantes entre valeur subjective et réponses BOLD dans le striatum ventral antérieur.
+        mapping:
+          en: The source labels accumbens core, not shell or the entire ventral striatum. It does not reproduce the meta-analytic cluster or identify a universal pleasure centre.
+          fr: La source étiquette le cœur de l’accumbens, et non sa coquille ni tout le striatum ventral. Elle ne reproduit pas l’amas méta-analytique et ne désigne pas un centre universel du plaisir.
+        view: anterior
+        plane: coronal
+      - id: ventromedial
+        region: destrieux:left:31
+        source_name: G_rectus
+        name: { en: Left gyrus rectus, fr: Gyrus droit gauche }
+        role: { en: Ventromedial frontal landmark, fr: Repère frontal ventromédian }
+        explanation:
+          en: Ventromedial prefrontal BOLD responses correlate with subjective value across diverse rewards and tasks in Bartra’s analysis.
+          fr: Les réponses BOLD préfrontales ventromédianes sont corrélées à la valeur subjective pour divers types de récompenses et de tâches dans l’analyse de Bartra.
+        mapping:
+          en: The gyrus rectus approximates part of ventromedial frontal anatomy. It is neither the entire functional valuation territory nor the focal lesion extent in the decision studies.
+          fr: Le gyrus droit représente approximativement une partie de l’anatomie frontale ventromédiane. Il n’est ni tout le territoire fonctionnel de valorisation ni l’étendue focale des lésions des études de décision.
+        view: inferior
+        plane: sagittal
+
+  - id: spatial-hearing
+    name: { en: Locating sounds in space, fr: Localisation des sons dans l’espace }
+    summary:
+      en: Compare temporal, parietal and frontal landmarks associated with auditory spatial judgments.
+      fr: Comparez les repères temporaux, pariétaux et frontaux associés aux jugements spatiaux auditifs.
+    route:
+      en: Posterior temporal · parietal · superior frontal territories
+      fr: Territoires temporaux postérieurs · pariétaux · frontaux supérieurs
+    scope:
+      en: Three right-sided cortical landmarks in a bilateral auditory system. Alain’s study contrasted location and pitch judgments of the same sounds. Brainstem binaural computations, primary auditory fields and other attention and motor contributions are omitted; the order is not a demonstrated serial pathway.
+      fr: Trois repères corticaux droits dans un système auditif bilatéral. L’étude d’Alain comparait les jugements de position et de hauteur des mêmes sons. Les calculs binauraux du tronc cérébral, les champs auditifs primaires et d’autres contributions attentionnelles et motrices sont omis ; l’ordre n’est pas une voie sérielle démontrée.
+    clinical:
+      en: Clarke’s right-lesion cases dissociated sound localization from recognition. Adriani’s acute-lesion cohort showed that injury within a specialized auditory network did not consistently produce its corresponding deficit; simple one-region predictions are unreliable.
+      fr: Les cas de lésions droites de Clarke dissociaient localisation et reconnaissance des sons. La cohorte de lésions aiguës d’Adriani montrait qu’une atteinte d’un réseau auditif spécialisé ne produisait pas systématiquement le déficit correspondant ; les prédictions simples fondées sur une région sont peu fiables.
+    deficit: sound-localization
+    references: [auditory-space, auditory-space-lesions, auditory-space-limits]
+    steps:
+      - id: superior-temporal
+        region: destrieux:right:34
+        source_name: G_temp_sup-Lateral
+        name: { en: Right lateral superior temporal gyrus, fr: Partie latérale du gyrus temporal supérieur droit }
+        role: { en: Posterior auditory landmark, fr: Repère auditif postérieur }
+        explanation:
+          en: Alain and colleagues found greater posterior temporal activity for sound-location judgments than for pitch judgments.
+          fr: Alain et ses collègues ont trouvé davantage d’activité temporale postérieure pour les jugements de position sonore que pour les jugements de hauteur.
+        mapping:
+          en: The whole lateral superior temporal parcel extends beyond posterior auditory territories. It does not delineate a spatial-hearing map or the study’s activation focus.
+          fr: La parcelle temporale supérieure latérale entière dépasse les territoires auditifs postérieurs. Elle ne délimite ni une carte d’audition spatiale ni le foyer d’activation de l’étude.
+        view: right
+        plane: coronal
+      - id: superior-parietal
+        region: destrieux:right:27
+        source_name: G_parietal_sup
+        name: { en: Right superior parietal lobule, fr: Lobule pariétal supérieur droit }
+        role: { en: Spatial judgment landmark, fr: Repère du jugement spatial }
+        explanation:
+          en: Parietal regions were more engaged by location than pitch judgments. Auditory spatial processing therefore extends beyond temporal auditory cortex.
+          fr: Des régions pariétales étaient davantage sollicitées par les jugements de position que de hauteur. Le traitement spatial auditif dépasse donc le cortex auditif temporal.
+        mapping:
+          en: This broad superior parietal landmark does not reproduce the fMRI cluster or Clarke’s inferior parietal lesions. Those studies used different tasks and methods.
+          fr: Ce large repère pariétal supérieur ne reproduit ni l’amas IRMf ni les lésions pariétales inférieures de Clarke. Ces études utilisaient des tâches et des méthodes différentes.
+        view: superior
+        plane: axial
+      - id: superior-frontal
+        region: destrieux:right:55
+        source_name: S_front_sup
+        name: { en: Right superior frontal sulcus, fr: Sillon frontal supérieur droit }
+        role: { en: Frontal task-related landmark, fr: Repère frontal lié à la tâche }
+        explanation:
+          en: Superior frontal sulcal activity also favoured location judgments in Alain’s experiment. The contrast includes the attention and response demands of the task.
+          fr: L’activité du sillon frontal supérieur privilégiait aussi les jugements de position dans l’expérience d’Alain. Le contraste inclut les exigences attentionnelles et de réponse de la tâche.
+        mapping:
+          en: The whole sulcus is not a dedicated auditory-localization centre. Its anatomy does not determine whether a response is auditory, attentional or motor.
+          fr: Le sillon entier n’est pas un centre réservé à la localisation auditive. Son anatomie ne détermine pas si une réponse est auditive, attentionnelle ou motrice.
+        view: right
+        plane: axial
+
+  - id: motion
+    name: { en: Visual motion landmarks, fr: Repères de la vision du mouvement }
+    summary:
+      en: Compare early visual cortex with two extrastriate territories sensitive to visual motion.
+      fr: Comparez le cortex visuel précoce à deux territoires extrastriés sensibles au mouvement visuel.
+    route:
+      en: V1 · V3A · MT
+      fr: V1 · V3A · MT
+    scope:
+      en: Three right-sided landmarks in bilateral visual systems. The sequence does not imply a direct V1-to-V3A-to-MT chain. Other motion-sensitive areas and white-matter pathways are omitted.
+      fr: Trois repères droits dans des systèmes visuels bilatéraux. La séquence n’implique pas une chaîne directe V1–V3A–MT. D’autres aires sensibles au mouvement et les voies de substance blanche sont omises.
+    clinical:
+      en: Zihl’s patient had severe visual motion impairment after bilateral lateral temporo-occipital and underlying white-matter damage. The case does not isolate one MT parcel or establish that a unilateral lesion has the same effect.
+      fr: La patiente de Zihl avait un trouble sévère de la vision du mouvement après une atteinte temporo-occipitale latérale bilatérale et de la substance blanche sous-jacente. Ce cas n’isole pas une parcelle MT et n’établit pas qu’une lésion unilatérale ait le même effet.
+    deficit: akinetopsia
+    references: [motion-mapping, motion-lesions, cortical-parcellation]
+    steps:
+      - id: v1
+        region: hcp-mmp:right:1
+        source_name: R_V1_ROI
+        name: { en: Right primary visual cortex, fr: Cortex visuel primaire droit }
+        role: { en: Early visual landmark, fr: Repère visuel précoce }
+        explanation:
+          en: Begin with V1, a retinotopically organized reference for comparing the extrastriate areas in Tootell’s study.
+          fr: Commencez par V1, une référence organisée de façon rétinotopique pour comparer les aires extrastriées de l’étude de Tootell.
+        mapping:
+          en: This HCP-MMP parcel locates primary visual cortex; it does not show motion responses measured in this individual.
+          fr: Cette parcelle HCP-MMP situe le cortex visuel primaire ; elle n’affiche pas de réponses au mouvement mesurées chez cet individu.
+        view: left
+        plane: coronal
+      - id: v3a
+        region: hcp-mmp:right:13
+        source_name: R_V3A_ROI
+        name: { en: Right visual area V3A, fr: Aire visuelle V3A droite }
+        role: { en: Dorsal motion-sensitive territory, fr: Territoire dorsal sensible au mouvement }
+        explanation:
+          en: Tootell and colleagues found human V3A to be retinotopically organized and relatively motion-selective, with properties differing from macaque V3A.
+          fr: Tootell et ses collègues ont observé une organisation rétinotopique et une sélectivité relative au mouvement en V3A humaine, avec des propriétés différentes de V3A du macaque.
+        mapping:
+          en: HCP-MMP V3A provides an atlas landmark rather than the study’s individual retinotopic boundary. Human and macaque area names do not establish identical functions.
+          fr: V3A de HCP-MMP fournit un repère d’atlas plutôt que la limite rétinotopique individuelle de l’étude. Les noms d’aires humains et du macaque n’établissent pas des fonctions identiques.
+        view: posterior
+        plane: axial
+      - id: mt
+        region: hcp-mmp:right:23
+        source_name: R_MT_ROI
+        name: { en: Right middle temporal visual area MT, fr: Aire visuelle temporale moyenne MT droite }
+        role: { en: Lateral motion-sensitive territory, fr: Territoire latéral sensible au mouvement }
+        explanation:
+          en: MT, also called V5, is another motion-sensitive visual area compared with V3A in Tootell’s functional measurements.
+          fr: MT, aussi appelée V5, est une autre aire visuelle sensible au mouvement comparée à V3A dans les mesures fonctionnelles de Tootell.
+        mapping:
+          en: The HCP-MMP MT parcel is only part of the broader MT+ complex. It neither reproduces Zihl’s lesion nor includes every territory needed for motion perception.
+          fr: La parcelle MT de HCP-MMP n’est qu’une partie du complexe MT+ plus large. Elle ne reproduit pas la lésion de Zihl et n’inclut pas tous les territoires nécessaires à la perception du mouvement.
+        view: right
+        plane: axial
+
+  - id: colour
+    name: { en: Colour perception landmarks, fr: Repères de la perception des couleurs }
+    summary:
+      en: Compare colour information in early and ventral extrastriate visual cortex.
+      fr: Comparez l’information sur les couleurs dans le cortex visuel précoce et extrastrié ventral.
+    route:
+      en: V1 · V2 · V4
+      fr: V1 · V2 · V4
+    scope:
+      en: Three right-sided landmarks in bilateral visual systems. This teaching order is not a complete serial model of colour perception. Additional ventral occipital areas, including the study’s VO1, are not visited.
+      fr: Trois repères droits dans des systèmes visuels bilatéraux. Cet ordre pédagogique n’est pas un modèle sériel complet de la perception des couleurs. D’autres aires occipitales ventrales, dont VO1 de l’étude, ne sont pas parcourues.
+    clinical:
+      en: Zeki’s clinical review relates acquired cerebral colour loss to ventral occipital damage. Colour decoding in healthy observers does not establish lesion boundaries, prove that one parcel is sufficient for colour vision or diagnose achromatopsia.
+      fr: La revue clinique de Zeki relie la perte acquise de la vision des couleurs à une atteinte occipitale ventrale. Le décodage des couleurs chez des sujets sains n’établit pas de limites lésionnelles, ne prouve pas qu’une parcelle suffise à la vision des couleurs et ne diagnostique pas l’achromatopsie.
+    deficit: achromatopsia
+    references: [colour-coding, colour-clinical, cortical-parcellation]
+    steps:
+      - id: v1
+        region: hcp-mmp:right:1
+        source_name: R_V1_ROI
+        name: { en: Right primary visual cortex, fr: Cortex visuel primaire droit }
+        role: { en: Early cortical colour information, fr: Information corticale précoce sur les couleurs }
+        explanation:
+          en: Brouwer and Heeger decoded stimulus colours from distributed V1 activity, illustrating that colour information is already available in early visual cortex.
+          fr: Brouwer et Heeger ont décodé les couleurs des stimuli à partir de l’activité distribuée de V1, montrant que l’information sur les couleurs est déjà disponible dans le cortex visuel précoce.
+        mapping:
+          en: The HCP-MMP V1 parcel is an anatomical reference. Its surface colour is an atlas display choice, not the stimulus colour or a neuronal tuning measurement.
+          fr: La parcelle V1 de HCP-MMP est une référence anatomique. Sa couleur de surface est un choix d’affichage de l’atlas, et non la couleur du stimulus ni une mesure de sélectivité neuronale.
+        view: left
+        plane: coronal
+      - id: v2
+        region: hcp-mmp:right:4
+        source_name: R_V2_ROI
+        name: { en: Right secondary visual cortex V2, fr: Cortex visuel secondaire V2 droit }
+        role: { en: Extrastriate colour information, fr: Information extrastriée sur les couleurs }
+        explanation:
+          en: Stimulus colours were also decodable from V2 activity in the same experiment. Successful decoding alone does not specify a region’s causal contribution to perception.
+          fr: Les couleurs des stimuli étaient aussi décodables à partir de l’activité de V2 dans la même expérience. Un décodage réussi ne précise pas à lui seul la contribution causale d’une région à la perception.
+        mapping:
+          en: This atlas parcel does not reproduce the individual retinotopic regions used in the experiment or distinguish their dorsal and ventral sampling.
+          fr: Cette parcelle d’atlas ne reproduit pas les régions rétinotopiques individuelles de l’expérience et ne distingue pas leur échantillonnage dorsal et ventral.
+        view: left
+        plane: coronal
+      - id: v4
+        region: hcp-mmp:right:6
+        source_name: R_V4_ROI
+        name: { en: Right visual area V4, fr: Aire visuelle V4 droite }
+        role: { en: Perceptual colour similarity, fr: Similarité perceptive des couleurs }
+        explanation:
+          en: In the study’s V4 and VO1, more similar perceived colours evoked more similar activity patterns, unlike the pattern reported in V1.
+          fr: Dans V4 et VO1 de l’étude, des couleurs perçues comme plus proches évoquaient des profils d’activité plus similaires, contrairement au profil rapporté en V1.
+        mapping:
+          en: HCP-MMP V4 is a landmark rather than a replication of the experiment’s V4 or VO1 definitions. It is not a self-contained colour centre or an achromatopsia lesion map.
+          fr: V4 de HCP-MMP est un repère plutôt qu’une reproduction des définitions de V4 ou de VO1 de l’expérience. Ce n’est ni un centre autonome des couleurs ni une carte lésionnelle de l’achromatopsie.
+        view: inferior
+        plane: coronal
+
+  - id: number
+    name: { en: Number and arithmetic systems, fr: Systèmes des nombres et du calcul }
+    summary:
+      en: Compare parietal landmarks for quantity, verbal arithmetic and spatial attention.
+      fr: Comparez les repères pariétaux de la quantité, du calcul verbal et de l’attention spatiale.
+    route:
+      en: Intraparietal sulcus · angular gyrus · superior parietal lobule
+      fr: Sillon intrapariétal · gyrus angulaire · lobule pariétal supérieur
+    scope:
+      en: Left-sided landmarks illustrating Dehaene and colleagues’ proposed three-system organization. Number processing also recruits the right hemisphere and frontal regions, with recruitment varying by task in Chochon’s fMRI study. These are interacting contributions rather than serial stages.
+      fr: Des repères gauches illustrant l’organisation en trois systèmes proposée par Dehaene et ses collègues. Le traitement des nombres mobilise aussi l’hémisphère droit et des régions frontales, avec un recrutement variant selon la tâche dans l’étude IRMf de Chochon. Ces contributions interagissent plutôt que de former des étapes sérielles.
+    clinical:
+      en: Dehaene and Cohen described two patients with dissociable impairments of verbal arithmetic facts and numerical quantity knowledge. Acalculia has different mechanisms; the left-sided tour is not a map of both patients’ lesions.
+      fr: Dehaene et Cohen ont décrit deux patients présentant des atteintes dissociables des faits arithmétiques verbaux et des connaissances sur les quantités numériques. L’acalculie a différents mécanismes ; le parcours gauche ne cartographie pas les lésions des deux patients.
+    deficit: acalculia
+    references: [number-systems, number-tasks, number-lesions]
+    steps:
+      - id: intraparietal
+        region: destrieux:left:57
+        source_name: S_intrapariet_and_P_trans
+        name: { en: Left intraparietal and transverse parietal sulci, fr: Sillons intrapariétal et pariétal transverse gauches }
+        role: { en: Numerical quantity processing, fr: Traitement des quantités numériques }
+        explanation:
+          en: Intraparietal territories are recruited during numerical manipulation. Chochon’s experiment found their lateralization changed with comparison, multiplication and subtraction demands.
+          fr: Des territoires intrapariétaux sont mobilisés pendant la manipulation numérique. Dans l’expérience de Chochon, leur latéralisation variait selon les exigences de comparaison, multiplication et soustraction.
+        mapping:
+          en: The combined Destrieux sulcal parcel is broader than the horizontal intraparietal segment discussed in the papers. It is not a number-specific functional localizer.
+          fr: La parcelle sulcale combinée de Destrieux dépasse le segment intrapariétal horizontal décrit dans les articles. Elle n’est pas une localisation fonctionnelle spécifique aux nombres.
+        view: superior
+        plane: axial
+      - id: angular
+        region: destrieux:left:25
+        source_name: G_pariet_inf-Angular
+        name: { en: Left angular gyrus, fr: Gyrus angulaire gauche }
+        role: { en: Verbal arithmetic contribution, fr: Contribution au calcul verbal }
+        explanation:
+          en: Dehaene and colleagues proposed a left angular contribution to handling numbers in verbal form, alongside other language regions.
+          fr: Dehaene et ses collègues ont proposé une contribution angulaire gauche au traitement des nombres sous forme verbale, avec d’autres régions langagières.
+        mapping:
+          en: The whole angular gyrus includes territories serving other functions. Its border does not isolate arithmetic fact retrieval or delimit the subcortical lesion in Dehaene and Cohen’s case.
+          fr: Le gyrus angulaire entier inclut des territoires assurant d’autres fonctions. Sa limite n’isole pas la récupération des faits arithmétiques et ne délimite pas la lésion sous-corticale du cas de Dehaene et Cohen.
+        view: left
+        plane: coronal
+      - id: superior-parietal
+        region: destrieux:left:27
+        source_name: G_parietal_sup
+        name: { en: Left superior parietal lobule, fr: Lobule pariétal supérieur gauche }
+        role: { en: Spatial attention contribution, fr: Contribution de l’attention spatiale }
+        explanation:
+          en: Their model assigns posterior superior parietal territories a spatial attention contribution shared with nonnumerical tasks.
+          fr: Leur modèle attribue aux territoires pariétaux supérieurs postérieurs une contribution d’attention spatiale partagée avec des tâches non numériques.
+        mapping:
+          en: The whole lobule extends beyond the posterior territories in the model. The opposite hemisphere is omitted, and no mental number line is measured on this surface.
+          fr: Le lobule entier dépasse les territoires postérieurs du modèle. L’hémisphère opposé est omis et aucune ligne numérique mentale n’est mesurée sur cette surface.
+        view: superior
+        plane: axial
+
+  - id: gaze
+    name: { en: Voluntary gaze control, fr: Contrôle volontaire du regard }
+    summary:
+      en: Locate parietal and frontal landmarks recruited during saccadic eye movements.
+      fr: Repérez les territoires pariétaux et frontaux mobilisés pendant les saccades oculaires.
+    route:
+      en: Intraparietal sulcus · frontal eye field · supplementary and cingulate eye field parcel
+      fr: Sillon intrapariétal · champ oculomoteur frontal · parcelle des champs oculomoteurs supplémentaire et cingulaire
+    scope:
+      en: Three right-sided landmarks in bilateral oculomotor systems. The order does not establish a parietal-to-frontal chain. Subcortical, brainstem and cerebellar contributions are not visited; this tour concerns cortical control rather than the full motor apparatus of the eyes.
+      fr: Trois repères droits dans des systèmes oculomoteurs bilatéraux. L’ordre n’établit pas une chaîne pariéto-frontale. Les contributions sous-corticales, du tronc cérébral et du cervelet ne sont pas parcourues ; ce parcours concerne le contrôle cortical plutôt que tout l’appareil moteur des yeux.
+    clinical:
+      en: Ghika’s parietal stroke series reported oculomotor apraxia with bilateral posterior lesions, alongside other eye-movement findings. This acquired syndrome cannot be assigned to one right frontal parcel or equated with every failure to move the eyes.
+      fr: La série d’AVC pariétaux de Ghika rapportait une apraxie oculomotrice avec des lésions postérieures bilatérales, ainsi que d’autres signes oculomoteurs. Ce syndrome acquis ne peut pas être attribué à une parcelle frontale droite ni assimilé à toute difficulté à bouger les yeux.
+    deficit: oculomotor-apraxia
+    references: [gaze-imaging, gaze-parietal, gaze-stroke, cortical-parcellation]
+    steps:
+      - id: intraparietal
+        region: destrieux:right:57
+        source_name: S_intrapariet_and_P_trans
+        name: { en: Right intraparietal and transverse parietal sulci, fr: Sillons intrapariétal et pariétal transverse droits }
+        role: { en: Parietal oculomotor landmark, fr: Repère oculomoteur pariétal }
+        explanation:
+          en: Müri and colleagues observed bilateral intraparietal activity during visually guided saccades and proposed a parietal eye-field location.
+          fr: Müri et ses collègues ont observé une activité intrapariétale bilatérale pendant les saccades visuellement guidées et proposé une localisation du champ oculomoteur pariétal.
+        mapping:
+          en: This combined sulcal parcel exceeds the functional focus in the deep intraparietal sulcus. It does not isolate the parietal eye field or measure a saccade signal.
+          fr: Cette parcelle sulcale combinée dépasse le foyer fonctionnel du sillon intrapariétal profond. Elle n’isole pas le champ oculomoteur pariétal et ne mesure pas de signal de saccade.
+        view: superior
+        plane: axial
+      - id: frontal-eye-field
+        region: hcp-mmp:right:10
+        source_name: R_FEF_ROI
+        name: { en: Right frontal eye field parcel, fr: Parcelle du champ oculomoteur frontal droit }
+        role: { en: Frontal oculomotor landmark, fr: Repère oculomoteur frontal }
+        explanation:
+          en: Berman and colleagues found frontal eye-field activation during both saccades and smooth pursuit. The region’s involvement is not specific to one eye-movement task.
+          fr: Berman et ses collègues ont observé une activation du champ oculomoteur frontal pendant les saccades et la poursuite lente. Sa participation n’est pas spécifique à une seule tâche oculomotrice.
+        mapping:
+          en: HCP-MMP FEF is an atlas parcel, not Berman’s functional activation cluster or an individual stimulation-defined eye field.
+          fr: FEF de HCP-MMP est une parcelle d’atlas, et non le foyer d’activation fonctionnelle de Berman ni un champ oculomoteur individuel défini par stimulation.
+        view: right
+        plane: axial
+      - id: supplementary-cingulate
+        region: hcp-mmp:right:43
+        source_name: R_SCEF_ROI
+        name: { en: Right supplementary and cingulate eye field parcel, fr: Parcelle des champs oculomoteurs supplémentaire et cingulaire droits }
+        role: { en: Medial frontal oculomotor landmark, fr: Repère oculomoteur frontal médial }
+        explanation:
+          en: Berman’s study also found supplementary eye-field and cingulate activation during saccades and pursuit. Compare this medial frontal territory with the lateral frontal landmark.
+          fr: L’étude de Berman rapportait aussi des activations oculomotrices supplémentaires et cingulaires pendant les saccades et la poursuite. Comparez ce territoire frontal médial au repère frontal latéral.
+        mapping:
+          en: HCP-MMP SCEF combines supplementary and cingulate eye-field territory. It does not separately delineate Berman’s supplementary eye field and anterior cingulate activations or reproduce their exact boundaries.
+          fr: SCEF de HCP-MMP combine des territoires oculomoteurs supplémentaire et cingulaire. Elle ne délimite pas séparément les activations du champ supplémentaire et du cortex cingulaire antérieur de Berman et ne reproduit pas leurs limites exactes.
+        view: left
+        plane: sagittal

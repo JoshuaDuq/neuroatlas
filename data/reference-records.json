@@ -151,6 +151,23 @@
    "pages": "432-5",
    "corrections": []
   },
+  "pmid:2276043": {
+   "pmid": "2276043",
+   "pmcid": null,
+   "doi": "10.1093/brain/113.6.1721",
+   "doi_source": "pubmed",
+   "title": "A century of cerebral achromatopsia",
+   "authors": [
+    "Zeki S"
+   ],
+   "year": 1990,
+   "pubdate": "1990 Dec",
+   "journal": "Brain",
+   "volume": "113 ( Pt 6)",
+   "issue": null,
+   "pages": "1721-77",
+   "corrections": []
+  },
   "pmid:2310343": {
    "pmid": "2310343",
    "pmcid": null,
@@ -335,6 +352,32 @@
    "pages": "887-9",
    "corrections": []
   },
+  "pmid:7667258": {
+   "pmid": "7667258",
+   "pmcid": "PMC41110",
+   "doi": "10.1073/pnas.92.18.8135",
+   "doi_source": "pubmed",
+   "title": "Object-related activity revealed by functional magnetic resonance imaging in human occipital cortex",
+   "authors": [
+    "Malach R",
+    "Reppas JB",
+    "Benson RR",
+    "Kwong KK",
+    "Jiang H",
+    "Kennedy WA",
+    "Ledden PJ",
+    "Brady TJ",
+    "Rosen BR",
+    "Tootell RB"
+   ],
+   "year": 1995,
+   "pubdate": "1995 Aug 29",
+   "journal": "Proc Natl Acad Sci U S A",
+   "volume": "92",
+   "issue": "18",
+   "pages": "8135-9",
+   "corrections": []
+  },
   "pmid:7922471": {
    "pmid": "7922471",
    "pmcid": null,
@@ -470,6 +513,27 @@
    "pages": "182-98",
    "corrections": []
   },
+  "pmid:8774415": {
+   "pmid": "8774415",
+   "pmcid": "PMC1073903",
+   "doi": "10.1136/jnnp.60.4.445",
+   "doi_source": "pubmed",
+   "title": "Location of the human posterior eye field with functional magnetic resonance imaging",
+   "authors": [
+    "Müri RM",
+    "Iba-Zizen MT",
+    "Derosier C",
+    "Cabanis EA",
+    "Pierrot-Deseilligny C"
+   ],
+   "year": 1996,
+   "pubdate": "1996 Apr",
+   "journal": "J Neurol Neurosurg Psychiatry",
+   "volume": "60",
+   "issue": "4",
+   "pages": "445-8",
+   "corrections": []
+  },
   "pmid:8906789": {
    "pmid": "8906789",
    "pmcid": null,
@@ -485,6 +549,24 @@
    "volume": "384",
    "issue": "6605",
    "pages": "159-61",
+   "corrections": []
+  },
+  "pmid:9220256": {
+   "pmid": "9220256",
+   "pmcid": null,
+   "doi": "10.1016/s0010-9452(08)70002-9",
+   "doi_source": "pubmed",
+   "title": "Cerebral pathways for calculation: double dissociation between rote verbal and quantitative knowledge of arithmetic",
+   "authors": [
+    "Dehaene S",
+    "Cohen L"
+   ],
+   "year": 1997,
+   "pubdate": "1997 Jun",
+   "journal": "Cortex",
+   "volume": "33",
+   "issue": "2",
+   "pages": "219-50",
    "corrections": []
   },
   "pmid:9270578": {
@@ -506,6 +588,30 @@
    "volume": "49",
    "issue": "2",
    "pages": "464-9",
+   "corrections": []
+  },
+  "pmid:9278542": {
+   "pmid": "9278542",
+   "pmcid": "PMC6573277",
+   "doi": "10.1523/jneurosci.17-18-07060.1997",
+   "doi_source": "pubmed",
+   "title": "Functional analysis of V3A and related areas in human visual cortex",
+   "authors": [
+    "Tootell RB",
+    "Mendola JD",
+    "Hadjikhani NK",
+    "Ledden PJ",
+    "Liu AK",
+    "Reppas JB",
+    "Sereno MI",
+    "Dale AM"
+   ],
+   "year": 1997,
+   "pubdate": "1997 Sep 15",
+   "journal": "J Neurosci",
+   "volume": "17",
+   "issue": "18",
+   "pages": "7060-78",
    "corrections": []
   },
   "pmid:9577385": {
@@ -607,6 +713,26 @@
    "pages": "1111-7",
    "corrections": []
   },
+  "pmid:10601743": {
+   "pmid": "10601743",
+   "pmcid": null,
+   "doi": "10.1162/089892999563689",
+   "doi_source": "pubmed",
+   "title": "Differential contributions of the left and right inferior parietal lobules to number processing",
+   "authors": [
+    "Chochon F",
+    "Cohen L",
+    "van de Moortele PF",
+    "Dehaene S"
+   ],
+   "year": 1999,
+   "pubdate": "1999 Nov",
+   "journal": "J Cogn Neurosci",
+   "volume": "11",
+   "issue": "6",
+   "pages": "617-30",
+   "corrections": []
+  },
   "pmid:10611128": {
    "pmid": "10611128",
    "pmcid": null,
@@ -625,6 +751,29 @@
    "volume": "123 ( Pt 1)",
    "issue": null,
    "pages": "141-54",
+   "corrections": []
+  },
+  "pmid:10619415": {
+   "pmid": "10619415",
+   "pmcid": "PMC6873313",
+   "doi": "10.1002/(sici)1097-0193(1999)8:4<209::aid-hbm5>3.0.co;2-0",
+   "doi_source": "pubmed",
+   "title": "Cortical networks subserving pursuit and saccadic eye movements in humans: an FMRI study",
+   "authors": [
+    "Berman RA",
+    "Colby CL",
+    "Genovese CR",
+    "Voyvodic JT",
+    "Luna B",
+    "Thulborn KR",
+    "Sweeney JA"
+   ],
+   "year": 1999,
+   "pubdate": "1999",
+   "journal": "Hum Brain Mapp",
+   "volume": "8",
+   "issue": "4",
+   "pages": "209-25",
    "corrections": []
   },
   "pmid:10683386": {
@@ -675,6 +824,25 @@
    "pages": "800-15",
    "corrections": []
   },
+  "pmid:10827445": {
+   "pmid": "10827445",
+   "pmcid": null,
+   "doi": "10.1016/s1364-6613(00)01482-0",
+   "doi_source": "pubmed",
+   "title": "The distributed human neural system for face perception",
+   "authors": [
+    "Haxby JV",
+    "Hoffman EA",
+    "Gobbini MI"
+   ],
+   "year": 2000,
+   "pubdate": "2000 Jun",
+   "journal": "Trends Cogn Sci",
+   "volume": "4",
+   "issue": "6",
+   "pages": "223-233",
+   "corrections": []
+  },
   "pmid:11087818": {
    "pmid": "11087818",
    "pmcid": "PMC17678",
@@ -700,6 +868,27 @@
      "pmid": null
     }
    ]
+  },
+  "pmid:11572938": {
+   "pmid": "11572938",
+   "pmcid": "PMC59809",
+   "doi": "10.1073/pnas.211209098",
+   "doi_source": "pubmed",
+   "title": "\"What\" and \"where\" in the human auditory system",
+   "authors": [
+    "Alain C",
+    "Arnott SR",
+    "Hevenor S",
+    "Graham S",
+    "Grady CL"
+   ],
+   "year": 2001,
+   "pubdate": "2001 Oct 09",
+   "journal": "Proc Natl Acad Sci U S A",
+   "volume": "98",
+   "issue": "21",
+   "pages": "12301-6",
+   "corrections": []
   },
   "pmid:11781408": {
    "pmid": "11781408",
@@ -1445,6 +1634,34 @@
    "pages": "393-402",
    "corrections": []
   },
+  "pmid:17576922": {
+   "pmid": "17576922",
+   "pmcid": "PMC1904171",
+   "doi": "10.1073/pnas.0704320104",
+   "doi_source": "pubmed",
+   "title": "Distinct brain networks for adaptive and stable task control in humans",
+   "authors": [
+    "Dosenbach NU",
+    "Fair DA",
+    "Miezin FM",
+    "Cohen AL",
+    "Wenger KK",
+    "Dosenbach RA",
+    "Fox MD",
+    "Snyder AZ",
+    "Vincent JL",
+    "Raichle ME",
+    "Schlaggar BL",
+    "Petersen SE"
+   ],
+   "year": 2007,
+   "pubdate": "2007 Jun 26",
+   "journal": "Proc Natl Acad Sci U S A",
+   "volume": "104",
+   "issue": "26",
+   "pages": "11073-8",
+   "corrections": []
+  },
   "pmid:17635980": {
    "pmid": "17635980",
    "pmcid": "PMC2117735",
@@ -1585,6 +1802,26 @@
    "pages": "1401-4",
    "corrections": []
   },
+  "pmid:19261891": {
+   "pmid": "19261891",
+   "pmcid": "PMC3407568",
+   "doi": "10.1523/jneurosci.3211-08.2009",
+   "doi_source": "pubmed",
+   "title": "Multiple parietal reach regions in humans: cortical representations for visual and proprioceptive feedback during on-line reaching",
+   "authors": [
+    "Filimon F",
+    "Nelson JD",
+    "Huang RS",
+    "Sereno MI"
+   ],
+   "year": 2009,
+   "pubdate": "2009 Mar 04",
+   "journal": "J Neurosci",
+   "volume": "29",
+   "issue": "9",
+   "pages": "2961-71",
+   "corrections": []
+  },
   "pmid:19353229": {
    "pmid": "19353229",
    "pmcid": null,
@@ -1689,6 +1926,42 @@
    "volume": "81",
    "issue": "3",
    "pages": "276-81",
+   "corrections": []
+  },
+  "pmid:19812543": {
+   "pmid": "19812543",
+   "pmcid": "PMC3055449",
+   "doi": "10.1038/npp.2009.129",
+   "doi_source": "pubmed",
+   "title": "The reward circuit: linking primate anatomy and human imaging",
+   "authors": [
+    "Haber SN",
+    "Knutson B"
+   ],
+   "year": 2010,
+   "pubdate": "2010 Jan",
+   "journal": "Neuropsychopharmacology",
+   "volume": "35",
+   "issue": "1",
+   "pages": "4-26",
+   "corrections": []
+  },
+  "pmid:19890009": {
+   "pmid": "19890009",
+   "pmcid": "PMC2799419",
+   "doi": "10.1523/jneurosci.3577-09.2009",
+   "doi_source": "pubmed",
+   "title": "Decoding and reconstructing color from responses in human visual cortex",
+   "authors": [
+    "Brouwer GJ",
+    "Heeger DJ"
+   ],
+   "year": 2009,
+   "pubdate": "2009 Nov 04",
+   "journal": "J Neurosci",
+   "volume": "29",
+   "issue": "44",
+   "pages": "13992-4003",
    "corrections": []
   },
   "pmid:19892765": {
@@ -1836,6 +2109,47 @@
    "pages": "704-16",
    "corrections": []
   },
+  "pmid:20932917": {
+   "pmid": "20932917",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2010.09.084",
+   "doi_source": "pubmed",
+   "title": "A multisensory investigation of the functional significance of the \"pain matrix\"",
+   "authors": [
+    "Mouraux A",
+    "Diukova A",
+    "Lee MC",
+    "Wise RG",
+    "Iannetti GD"
+   ],
+   "year": 2011,
+   "pubdate": "2011 Feb 01",
+   "journal": "Neuroimage",
+   "volume": "54",
+   "issue": "3",
+   "pages": "2237-49",
+   "corrections": []
+  },
+  "pmid:20957581": {
+   "pmid": "20957581",
+   "pmcid": null,
+   "doi": "10.1080/02643290244000239",
+   "doi_source": "pubmed",
+   "title": "Three parietal circuits for number processing",
+   "authors": [
+    "Dehaene S",
+    "Piazza M",
+    "Pinel P",
+    "Cohen L"
+   ],
+   "year": 2003,
+   "pubdate": "2003 May 01",
+   "journal": "Cogn Neuropsychol",
+   "volume": "20",
+   "issue": "3",
+   "pages": "487-506",
+   "corrections": []
+  },
   "pmid:21371485": {
    "pmid": "21371485",
    "pmcid": "PMC3128701",
@@ -1855,6 +2169,23 @@
    "volume": "49",
    "issue": "8",
    "pages": "2185-98",
+   "corrections": []
+  },
+  "pmid:21623594": {
+   "pmid": "21623594",
+   "pmcid": "PMC3104450",
+   "doi": "10.3349/ymj.2011.52.4.553",
+   "doi_source": "pubmed",
+   "title": "Somatotopic arrangement and location of the corticospinal tract in the brainstem of the human brain",
+   "authors": [
+    "Jang SH"
+   ],
+   "year": 2011,
+   "pubdate": "2011 Jul",
+   "journal": "Yonsei Med J",
+   "volume": "52",
+   "issue": "4",
+   "pages": "553-7",
    "corrections": []
   },
   "pmid:21653723": {
@@ -1973,6 +2304,24 @@
    "pages": "718-35",
    "corrections": []
   },
+  "pmid:22131304": {
+   "pmid": "22131304",
+   "pmcid": "PMC6869965",
+   "doi": "10.1002/hbm.21416",
+   "doi_source": "pubmed",
+   "title": "Localization of pain-related brain activation: a meta-analysis of neuroimaging data",
+   "authors": [
+    "Duerden EG",
+    "Albanese MC"
+   ],
+   "year": 2013,
+   "pubdate": "2013 Jan",
+   "journal": "Hum Brain Mapp",
+   "volume": "34",
+   "issue": "1",
+   "pages": "109-49",
+   "corrections": []
+  },
   "pmid:22451328": {
    "pmid": "22451328",
    "pmcid": "PMC6869968",
@@ -2012,6 +2361,23 @@
    "volume": "49",
    "issue": "3",
    "pages": "658-67",
+   "corrections": []
+  },
+  "pmid:22584224": {
+   "pmid": "22584224",
+   "pmcid": "PMC3398395",
+   "doi": "10.1016/j.neuroimage.2012.04.062",
+   "doi_source": "pubmed",
+   "title": "A review and synthesis of the first 20 years of PET and fMRI studies of heard speech, spoken language and reading",
+   "authors": [
+    "Price CJ"
+   ],
+   "year": 2012,
+   "pubdate": "2012 Aug 15",
+   "journal": "Neuroimage",
+   "volume": "62",
+   "issue": "2",
+   "pages": "816-47",
    "corrections": []
   },
   "pmid:22719000": {
@@ -2200,6 +2566,25 @@
    "pages": "3799-814",
    "corrections": []
   },
+  "pmid:23507394": {
+   "pmid": "23507394",
+   "pmcid": "PMC3756836",
+   "doi": "10.1016/j.neuroimage.2013.02.063",
+   "doi_source": "pubmed",
+   "title": "The valuation system: a coordinate-based meta-analysis of BOLD fMRI experiments examining neural correlates of subjective value",
+   "authors": [
+    "Bartra O",
+    "McGuire JT",
+    "Kable JW"
+   ],
+   "year": 2013,
+   "pubdate": "2013 Aug 01",
+   "journal": "Neuroimage",
+   "volume": "76",
+   "issue": null,
+   "pages": "412-27",
+   "corrections": []
+  },
   "pmid:23658385": {
    "pmid": "23658385",
    "pmcid": null,
@@ -2258,6 +2643,45 @@
    "volume": "44",
    "issue": "10",
    "pages": "2760-7",
+   "corrections": []
+  },
+  "pmid:23892552": {
+   "pmid": "23892552",
+   "pmcid": "PMC3758404",
+   "doi": "10.1038/nn.3470",
+   "doi_source": "pubmed",
+   "title": "Multi-task connectivity reveals flexible hubs for adaptive task control",
+   "authors": [
+    "Cole MW",
+    "Reynolds JR",
+    "Power JD",
+    "Repovs G",
+    "Anticevic A",
+    "Braver TS"
+   ],
+   "year": 2013,
+   "pubdate": "2013 Sep",
+   "journal": "Nat Neurosci",
+   "volume": "16",
+   "issue": "9",
+   "pages": "1348-55",
+   "corrections": []
+  },
+  "pmid:24531325": {
+   "pmid": "24531325",
+   "pmcid": null,
+   "doi": "10.2340/16501977-1782",
+   "doi_source": "pubmed",
+   "title": "The corticospinal tract from the viewpoint of brain rehabilitation",
+   "authors": [
+    "Jang SH"
+   ],
+   "year": 2014,
+   "pubdate": "2014 Mar",
+   "journal": "J Rehabil Med",
+   "volume": "46",
+   "issue": "3",
+   "pages": "193-9",
    "corrections": []
   },
   "pmid:24556336": {
@@ -2843,6 +3267,26 @@
    "volume": "165",
    "issue": null,
    "pages": "170-179",
+   "corrections": []
+  },
+  "pmid:29073650": {
+   "pmid": "29073650",
+   "pmcid": "PMC6028313",
+   "doi": "10.1038/nn.4656",
+   "doi_source": "pubmed",
+   "title": "The cognitive map in humans: spatial navigation and beyond",
+   "authors": [
+    "Epstein RA",
+    "Patai EZ",
+    "Julian JB",
+    "Spiers HJ"
+   ],
+   "year": 2017,
+   "pubdate": "2017 Oct 26",
+   "journal": "Nat Neurosci",
+   "volume": "20",
+   "issue": "11",
+   "pages": "1504-1513",
    "corrections": []
   },
   "pmid:29157937": {

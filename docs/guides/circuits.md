@@ -1,6 +1,6 @@
 # Guided circuits
 
-The **Circuits** tab contains nine tours covering vision, memory, basal ganglia motor loops, hearing, touch, language, spatial attention, cerebellar output and praxis. Choose a tour and a landmark, or use the arrows in the location bar to step through it.
+The **Circuits** tab contains twenty-three tours: sensory systems (vision, visual motion, colour, objects, hearing, sound localization, touch, pain), movement (basal ganglia motor loops, corticospinal descent, cerebellar output, praxis, reaching, gaze) and cognition (memory, navigation, language, reading, number, spatial attention, cognitive control, faces and emotion, reward and valuation). Choose a tour and a landmark, or use the arrows in the location bar to step through it.
 
 ```{figure} ../../.github/assets/readme/circuits.webp
 :alt: The memory tour on its first landmark, the left hippocampal formation, outlined among the structures around it

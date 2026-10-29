@@ -55,7 +55,7 @@ The subject's own T1 in three planes around a shared crosshair, with the label u
 
 **[Take a guided tour](guides/circuits.md)**
 
-Nine tours, from vision to praxis, that reveal and frame each landmark.
+Twenty-three tours, from vision to gaze, that reveal and frame each landmark.
 :::
 
 :::{container} feature

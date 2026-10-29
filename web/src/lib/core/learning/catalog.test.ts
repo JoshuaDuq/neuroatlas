@@ -21,7 +21,7 @@ const circuitOf = (
 const create = (copy: object, manifest = published[0]) =>
   createCircuitCatalog(copy as CircuitData, manifest, deficitIds);
 
-test('all nine tours resolve exact source landmarks on every published anatomy', () => {
+test('all twenty-three tours resolve exact source landmarks on every published anatomy', () => {
   for (const manifest of published) {
     const catalog = create(data, manifest);
     assert.deepEqual(
@@ -36,11 +36,25 @@ test('all nine tours resolve exact source landmarks on every published anatomy',
         'attention',
         'cerebellar',
         'praxis',
+        'objects',
+        'reading',
+        'reaching',
+        'navigation',
+        'control',
+        'corticospinal',
+        'pain',
+        'emotion',
+        'valuation',
+        'spatial-hearing',
+        'motion',
+        'colour',
+        'number',
+        'gaze',
       ],
     );
     assert.equal(
       catalog.all.reduce((count, circuit) => count + circuit.steps.length, 0),
-      39,
+      85,
     );
     assert.equal(catalog.contextMarginMm, 12);
     assert.equal(catalog.get('vision').steps.at(-1)!.region, 'hcp-mmp:left:1');
@@ -460,11 +474,11 @@ describe('CAT-52 · a landmark resolves to one form and uncovers what others cov
   });
 });
 
-test('CAT-53 · the published circuits: revision, margin, 25 https references, nine circuits with their deficits and landmark counts', () => {
+test('CAT-53 · the published circuits: revision, margin, 64 https references, twenty-three circuits with their deficits and landmark counts', () => {
   const catalog = create(data);
-  assert.equal(catalog.revised, '2026-10-24');
+  assert.equal(catalog.revised, '2026-10-29');
   assert.equal(catalog.contextMarginMm, 12);
-  assert.equal(data.references.length, 25);
+  assert.equal(data.references.length, 64);
   for (const reference of data.references) {
     assert.ok(catalog.reference(reference.id).url.startsWith('https://'), reference.id);
   }
@@ -480,6 +494,20 @@ test('CAT-53 · the published circuits: revision, margin, 25 https references, n
       ['attention', 3, 'neglect'],
       ['cerebellar', 5, 'ataxia'],
       ['praxis', 6, 'apraxia'],
+      ['objects', 3, 'agnosia'],
+      ['reading', 4, 'alexia'],
+      ['reaching', 3, 'optic-ataxia'],
+      ['navigation', 3, 'topographical-disorientation'],
+      ['control', 4, 'executive'],
+      ['corticospinal', 4, 'hemiparesis'],
+      ['pain', 3, 'pain-asymbolia'],
+      ['emotion', 4, 'emotion-recognition'],
+      ['valuation', 3, 'decision-making'],
+      ['spatial-hearing', 3, 'sound-localization'],
+      ['motion', 3, 'akinetopsia'],
+      ['colour', 3, 'achromatopsia'],
+      ['number', 3, 'acalculia'],
+      ['gaze', 3, 'oculomotor-apraxia'],
     ],
   );
 });
