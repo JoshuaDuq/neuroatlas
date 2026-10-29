@@ -1,4 +1,5 @@
 import type { CircuitCatalog, Landmark } from '../core/learning/catalog.ts';
+import type { RevealSettings } from '../core/panels/clinical.ts';
 import type { ReaderFailure, ReaderState } from '../core/state/reader-state.ts';
 import type { SceneCommands } from '../core/state/scene-commands.ts';
 import type { Engine, MoveOptions, MprPlane } from '../engine/api.ts';
@@ -44,6 +45,7 @@ export function createLessons({
   chooseExplorer,
   openMriPanel,
   render,
+  stage,
 }: {
   engine: Pick<Engine, 'model' | 'sections' | 'camera'>;
   session: Pick<SessionStore, 'state' | 'setView'>;
@@ -57,11 +59,20 @@ export function createLessons({
   /** The Circuits panel's entry to the lesson's MRI: its busy runner, which calls `openMri` (circuits.js:344). */
   openMriPanel: () => unknown;
   render: () => void;
+  /** What a step does to the reader's own settings, said in the notice as a deficit's reveal says it. */
+  stage: {
+    settings: () => RevealSettings;
+    /** Says what changed since `before`; false when nothing did. */
+    sayChanged: (before: RevealSettings) => boolean;
+    sayRestored: () => void;
+  };
 }) {
   const { model, sections, camera } = engine;
   // The scene before the open lesson, put back when the reader leaves it. Null for a lesson a link
   // opened on its landmark: that scene is the link's own.
   let beforeLesson: ReaderState | null = null;
+  // A step of the open lesson said what it changed, so leaving it says the scene came back.
+  let changesSaid = false;
 
   /** The lesson step whose landmark is the selection, while that lesson is the open circuit. */
   function lessonLandmark(): Landmark | null {
@@ -88,9 +99,19 @@ export function createLessons({
     return true;
   }
 
+  /** A lesson's landmark opened as a step the reader took, saying what it changed on the stage. */
+  async function stepTo(step: Landmark, current: () => boolean): Promise<boolean> {
+    const before = stage.settings();
+    if (!(await openLandmark(step, current))) return false;
+    if (stage.sayChanged(before)) changesSaid = true;
+    return true;
+  }
+
   /** The scene a lesson opens over, unless one is already open and holds it. */
   function rememberBeforeLesson() {
-    if (!lesson.state.circuit) beforeLesson = reader.capture();
+    if (lesson.state.circuit) return;
+    beforeLesson = reader.capture();
+    changesSaid = false;
   }
 
   /**
@@ -100,7 +121,9 @@ export function createLessons({
   async function leave() {
     if (!lesson.state.circuit || session.state.explorer !== 'circuits') return;
     const before = beforeLesson;
+    const said = changesSaid;
     beforeLesson = null;
+    changesSaid = false;
     lesson.close();
     render();
     if (!before) return;
@@ -116,6 +139,8 @@ export function createLessons({
           'The scene from before the lesson was not fully restored.',
         ),
       );
+    } else if (said) {
+      stage.sayRestored();
     }
     render();
   }
@@ -171,6 +196,7 @@ export function createLessons({
     takeBeforeLesson(): ReaderState | null {
       const before = beforeLesson;
       beforeLesson = null;
+      changesSaid = false;
       return before;
     },
 
@@ -190,7 +216,7 @@ export function createLessons({
       const circuit = circuits.get(id);
       rememberBeforeLesson();
       shell.showDetail();
-      if (!(await openLandmark(circuit.steps[0]!, current))) return;
+      if (!(await stepTo(circuit.steps[0]!, current))) return;
       lesson.start(id);
       render();
     },
@@ -201,7 +227,7 @@ export function createLessons({
       rememberBeforeLesson();
       chooseExplorer('circuits');
       shell.showDetail();
-      if (!(await openLandmark(circuits.get(id).steps[index]!, current))) return;
+      if (!(await stepTo(circuits.get(id).steps[index]!, current))) return;
       lesson.start(id);
       lesson.go(index);
       render();
@@ -213,7 +239,7 @@ export function createLessons({
       const { circuit } = lesson.state;
       const step = circuits.get(circuit!).steps[index];
       if (!step) throw new RangeError(`Invalid landmark index: ${index}`);
-      if (!(await openLandmark(step, current))) return;
+      if (!(await stepTo(step, current))) return;
       lesson.go(index);
       render();
       if (session.state.explorer === 'circuits') shell.showDetail();

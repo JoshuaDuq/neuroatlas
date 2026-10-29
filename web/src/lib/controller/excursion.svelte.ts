@@ -25,7 +25,7 @@ import { createLessons } from './lesson.ts';
 import type { MriDialog, SceneReader, Shell } from './lesson.ts';
 import type { LesionStore } from '../state/lesion.svelte.ts';
 import { createExplorerChoice, createModes } from './modes.ts';
-import type { Language, Notice } from '../types/index.ts';
+import type { Explorer, Language, Notice } from '../types/index.ts';
 
 export type { MriDialog, SceneReader, Shell } from './lesson.ts';
 
@@ -97,6 +97,8 @@ export function createExcursions(
   // The scene before this excursion's first function or deficit. Kept until it is restored or the
   // function or deficit closes, so Restore returns there whatever was changed since, as its label says.
   let beforeExcursion = $state.raw<ReaderState | null>(null);
+  // The tab that scene was shown in, which Restore returns to with it.
+  let excursionOrigin: Explorer | null = null;
   // Whether the cortex is see-through because the reader took the notice's offer, so the next map
   // that needs no such view can put the cortex back.
   let seenThroughByNotice = false;
@@ -121,6 +123,15 @@ export function createExcursions(
     chooseExplorer,
     openMriPanel: panels.openMri,
     render,
+    stage: {
+      settings: revealSettings,
+      sayChanged: (before) => sayRevealed(before),
+      // What the lesson said it changed is undone, so the confirmation replaces it rather than joining it.
+      sayRestored: () => {
+        session.notify(null);
+        session.notify({ text: t(lang(), 'clinical').stageRestored });
+      },
+    },
   });
   const modes = createModes({
     engine,
@@ -147,10 +158,23 @@ export function createExcursions(
     }
   }
 
-  /** Put back the scene from before the first function or deficit, unpainted; false when a later command overtook it. */
+  /** The scene an excursion leaves, and its tab, held once: later steps of the excursion keep the first. */
+  function holdBeforeExcursion(fromLesson: ReaderState | null = null) {
+    if (beforeExcursion) return;
+    beforeExcursion = fromLesson ?? reader.capture();
+    excursionOrigin = fromLesson ? 'circuits' : session.state.explorer;
+  }
+
+  /**
+   * Put back the scene from before the first function or deficit, unpainted, in the tab it was shown
+   * in; false when a later command overtook it.
+   */
   async function restoreBeforeExcursion(): Promise<boolean> {
     if (!beforeExcursion) throw new Error('There is no scene from before an excursion to restore.');
     const current = commands.begin();
+    const excursion = session.state.explorer;
+    // The tab first, so one that holds a display of its own (Tracts' cortex) holds the reader's.
+    if (excursionOrigin && excursionOrigin !== excursion) chooseExplorer(excursionOrigin);
     const failures = await reader.apply(beforeExcursion, current);
     if (!current()) return false;
     if (failures.length) {
@@ -161,9 +185,10 @@ export function createExcursions(
       );
     }
     beforeExcursion = null;
+    excursionOrigin = null;
     seenThroughByNotice = false;
     // The function or deficit in front opened the excursion, so the view from before it has it closed.
-    if (session.state.explorer === 'functions') session.setFunction(null);
+    if (excursion === 'functions') session.setFunction(null);
     else session.setDeficit(null);
     session.notify({ text: t(lang(), 'clinical').stageRestored });
     render();
@@ -210,15 +235,39 @@ export function createExcursions(
     void sections.setCutAtlas(atlas);
   }
 
-  /** What a reveal changed, and after it any hint about seeing what it revealed, as one notice. */
-  function sayRevealed(before: RevealSettings, hint: Notice | null = null) {
+  /**
+   * What a reveal changed, what of it the framing cannot show, and any hint about seeing what it
+   * revealed, as one notice; false when there was nothing to say.
+   */
+  function sayRevealed(
+    before: RevealSettings,
+    hint: Notice | null = null,
+    unseen: string | null = null,
+  ): boolean {
     const said = revealNotice(lang(), before, revealSettings());
-    if (said || hint) {
-      session.notify({
-        text: [said, hint?.text].filter(Boolean).join(' '),
-        action: hint?.action ?? null,
-      });
+    if (!said && !unseen && !hint) return false;
+    session.notify({
+      text: [said, unseen, hint?.text].filter(Boolean).join(' '),
+      action: hint?.action ?? null,
+    });
+    return true;
+  }
+
+  /** Coloured cortical regions the framing could not show, each name once with its sides. */
+  function unseenNotice(ids: readonly string[]): string | null {
+    if (!ids.length) return null;
+    const list = new Intl.ListFormat(lang(), { type: 'conjunction' });
+    const sides = new Map<string, string[]>();
+    for (const id of ids) {
+      const name = anatomy.get(id)!.label.name;
+      const side = t(lang(), 'sides').words[model.regions.get(id)!.hemisphere];
+      sides.set(name, [...(sides.get(name) ?? []), side]);
     }
+    const items = [...sides].map(
+      ([name, side]) =>
+        `${name.charAt(0).toLocaleUpperCase(lang())}${name.slice(1)} (${list.format(side)})`,
+    );
+    return t(lang(), 'clinical').unseen(list.format(items));
   }
 
   /**
@@ -319,8 +368,7 @@ export function createExcursions(
     ];
     // Before the detail opens: on a phone, raising the sheet reframes the camera. A lesson it is
     // opened from ends here and hands over the scene from before it, for Restore to return to.
-    const fromLesson = lessons.takeBeforeLesson();
-    beforeExcursion ??= fromLesson ?? reader.capture();
+    holdBeforeExcursion(lessons.takeBeforeLesson());
     lesson.close();
     session.setDeficit(id);
     chooseExplorer('deficits');
@@ -329,10 +377,10 @@ export function createExcursions(
     const before = revealSettings();
     if (!(await commands.revealRegions(regions, current))) return false;
     cutLabelsFollowAtlas();
-    sayRevealed(before, seeThroughFor(deficitDeepHint(id)));
     // Drawn first, so the framing measures the key this paint brings.
     render();
-    camera.frameRegions(regions);
+    const unseen = camera.frameRegions(regions);
+    sayRevealed(before, seeThroughFor(deficitDeepHint(id)), unseenNotice(unseen));
     render();
     return true;
   }
@@ -343,8 +391,7 @@ export function createExcursions(
    */
   async function openFunction(id: string): Promise<boolean> {
     const current = commands.begin();
-    const fromLesson = lessons.takeBeforeLesson();
-    beforeExcursion ??= fromLesson ?? reader.capture();
+    holdBeforeExcursion(lessons.takeBeforeLesson());
     lesson.close();
     session.setFunction(id);
     chooseExplorer('functions');
@@ -365,7 +412,7 @@ export function createExcursions(
   /** A region a function or deficit names: drawn, selected and framed, as an excursion step. */
   async function openListedRegion(id: string): Promise<boolean> {
     const current = commands.begin();
-    beforeExcursion ??= reader.capture();
+    holdBeforeExcursion();
     const before = revealSettings();
     // A function's or deficit's structure is drawn where its paint is.
     const shown =
@@ -402,6 +449,7 @@ export function createExcursions(
       session.setClinicalQuery(query);
     }
     beforeExcursion = null;
+    excursionOrigin = null;
     return modes.chooseMode(mode);
   }
 
@@ -416,6 +464,7 @@ export function createExcursions(
     get tractsHeld() {
       return explorerChoice.tractsHeld;
     },
+    afterReset: explorerChoice.afterReset,
     /** The regions a selection shares anatomy with (related lessons and evidence). */
     involved: createInvolvement(model.regions),
 
@@ -484,6 +533,7 @@ export function createExcursions(
     /** A link's scene is the new baseline: no excursion or lesson has anything to go back to. */
     forget() {
       beforeExcursion = null;
+      excursionOrigin = null;
       lessons.forgetBeforeLesson();
     },
   };

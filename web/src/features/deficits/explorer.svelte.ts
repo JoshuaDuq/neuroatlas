@@ -111,7 +111,7 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
     }
   }
 
-  /** The profile closes with the excursion it opened, so focus returns to its row in the list. */
+  /** The profile closes with the excursion it opened, so focus returns to its row in the list, or to the tab Restore returned to. */
   async function restore(deficit: string): Promise<void> {
     if (opening) return;
     if (
@@ -123,6 +123,11 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
       return;
     }
     await tick();
+    // Restore returned to another tab: focus goes to its region, else to that tab.
+    if (deps.session.state.explorer !== 'deficits') {
+      requestFocus(FOCUS_TARGETS.regionTitle, { fallback: FOCUS_TARGETS.activeTab });
+      return;
+    }
     const row = refs.list?.querySelector<HTMLElement>(
       `[data-deficit="${CSS.escape(deficit)}"] .row`,
     );

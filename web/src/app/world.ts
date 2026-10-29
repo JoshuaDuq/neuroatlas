@@ -120,6 +120,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       },
       chooseExplorer: excursions.chooseExplorer,
       frameLandmark: excursions.focusLandmark,
+      afterReset: excursions.afterReset,
     });
     links = createLinks({
       engine,

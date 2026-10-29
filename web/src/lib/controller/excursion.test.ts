@@ -55,6 +55,30 @@ describe('an excursion into a deficit', () => {
     assert.equal(scene.session.state.notice?.text, 'Previous view restored.');
   });
 
+  test('Restore returns to the tab the excursion left, and stays in the list it was opened from', async () => {
+    const scene = createScene();
+    scene.excursions.chooseExplorer('anatomy');
+    await scene.excursions.openDeficit(DEFICIT);
+    assert.equal(scene.session.state.explorer, 'deficits');
+    await scene.excursions.restoreBeforeExcursion();
+    assert.equal(scene.session.state.explorer, 'anatomy');
+
+    scene.excursions.chooseExplorer('deficits');
+    await scene.excursions.openDeficit(DEFICIT);
+    await scene.excursions.restoreBeforeExcursion();
+    assert.equal(scene.session.state.explorer, 'deficits');
+  });
+
+  test('Restore to Tracts holds the reader’s own opacity, not the excursion’s', async () => {
+    const scene = createScene();
+    scene.excursions.chooseExplorer('diffusion');
+    await scene.excursions.openDeficit(DEFICIT);
+    await scene.excursions.restoreBeforeExcursion();
+    assert.equal(scene.session.state.explorer, 'diffusion');
+    scene.excursions.chooseExplorer('anatomy');
+    assert.equal(scene.engine.model.settings.cortexOpacity, 1);
+  });
+
   test('Restore on Functions closes the open function', async () => {
     const scene = createScene();
     await scene.excursions.openFunction('language');
@@ -203,6 +227,19 @@ describe('an excursion into a function', () => {
     assert.equal(scene.reader.apply.mock.calls[0]![0], held);
     await scene.excursions.leaveLesson();
     assert.equal(scene.reader.apply.mock.calls.length, 1);
+  });
+
+  test('a lesson step says the side it shows alone, and leaving the lesson says the scene came back', async () => {
+    const scene = createScene();
+    const circuit = scene.circuits.all.find(
+      (entry) => scene.engine.model.regions.get(entry.steps[0]!.region)!.hemisphere === 'left',
+    )!;
+    scene.excursions.chooseExplorer('circuits');
+    await scene.excursions.openCircuit(circuit.id);
+    assert.equal(scene.engine.model.settings.hemisphere, 'left');
+    assert.match(scene.session.state.notice!.text, /^left hemisphere shown alone/i);
+    await scene.excursions.leaveLesson();
+    assert.equal(scene.session.state.notice!.text, 'Previous view restored.');
   });
 
   test('CTRL-30 opening a function says the atlas it changed, and labels the cut by that atlas', async () => {

@@ -188,7 +188,7 @@ export function createFunctionExplorer(deps: FunctionExplorerDeps) {
       }
     },
 
-    /** The profile closes with the excursion it opened, so focus returns to its row in the list. */
+    /** The profile closes with the excursion it opened, so focus returns to its row in the list, or to the tab Restore returned to. */
     async restore(): Promise<void> {
       if (opening) return;
       const id = session.state.selectedFunction;
@@ -196,6 +196,11 @@ export function createFunctionExplorer(deps: FunctionExplorerDeps) {
       if (!outcome.ok || outcome.value === false) return;
       // The workspace has returned to the list by the time the page has settled.
       await tick();
+      // Restore returned to another tab: focus goes to its region, else to that tab.
+      if (session.state.explorer !== 'functions') {
+        requestFocus(FOCUS_TARGETS.regionTitle, { fallback: FOCUS_TARGETS.activeTab });
+        return;
+      }
       const row = id && list?.querySelector<HTMLElement>(`[data-function="${CSS.escape(id)}"]`);
       (row || search)?.focus();
     },

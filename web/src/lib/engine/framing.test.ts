@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
-import { Box3, BoxGeometry, Mesh, Sphere, Vector3 } from 'three';
+import {
+  Box3,
+  BoxGeometry,
+  BufferGeometry,
+  Float32BufferAttribute,
+  Mesh,
+  Sphere,
+  Vector3,
+} from 'three';
+import type { Raycaster } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import type { CutMode, ModelState, Region } from '../types/index.ts';
 import { createFraming } from './framing.ts';
@@ -86,6 +95,7 @@ function fixture({
   state = {} as Partial<ModelState>,
   regions = new Map<string, Region>(),
   scale = { horizontal: 1, vertical: 0.45 },
+  intersect = (() => null) as FramingModel['intersect'],
 } = {}) {
   const bounds = new Box3(new Vector3(-0.08, -0.07, -0.1), new Vector3(0.08, 0.11, 0.1));
   let size = { width: 390, height: 792 };
@@ -99,6 +109,7 @@ function fixture({
     state: { ...STATE, ...state },
     visibleMeshes: meshes,
     regions,
+    intersect,
   };
   const sections = {
     active: false,
@@ -546,6 +557,85 @@ describe('framing parts of the anatomy', () => {
     assert.equal(stage.camera.viewHeld, true);
   });
 
+  describe('coloured cortical regions out of sight', () => {
+    const cortex = new Map<string, Region>([
+      ['lateral-left', { id: 'lateral-left', hemisphere: 'left', kind: 'cortex' } as Region],
+      ['lateral-right', { id: 'lateral-right', hemisphere: 'right', kind: 'cortex' } as Region],
+      ['buried', { id: 'buried', hemisphere: 'right', kind: 'cortex' } as Region],
+    ]);
+    // A core between two lateral patches, and a patch sealed inside it, as the medial wall is behind the hemisphere.
+    const sightMeshes = () => [
+      part('core', { kind: 'cortex' }, [0.08, 0.12, 0.15], [0, 0.02, 0]),
+      part('lateral-left', { kind: 'cortex' }, [0.01, 0.02, 0.02], [-0.06, 0.02, 0]),
+      part('lateral-right', { kind: 'cortex' }, [0.01, 0.02, 0.02], [0.06, 0.02, 0]),
+      part('buried', { kind: 'cortex' }, [0.01, 0.02, 0.02], [0.01, 0.02, 0]),
+    ];
+    const sighted = (meshes: AtlasMesh[]) =>
+      fixture({
+        meshes,
+        regions: cortex,
+        scale: FULL,
+        intersect: (ray) => (ray.intersectObjects(meshes, false)[0] as never) ?? null,
+      });
+
+    it('turns to a level view that shows both sides when the heading hides one', () => {
+      const stage = sighted(sightMeshes());
+      stage.camera.applyView('left', { immediate: true });
+      assert.deepEqual(stage.camera.frameRegions(['lateral-left', 'lateral-right']), []);
+      assert.ok(Math.abs(headingOf(stage).x) < 0.5, `heading ${headingOf(stage).toArray()}`);
+    });
+
+    /** Every sample is covered unless `shows` says the ray from the camera to it is clear. */
+    const covered =
+      (shows: (direction: Vector3, point: Vector3) => boolean) => (ray: Raycaster) => {
+        const point = ray.ray.at(ray.far - 0.0005, new Vector3());
+        return shows(ray.ray.direction, point)
+          ? null
+          : ({ distance: 0, object: { userData: { region_id: 'cover' } } } as never);
+      };
+
+    it('turns to the view from below for a region only that view shows', () => {
+      const meshes = [part('ventral', { kind: 'cortex' }, [0.02, 0.005, 0.02], [0, -0.04, 0])];
+      const stage = fixture({
+        meshes,
+        regions: new Map([['ventral', { id: 'ventral', kind: 'cortex' } as Region]]),
+        scale: FULL,
+        intersect: covered((direction) => direction.y > 0.9),
+      });
+      stage.camera.applyView('left', { immediate: true });
+      assert.deepEqual(stage.camera.frameRegions(['ventral']), []);
+      assert.ok(headingOf(stage).distanceTo(VIEW_DIRECTIONS.inferior) < 1e-9);
+    });
+
+    it('does not turn for a sliver, and names only what no point of shows', () => {
+      // 24 sampled points on the body, 2 on a tip that only the anterior view sees: under a tenth in sight.
+      const tip = new Mesh(
+        new BufferGeometry().setAttribute(
+          'position',
+          new Float32BufferAttribute([0, 0.02, -0.07, 0.002, 0.02, -0.07], 3),
+        ),
+      ) as unknown as AtlasMesh;
+      tip.userData['region_id'] = 'sliver';
+      const meshes = [part('sliver', { kind: 'cortex' }, [0.01, 0.02, 0.02], [0, 0.02, 0]), tip];
+      const stage = fixture({
+        meshes,
+        regions: new Map([['sliver', { id: 'sliver', kind: 'cortex' } as Region]]),
+        scale: FULL,
+        intersect: covered((direction, point) => direction.z > 0.9 && point.z < -0.06),
+      });
+      stage.camera.applyView('left', { immediate: true });
+      assert.deepEqual(stage.camera.frameRegions(['sliver']), ['sliver']);
+      assert.ok(headingOf(stage).distanceTo(VIEW_DIRECTIONS.left) < 1e-9);
+    });
+
+    it('keeps the heading and names the region no level view can show', () => {
+      const stage = sighted(sightMeshes());
+      stage.camera.applyView('left', { immediate: true });
+      assert.deepEqual(stage.camera.frameRegions(['lateral-left', 'buried']), ['buried']);
+      assert.ok(headingOf(stage).distanceTo(VIEW_DIRECTIONS.left) < 1e-9);
+    });
+  });
+
   it('FACADE-08 pulling back and the internal frame keep the heading and the held view', () => {
     const meshes = [...wholeBrain(), cord()];
     const stage = fixture({ meshes, state: { spinalCordVisible: true }, scale: FULL });
@@ -708,6 +798,26 @@ describe('a dock or sheet change', () => {
     assert.ok(Math.abs(end.position.distanceTo(end.target) - (distance * after) / before) < 1e-12);
     assert.ok(end.target.distanceTo(start.target) < 1e-12);
     assert.ok(headingOf(stage).distanceTo(VIEW_DIRECTIONS.left) < 1e-9);
+  });
+
+  it('a camera restored while a key is still on the stage keeps its own distance once the key leaves', () => {
+    const stage = fixture({ meshes: wholeBrain(), scale: FULL });
+    stage.camera.applyView('left', { immediate: true });
+    stage.camera.dolly(1.4);
+    stage.finish();
+    const snapshot = stage.camera.capture();
+    const distance = stage.distance();
+    // A deficit's key takes a band off the room, and the camera is reframed into it.
+    stage.setSource({ inset: { right: 120 }, scale: FULL });
+    stage.camera.refitDock();
+    stage.finish();
+    assert.ok(Math.abs(stage.distance() - distance) > 1e-4);
+    // Restore lands before the key is measured gone; the key's leaving then refits the dock.
+    stage.camera.restore('left', snapshot, { immediate: true });
+    stage.setSource({ inset: {}, scale: FULL });
+    stage.camera.refitDock();
+    stage.finish();
+    assert.ok(Math.abs(stage.distance() - distance) < 1e-9, `${stage.distance()} vs ${distance}`);
   });
 
   it('FACADE-15 while a gesture is down the refit waits for the lift', () => {

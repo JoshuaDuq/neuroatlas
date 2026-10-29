@@ -188,8 +188,9 @@ export function createFakeCamera({
     frameCurrent: (name) => frameView(name),
     applyView: (name) => frameView(name),
     frameRegions(ids) {
-      if (!ids.some((id) => model.isRegionDrawn(id))) return;
+      if (!ids.some((id) => model.isRegionDrawn(id))) return [];
       reframe();
+      return [];
     },
     frameRegion(id) {
       if (!model.isRegionDrawn(id)) return false;

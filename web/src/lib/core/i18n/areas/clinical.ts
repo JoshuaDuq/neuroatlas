@@ -11,6 +11,8 @@ export const en = {
   deepMapped: (list: string, count: number) =>
     `${list} ${count === 1 ? 'lies' : 'lie'} beneath the cortex.`,
   otherMapped: (count: number) => `${count} other mapped ${count === 1 ? 'region' : 'regions'}`,
+  // Coloured cortical regions the framed view cannot show, each with its sides.
+  unseen: (list: string) => `Out of sight from this view: ${list}.`,
   functionBridge: (count: number, query: string) =>
     `Functions: ${count} activation ${count === 1 ? 'map matches' : 'maps match'} “${query}”`,
   results: (count: number) =>
@@ -31,7 +33,11 @@ export const en = {
   changed: {
     cut: 'section closed',
     isolation: 'isolation cleared',
-    hemisphere: 'both hemispheres shown',
+    hemisphere: {
+      both: 'both hemispheres shown',
+      left: 'left hemisphere shown alone',
+      right: 'right hemisphere shown alone',
+    },
     cortexHidden: 'cortex hidden',
     cortexShown: 'cortex shown',
     atlas: (name: string) => `atlas set to ${name}`,
@@ -82,6 +88,7 @@ export const fr: typeof en = {
     `${list} ${count === 1 ? 'se trouve' : 'se trouvent'} sous le cortex.`,
   otherMapped: (count: number) =>
     `${count} ${count === 1 ? 'autre région cartographiée' : 'autres régions cartographiées'}`,
+  unseen: (list: string) => `Hors de vue sous cet angle\u202f: ${list}.`,
   functionBridge: (count: number, query: string) =>
     `Fonctions\u202f: ${count} ${count === 1 ? 'carte d’activation correspond' : 'cartes d’activation correspondent'} à «\u00a0${query}\u00a0»`,
   results: (count: number) =>
@@ -103,7 +110,11 @@ export const fr: typeof en = {
   changed: {
     cut: 'coupe fermée',
     isolation: 'isolement retiré',
-    hemisphere: 'deux hémisphères affichés',
+    hemisphere: {
+      both: 'deux hémisphères affichés',
+      left: 'hémisphère gauche seul affiché',
+      right: 'hémisphère droit seul affiché',
+    },
     cortexHidden: 'cortex masqué',
     cortexShown: 'cortex affiché',
     atlas: (name: string) => `atlas réglé sur ${name}`,

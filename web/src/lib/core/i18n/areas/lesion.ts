@@ -54,11 +54,13 @@ export const en = {
   modes: { lesion: 'Lesion only', functions: 'Functions', deficits: 'Deficits' },
   reaches: 'What it reaches',
   reachesNote:
-    'Functions: the share of each function’s territory on the lesion’s side that lies inside it (Neurosynth consistency maps, z ≥ 3). Bars are scaled to the largest share. Deficits: findings whose cited regions it reaches. Overlap only; it predicts no deficit.',
+    'Functions: the share of each function’s territory on the lesion’s side that lies inside it (Neurosynth consistency maps, z ≥ 3). Bars are scaled to the largest share. Deficits: findings whose cited regions it reaches.',
   nothingReached: 'No mapped function or finding is reached.',
   functionsLabel: 'Functions',
   deficitsLabel: 'Deficits',
-  deficitReach: (findings: string, share: string) => `${findings} · up to ${share}`,
+  // `share` is the most of any one cited region inside the lesion, not a chance of the deficit.
+  deficitReach: (findings: string, share: string) =>
+    `${findings} · up to ${share} of a cited region inside`,
   more: (count: string) => `${count} more`,
   slightFunctions: (count: string) => `${count} more functions under 1%`,
   findingsDetail: 'Findings in detail',
@@ -141,11 +143,12 @@ export const fr: typeof en = {
   modes: { lesion: 'Lésion seule', functions: 'Fonctions', deficits: 'Déficits' },
   reaches: 'Ce qu’elle atteint',
   reachesNote:
-    'Fonctions\u202f: la part du territoire de chaque fonction, du côté de la lésion, comprise dans celle-ci (cartes de cohérence Neurosynth, z ≥ 3). Les barres sont à l’échelle de la plus grande part. Déficits\u202f: constats dont les régions citées sont atteintes. Un chevauchement seulement\u202f; elle ne prédit aucun déficit.',
+    'Fonctions\u202f: la part du territoire de chaque fonction, du côté de la lésion, comprise dans celle-ci (cartes de cohérence Neurosynth, z ≥ 3). Les barres sont à l’échelle de la plus grande part. Déficits\u202f: constats dont les régions citées sont atteintes.',
   nothingReached: 'Aucune fonction cartographiée ni aucun constat n’est atteint.',
   functionsLabel: 'Fonctions',
   deficitsLabel: 'Déficits',
-  deficitReach: (findings: string, share: string) => `${findings} · jusqu’à ${share}`,
+  deficitReach: (findings: string, share: string) =>
+    `${findings} · jusqu’à ${share} d’une région citée dans la lésion`,
   more: (count: string) => `${count} de plus`,
   slightFunctions: (count: string) => `${count} fonctions de plus sous 1\u202f%`,
   findingsDetail: 'Constats en détail',

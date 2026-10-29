@@ -37,12 +37,15 @@ export function createAnatomyCommands(
     ui,
     chooseExplorer,
     frameLandmark,
+    afterReset,
   }: {
     commands: SceneCommands;
     ui: SelectionInterface;
     chooseExplorer: (explorer: Explorer) => void;
     /** Frame the open lesson's landmark as its lesson authored it; false when none is open or it has no drawn mesh. */
     frameLandmark: (options: MoveOptions) => boolean;
+    /** What the open tab keeps of its own display once a reset has given the opening one. */
+    afterReset: () => void;
   },
 ) {
   const { model, sections, camera } = engine;
@@ -297,6 +300,7 @@ export function createAnatomyCommands(
     session.setQuery('');
     void sections.setMode('off');
     model.reset();
+    afterReset();
     camera.recenter();
     if (!session.setView('oblique')) throw new Error('Unknown view: oblique');
     camera.applyView('oblique');

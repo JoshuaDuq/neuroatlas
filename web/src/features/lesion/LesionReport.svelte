@@ -187,6 +187,8 @@
       withUnit(measurement ? cm3(measurement.volume) : '—', 'cm³', lang),
     )}
   </p>
+  <!-- Before any share: what follows measures overlap on this brain and predicts nothing. -->
+  <p class="detail-note">{copy.caveat}</p>
   <div class="actions">
     <button type="button" onclick={lesion.remove}>{copy.remove}</button>
   </div>
@@ -207,6 +209,7 @@
 
   {#if measurement && profile && findings}
     <h3 class="lesion-heading">{copy.reaches}</h3>
+    <p class="detail-note">{copy.reachesNote}</p>
     {#if !profile.length}
       <p class="detail-note">{copy.nothingReached}</p>
     {/if}
@@ -261,8 +264,6 @@
     {#if lesion.functions?.slight.length}
       <p class="detail-note">{copy.slightFunctions(grouped(lesion.functions.slight.length))}</p>
     {/if}
-    <p class="detail-note">{copy.reachesNote}</p>
-    <p class="detail-note">{copy.caveat}</p>
 
     <div class="evidence-section lesion-first-section">
       <Disclosure

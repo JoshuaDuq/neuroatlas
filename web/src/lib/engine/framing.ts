@@ -1,5 +1,5 @@
-import { Box3, Sphere, Vector3 } from 'three';
-import type { Mesh } from 'three';
+import { Box3, Raycaster, Sphere, Vector3 } from 'three';
+import type { Intersection, Mesh } from 'three';
 import { orbitWithin } from '../core/state/url-state.ts';
 import type { ModelState, Orbit, Region, ViewName } from '../types/index.ts';
 import type {
@@ -47,6 +47,22 @@ const WHOLE_ZOOM = 1;
 /** Beyond this the up vector differs from the named view's and a link carries it (app.js:821). */
 const UP_DIFFERS = 1e-3;
 const MM_PER_M = 1000;
+/** Surface points tried per mesh of a coloured cortical region when judging whether a framing shows it. */
+const SIGHT_SAMPLES = 24;
+/** A point is seen when nothing lies this far in front of it, in metres: a shared border is no cover. */
+const SIGHT_TOLERANCE_M = 0.0005;
+/** The share of a region's sampled points in sight before a framing turns to show it: a sliver is no reason to turn. */
+const SIGHT_SHOWN = 0.1;
+/** The views a deficit's framing may turn to when its own heading hides coloured regions. */
+const SIGHT_VIEWS: readonly ViewName[] = [
+  'oblique',
+  'left',
+  'right',
+  'anterior',
+  'posterior',
+  'superior',
+  'inferior',
+];
 
 /** What framing reads of the scene. */
 export type FramingScene = Pick<
@@ -69,6 +85,8 @@ export interface FramingModel {
   readonly state: ModelState;
   readonly visibleMeshes: readonly AtlasMesh[];
   readonly regions: ReadonlyMap<string, Region>;
+  /** The nearest drawn surface along a ray. */
+  intersect(raycaster: Raycaster): Intersection<AtlasMesh> | null;
 }
 
 /** What framing reads of the cut. */
@@ -373,11 +391,12 @@ export function createFraming({
     }
     const plan = scene.destination;
     const direction = plan.position.clone().sub(plan.target).normalize();
-    const before = fittedDistance(direction);
     if (!applyFraming()) return;
-    const after = fittedDistance(direction);
-    if (!(before > 0 && after > 0)) return;
-    const distance = (plan.position.distanceTo(plan.target) * after) / before;
+    const fitted = fittedDistance(direction);
+    if (!(fitted > 0)) return;
+    // The magnification is the size kept, not the distance: a camera restored while a key was still
+    // leaving the stage was placed for the room it lands in, and stays there.
+    const distance = fitted * zoom;
     moveCamera({ ...plan, position: plan.target.clone().addScaledVector(direction, distance) });
   }
 
@@ -455,12 +474,61 @@ export function createFraming({
   }
 
   /** Frame a deficit's drawn regions together, from the side they lie on when they share one. */
-  function frameRegions(ids: readonly string[]) {
+  const sight = new Raycaster();
+  sight.firstHitOnly = true;
+
+  /** Whether a surface point of region `id` is in sight from `eye`: the first surface the ray meets is its own, or none in front. */
+  function inSight(eye: Vector3, point: Vector3, id: string): boolean {
+    const toward = point.clone().sub(eye);
+    const distance = toward.length();
+    sight.set(eye, toward.divideScalar(distance));
+    sight.far = distance + SIGHT_TOLERANCE_M;
+    const hit = model.intersect(sight);
+    return (
+      !hit ||
+      hit.object.userData['region_id'] === id ||
+      hit.distance >= distance - SIGHT_TOLERANCE_M
+    );
+  }
+
+  /** The share of each cortical region's sampled surface points that `eye` can see. */
+  function sightFrom(
+    eye: Vector3,
+    cortical: ReadonlyMap<string, readonly Mesh[]>,
+  ): Map<string, number> {
+    const point = new Vector3();
+    const shares = new Map<string, number>();
+    for (const [id, meshes] of cortical) {
+      let sampled = 0;
+      let seen = 0;
+      for (const mesh of meshes) {
+        const position = mesh.geometry.attributes['position']!;
+        const stride = Math.max(1, Math.floor(position.count / SIGHT_SAMPLES));
+        mesh.updateWorldMatrix(true, false);
+        for (let i = 0; i < position.count; i += stride) {
+          point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+          sampled += 1;
+          if (inSight(eye, point, id)) seen += 1;
+        }
+      }
+      shares.set(id, seen / sampled);
+    }
+    return shares;
+  }
+
+  const clearlyShown = (shares: ReadonlyMap<string, number>) =>
+    [...shares.values()].filter((share) => share >= SIGHT_SHOWN).length;
+
+  /**
+   * Frame a deficit's regions together. When its own heading does not clearly show every coloured
+   * cortical region, the view that clearly shows most is taken instead; returns those wholly out of sight.
+   */
+  function frameRegions(ids: readonly string[]): string[] {
     const wanted = new Set(ids);
     const meshes = model.visibleMeshes.filter((mesh) =>
       wanted.has(mesh.userData['region_id'] as string),
     );
-    if (!meshes.length) return;
+    if (!meshes.length) return [];
     const box = boundsOf(meshes);
     const context = withContext(box);
     // A mapping wide enough to carry its own context is fitted by its silhouette, as the whole brain
@@ -476,9 +544,34 @@ export function createFraming({
     if (sides.size === 1 && Math.sign(direction.x) === (sides.has('left') ? 1 : -1)) {
       direction.x *= -1;
     }
+    const cortical = new Map<string, Mesh[]>();
+    for (const mesh of meshes) {
+      const id = mesh.userData['region_id'] as string;
+      if (model.regions.get(id)?.kind !== 'cortex') continue;
+      cortical.set(id, [...(cortical.get(id) ?? []), mesh]);
+    }
+    const fit = framingFit();
+    const plan = (heading: Vector3) =>
+      planFraming(camera, controls, context, heading, frameTo, fit, points);
+    let chosen = plan(direction);
+    let shares = sightFrom(chosen.position, cortical);
+    const up = camera.up.clone();
+    for (const name of SIGHT_VIEWS) {
+      if (clearlyShown(shares) === cortical.size) break;
+      camera.up.copy(upFor(name));
+      const candidate = plan(VIEW_DIRECTIONS[name].clone());
+      const candidateShares = sightFrom(candidate.position, cortical);
+      if (clearlyShown(candidateShares) > clearlyShown(shares)) {
+        chosen = candidate;
+        shares = candidateShares;
+        up.copy(upFor(name));
+      }
+    }
+    camera.up.copy(up);
     held.release();
-    moveCamera(planFraming(camera, controls, context, direction, frameTo, framingFit(), points));
+    moveCamera(chosen);
     rememberZoom();
+    return [...shares].filter(([, share]) => share === 0).map(([id]) => id);
   }
 
   function frameRegion(id: string, { immediate = false }: MoveOptions = {}): boolean {

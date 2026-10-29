@@ -54,6 +54,25 @@ describe('leaving Tracts', () => {
     assert.equal(engine.model.settings.cortexOpacity, 0);
   });
 
+  test('a reset in Tracts keeps the tracts seen through the cortex, and gives back the opening opacity', () => {
+    const { excursions, engine } = createScene();
+    engine.model.setCortexOpacity(0.64);
+    excursions.chooseExplorer('diffusion');
+    engine.model.reset();
+    excursions.afterReset();
+    assert.equal(engine.model.settings.cortexOpacity, engine.tracts.defaultOpacity);
+    excursions.chooseExplorer('anatomy');
+    assert.equal(engine.model.settings.cortexOpacity, 1);
+  });
+
+  test('a reset outside Tracts leaves the opening opacity', () => {
+    const { excursions, engine } = createScene();
+    engine.model.setCortexOpacity(0.4);
+    engine.model.reset();
+    excursions.afterReset();
+    assert.equal(engine.model.settings.cortexOpacity, 1);
+  });
+
   test('Tracts on another subject leaves the anatomy opacity alone', () => {
     const scene = createScene();
     const { chooseExplorer } = createExplorerChoice({

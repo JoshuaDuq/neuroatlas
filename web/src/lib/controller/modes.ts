@@ -31,6 +31,15 @@ export function createExplorerChoice({
     get tractsHeld() {
       return beforeTractsOpacity !== null;
     },
+    /**
+     * A reset gives the opening display, and under Tracts that is the see-through cortex over the
+     * tracts, with the reset's opaque cortex the one to give back.
+     */
+    afterReset() {
+      if (beforeTractsOpacity === null) return;
+      beforeTractsOpacity = engine.model.settings.cortexOpacity;
+      engine.model.setCortexOpacity(engine.tracts.defaultOpacity);
+    },
     chooseExplorer(value: Explorer) {
       const previous = session.state.explorer;
       // Before Tracts holds the opacity, so it holds the reader's own.

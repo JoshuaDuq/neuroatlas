@@ -70,6 +70,7 @@ function build() {
         ui: parts.ui,
         chooseExplorer: parts.chooseExplorer,
         frameLandmark: parts.frameLandmark,
+        afterReset: () => {},
       },
     );
   });

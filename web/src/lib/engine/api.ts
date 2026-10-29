@@ -400,10 +400,12 @@ export interface EngineCamera {
   /** Frame a named view, as the view keys and presets do (app.js:443). Holds the view. */
   applyView(view: ViewName, options?: MoveOptions): void;
   /**
-   * Frame a deficit's regions together, from the side they lie on (app.js:474). Releases the view. A no-op,
-   * leaving the held view alone, when none of the ids is drawn (app.js:476-477).
+   * Frame a deficit's regions together, from the side they lie on (app.js:474), or from the view that
+   * clearly shows most of its coloured cortical regions when that side does not show them all. Releases
+   * the view. Returns the cortical regions wholly out of sight. A no-op returning none, leaving the held view
+   * alone, when none of the ids is drawn (app.js:476-477).
    */
-  frameRegions(ids: readonly string[]): void;
+  frameRegions(ids: readonly string[]): readonly string[];
   /** Frame one drawn region from the current heading (app.js:510-524). Releases the view; false when it has no drawn mesh. */
   frameRegion(id: string, options?: MoveOptions): boolean;
   /**

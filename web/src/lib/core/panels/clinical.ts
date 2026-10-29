@@ -3,7 +3,7 @@ import type { Translated } from '../clinical/types.ts';
 import { failureNotice } from '../i18n/errors.ts';
 import { atlasSwitchLabel, t } from '../i18n/index.ts';
 
-/** The display settings a deficit's reveal may change, as the notice compares them. */
+/** The display settings a deficit's reveal or a lesson step may change, as the notice compares them. */
 export interface RevealSettings {
   cut: boolean;
   isolated: boolean;
@@ -69,7 +69,7 @@ export function revealNotice(
   if (before.detail !== after.detail) {
     clauses.push(said.detail(atlasSwitchLabel(after.detail, lang)));
   }
-  if (before.hemisphere !== after.hemisphere) clauses.push(said.hemisphere);
+  if (before.hemisphere !== after.hemisphere) clauses.push(said.hemisphere[after.hemisphere]);
   if (before.cortex !== after.cortex) {
     clauses.push(after.cortex ? said.cortexShown : said.cortexHidden);
   }
