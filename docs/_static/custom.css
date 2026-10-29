@@ -44,7 +44,10 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
   outline-offset: 2px;
 }
 
-/* Masthead: identity, section tabs, actions. Below furo's drawer breakpoint the theme's own mobile header takes over. */
+/* Masthead: identity and actions. Below furo's drawer breakpoint the theme's own mobile header takes over. */
+/* furo fixes body to the viewport's height, which would release the sticky masthead after one screen. */
+body { height: auto; min-height: 100%; }
+.page { min-height: 100vh; }
 .docs-header {
   position: sticky;
   top: 0;
@@ -76,27 +79,6 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
   color: var(--color-foreground-muted);
   font-size: 0.8125rem;
   font-weight: 600;
-}
-.docs-sections {
-  display: flex;
-  padding-left: 8px;
-}
-.docs-sections a {
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  color: var(--color-foreground-secondary);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color var(--ui-transition);
-}
-.docs-sections a:hover { color: var(--color-foreground-primary); }
-.docs-sections a[aria-current] {
-  border-bottom-color: var(--color-brand-primary);
-  color: var(--color-foreground-primary);
 }
 .docs-actions {
   display: flex;
@@ -138,6 +120,7 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
   font-weight: 650;
   letter-spacing: -0.02em;
 }
+.mobile-header .header-right { gap: 12px; }
 
 @media (max-width: 63em) {
   .docs-header { display: none; }
@@ -149,22 +132,19 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
   border-right: var(--rule);
 }
 @media (min-width: 63.01em) {
+  .page { min-height: calc(100vh - var(--docs-header-height)); }
   .sidebar-sticky { top: var(--docs-header-height); height: calc(100vh - var(--docs-header-height)); }
+  /* The external links group repeats the masthead's Source and Open viewer; it stays for the phone drawer. */
+  .sidebar-tree .caption:has(+ ul > li > a.reference.external),
+  .sidebar-tree ul:has(> li > a.reference.external) { display: none; }
 }
 @media (min-width: 82.01em) {
   .toc-sticky { top: var(--docs-header-height); max-height: calc(100vh - var(--docs-header-height)); }
+  /* In flow here, not an overlay: furo's z-index would paint the column over the pinned masthead. */
+  .toc-drawer { z-index: auto; }
 }
-.sidebar-release {
-  display: flex;
-  gap: 8px;
-  padding: 16px 16px 4px;
-  color: var(--color-foreground-muted);
-  font-size: 0.8125rem;
-}
-.sidebar-release span:first-child { font-family: var(--font-stack--monospace); }
-.sidebar-release span:last-child { padding-left: 8px; border-left: var(--rule); }
 .sidebar-search-container {
-  margin: 8px 12px 4px;
+  margin: 16px 12px 4px;
   border: 1px solid var(--color-foreground-border);
   border-radius: var(--radius-control);
   background: var(--color-background-primary);
@@ -332,6 +312,9 @@ table.docutils td {
   border-bottom: var(--rule);
 }
 table.docutils tr:last-child td { border-bottom: 0; }
+/* Every table starts at the text's edge; a short code value stays on one line. */
+article table.docutils { margin-left: 0; margin-right: 0; }
+article table.docutils code.literal { white-space: nowrap; overflow-wrap: normal; }
 
 /* Admonitions: one flat, evenly ruled panel; a warning alone takes the danger colour. */
 .admonition, details {
