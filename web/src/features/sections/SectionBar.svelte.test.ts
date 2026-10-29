@@ -223,6 +223,7 @@ describe('the Section popover', () => {
       'destrieux',
       'hcp-mmp',
       'julich',
+      'schaefer',
       'nextbrain',
       'arterial',
       'nettekoven',
