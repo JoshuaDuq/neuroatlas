@@ -43,6 +43,7 @@
       {/if}
       <p class="circuit-role">{step.role[lang]}</p>
       <p class="circuit-explanation">{step.explanation[lang]}</p>
+      <p class="circuit-note">{copy.clinicalNote}</p>
       {#if !model.landmarkSelected}
         <!-- Back to the prepared view, offered once the reader has left the landmark. -->
         <p class="circuit-note circuit-return">
@@ -110,6 +111,7 @@
       margin-top: var(--space-4);
     }
     .circuit-note {
+      margin-top: var(--space-3);
       color: var(--text-secondary);
       font-size: var(--text-caption);
       line-height: var(--lh-caption);

@@ -1,6 +1,8 @@
 export const en = {
-  tool: 'Lesion',
   radius: 'Radius',
+  // What a click on the brain does while the Section popover is open.
+  click: 'A click on the brain',
+  clicks: { select: 'Selects a region', place: 'Places the lesion' },
   placeHint: 'Click the brain or a cut face to place its centre.',
   moveHint: 'Click the brain or a cut face to move its centre.',
   showReport: 'Show the report',
@@ -83,8 +85,9 @@ export const en = {
 };
 
 export const fr: typeof en = {
-  tool: 'Lésion',
   radius: 'Rayon',
+  click: 'Un clic sur le cerveau',
+  clicks: { select: 'Sélectionne une région', place: 'Place la lésion' },
   placeHint: 'Cliquez sur le cerveau ou une face de coupe pour placer son centre.',
   moveHint: 'Cliquez sur le cerveau ou une face de coupe pour déplacer son centre.',
   showReport: 'Afficher le rapport',

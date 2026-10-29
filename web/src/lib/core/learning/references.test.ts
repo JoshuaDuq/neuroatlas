@@ -17,7 +17,7 @@ interface Work {
   book?: string;
   nbk?: string;
   pmcid?: string;
-  corrections: { doi: string }[];
+  corrections: { doi: string; type: string }[];
 }
 interface Source {
   pmid: string;
@@ -116,7 +116,22 @@ test('circuit references name the article or Bookshelf chapter their identifiers
     );
     assert.equal(Number(year), issueYear(work), `${reference.id}: year`);
     if (work.book) assert.equal(plain(container), plain(work.book), `${reference.id}: book`);
-    uncorrected(work, reference.id);
+    assert.deepEqual(
+      (reference.corrections ?? []).map((correction) => correction.doi),
+      work.corrections.map((correction) => correction.doi),
+      `${reference.id}: corrections`,
+    );
+  }
+});
+
+test('cited works have no recorded retraction or expression of concern', () => {
+  for (const [id, work] of Object.entries(records)) {
+    for (const notice of work.corrections) {
+      assert.ok(
+        !/retract|concern/i.test(notice.type),
+        `${id}: ${notice.type} requires scientific review before inclusion`,
+      );
+    }
   }
 });
 

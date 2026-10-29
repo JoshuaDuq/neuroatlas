@@ -349,12 +349,30 @@ describe('the list', () => {
     expect(first.getAttribute('aria-label')).toMatch(
       /^Highlight overlap with .+, 956\.4 mm², 34\.4% of this region$/,
     );
-    // Label in name: the visible region name is part of the accessible name.
-    expect(first.getAttribute('aria-label')).toContain(
-      text(first.querySelector('.comparison-name')!),
-    );
+    // Label in name: each visible part of the region's name is part of the accessible name.
+    for (const part of first.querySelectorAll('.comparison-name > span')) {
+      expect(first.getAttribute('aria-label')).toContain(text(part));
+    }
     expect(text(first.querySelectorAll('.measure')[0]!)).toBe('956.4');
     expect(text(first.querySelectorAll('.measure')[1]!)).toBe('34.4');
+  });
+
+  test('an HCP-MMP code is captioned with its Glasser section, in its accessible name too', async () => {
+    serve();
+    await mount({ regionId: SFG });
+    await open();
+    const first = rows()[0]!;
+    const section = first.querySelector('.comparison-section');
+    expect(section).not.toBeNull();
+    expect(text(section!)).toMatch(/cortex/i);
+    expect(first.getAttribute('aria-label')).toContain(`, ${text(section!)},`);
+  });
+
+  test('a Destrieux name needs no caption', async () => {
+    serve();
+    await mount({ regionId: V1 });
+    await open();
+    expect(rows()[0]!.querySelector('.comparison-section')).toBeNull();
   });
 
   test('French names its units and uses the decimal comma', async () => {

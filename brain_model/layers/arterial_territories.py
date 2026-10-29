@@ -6,8 +6,9 @@ import nibabel as nib
 import numpy as np
 import yaml
 
-from ..sources import ROOT, declares
+from ..labels.placement import placements
 from ..labels.volumes import validate_same_grid
+from ..sources import ROOT, declares
 
 ATLAS_ID = "arterial"
 LAYER = "arterial_territories"
@@ -215,6 +216,11 @@ def build_regions(config, definition):
     """One cut-only region per branch and hemisphere, sized on the registered volume."""
     image, values = load(config, definition)
     voxel = [float(x) for x in image.header.get_zooms()[:3]]
+    placed = placements(
+        values,
+        image.header.get_vox2ras_tkr(),
+        [value for territory in definition["territories"] for value in territory["values"]],
+    )
     regions = []
     for territory in definition["territories"]:
         major = definition["major"][territory["major"]]
@@ -236,6 +242,7 @@ def build_regions(config, definition):
                 "voxel_count": count,
                 "voxel_size_mm": voxel,
                 "segmentation_volume_mm3": count * float(np.prod(voxel)),
+                **placed[value],
             })
     return regions
 

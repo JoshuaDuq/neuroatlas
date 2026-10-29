@@ -13,17 +13,17 @@ export function showCircuitLandmark(
   model.setHemisphere(region.hemisphere === 'midline' ? 'both' : region.hemisphere);
 }
 
-/** Centre the authored MRI plane on this individual's actual landmark. */
+/** Centre the authored MRI plane inside this individual's actual landmark, at its anchor. */
 export async function prepareCircuitMri(
-  model: Pick<EngineModel, 'centroidOf'>,
+  model: Pick<EngineModel, 'anchorOf'>,
   sections: Pick<EngineSections, 'setCrosshair' | 'setDisplay' | 'setMode'>,
   step: Pick<Landmark, 'region' | 'plane'>,
 ): Promise<void> {
-  const centroid = model.centroidOf(step.region);
-  if (!centroid || centroid.length !== 3 || !centroid.every(Number.isFinite)) {
-    throw new Error(`Missing landmark centroid: ${step.region}`);
+  const anchor = model.anchorOf(step.region);
+  if (!anchor || anchor.length !== 3 || !anchor.every(Number.isFinite)) {
+    throw new Error(`Missing landmark anchor: ${step.region}`);
   }
-  sections.setCrosshair(centroid);
+  sections.setCrosshair(anchor);
   sections.setDisplay({ reverse: false, overlay: true });
   await sections.setMode(step.plane);
 }

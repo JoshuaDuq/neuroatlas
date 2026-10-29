@@ -7,9 +7,10 @@ import numpy as np
 from nibabel.freesurfer.io import read_annot, read_geometry
 from scipy.spatial import cKDTree
 
-from ..sources import read_color_table, read_config, sha256, verify_sources, write_json
 from ..layers import arterial_territories, cerebellar_functions
+from ..sources import read_color_table, read_config, sha256, verify_sources, write_json
 from . import nextbrain, white_matter
+from .placement import placements
 from .volumes import encode_cropped_volume, validate_same_grid
 
 
@@ -110,6 +111,28 @@ def project_surface_atlas(config, atlas, image, codes, labels, regions):
     return projected
 
 
+def place_cortex(data, voxel_to_surface, labels, regions, atlas):
+    """A surface atlas's parcels are placed by their voxels in the ribbon, the cortex a cut and the MRI
+    show. A parcel no ribbon voxel carries keeps the placement its surface gave it, and is named."""
+    parcels = {
+        region["id"]: region
+        for region in regions
+        if region["atlas"] == atlas and region["kind"] == "cortex"
+    }
+    present = set(np.unique(data).tolist())
+    codes = {
+        code: label["region_id"]
+        for code, label in enumerate(labels)
+        if label["region_id"] in parcels and code in present
+    }
+    placed = placements(data, voxel_to_surface, list(codes))
+    for code, region_id in codes.items():
+        parcels[region_id].update(placed[code])
+    on_surface = sorted(set(parcels) - set(codes.values()))
+    if on_surface:
+        print(f"{atlas}: placed on their surface, no ribbon voxel: {', '.join(on_surface)}", flush=True)
+
+
 def nextbrain_limitations(config, record):
     if config[nextbrain.ATLAS_ID]["procedure"] != nextbrain.SUBJECT_SEGMENTATION:
         return [
@@ -163,6 +186,7 @@ def export_tissue_labels(config, manifest):
                 config, surface, image, codes, atlas_labels, manifest["regions"]
             )
         )
+        place_cortex(data, image.header.get_vox2ras_tkr(), atlas_labels, manifest["regions"], atlas)
         encoded_image = nib.MGHImage(
             data.astype(np.int32), image.affine, header=image.header.copy()
         )

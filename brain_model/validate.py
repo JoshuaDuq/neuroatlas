@@ -23,8 +23,8 @@ from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
 from .labels.volumes import conformed_grid
 from .layers import (
     arterial_territories,
-    cerebellar_functions,
     cab_np,
+    cerebellar_functions,
     functional_regions,
     networks,
     neuropsych_domains,
@@ -47,7 +47,12 @@ from .surfaces.geometry import (
 from .surfaces.ribbons import validate_ribbon_labels
 from .surfaces.shading import cortical_concavity
 from .surfaces.solids import validate_solid_envelopes
-from .validate_segmentation import cerebellar_agreement, segmentation_agreement, surface_holes
+from .validate_placement import validate_placements
+from .validate_segmentation import (
+    cerebellar_agreement,
+    segmentation_agreement,
+    surface_holes,
+)
 from .validate_transforms import validate_transforms
 from .validate_volumes import validate_tissue_volumes, validate_volumes
 
@@ -984,6 +989,7 @@ def main():
         ),
         "volumes": validate_volumes(config),
         "tissue_volumes": validate_tissue_volumes(config, manifest, tissues),
+        "placements": validate_placements(config, manifest, tissues, nextbrain_source),
         "transforms": validate_transforms(config),
         "layers": layers,
         "published_files": files,

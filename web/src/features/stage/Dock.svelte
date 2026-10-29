@@ -1,5 +1,5 @@
 <!--
-  The stage dock: one plate of four worded tools, View, Section, Display and Lesion, each opening a popover
+  The stage dock: one plate of three worded tools, View, Section and Display, each opening a popover
   (index.html:433-490, stage.css:311-440). APG Toolbar (deviation g2-dock-toolbar): while three or more tools
   are shown the row is a labelled `role="toolbar"` with one Tab stop; ← → ↑ ↓ and Home/End move between the
   visible tools, Enter and Space open. Over the tract reference only View is left, and a lone button is
@@ -7,7 +7,9 @@
   - U5's popover keeps its trigger and its content together, so the popovers' controls sit inside the toolbar
     element. Only the tools rove (`.stage-tool`); keys inside a popover are the popover's own.
   - The popovers are placed above the whole dock on its start edge, inside the visible stage (place-popover.ts).
-  - Section's popover and the section row above the tools are G4's: they come in as snippets.
+  - Section's popover and the section row above the tools are G4's: they come in as snippets. The lesion's
+    controls come last in the Section popover: a click on the brain places the lesion only while the reader has
+    chosen so there and the popover is open, and while it does, a press on the stage keeps it open.
   - The View tool names the held preset, and keeps the width of the widest name so the other tools never move.
   - The dock root carries `data-own-keys` (decision 7): the page's single-key shortcuts skip its controls.
 -->
@@ -53,8 +55,10 @@
     /** G4: the body of the Section popover, and the section row above the tools. */
     sectionPopover: Snippet<[{ close: () => void }]>;
     sectionBar?: Snippet;
-    /** The Lesion popover's body; while it is open, a click on the brain places the lesion. */
-    lesionPopover: Snippet<[{ close: () => void }]>;
+    /** The lesion's controls under the Section popover's, with the choice of what a click on the brain does. */
+    lesionControls: Snippet<
+      [{ close: () => void; placing: boolean; setPlacing: (placing: boolean) => void }]
+    >;
     onLesionPlacing: (placing: boolean) => void;
   }
 
@@ -70,7 +74,7 @@
     commands,
     sectionPopover,
     sectionBar,
-    lesionPopover,
+    lesionControls,
     onLesionPlacing,
   }: Props = $props();
 
@@ -78,7 +82,6 @@
   const viewCaptionId = `view-caption-${uid}`;
   const sectionLabelId = `section-tool-${uid}`;
   const displayLabelId = `display-tool-${uid}`;
-  const lesionLabelId = `lesion-tool-${uid}`;
 
   const copy = $derived(t(lang, 'viewport'));
   const viewNames = $derived(t(lang, 'views'));
@@ -86,7 +89,7 @@
   const shown = $derived(status === 'ready' || status === 'switching');
   // A phone sheet raised over the stage covers it.
   const covered = $derived(!shown || stage.sheetFull);
-  const toolCount = $derived(tractReference ? 1 : 4);
+  const toolCount = $derived(tractReference ? 1 : 3);
   const toolbar = $derived(toolCount >= 3);
 
   // Whether the camera still sits on the named view; the engine says when it stops (viewport-chrome.js:560).
@@ -101,9 +104,13 @@
   let viewOpen = $state(false);
   let sectionOpen = $state(false);
   let displayOpen = $state(false);
-  let lesionOpen = $state(false);
-  const anyOpen = $derived(viewOpen || sectionOpen || displayOpen || lesionOpen);
-  $effect(() => onLesionPlacing(lesionOpen && !tractReference));
+  const anyOpen = $derived(viewOpen || sectionOpen || displayOpen);
+  // A click places the lesion only while the reader chose so, and only until the Section popover closes.
+  let placing = $state(false);
+  $effect(() => {
+    if (!sectionOpen) placing = false;
+  });
+  $effect(() => onLesionPlacing(sectionOpen && placing && !tractReference));
 
   let dock: HTMLElement;
   let tools: HTMLElement;
@@ -165,7 +172,7 @@
       : `width: ${POPOVER_WIDTH}px`,
   );
 
-  /** The stage's own canvas, where a press places the lesion while its popover is open. */
+  /** The stage's own canvas, where a press places the lesion while the reader has chosen so. */
   const onStage = (node: Node) =>
     node instanceof HTMLCanvasElement && (dock.offsetParent?.contains(node) ?? false);
 
@@ -228,9 +235,14 @@
       style={popoverStyle}
       dialogLabelledby={sectionLabelId}
       rescueFocus={focusFirstTool}
+      holdsOpen={(node) => placing && onStage(node)}
     >
       {#snippet name()}<span id={sectionLabelId}>{copy.sectionTool}</span>{/snippet}
-      {#snippet body({ close })}{@render sectionPopover({ close })}{/snippet}
+      {#snippet body({ close })}
+        <!-- On a phone the cut's controls fold away while placing, so the popover leaves the brain to click. -->
+        <div hidden={placing && media.phone}>{@render sectionPopover({ close })}</div>
+        {@render lesionControls({ close, placing, setPlacing: (next) => (placing = next) })}
+      {/snippet}
     </StagePopover>
     <StagePopover
       bind:open={displayOpen}
@@ -257,18 +269,6 @@
           onSpinalCordVisible={commands.setSpinalCordVisible}
         />
       {/snippet}
-    </StagePopover>
-    <StagePopover
-      bind:open={lesionOpen}
-      hidden={tractReference}
-      {covered}
-      style={popoverStyle}
-      dialogLabelledby={lesionLabelId}
-      rescueFocus={focusFirstTool}
-      holdsOpen={onStage}
-    >
-      {#snippet name()}<span id={lesionLabelId}>{t(lang, 'lesion').tool}</span>{/snippet}
-      {#snippet body({ close })}{@render lesionPopover({ close })}{/snippet}
     </StagePopover>
   </div>
   {@render sectionBar?.()}

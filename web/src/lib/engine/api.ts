@@ -177,8 +177,10 @@ export interface EngineModel {
   readonly spinalCordLoad: SpinalCordLoad;
   /** A region has a visible mesh on screen (sections.js:259: `visibleMeshes.some(region_id)`). */
   isRegionDrawn(id: string): boolean;
-  /** The region's centre in RAS millimetres, rounded to 0.1, or null with no geometry (brain-atlas.js:676). */
+  /** The mean of the region's voxel centres in surface RAS millimetres; null for an unknown id or a non-region. */
   centroidOf(id: string | null): Vec3 | null;
+  /** The region's own voxel nearest its centroid, where the linked MRI and a cut go to show it. */
+  anchorOf(id: string | null): Vec3 | null;
   /** The shared visibility rule for the current settings (brain-atlas.js:714). */
   canSelect(region: Region): boolean;
 

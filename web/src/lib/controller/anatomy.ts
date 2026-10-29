@@ -164,7 +164,7 @@ export function createAnatomyCommands(
     // conventional default, and the panel moves it from there.
     if (reason === 'no-cut') {
       await commands.cut('coronal', current);
-      const coordinates = model.centroidOf(id);
+      const coordinates = model.anchorOf(id);
       if (current() && coordinates && sections.active) {
         sections.setOffset(offsetThrough(coordinates, sections.frame.normal, sections.offsetRange));
       }

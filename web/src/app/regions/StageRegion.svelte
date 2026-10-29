@@ -244,10 +244,12 @@
           {tractReference}
         />
       {/snippet}
-      {#snippet lesionPopover({ close })}
+      {#snippet lesionControls({ close, placing, setPlacing })}
         <LesionPopover
           lesion={world.lesion}
           lang={current.lang}
+          {placing}
+          onPlacing={setPlacing}
           onReport={() => {
             world.excursions.chooseExplorer('anatomy');
             world.anatomy.selectRegion(null);

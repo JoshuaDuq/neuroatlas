@@ -239,16 +239,14 @@ export function defineEngineContract(
         opensOnTheFirstAtlas(world());
       });
 
-      it('reports centroids in RAS millimetres only for geometry it has', () => {
+      it('reports a region’s published centroid and anchor in RAS millimetres, its layer loaded or not', () => {
         const { engine, left, cortex, otherAtlas } = world();
         assert.equal(engine.model.centroidOf(null), null);
-        const centre = engine.model.centroidOf(left.id);
-        assert.ok(centre && centre.length === 3 && centre.every(Number.isFinite));
-        assert.ok(
-          centre.every((value) => value !== 0),
-          'a centroid lies off every plane through the origin',
-        );
-        assert.equal(engine.model.centroidOf(cortex('left', otherAtlas).id), null);
+        for (const id of [left.id, cortex('left', otherAtlas).id]) {
+          for (const point of [engine.model.centroidOf(id), engine.model.anchorOf(id)]) {
+            assert.ok(point && point.length === 3 && point.every(Number.isFinite), id);
+          }
+        }
         assert.equal(engine.model.isRegionDrawn(left.id), true);
         assert.equal(engine.model.isRegionDrawn(cortex('left', otherAtlas).id), false);
       });

@@ -97,7 +97,7 @@
         tractReference={live.tractReference}
       />
     {/snippet}
-    {#snippet lesionPopover()}{/snippet}
+    {#snippet lesionControls()}{/snippet}
   </Dock>
 </main>
 <button type="button">After</button>

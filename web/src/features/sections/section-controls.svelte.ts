@@ -32,7 +32,7 @@ export interface SectionControlsDeps {
       | 'setDisplay'
       | 'cutSpacingMm'
     >;
-    model: Pick<EngineModel, 'state' | 'centroidOf' | 'manifest' | 'cabNp' | 'domains'>;
+    model: Pick<EngineModel, 'state' | 'anchorOf' | 'manifest' | 'cabNp' | 'domains'>;
     camera: Pick<EngineCamera, 'faceCut'>;
   };
   /** The sections' display snapshot, replaced on every engine `change` (S1's engine sync). */
@@ -182,9 +182,9 @@ export function createSectionControls({
         if (!sections.active || sections.state.mode !== plane) return;
         // The new plane meets the region already chosen, not the midline the slider was left on.
         const region = model.state.selectedRegion;
-        const centroid = region && model.centroidOf(region.id);
-        if (centroid) {
-          sections.setOffset(offsetThrough(centroid, sections.frame.normal, sections.offsetRange));
+        const anchor = region && model.anchorOf(region.id);
+        if (anchor) {
+          sections.setOffset(offsetThrough(anchor, sections.frame.normal, sections.offsetRange));
         }
         face();
       } catch (error) {

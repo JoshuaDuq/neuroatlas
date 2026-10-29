@@ -55,7 +55,7 @@ The subject's own T1 in three planes around a shared crosshair, with the label u
 
 **[Take a guided tour](guides/circuits.md)**
 
-Twenty-three tours, from vision to gaze, that reveal and frame each landmark.
+Thirty-five tours, from vision and movement to spelling, music, visual extinction, voice recognition and locked-in syndrome, that reveal and frame each landmark.
 :::
 
 :::{container} feature
@@ -136,6 +136,8 @@ api/index
 :caption: Reference
 
 reference/references
+reference/circuit-evidence
+reference/full-text-review
 ```
 
 ```{toctree}

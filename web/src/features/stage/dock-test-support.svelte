@@ -1,4 +1,4 @@
-<!-- Fixture for the dock tests: the stage host as the Stage region renders it, with the dock, stubs for the Section and Lesion bodies, and a tab stop each side. Not shipped. -->
+<!-- Fixture for the dock tests: the stage host as the Stage region renders it, with the dock, stubs for the Section popover's body and its lesion controls, and a tab stop each side. Not shipped. -->
 <script lang="ts">
   import type { FakeEngine } from '../../lib/engine/fake.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
@@ -79,9 +79,10 @@
       <p class="stage-field-label">Cutting plane</p>
       <button type="button">Sagittal</button>
     {/snippet}
-    {#snippet lesionPopover()}
-      <p class="stage-field-label">Radius</p>
-      <button type="button">Remove</button>
+    {#snippet lesionControls({ placing: on, setPlacing })}
+      <div class="stage-field">
+        <button type="button" aria-pressed={on} onclick={() => setPlacing(!on)}>Place</button>
+      </div>
     {/snippet}
   </Dock>
 </main>

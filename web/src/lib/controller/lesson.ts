@@ -255,12 +255,13 @@ export function createLessons({
         return;
       }
       const region = model.state.selectedRegion;
-      const centroid = region && model.centroidOf(region.id);
-      if (centroid) {
+      // The anchor, not the centroid: a curved region's centroid can lie in its neighbour.
+      const anchor = region && model.anchorOf(region.id);
+      if (anchor) {
         const [x, y, z] = sections.state.crosshair;
         // Not at a region: only a crosshair still at the origin moves to the selection.
         if (atRegion || (Math.abs(x) < 1e-3 && Math.abs(y) < 1e-3 && Math.abs(z) < 1e-3)) {
-          sections.setCrosshair(centroid);
+          sections.setCrosshair(anchor);
         }
       }
       await sections.load();

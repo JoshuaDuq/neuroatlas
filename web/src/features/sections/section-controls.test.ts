@@ -80,7 +80,7 @@ describe('choosing a plane', () => {
     engine.model.select(region.id);
     const controls = build();
     await controls.choose('sagittal');
-    expect(controls.offset).toBe(engine.model.centroidOf(region.id)![0]);
+    expect(controls.offset).toBe(engine.model.anchorOf(region.id)![0]);
     expect(controls.offset).not.toBe(0);
   });
 

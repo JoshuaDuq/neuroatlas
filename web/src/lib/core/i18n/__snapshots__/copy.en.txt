@@ -78,7 +78,9 @@
   "mapping": "What this atlas shows",
   "clinical": "Clinical context",
   "clinicalLink": "Open deficit evidence",
-  "clinicalNote": "Reference anatomy; these associations do not predict an individual patient’s deficit.",
+  "clinicalNote": "Reference anatomy. Clinical accuracy has not been validated; these associations do not predict an individual patient’s deficit.",
+  "deficitEvidence": "Deficit evidence",
+  "background": "Circuit background",
   "evidence": "Sources",
   "revised": "Content checked",
   "loading": "Opening landmark…",
@@ -199,7 +201,7 @@
   "full-text": "Source inspected: full text",
   "sources": "Selected literature · not a systematic review",
   "revised": "Content checked",
-  "referenceOnly": "Reference anatomy; associations do not predict an individual patient’s deficit.",
+  "referenceOnly": "Reference anatomy. Clinical accuracy has not been validated; associations do not predict an individual patient’s deficit.",
   "mappingEmpty": "No atlas mapping available.",
   "loading": "Opening anatomy…",
   "methods": {
@@ -816,8 +818,12 @@
   "constituentCutOnly": "Cut only"
  },
  "lesion": {
-  "tool": "Lesion",
   "radius": "Radius",
+  "click": "A click on the brain",
+  "clicks": {
+   "select": "Selects a region",
+   "place": "Places the lesion"
+  },
   "placeHint": "Click the brain or a cut face to place its centre.",
   "moveHint": "Click the brain or a cut face to move its centre.",
   "showReport": "Show the report",

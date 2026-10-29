@@ -340,22 +340,6 @@ test('ATLAS-40 reset keeps the atlas, the detail level and the paint, and cancel
   model.dispose();
 });
 
-test('ATLAS-46 a centroid is the box centre in surface RAS millimetres, computed once, and absent for no mesh', async () => {
-  const { model } = await opened();
-  assert.deepEqual(
-    model.centroidOf('a-left')!.map((value: number) => value + 0),
-    [0, 0, 0],
-  );
-  const right = model.centroidOf('a-right');
-  assert.deepEqual(
-    right!.map((value: number) => value + 0),
-    [30, 0, 0],
-  );
-  assert.equal(model.centroidOf('a-right'), right);
-  for (const id of ['n-left', 'nonexistent', null]) assert.equal(model.centroidOf(id), null);
-  model.dispose();
-});
-
 test('ATLAS-36 a change of view releases the isolation; opacity, colour, paint and planes keep it', async () => {
   const releasing: [string, (model: Stub) => unknown][] = [
     ['setAtlas', (model) => model.setAtlas('b')],

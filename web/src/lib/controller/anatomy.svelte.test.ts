@@ -505,13 +505,13 @@ describe('the six reveal reasons beyond the first two (CTRL-18)', () => {
 
 describe('a cut-only region (CTRL-19)', () => {
   test.each([
-    { centroid: [10, -20, 5], expected: -20 },
-    { centroid: [-60, 0, 90], expected: 0 },
+    { anchor: [10, -20, 5], expected: -20 },
+    { anchor: [-60, 0, 90], expected: 0 },
   ] as const)(
-    'CTRL-19 reveal no-cut opens a coronal cut through the centroid $centroid at offset $expected',
-    async ({ centroid, expected }) => {
+    'CTRL-19 reveal no-cut opens a coronal cut through the anchor $anchor at offset $expected',
+    async ({ anchor, expected }) => {
       const { anatomy } = build();
-      vi.spyOn(engine.model, 'centroidOf').mockReturnValue([...centroid]);
+      vi.spyOn(engine.model, 'anchorOf').mockReturnValue([...anchor]);
       await anatomy.revealRegion('no-cut', CUT_ONLY);
       expect(engine.sections.state.mode).toBe('coronal');
       expect(engine.sections.offset).toBe(expected);
@@ -523,15 +523,15 @@ describe('a cut-only region (CTRL-19)', () => {
     const { anatomy } = build();
     const [minimum, maximum] = engine.sections.offsetRange;
     expect([minimum, maximum]).toEqual([-128, 128]);
-    vi.spyOn(engine.model, 'centroidOf').mockReturnValue([0, -500, 0]);
+    vi.spyOn(engine.model, 'anchorOf').mockReturnValue([0, -500, 0]);
     await anatomy.revealRegion('no-cut', CUT_ONLY);
     expect(engine.sections.offset).toBe(minimum);
   });
 
-  test('CTRL-19 a centroid that is not finite fails the reveal with a notice', async () => {
+  test('CTRL-19 an anchor that is not finite fails the reveal with a notice', async () => {
     const { anatomy, session } = build();
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(engine.model, 'centroidOf').mockReturnValue([0, Number.NaN, 0]);
+    vi.spyOn(engine.model, 'anchorOf').mockReturnValue([0, Number.NaN, 0]);
     await anatomy.revealRegion('no-cut', CUT_ONLY);
     expect(session.state.notice).not.toBeNull();
     expect(engine.model.state.selectedRegion).toBeNull();

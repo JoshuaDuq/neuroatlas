@@ -160,6 +160,7 @@
             region={current.selectedRegion}
             lang={current.lang}
             outlineAvailable={!current.cutActive && !isIndependentTractReference(current)}
+            {functionalRegions}
           />
         {/snippet}
         {#snippet relatedDeficits()}

@@ -78,7 +78,9 @@
   "mapping": "Ce que montre cet atlas",
   "clinical": "Contexte clinique",
   "clinicalLink": "Ouvrir les données sur le déficit",
-  "clinicalNote": "Anatomie de référence ; ces associations ne prédisent pas le déficit d’un patient individuel.",
+  "clinicalNote": "Anatomie de référence. L’exactitude clinique n’a pas été validée ; ces associations ne prédisent pas le déficit d’un patient individuel.",
+  "deficitEvidence": "Données sur le déficit",
+  "background": "Contexte du parcours",
   "evidence": "Sources",
   "revised": "Contenu vérifié",
   "loading": "Ouverture du repère…",
@@ -199,7 +201,7 @@
   "full-text": "Source consultée : texte intégral",
   "sources": "Sélection de publications · pas une revue systématique",
   "revised": "Contenu vérifié",
-  "referenceOnly": "Anatomie de référence<NNBSP>; les associations ne prédisent pas le déficit d’un patient individuel.",
+  "referenceOnly": "Anatomie de référence. L’exactitude clinique n’a pas été validée ; les associations ne prédisent pas le déficit d’un patient individuel.",
   "mappingEmpty": "Aucune correspondance disponible dans l’atlas.",
   "loading": "Ouverture de l’anatomie…",
   "methods": {
@@ -816,8 +818,12 @@
   "constituentCutOnly": "Coupe seulement"
  },
  "lesion": {
-  "tool": "Lésion",
   "radius": "Rayon",
+  "click": "Un clic sur le cerveau",
+  "clicks": {
+   "select": "Sélectionne une région",
+   "place": "Place la lésion"
+  },
   "placeHint": "Cliquez sur le cerveau ou une face de coupe pour placer son centre.",
   "moveHint": "Cliquez sur le cerveau ou une face de coupe pour déplacer son centre.",
   "showReport": "Afficher le rapport",

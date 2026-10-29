@@ -56,7 +56,6 @@ import {
 } from '../render/border-feather.ts';
 import { addMriAppearance } from '../render/mri-material.ts';
 import type { MriUniforms } from '../render/mri-material.ts';
-import { worldToRas } from '../slices/coordinates.ts';
 import { loadRibbonSources } from '../tissues/solid-assets.ts';
 import { createWhiteMatterSurfaces, exposedWhiteMatter } from '../tissues/white-matter-surfaces.ts';
 import type { WhiteMatterSurfaces } from '../tissues/white-matter-surfaces.ts';
@@ -313,7 +312,6 @@ export class BrainAtlas extends EventTarget {
   private atlasRequest = 0;
   private detailRequest = 0;
   private isDisposed = false;
-  private readonly centroids = new Map<string, Triple>();
 
   constructor(
     manifest: AtlasManifest,
@@ -881,28 +879,28 @@ export class BrainAtlas extends EventTarget {
     return this.regions.get(hit.object.userData['region_id'] as string) ?? null;
   }
 
+  /**
+   * The mean of the region's voxel centres (a cortical parcel's, in the ribbon), in surface RAS
+   * millimetres; null for an unknown id or a non-region. It can lie outside a curved region.
+   */
   centroidOf(regionId: string | null): Triple | null {
-    if (!regionId) return null;
-    const cached = this.centroids.get(regionId);
-    if (cached) return cached;
-    const box = new Box3();
-    for (const layer of this.layers.values()) {
-      for (const mesh of layer.meshes) {
-        if (mesh.userData['region_id'] === regionId) {
-          if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
-          box.expandByObject(mesh);
-        }
-      }
-    }
-    if (box.isEmpty()) return null;
-    const [right, anterior, superior] = worldToRas(box.getCenter(new Vector3()));
-    const ras: Triple = [
-      Math.round(right * 10) / 10,
-      Math.round(anterior * 10) / 10,
-      Math.round(superior * 10) / 10,
-    ];
-    this.centroids.set(regionId, ras);
-    return ras;
+    return this.placement(regionId, 'centroid_ras_mm');
+  }
+
+  /** The region's own voxel nearest its centroid: where the linked MRI and a cut go to show it. */
+  anchorOf(regionId: string | null): Triple | null {
+    return this.placement(regionId, 'anchor_ras_mm');
+  }
+
+  private placement(
+    regionId: string | null,
+    field: 'centroid_ras_mm' | 'anchor_ras_mm',
+  ): Triple | null {
+    const region = regionId ? this.regions.get(regionId) : undefined;
+    if (!region || region.kind === 'non-region') return null;
+    const value = region[field];
+    if (!value) throw new Error(`The manifest places no ${field} for ${regionId}.`);
+    return [...value];
   }
 
   setClippingPlanes(planes: Plane[]): void {
@@ -1154,7 +1152,6 @@ export class BrainAtlas extends EventTarget {
     }
     this.ribbonWedges.clear();
     this.layers.clear();
-    this.centroids.clear();
     this.group.removeFromParent();
   }
 

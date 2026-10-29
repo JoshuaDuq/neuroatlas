@@ -16,7 +16,9 @@ export const en = {
   clinical: 'Clinical context',
   clinicalLink: 'Open deficit evidence',
   clinicalNote:
-    'Reference anatomy; these associations do not predict an individual patient’s deficit.',
+    'Reference anatomy. Clinical accuracy has not been validated; these associations do not predict an individual patient’s deficit.',
+  deficitEvidence: 'Deficit evidence',
+  background: 'Circuit background',
   evidence: 'Sources',
   revised: 'Content checked',
   loading: 'Opening landmark…',
@@ -45,7 +47,9 @@ export const fr: typeof en = {
   clinical: 'Contexte clinique',
   clinicalLink: 'Ouvrir les données sur le déficit',
   clinicalNote:
-    'Anatomie de référence ; ces associations ne prédisent pas le déficit d’un patient individuel.',
+    'Anatomie de référence. L’exactitude clinique n’a pas été validée ; ces associations ne prédisent pas le déficit d’un patient individuel.',
+  deficitEvidence: 'Données sur le déficit',
+  background: 'Contexte du parcours',
   evidence: 'Sources',
   revised: 'Contenu vérifié',
   loading: 'Ouverture du repère…',

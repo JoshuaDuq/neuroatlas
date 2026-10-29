@@ -1,6 +1,8 @@
 <!-- Fixture for the atlas comparison tests: the real CDMD manifest inside the inspector's own scope, as R1's slot mounts it. Not shipped. -->
 <script lang="ts">
   import manifest from '../../../../public/models/cdmd/manifest.json';
+  import functionalFile from '../../../../public/models/cdmd/functional-regions.json';
+  import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { ComparisonManifest } from '../../lib/core/comparison/catalog.ts';
   import type { Engine } from '../../lib/engine/api.ts';
   import type { Language, Region } from '../../lib/types/index.ts';
@@ -46,5 +48,6 @@
     {region}
     {lang}
     {outlineAvailable}
+    functionalRegions={functionalFile as unknown as FunctionalRegions}
   />
 </div>

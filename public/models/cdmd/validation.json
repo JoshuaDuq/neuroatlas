@@ -4566,6 +4566,26 @@
       "label_count": 587
     }
   },
+  "placements": {
+    "anchors_inside_own_label": {
+      "destrieux": 148,
+      "aseg": 32,
+      "hcp-mmp": 360,
+      "julich": 275,
+      "schaefer": 400,
+      "nextbrain": 514,
+      "learning": 106,
+      "pam50": 34,
+      "wmparc": 68,
+      "arterial": 30,
+      "nettekoven": 32
+    },
+    "placed_on_surface_no_ribbon_voxel": [
+      "julich:left:23",
+      "julich:left:24",
+      "julich:right:24"
+    ]
+  },
   "transforms": {
     "projected_annotations": {
       "HCPMMP1": {

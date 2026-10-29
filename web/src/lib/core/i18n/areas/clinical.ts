@@ -58,7 +58,8 @@ export const en = {
   'full-text': 'Source inspected: full text',
   sources: 'Selected literature · not a systematic review',
   revised: 'Content checked',
-  referenceOnly: 'Reference anatomy; associations do not predict an individual patient’s deficit.',
+  referenceOnly:
+    'Reference anatomy. Clinical accuracy has not been validated; associations do not predict an individual patient’s deficit.',
   mappingEmpty: 'No atlas mapping available.',
   loading: 'Opening anatomy…',
   methods: {
@@ -136,7 +137,7 @@ export const fr: typeof en = {
   sources: 'Sélection de publications · pas une revue systématique',
   revised: 'Contenu vérifié',
   referenceOnly:
-    'Anatomie de référence\u202f; les associations ne prédisent pas le déficit d’un patient individuel.',
+    'Anatomie de référence. L’exactitude clinique n’a pas été validée ; les associations ne prédisent pas le déficit d’un patient individuel.',
   mappingEmpty: 'Aucune correspondance disponible dans l’atlas.',
   loading: 'Ouverture de l’anatomie…',
   methods: {

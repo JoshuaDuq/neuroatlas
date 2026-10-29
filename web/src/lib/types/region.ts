@@ -41,6 +41,10 @@ export interface Region {
   voxel_size_mm?: number[];
   display_maximum_displacement_mm?: number;
   segmentation_volume_mm3?: number;
+  /** The mean of its voxel centres (a cortical parcel's, in the ribbon), surface RAS mm. */
+  centroid_ras_mm?: [number, number, number];
+  /** Its own voxel nearest that centroid, surface RAS mm: inside it, as a centroid may not be. */
+  anchor_ras_mm?: [number, number, number];
   constituent_regions?: string[];
   display_names?: Localised;
   system_names?: Localised;

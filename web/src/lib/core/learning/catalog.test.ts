@@ -7,9 +7,8 @@ import { createCircuitCatalog } from './catalog.ts';
 import type { AuthoredCircuit, CircuitData } from './catalog.ts';
 
 const data = readRepoYaml<CircuitData>('data/circuits.yaml');
-const deficitIds = readRepoYaml<ClinicalData>('data/neuropsychology.yaml').deficits.map(
-  (deficit) => deficit.id,
-);
+const clinical = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
+const deficitIds = clinical.deficits.map((deficit) => deficit.id);
 const published = manifests.map(([, manifest]) => manifest);
 
 const clone = () => structuredClone(data) as { -readonly [K in keyof CircuitData]: any };
@@ -21,7 +20,7 @@ const circuitOf = (
 const create = (copy: object, manifest = published[0]) =>
   createCircuitCatalog(copy as CircuitData, manifest, deficitIds);
 
-test('all twenty-three tours resolve exact source landmarks on every published anatomy', () => {
+test('all thirty-five tours resolve exact source landmarks on every published anatomy', () => {
   for (const manifest of published) {
     const catalog = create(data, manifest);
     assert.deepEqual(
@@ -50,11 +49,23 @@ test('all twenty-three tours resolve exact source landmarks on every published a
         'colour',
         'number',
         'gaze',
+        'speech-planning',
+        'writing',
+        'music',
+        'taste',
+        'olfaction',
+        'mentalizing',
+        'extinction',
+        'copying',
+        'cortical-hearing',
+        'oral-praxis',
+        'voices',
+        'pontine-motor',
       ],
     );
     assert.equal(
       catalog.all.reduce((count, circuit) => count + circuit.steps.length, 0),
-      85,
+      115,
     );
     assert.equal(catalog.contextMarginMm, 12);
     assert.equal(catalog.get('vision').steps.at(-1)!.region, 'hcp-mmp:left:1');
@@ -195,6 +206,55 @@ test('a landmark’s view must be one of the camera presets', () => {
   const invalid = clone();
   (invalid.circuits[0].steps[0] as Record<string, any>).view = 'diagonal';
   assert.throws(() => create(invalid), /Unknown view: diagonal/);
+});
+
+test('clinical source roles must be declared and refer to distinct cited works', () => {
+  for (const clinicalReferences of [
+    undefined,
+    [],
+    ['missing'],
+    ['memory-anatomy'],
+    ['visual-pathways', 'visual-pathways'],
+  ]) {
+    const invalid = clone();
+    invalid.circuits[0].clinical_references = clinicalReferences;
+    assert.throws(() => create(invalid), /clinical references/i);
+  }
+});
+
+test('every tour directly cites supporting evidence for its linked clinical deficit', () => {
+  const works = new Map(data.references.map((reference) => [reference.id, reference.pmid]));
+  for (const circuit of data.circuits) {
+    const sources = circuit.clinical_references;
+    assert.ok(Array.isArray(sources) && sources.length, `${circuit.id}: no clinical references`);
+    const pmids = new Set(sources.map((source) => works.get(source)));
+    assert.ok(
+      clinical.associations.some(
+        (association) =>
+          association.deficit === circuit.deficit &&
+          association.evidence.some(
+            (evidence) =>
+              evidence.role === 'supporting' &&
+              pmids.has(
+                clinical.references.find((reference) => reference.id === evidence.reference)!.pmid,
+              ),
+          ),
+      ),
+      `${circuit.id}: no supporting clinical source for ${circuit.deficit}`,
+    );
+  }
+});
+
+test('published corrections require valid DOI links and both language summaries', () => {
+  for (const corrections of [
+    'correction',
+    [{ doi: 'invalid', summary: { en: 'Correction', fr: 'Correction' } }],
+    [{ doi: '10.1093/cercor/bhl065', summary: { en: 'Correction' } }],
+  ]) {
+    const invalid = clone();
+    invalid.references[0].corrections = corrections;
+    assert.throws(() => create(invalid), /correction/i);
+  }
 });
 
 const RANGE = 'Circuit context margin must be positive millimetres.';
@@ -474,11 +534,11 @@ describe('CAT-52 · a landmark resolves to one form and uncovers what others cov
   });
 });
 
-test('CAT-53 · the published circuits: revision, margin, 64 https references, twenty-three circuits with their deficits and landmark counts', () => {
+test('CAT-53 · the published circuits: revision, margin, 101 https references, thirty-five circuits with their deficits and landmark counts', () => {
   const catalog = create(data);
   assert.equal(catalog.revised, '2026-10-29');
   assert.equal(catalog.contextMarginMm, 12);
-  assert.equal(data.references.length, 64);
+  assert.equal(data.references.length, 101);
   for (const reference of data.references) {
     assert.ok(catalog.reference(reference.id).url.startsWith('https://'), reference.id);
   }
@@ -508,8 +568,86 @@ test('CAT-53 · the published circuits: revision, margin, 64 https references, t
       ['colour', 3, 'achromatopsia'],
       ['number', 3, 'acalculia'],
       ['gaze', 3, 'oculomotor-apraxia'],
+      ['speech-planning', 3, 'speech-apraxia'],
+      ['writing', 3, 'agraphia'],
+      ['music', 4, 'amusia'],
+      ['taste', 2, 'taste-impairment'],
+      ['olfaction', 2, 'olfactory-recognition'],
+      ['mentalizing', 2, 'theory-of-mind'],
+      ['extinction', 4, 'visual-extinction'],
+      ['copying', 2, 'constructional-apraxia'],
+      ['cortical-hearing', 2, 'cortical-deafness'],
+      ['oral-praxis', 2, 'buccofacial-apraxia'],
+      ['voices', 2, 'phonagnosia'],
+      ['pontine-motor', 2, 'locked-in'],
     ],
   );
+});
+
+test('each added deficit tour cites patient lesion evidence supporting the same deficit and a visited region', () => {
+  for (const id of ['speech-planning', 'writing', 'music', 'taste', 'olfaction', 'mentalizing']) {
+    const circuit = data.circuits.find((entry) => entry.id === id)!;
+    const cited = new Set(
+      data.references
+        .filter((reference) => circuit.references.includes(reference.id))
+        .map((reference) => reference.pmid),
+    );
+    const supporting = clinical.associations.filter(
+      (association) =>
+        association.deficit === circuit.deficit &&
+        association.mappings.some((mapping) =>
+          circuit.steps.some((step) => step.region === mapping.region),
+        ) &&
+        association.evidence.some((evidence) => {
+          const reference = clinical.references.find((entry) => entry.id === evidence.reference)!;
+          return (
+            evidence.role === 'supporting' &&
+            ['lesion-mapping', 'case-series', 'case-report'].includes(reference.method) &&
+            cited.has(reference.pmid)
+          );
+        }),
+    );
+    assert.ok(supporting.length, `${id}: no cited patient lesion evidence for its deficit`);
+  }
+});
+
+test('every landmark in the next six tours has cited full-text patient lesion provenance for its deficit', () => {
+  const references = new Map(clinical.references.map((reference) => [reference.id, reference]));
+  for (const id of [
+    'extinction',
+    'copying',
+    'cortical-hearing',
+    'oral-praxis',
+    'voices',
+    'pontine-motor',
+  ]) {
+    const circuit = data.circuits.find((entry) => entry.id === id);
+    assert.ok(circuit, `${id}: missing tour`);
+    const cited = new Set(
+      data.references
+        .filter((reference) => circuit.clinical_references.includes(reference.id))
+        .map((reference) => reference.pmid),
+    );
+    for (const step of circuit.steps) {
+      assert.ok(
+        clinical.associations.some(
+          (association) =>
+            association.deficit === circuit.deficit &&
+            association.mappings.some((mapping) => mapping.region === step.region) &&
+            association.evidence.some((evidence) => {
+              const source = references.get(evidence.reference)!;
+              return (
+                evidence.role === 'supporting' &&
+                source.scope === 'full-text' &&
+                ['lesion-mapping', 'case-series', 'case-report'].includes(source.method) &&
+                cited.has(source.pmid)
+              );
+            }),
+        ),
+        `${id}/${step.id}: no cited full-text patient lesion source maps this deficit and region`,
+      );
+    }
+  }
 });
 
 test('CAT-54 · an unknown circuit, landmark or reference fails by name', () => {

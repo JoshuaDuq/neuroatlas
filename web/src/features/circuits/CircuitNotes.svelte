@@ -12,6 +12,7 @@
 <script lang="ts">
   import { t } from '../../lib/core/i18n/index.ts';
   import { stepProgress } from '../../lib/core/panels/circuits.ts';
+  import { publishedCorrections } from '../../lib/core/panels/clinical.ts';
   import Disclosure from '../../lib/ui/Disclosure.svelte';
   import { iconGraphic } from '../../lib/ui/IconButton.svelte';
   import type { CircuitExplorer } from './circuits-explorer.svelte.ts';
@@ -100,7 +101,6 @@
           >
             {copy.clinicalLink}
           </button>
-          <p class="small">{copy.clinicalNote}</p>
         </div>
       </Disclosure>
     </div>
@@ -110,11 +110,27 @@
           {#each circuit.references as id (id)}
             {@const reference = model.reference(id)}
             <p class="source">
+              <span class="source-kind"
+                >{circuit.clinical_references.includes(id)
+                  ? copy.deficitEvidence
+                  : copy.background}</span
+              >
               <a href={reference.url} target="_blank" rel="noreferrer"
                 >{reference.title}<span class="visually-hidden">{` ${t(lang, 'link').newTab}`}</span
                 >{@render iconGraphic('external-link')}</a
               >
               <span>{reference.citation}</span>
+              {#each publishedCorrections(reference, lang) as correction (correction.doi)}
+                <span class="source-correction">
+                  {t(lang, 'clinical').correction}:
+                  <a href={correction.href} target="_blank" rel="noreferrer"
+                    >{correction.doi}<span class="visually-hidden"
+                      >{` ${t(lang, 'link').newTab}`}</span
+                    ></a
+                  >
+                  — {correction.summary}
+                </span>
+              {/each}
             </p>
           {/each}
           <p class="small">{copy.revised}: {model.revised}</p>

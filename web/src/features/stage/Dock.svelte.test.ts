@@ -158,31 +158,31 @@ afterEach(() => {
 });
 
 describe('the toolbar', () => {
-  test('is a labelled toolbar of four tools with one Tab stop that the arrows walk, wrapping', async () => {
+  test('is a labelled toolbar of three tools with one Tab stop that the arrows walk, wrapping', async () => {
     await mount();
     const bar = page.getByRole('toolbar', { name: '3D viewer tools' }).element();
     const tools = [...bar.querySelectorAll<HTMLElement>('.stage-tool')];
     expect(
       tools.map((node) => node.getAttribute('aria-label') ?? node.textContent!.trim()),
-    ).toEqual(['Anatomical view: Oblique', 'Section', 'Display', 'Lesion']);
-    expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1, -1]);
+    ).toEqual(['Anatomical view: Oblique', 'Section', 'Display']);
+    expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1]);
 
     tool('Anatomical view').focus();
     await userEvent.keyboard('{ArrowRight}');
     expect(active()).toBe(tool('Section'));
-    await userEvent.keyboard('{ArrowDown}{ArrowRight}{ArrowRight}');
+    await userEvent.keyboard('{ArrowDown}{ArrowRight}');
     expect(active()).toBe(tool('Anatomical view'));
     await userEvent.keyboard('{ArrowLeft}');
-    expect(active()).toBe(tool('Lesion'));
+    expect(active()).toBe(tool('Display'));
     await userEvent.keyboard('{Home}');
     expect(active()).toBe(tool('Anatomical view'));
     await userEvent.keyboard('{End}');
-    expect(active()).toBe(tool('Lesion'));
+    expect(active()).toBe(tool('Display'));
   });
 
   test('Tab passes the whole toolbar in one stop, and comes back to its first tool', async () => {
     await mount();
-    tool('Lesion').focus();
+    tool('Display').focus();
     await userEvent.keyboard('{Tab}');
     expect(active()).toBe(control('button', 'After'));
     // The Tab stop is the focused tool, else the first (ui/roving.js), as in the legacy dock.
@@ -294,6 +294,9 @@ describe('a tool and its popover', () => {
   test('Tab from the last control of a popover leaves the dock', async () => {
     await mount();
     await open('Section');
+    // Its last control is the lesion's, after the cut's.
+    await userEvent.keyboard('{Tab}');
+    expect(active()).toBe(control('button', 'Place'));
     await userEvent.keyboard('{Tab}');
     expect(active()).toBe(control('button', 'After'));
     await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
@@ -794,24 +797,38 @@ describe('accessibility (axe)', () => {
   });
 });
 
-describe('the Lesion tool', () => {
-  test('places while its popover is open: a press on the stage keeps it open, one elsewhere closes it', async () => {
+describe('placing a lesion from the Section popover', () => {
+  test('places only once chosen there: a press on the stage then keeps it open, and closing ends it', async () => {
     await mount();
+    await press('button', 'Section');
+    expect(tool('Section').getAttribute('aria-expanded')).toBe('true');
+    // Open for a cut, a click on the brain still selects: nothing is placed.
     expect(placing.at(-1)).toBe(false);
-    await press('button', 'Lesion');
+    await press('button', 'Place');
     await vi.waitFor(() => expect(placing.at(-1)).toBe(true));
-    const canvas = document.getElementById('stage-canvas')!;
-    await userEvent.click(canvas);
-    expect(tool('Lesion').getAttribute('aria-expanded')).toBe('true');
+    await userEvent.click(document.getElementById('stage-canvas')!);
+    expect(tool('Section').getAttribute('aria-expanded')).toBe('true');
     expect(placing.at(-1)).toBe(true);
     await press('button', 'After');
-    await vi.waitFor(() => expect(tool('Lesion').getAttribute('aria-expanded')).toBe('false'));
+    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
     expect(placing.at(-1)).toBe(false);
+    // Opened again, the popover starts back on selecting.
+    await press('button', 'Section');
+    expect(control('button', 'Place').getAttribute('aria-pressed')).toBe('false');
+    expect(placing.at(-1)).toBe(false);
+  });
+
+  test('a press on the stage closes the popover while a click selects', async () => {
+    await mount();
+    await press('button', 'Section');
+    await userEvent.click(document.getElementById('stage-canvas')!);
+    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
+    expect(placing.every((on) => !on)).toBe(true);
   });
 
   test('is not offered over the tract reference, so nothing is placed there', async () => {
     await mount({ tractReference: true });
-    expect(page.getByRole('button', { name: 'Lesion' }).elements()).toHaveLength(0);
+    expect(page.getByRole('button', { name: 'Section' }).elements()).toHaveLength(0);
     expect(placing.at(-1)).toBe(false);
   });
 });

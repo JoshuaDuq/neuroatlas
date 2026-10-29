@@ -10,6 +10,7 @@ from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
 from .gltf.export import add_region, compact_region, published_area_mm2, write_scene
 from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
+from .labels.placement import placements, surface_placement
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
 from .layers import (
@@ -204,6 +205,9 @@ def build_cortex(config, atlas, field_ranges=None):
                 triangle_count=len(mesh.faces),
                 surface_area_mm2=published_area_mm2(mesh.vertices, mesh.faces),
             )
+            if region["kind"] == "cortex":
+                # Mid-ribbon points; the cut volume's ribbon voxels replace this where they label the parcel.
+                region.update(surface_placement((vertices + white)[labels == label] / 2))
             regions.append(region)
         print(
             f"{atlas['id']} {hemisphere}: {len(vertices):,} source vertices, "
@@ -239,6 +243,7 @@ def build_structure_layer(config, grid, labels, describe, filename):
     smoothing = config["structures"]["smoothing"]
     scene = trimesh.Scene()
     regions = []
+    placed = placements(volume, affine, labels)
     for label in labels:
         region, color = describe(label)
         region.update(
@@ -258,6 +263,8 @@ def build_structure_layer(config, grid, labels, describe, filename):
             triangle_count=len(exported.faces),
             surface_area_mm2=published_area_mm2(exported.vertices, exported.faces),
             segmentation_volume_mm3=float(region["voxel_count"] * voxel_volume),
+            # After the mesh is added: the manifest carries placements, the GLB's extras do not.
+            **placed[label],
         )
         regions.append(region)
     write_scene(scene, config["output_directory"] / filename)
@@ -623,6 +630,7 @@ def main():
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             *boundary_certainty_limitations(config),
             "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
+            "Each region's centroid is the mean of its voxel centres (a cortical parcel's, of its voxels in the cortical ribbon), and can lie outside a curved region; its anchor, where the linked MRI and a cut go to show it, is its own voxel nearest that centroid. A parcel no ribbon voxel carries is placed by its mid-ribbon surface points instead.",
             "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
             *network_limitations(config),
             *cab_np.limitations(),

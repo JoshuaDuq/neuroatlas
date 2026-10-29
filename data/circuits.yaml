@@ -352,6 +352,215 @@ references:
     citation: Ghika et al. · Clinical Neurology and Neurosurgery · 1998
     pmid: '9879853'
     url: https://pubmed.ncbi.nlm.nih.gov/9879853/
+  - id: speech-insula
+    title: A new brain region for coordinating speech articulation
+    citation: Dronkers · Nature · 1996
+    pmid: '8906789'
+    url: https://pubmed.ncbi.nlm.nih.gov/8906789/
+  - id: speech-frontal
+    title: Re-examining the brain regions crucial for orchestrating speech articulation
+    citation: Hillis et al. · Brain · 2004
+    pmid: '15090478'
+    url: https://pubmed.ncbi.nlm.nih.gov/15090478/
+  - id: speech-motor
+    title: The neuroanatomy of pure apraxia of speech in stroke
+    citation: Graff-Radford et al. · Brain and Language · 2014
+    pmid: '24556336'
+    pmcid: PMC4004427
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4004427/
+  - id: spelling-memory
+    title: Neural bases of orthographic long-term memory and working memory in dysgraphia
+    citation: Rapp et al. · Brain · 2016
+    pmid: '26685156'
+    pmcid: PMC4805091
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4805091/
+  - id: music-lesions
+    title: Neural Basis of Acquired Amusia and Its Recovery after Stroke
+    citation: Sihvonen et al. · Journal of Neuroscience · 2016
+    pmid: '27559169'
+    pmcid: PMC6601900
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6601900/
+  - id: taste-lesions
+    title: Taste perception in patients with insular cortex lesions
+    citation: Pritchard, Macaluso & Eslinger · Behavioral Neuroscience · 1999
+    pmid: '10495075'
+    url: https://pubmed.ncbi.nlm.nih.gov/10495075/
+  - id: olfactory-identification
+    title: Olfactory identification deficits in patients with focal cerebral excision
+    citation: Jones-Gotman & Zatorre · Neuropsychologia · 1988
+    pmid: '3374800'
+    url: https://pubmed.ncbi.nlm.nih.gov/3374800/
+  - id: olfactory-memory
+    title: 'Odor recognition memory in humans: role of right temporal and orbitofrontal regions'
+    citation: Jones-Gotman & Zatorre · Brain and Cognition · 1993
+    pmid: '8373572'
+    url: https://pubmed.ncbi.nlm.nih.gov/8373572/
+  - id: mentalizing-lesions
+    title: 'Dissociable prefrontal networks for cognitive and affective theory of mind: a lesion study'
+    citation: Shamay-Tsoory & Aharon-Peretz · Neuropsychologia · 2007
+    pmid: '17640690'
+    url: https://pubmed.ncbi.nlm.nih.gov/17640690/
+  - id: clinical-zhang-2006
+    title: 'Homonymous hemianopias: clinical-anatomic correlations in 904 cases'
+    citation: Zhang et al. · Neurology · 2006
+    pmid: '16567710'
+    url: https://pubmed.ncbi.nlm.nih.gov/16567710/
+  - id: clinical-zola-morgan-1986
+    title: 'Human amnesia and the medial temporal region: enduring memory impairment following a bilateral lesion limited to field CA1 of the hippocampus'
+    citation: Zola-Morgan et al. · Journal of Neuroscience · 1986
+    pmid: '3760943'
+    pmcid: PMC6568782
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6568782/
+  - id: clinical-aggleton-2000
+    title: Differential cognitive effects of colloid cysts in the third ventricle that spare or compromise the fornix
+    citation: Aggleton et al. · Brain · 2000
+    pmid: '10734011'
+    url: https://pubmed.ncbi.nlm.nih.gov/10734011/
+  - id: clinical-harding-2000
+    title: Degeneration of anterior thalamic nuclei differentiates alcoholics with amnesia
+    citation: Harding et al. · Brain · 2000
+    pmid: '10611128'
+    url: https://pubmed.ncbi.nlm.nih.gov/10611128/
+  - id: clinical-fearnley-1991
+    title: 'Ageing and Parkinson''s disease: substantia nigra regional selectivity'
+    citation: Fearnley & Lees · Brain · 1991
+    pmid: '1933245'
+    url: https://pubmed.ncbi.nlm.nih.gov/1933245/
+  - id: clinical-bhatia-1994
+    title: The behavioural and motor consequences of focal lesions of the basal ganglia in man
+    citation: Bhatia & Marsden · Brain · 1994
+    pmid: '7922471'
+    url: https://pubmed.ncbi.nlm.nih.gov/7922471/
+  - id: clinical-coslett-1984
+    title: Pure word deafness after bilateral primary auditory cortex infarcts
+    citation: Coslett et al. · Neurology · 1984
+    pmid: '6538274'
+    url: https://pubmed.ncbi.nlm.nih.gov/6538274/
+  - id: clinical-maffei-2017
+    title: 'Pure word deafness following left temporal damage: Behavioral and neuroanatomical evidence from a new case'
+    citation: Maffei et al. · Cortex · 2017
+    pmid: '29157937'
+    url: https://pubmed.ncbi.nlm.nih.gov/29157937/
+  - id: clinical-meyer-2016
+    title: Voxel-based lesion-symptom mapping of stroke lesions underlying somatosensory deficits
+    citation: 'Meyer et al. · NeuroImage: Clinical · 2016'
+    pmid: '26900565'
+    pmcid: PMC4724038
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4724038/
+  - id: clinical-dronkers-2004
+    title: Lesion analysis of the brain areas involved in language comprehension
+    citation: Dronkers et al. · Cognition · 2004
+    pmid: '15037129'
+    url: https://pubmed.ncbi.nlm.nih.gov/15037129/
+  - id: clinical-na-2022
+    title: 'Language systems from lesion-symptom mapping in aphasia: A meta-analysis of voxel-based lesion mapping studies'
+    citation: 'Na et al. · NeuroImage: Clinical · 2022'
+    pmid: '35569227'
+    pmcid: PMC9112051
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC9112051/
+  - id: clinical-verdon-2010
+    title: 'Neuroanatomy of hemispatial neglect and its functional components: a study using voxel-based lesion-symptom mapping'
+    citation: Verdon et al. · Brain · 2010
+    pmid: '20028714'
+    url: https://pubmed.ncbi.nlm.nih.gov/20028714/
+  - id: clinical-chechlacz-2012
+    title: 'Neuroanatomical Dissections of Unilateral Visual Neglect Symptoms: ALE Meta-Analysis of Lesion-Symptom Mapping'
+    citation: Chechlacz et al. · Frontiers in Human Neuroscience · 2012
+    pmid: '22907997'
+    pmcid: PMC3415822
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3415822/
+  - id: clinical-schoch-2006
+    title: 'Functional localization in the human cerebellum based on voxelwise statistical analysis: a study of 90 patients'
+    citation: Schoch et al. · NeuroImage · 2006
+    pmid: '16253526'
+    url: https://pubmed.ncbi.nlm.nih.gov/16253526/
+  - id: clinical-goldenberg-2006
+    title: The neural basis of imitation is body part specific
+    citation: Goldenberg & Karnath · Journal of Neuroscience · 2006
+    pmid: '16763035'
+    pmcid: PMC6675202
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6675202/
+  - id: clinical-achilles-2017
+    title: Using multi-level Bayesian lesion-symptom mapping to probe the body-part-specificity of gesture imitation skills
+    citation: Achilles et al. · NeuroImage · 2017
+    pmid: '28822751'
+    pmcid: PMC5692920
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5692920/
+  - id: clinical-bouvier-2006
+    title: Behavioral deficits and cortical damage loci in cerebral achromatopsia
+    citation: Bouvier & Engel · Cerebral Cortex · 2006
+    pmid: '15858161'
+    url: https://pubmed.ncbi.nlm.nih.gov/15858161/
+    corrections:
+    - doi: 10.1093/cercor/bhl065
+      summary:
+        en: Corrects a Results sentence to state that two small locations within the high-overlap region were lesioned in 8 of the 11 achromatopsia cases, and corrects the slice labels of Figure 2.
+        fr: Corrige une phrase des résultats pour indiquer que deux petites zones de la région de fort chevauchement étaient lésées chez 8 des 11 cas d’achromatopsie, et corrige les étiquettes des coupes de la figure 2.
+  - id: clinical-baldo-2007
+    title: 'Neural correlates of arithmetic and language comprehension: a common substrate?'
+    citation: Baldo & Dronkers · Neuropsychologia · 2007
+    pmid: '16997333'
+    url: https://pubmed.ncbi.nlm.nih.gov/16997333/
+  - id: clinical-duricy-2025
+    title: 'The role of the intraparietal sulcus in numeracy: A review of parietal lesion cases'
+    citation: Duricy et al. · Behavioural Brain Research · 2025
+    pmid: '39892656'
+    pmcid: PMC13229119
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC13229119/
+  - id: clinical-otsuka-hirota-2014
+    title: 'Invisibility of moving objects: a core symptom of motion blindness'
+    citation: Otsuka-Hirota et al. · BMJ Case Reports · 2014
+    pmid: '24729106'
+    pmcid: PMC3987254
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3987254/
+  - id: clinical-aboulhosn-2022
+    title: Partial Balint's syndrome and left homonymous hemianopsia presenting after resection of a right occipito-parietal glioblastoma
+    citation: Aboulhosn et al. · Neurocase · 2022
+    pmid: '36794351'
+    url: https://pubmed.ncbi.nlm.nih.gov/36794351/
+
+  - id: clinical-sperber-2024
+    title: 'The neuroanatomy of visual extinction following right hemisphere brain damage: Insights from multivariate and Bayesian lesion analyses in acute stroke'
+    citation: Sperber et al. · Human Brain Mapping · 2024
+    pmid: '38433712'
+    pmcid: PMC10910281
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10910281/
+  - id: clinical-chen-2016
+    title: 'Lesion-symptom mapping of a complex figure copy task: A large-scale PCA study of the BCoS trial'
+    citation: 'Chen et al. · NeuroImage: Clinical · 2016'
+    pmid: '27182489'
+    pmcid: PMC4857225
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4857225/
+  - id: clinical-lachowska-2021
+    title: Cortical Deafness Due to Ischaemic Strokes in Both Temporal Lobes
+    citation: Lachowska et al. · Journal of Audiology and Otology · 2021
+    pmid: '33327707'
+    pmcid: PMC8311059
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8311059/
+  - id: clinical-conterno-2022
+    title: 'Speech apraxia and oral apraxia: association or dissociation? A multivariate lesion-symptom mapping study in acute stroke patients'
+    citation: Conterno et al. · Experimental Brain Research · 2022
+    pmid: '34652492'
+    pmcid: PMC8803819
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8803819/
+  - id: clinical-roswandowitz-2018
+    title: Obligatory and facultative brain regions for voice-identity recognition
+    citation: Roswandowitz et al. · Brain · 2018
+    pmid: '29228111'
+    pmcid: PMC5837691
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5837691/
+  - id: clinical-leonard-2019
+    title: Diffusion tensor imaging reveals diffuse white matter injuries in locked-in syndrome patients
+    citation: Leonard et al. · PLOS ONE · 2019
+    pmid: '30969973'
+    pmcid: PMC6457498
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6457498/
+  - id: clinical-nilsen-2023
+    title: Demographic, Medical, and Clinical Characteristics of a Population-Based Sample of Patients With Long-lasting Locked-In Syndrome
+    citation: Nilsen et al. · Neurology · 2023
+    pmid: '37442623'
+    pmcid: PMC10491452
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10491452/
 
 circuits:
   - id: vision
@@ -366,10 +575,11 @@ circuits:
       en: Left-sided landmarks after the midline chiasm. The retina, optic nerves and optic radiations are not included in this tour.
       fr: Repères gauches après le chiasma médian. La rétine, les nerfs optiques et les radiations optiques ne sont pas inclus dans ce parcours.
     clinical:
-      en: Compare these landmarks with the published visual-field deficit evidence.
-      fr: Comparez ces repères aux données publiées sur les déficits du champ visuel.
+      en: Zhang’s clinical series associates homonymous field loss with retrochiasmal injury, including occipital cortex and optic radiations. Field-defect shape did not uniquely identify lesion location. The chiasm is an anatomical starting reference, not a typical homonymous-lesion site.
+      fr: La série clinique de Zhang associe les pertes homonymes du champ visuel aux atteintes rétrochiasmatiques, dont le cortex occipital et les radiations optiques. La forme du déficit ne désignait pas une localisation lésionnelle unique. Le chiasma est un repère anatomique de départ, et non un site lésionnel homonyme typique.
     deficit: hemianopia
-    references: [visual-pathways, retinotopy]
+    references: [visual-pathways, retinotopy, clinical-zhang-2006]
+    clinical_references: [clinical-zhang-2006]
     steps:
       - id: chiasm
         region: learning:midline:optic-chiasm
@@ -436,10 +646,11 @@ circuits:
       en: A left-sided landmark tour, not a complete Papez loop. Memory also depends on parallel pathways and cortical connections.
       fr: Un parcours de repères gauches, et non un circuit de Papez complet. La mémoire dépend aussi de voies parallèles et de connexions corticales.
     clinical:
-      en: Explore evidence on hippocampal, fornical and diencephalic contributions to acquired amnesia.
-      fr: Explorez les données sur les contributions hippocampiques, fornicales et diencéphaliques à l’amnésie acquise.
+      en: The cited patient and post-mortem studies concern bilateral hippocampal injury, bilateral fornix interruption and anterior thalamic degeneration. Harding found mammillary damage in both amnesic and non-amnesic Wernicke cases; mammillary damage alone did not distinguish amnesia. The left-sided tour does not reproduce these lesions or establish a single necessary chain.
+      fr: Les études cliniques et post-mortem citées concernent une atteinte hippocampique bilatérale, une interruption bilatérale du fornix et une dégénérescence thalamique antérieure. Harding trouvait des lésions mamillaires dans les cas de Wernicke amnésiques et non amnésiques ; leur seule présence ne distinguait pas l’amnésie. Le parcours gauche ne reproduit pas ces lésions et n’établit pas une chaîne nécessaire unique.
     deficit: amnesia
-    references: [memory-anatomy, memory-network, fornix]
+    references: [memory-anatomy, memory-network, fornix, clinical-zola-morgan-1986, clinical-aggleton-2000, clinical-harding-2000]
+    clinical_references: [clinical-zola-morgan-1986, clinical-aggleton-2000, clinical-harding-2000]
     steps:
       - id: hippocampus
         region: learning:left:hippocampus
@@ -519,10 +730,11 @@ circuits:
       en: A simplified motor-loop schematic. Nigral output, dopamine modulation, hyperdirect pathways and nonmotor loops are outside this tour.
       fr: Un schéma simplifié des boucles motrices. La sortie nigrale, la modulation dopaminergique, les voies hyperdirectes et les boucles non motrices sont hors de ce parcours.
     clinical:
-      en: Read the curated parkinsonism evidence alongside these anatomical landmarks.
-      fr: Consultez les données sélectionnées sur le parkinsonisme à côté de ces repères anatomiques.
+      en: Fearnley’s post-mortem study concerns nigral neuronal loss in Parkinson’s disease; the substantia nigra is omitted from this tour. Bhatia’s review found parkinsonism infrequently after lentiform injury. This schematic does not establish that injury to any displayed landmark produces Parkinson’s disease or a uniform parkinsonian syndrome.
+      fr: L’étude post-mortem de Fearnley concerne la perte neuronale nigrale dans la maladie de Parkinson ; la substance noire est omise de ce parcours. La revue de Bhatia trouvait peu de parkinsonismes après atteinte lentiforme. Ce schéma n’établit pas qu’une lésion de tout repère affiché provoque une maladie de Parkinson ou un syndrome parkinsonien uniforme.
     deficit: parkinsonism
-    references: [basal-ganglia, motor-learning, striatal-input]
+    references: [basal-ganglia, motor-learning, striatal-input, clinical-fearnley-1991, clinical-bhatia-1994]
+    clinical_references: [clinical-fearnley-1991, clinical-bhatia-1994]
     steps:
       - id: cortex
         region: destrieux:left:29
@@ -615,10 +827,11 @@ circuits:
       en: The ventral geniculate relay is not a separate teaching solid here. The displayed dorsal division must not be read as the relay to A1. The ears, cochlear nuclei, other brainstem relays and auditory radiations are outside this tour.
       fr: Le relais géniculé ventral n’a pas de volume pédagogique distinct ici. La division dorsale affichée ne doit pas être interprétée comme le relais vers A1. Les oreilles, les noyaux cochléaires, les autres relais du tronc cérébral et les radiations auditives sont hors de ce parcours.
     clinical:
-      en: Compare hearing landmarks with word-deafness evidence. Understanding spoken words also depends on cortical processing beyond a simple ascending relay.
-      fr: Comparez les repères auditifs aux données sur la surdité verbale. Comprendre les mots entendus dépend aussi de traitements corticaux au-delà d’un simple relais ascendant.
+      en: Coslett reported word deafness after bilateral auditory cortical infarcts; Maffei reported a unilateral left temporal case involving cortex and white matter. These cases do not establish a deficit at every ascending relay, a required bilateral lesion pattern or a single cortical/disconnection mechanism.
+      fr: Coslett rapportait une surdité verbale après des infarctus corticaux auditifs bilatéraux ; Maffei décrivait un cas temporal gauche unilatéral impliquant le cortex et la substance blanche. Ces cas n’établissent ni un déficit à chaque relais ascendant, ni un profil lésionnel bilatéral obligatoire, ni un mécanisme cortical ou de déconnexion unique.
     deficit: word-deafness
-    references: [auditory-pathways, auditory-thalamus, cortical-parcellation]
+    references: [auditory-pathways, auditory-thalamus, cortical-parcellation, clinical-coslett-1984, clinical-maffei-2017]
+    clinical_references: [clinical-coslett-1984, clinical-maffei-2017]
     steps:
       - id: colliculus
         region: learning:left:inferior-colliculus
@@ -672,10 +885,11 @@ circuits:
       en: A left-sided thalamocortical landmark tour. The spinal pathways, brainstem crossings and individual body-part maps are not displayed. Somatosensory processing includes parallel and reciprocal connections.
       fr: Un parcours de repères thalamo-corticaux gauches. Les voies spinales, les croisements du tronc cérébral et les cartes individuelles des parties du corps ne sont pas affichés. Le traitement somatosensoriel comprend des connexions parallèles et réciproques.
     clinical:
-      en: Read the upper-limb sensory-loss evidence and compare its lesion findings with these larger reference landmarks.
-      fr: Consultez les données sur les déficits sensitifs du membre supérieur et comparez leurs résultats lésionnels à ces repères de référence plus étendus.
+      en: Meyer linked arm and hand sensory deficits to parietal white matter and insulo-opercular injury. S1, thalamus and brainstem were untested because lesion coverage was insufficient. These broader landmarks do not reproduce the lesion clusters or isolate hand representations.
+      fr: Meyer associait les déficits sensitifs du bras et de la main aux atteintes de substance blanche pariétale et insulo-operculaires. S1, le thalamus et le tronc cérébral n’étaient pas testés faute de couverture lésionnelle suffisante. Ces repères plus larges ne reproduisent pas les amas lésionnels et n’isolent pas les représentations de la main.
     deficit: somatosensory
-    references: [somatic-cortex, opercular-somatotopy, cortical-parcellation]
+    references: [somatic-cortex, opercular-somatotopy, cortical-parcellation, clinical-meyer-2016]
+    clinical_references: [clinical-meyer-2016]
     steps:
       - id: thalamus
         region: learning:left:thalamus
@@ -712,8 +926,8 @@ circuits:
           en: OP1 marks a parietal opercular territory associated with secondary somatosensory processing. The operculum contains several sensory areas and body maps, rather than one undivided S2 region.
           fr: OP1 repère un territoire de l’opercule pariétal associé au traitement somatosensoriel secondaire. L’opercule contient plusieurs aires sensitives et cartes corporelles, plutôt qu’une région S2 indivisée.
         mapping:
-          en: The HCP-MMP OP1 parcel is a landmark for this territory; it does not reproduce the study’s tactile activation maps in this individual.
-          fr: La parcelle OP1 de HCP-MMP sert de repère pour ce territoire ; elle ne reproduit pas les cartes d’activation tactile de l’étude chez cet individu.
+          en: This HCP-MMP OP1 landmark does not reproduce Meyer’s OP2/OP3-border cluster (lesser OP4 involvement) or individual tactile activation maps.
+          fr: Ce repère OP1 de HCP-MMP ne reproduit ni l’amas de Meyer à la frontière OP2/OP3 (moindre implication d’OP4), ni les cartes individuelles d’activation tactile.
         view: inferior
         plane: coronal
 
@@ -729,10 +943,11 @@ circuits:
       en: Four left-sided landmarks, not a serial comprehension-to-production chain. Speech processing also involves the right hemisphere, additional cortical territories and white-matter pathways that this tour does not reconstruct.
       fr: Quatre repères gauches, et non une chaîne sérielle de la compréhension vers la production. Le traitement de la parole implique aussi l’hémisphère droit, d’autres territoires corticaux et des voies de substance blanche que ce parcours ne reconstruit pas.
     clinical:
-      en: Compare the aphasia evidence across comprehension, naming and speech tasks. Different tasks and lesions need not identify the same critical territory.
-      fr: Comparez les données sur l’aphasie selon les tâches de compréhension, de dénomination et de parole. Des tâches et des lésions différentes ne désignent pas nécessairement le même territoire critique.
+      en: Dronkers’ comprehension study and Na’s lesion meta-analysis link different language tasks to differing temporal, frontal and insular-motor injury patterns. The atlas parcels are broad references, not fixed Broca/Wernicke centres or a patient-specific language-dominance assessment.
+      fr: L’étude de compréhension de Dronkers et la méta-analyse lésionnelle de Na associent différentes tâches langagières à des profils d’atteinte temporale, frontale et insulo-motrice différents. Les parcelles d’atlas sont des repères larges, et non des centres fixes de Broca ou Wernicke ni une évaluation individuelle de dominance langagière.
     deficit: aphasia
-    references: [speech-streams, speech-feedback, cortical-parcellation]
+    references: [speech-streams, speech-feedback, cortical-parcellation, clinical-dronkers-2004, clinical-na-2022]
+    clinical_references: [clinical-dronkers-2004, clinical-na-2022]
     steps:
       - id: superior-temporal
         region: destrieux:left:34
@@ -799,10 +1014,11 @@ circuits:
       en: The dorsal attention network is bilateral; this tour shows only its right-sided landmarks. Ventral reorienting responses often show right dominance. The frontal ventral components and other network nodes are outside this tour.
       fr: Le réseau dorsal de l’attention est bilatéral ; ce parcours montre seulement ses repères droits. Les réponses ventrales de réorientation présentent souvent une dominance droite. Les composantes frontales ventrales et les autres nœuds du réseau sont hors de ce parcours.
     clinical:
-      en: Read the neglect evidence as a network problem with varied lesion patterns, rather than a consequence predicted by one highlighted parcel.
-      fr: Consultez les données sur la négligence comme un problème de réseau aux profils lésionnels variés, plutôt qu’une conséquence prédite par une seule parcelle sélectionnée.
+      en: Verdon distinguishes perceptual and exploratory components of neglect. Chechlacz’s meta-analysis of left visual neglect separates egocentric and allocentric associations while finding shared white matter involvement. These cortical landmarks do not trace affected pathways or reproduce the lesion maps.
+      fr: Verdon distingue des composantes perceptives et exploratoires de la négligence. La méta-analyse de Chechlacz sur la négligence visuelle gauche sépare les associations égocentrées et allocentrées tout en montrant une implication commune de la substance blanche. Ces repères corticaux ne tracent pas les voies atteintes et ne reproduisent pas les cartes lésionnelles.
     deficit: neglect
-    references: [attention-systems, attention-laterality, cortical-parcellation]
+    references: [attention-systems, attention-laterality, cortical-parcellation, clinical-verdon-2010, clinical-chechlacz-2012]
+    clinical_references: [clinical-verdon-2010, clinical-chechlacz-2012]
     steps:
       - id: ips1
         region: hcp-mmp:right:17
@@ -856,10 +1072,11 @@ circuits:
       en: One simplified dentate output branch, not the full cerebellar loop. Incoming mossy and climbing fibres, other deep nuclei and return pathways are omitted. The crossing is explained, not reconstructed as individual axons.
       fr: Une branche de sortie du noyau dentelé, simplifiée, et non toute la boucle cérébelleuse. Les fibres moussues et grimpantes afférentes, les autres noyaux profonds et les voies de retour sont omis. Le croisement est expliqué, et non reconstruit en axones individuels.
     clinical:
-      en: Compare these output landmarks with cerebellar ataxia evidence. Lesion location within the cerebellum matters; the entire cortex is not one uniform motor territory.
-      fr: Comparez ces repères de sortie aux données sur l’ataxie cérébelleuse. La localisation lésionnelle dans le cervelet importe ; tout le cortex ne constitue pas un territoire moteur uniforme.
+      en: Schoch’s mixed ischemic and surgical cohort linked limb ataxia particularly to interposed and dentate nuclear lesions; cortical associations varied with lesion location and stage. This dentate output tour does not map every ataxia syndrome or imply that the whole cerebellar cortex is uniformly motor. The cohort included patients operated in childhood or adolescence.
+      fr: La cohorte mixte ischémique et chirurgicale de Schoch associait l’ataxie des membres notamment aux lésions des noyaux interposés et dentelé ; les associations corticales variaient selon la localisation et le stade. Ce parcours de sortie dentelée ne cartographie pas toute ataxie et n’implique pas un cortex cérébelleux uniformément moteur. La cohorte incluait des patients opérés dans l’enfance ou l’adolescence.
     deficit: ataxia
-    references: [cerebellar-organization, cerebellar-peduncles, cerebellar-motor-loops, cortical-parcellation]
+    references: [cerebellar-organization, cerebellar-peduncles, cerebellar-motor-loops, cortical-parcellation, clinical-schoch-2006]
+    clinical_references: [clinical-schoch-2006]
     steps:
       - id: cortex
         region: learning:cerebellar-cortex-left
@@ -969,10 +1186,11 @@ circuits:
       en: The Grasp system is bilateral; this tour shows only its left-sided landmarks. The Use system is left-lateralized. The systems are interacting territories, not serial chains. Parietofrontal fibres, the corpus callosum, the cerebellum, the basal ganglia and the development of these systems are outside this tour.
       fr: Le système de saisie est bilatéral ; ce parcours montre seulement ses repères gauches. Le système d’utilisation est latéralisé à gauche. Ces systèmes sont des territoires en interaction, et non des chaînes sérielles. Les fibres pariéto-frontales, le corps calleux, le cervelet, les ganglions de la base et le développement de ces systèmes sont hors de ce parcours.
     clinical:
-      en: Compare these landmarks with the limb apraxia evidence. Apraxia follows damage at varied sites of a left temporo-parieto-frontal network, and it dissociates from optic ataxia, which follows damage to the Grasp system.
-      fr: Comparez ces repères aux données sur l’apraxie gestuelle. L’apraxie suit des lésions de sites variés d’un réseau temporo-pariéto-frontal gauche, et elle se dissocie de l’ataxie optique, qui suit des lésions du système de saisie.
+      en: Goldenberg associated hand and finger imitation deficits with differing lesion sites, but Achilles’ larger stroke sample did not consistently reproduce that body-part dissociation. The Grasp/Use framework is a teaching model, not a validated patient-specific apraxia map. Imitation, tool use and visually guided reaching are distinct tasks.
+      fr: Goldenberg associait les déficits d’imitation de la main et des doigts à des sites lésionnels différents, mais le plus grand échantillon d’AVC d’Achilles ne reproduisait pas constamment cette dissociation. Le cadre préhension/utilisation est un modèle pédagogique, et non une carte validée d’apraxie individuelle. L’imitation, l’utilisation d’outils et l’atteinte visuellement guidée sont des tâches distinctes.
     deficit: apraxia
-    references: [action-systems, dorsal-streams, tool-network, tool-use-evolution, apraxia-parietal, cortical-parcellation]
+    references: [action-systems, dorsal-streams, tool-network, tool-use-evolution, apraxia-parietal, cortical-parcellation, clinical-goldenberg-2006, clinical-achilles-2017]
+    clinical_references: [clinical-goldenberg-2006, clinical-achilles-2017]
     steps:
       - id: mip
         region: hcp-mmp:left:50
@@ -980,8 +1198,8 @@ circuits:
         name: { en: Left medial intraparietal area MIP, fr: Aire intrapariétale médiane MIP gauche }
         role: { en: Grasp system · online control, fr: Système de saisie · contrôle en ligne }
         explanation:
-          en: Start in the superior parietal lobule. The dorso-dorsal stream, through V6A and MIP, controls reaching and grasping online from an object’s current size, shape and orientation. Its damage leads to optic ataxia.
-          fr: Commencez dans le lobule pariétal supérieur. La voie dorso-dorsale, par V6A et MIP, contrôle en ligne l’atteinte et la saisie à partir de la taille, de la forme et de l’orientation actuelles de l’objet. Sa lésion entraîne une ataxie optique.
+          en: In the cited two-stream model, dorso-dorsal territories including V6A and MIP contribute to online reaching and grasping. Injury to broader occipitoparietal reaching systems can cause optic ataxia; this atlas parcel is not an individually demonstrated critical lesion site.
+          fr: Dans le modèle à deux voies cité, les territoires dorso-dorsaux comprenant V6A et MIP contribuent à l’atteinte et à la préhension en ligne. Une lésion des systèmes occipitopariétaux d’atteinte plus larges peut causer une ataxie optique ; cette parcelle d’atlas n’est pas un site lésionnel critique démontré individuellement.
         mapping:
           en: This HCP-MMP parcel lies mostly in the intraparietal sulcus. It is an atlas label mapped onto the individual surface, not a reaching localizer, and V6A is not shown.
           fr: Cette parcelle HCP-MMP se trouve surtout dans le sillon intrapariétal. C’est une étiquette d’atlas projetée sur la surface individuelle, et non une localisation de l’atteinte ; V6A n’est pas affichée.
@@ -1006,8 +1224,8 @@ circuits:
         name: { en: Left middle temporal area MT, fr: Aire temporale moyenne MT gauche }
         role: { en: Use system · visual entry, fr: Système d’utilisation · entrée visuelle }
         explanation:
-          en: Now change systems. MT is the main visual node of the ventro-dorsal stream, which reaches the inferior parietal lobule and contributes to action understanding. In Functions, the Gestures and Action observation maps both peak here.
-          fr: Changez maintenant de système. MT est le principal nœud visuel de la voie ventro-dorsale, qui rejoint le lobule pariétal inférieur et contribue à la compréhension de l’action. Dans Fonctions, les cartes Gestes et Observation de l’action culminent toutes deux ici.
+          en: Now change systems. In the cited model, MT contributes visual input to ventro-dorsal territories involved in action processing. This functional framework does not establish an MT lesion as a sufficient cause of limb apraxia.
+          fr: Changez maintenant de système. Dans le modèle cité, MT contribue aux entrées visuelles des territoires ventro-dorsaux impliqués dans le traitement des actions. Ce cadre fonctionnel n’établit pas qu’une lésion de MT suffise à causer une apraxie gestuelle.
         mapping:
           en: This HCP-MMP parcel is mapped onto the individual surface. It is not a motion localizer measured in this brain.
           fr: Cette parcelle HCP-MMP est projetée sur la surface individuelle. Elle ne constitue pas une localisation du mouvement mesurée dans ce cerveau.
@@ -1019,8 +1237,8 @@ circuits:
         name: { en: Left anterior inferior parietal area PFt, fr: Aire pariétale inférieure antérieure PFt gauche }
         role: { en: Use system · tool use, fr: Système d’utilisation · usage des outils }
         explanation:
-          en: The ventro-dorsal Use system stores the skilled actions associated with familiar objects. Tool studies converge on the left inferior parietal lobule, and watching actions done with tools engages a rostral sector of it that was not found in monkeys.
-          fr: Le système d’utilisation ventro-dorsal conserve les actions expertes associées aux objets familiers. Les études sur les outils convergent vers le lobule pariétal inférieur gauche, et l’observation d’actions réalisées avec des outils en sollicite un secteur rostral qui n’a pas été observé chez le singe.
+          en: The proposed Use system supports learned object-related actions. Tool studies implicate left inferior parietal territories. Peeters’ human–monkey comparison reported a human rostral response under its tested conditions; this does not establish universal human exclusivity or this parcel’s necessity for tool use.
+          fr: Le système d’utilisation proposé soutient les actions apprises liées aux objets. Les études d’outils impliquent des territoires pariétaux inférieurs gauches. La comparaison humain–singe de Peeters rapportait une réponse rostrale humaine dans les conditions testées ; cela n’établit ni une exclusivité humaine universelle ni la nécessité de cette parcelle pour utiliser des outils.
         mapping:
           en: PFt lies mostly in the postcentral sulcus and extends onto the anterior supramarginal gyrus. Published tool sites are group activation peaks, not this parcel’s boundary, and apraxia lesions extend beyond it.
           fr: PFt se situe surtout dans le sillon postcentral et s’étend sur la partie antérieure du gyrus supramarginal. Les sites publiés pour les outils sont des pics d’activation de groupe, et non la limite de cette parcelle ; les lésions apraxiques la dépassent.
@@ -1069,6 +1287,7 @@ circuits:
       fr: Comparez les données sur l’agnosie des objets aux effets de réseau du cas unique de Konen. Une lésion fusiforme droite focale affectait les réponses au-delà de la lésion et dans l’hémisphère opposé ; cela n’établit pas une dominance droite fixe.
     deficit: agnosia
     references: [object-localizer, object-agnosia, cortical-parcellation]
+    clinical_references: [object-agnosia]
     steps:
       - id: v1
         region: hcp-mmp:right:1
@@ -1126,6 +1345,7 @@ circuits:
       fr: Le cas chirurgical de Gaillard soutient une contribution causale du cortex occipitotemporal ventral gauche à la lecture. La comparaison d’AVC de Leff distingue le trouble de reconnaissance des mots entiers des difficultés de lecture liées au champ visuel ; ces études ne rendent pas tous les troubles de lecture équivalents.
     deficit: alexia
     references: [reading-network, reading-causal, reading-lesions, cortical-parcellation]
+    clinical_references: [reading-causal, reading-lesions]
     steps:
       - id: v1
         region: hcp-mmp:left:1
@@ -1196,6 +1416,7 @@ circuits:
       fr: Comparez les données sur l’ataxie optique au chevauchement lésionnel occipitopariétal de Karnath et Perenin, avec extension médiale par la substance blanche. Les erreurs d’atteinte d’une cible ne peuvent pas être attribuées à une seule parcelle pariétale supérieure.
     deficit: optic-ataxia
     references: [reach-feedback, reach-lesions]
+    clinical_references: [reach-lesions]
     steps:
       - id: parieto-occipital
         region: destrieux:left:66
@@ -1253,6 +1474,7 @@ circuits:
       fr: Les trois patients de Takahashi reconnaissaient les lieux familiers mais ne pouvaient plus rappeler les directions entre eux après une atteinte rétrospléniale droite. C’est une forme de désorientation topographique, distincte d’une incapacité à reconnaître les repères.
     deficit: topographical-disorientation
     references: [navigation-map, navigation-lesions, memory-anatomy, cortical-parcellation]
+    clinical_references: [navigation-lesions]
     steps:
       - id: parahippocampal
         region: destrieux:right:23
@@ -1310,6 +1532,7 @@ circuits:
       fr: La cartographie lésionnelle de Gläscher reliait l’inhibition de la réponse, la surveillance des conflits et la flexibilité à des atteintes préfrontales dorsolatérales et cingulaires antérieures, distinctes des atteintes préfrontales ventrales qui altéraient les décisions fondées sur la valeur. Ces repères ne prédisent pas le profil exécutif individuel d’un patient.
     deficit: executive
     references: [adaptive-control, control-systems, control-lesions, cortical-parcellation]
+    clinical_references: [control-lesions]
     steps:
       - id: middle-frontal
         region: destrieux:left:15
@@ -1380,6 +1603,7 @@ circuits:
       fr: Une atteinte corticospinale est associée à un trouble du mouvement volontaire. L’étude d’AVC de Frenkel-Toledo reliait la parésie du bras à une atteinte corticospinale au niveau de la couronne rayonnante et de la capsule, mais aussi à des atteintes périsylviennes, putaminales et des faisceaux d’association ; un repère de faisceau seul ne prédit ni la faiblesse, ni la spasticité, ni la récupération.
     deficit: hemiparesis
     references: [corticospinal-anatomy, corticospinal-brainstem, motor-weakness, cortical-parcellation]
+    clinical_references: [motor-weakness]
     steps:
       - id: motor-cortex
         region: hcp-mmp:left:8
@@ -1450,6 +1674,7 @@ circuits:
       fr: Les six patients de Berthier avaient des réponses protectrices et émotionnelles inadéquates aux stimuli douloureux malgré une sensibilité primaire préservée. Une atteinte insulaire était présente, avec lésions associées variables ; la série n’isole ni une lésion suffisante ni une sous-région insulaire unique.
     deficit: pain-asymbolia
     references: [pain-activation, pain-specificity, pain-dissociation]
+    clinical_references: [pain-dissociation]
     steps:
       - id: posterior-insula
         region: destrieux:left:17
@@ -1507,6 +1732,7 @@ circuits:
       fr: La patiente S.M. d’Adolphs avait des lésions amygdaliennes bilatérales et une reconnaissance faciale de la peur déficitaire. L’instruction explicite de regarder les yeux rétablissait sa performance au suivi ; la série de neuf patients montrait aussi une variabilité importante.
     deficit: emotion-recognition
     references: [face-system, fear-lesions, fear-variability, fear-gaze]
+    clinical_references: [fear-lesions, fear-variability, fear-gaze]
     steps:
       - id: fusiform
         region: destrieux:right:21
@@ -1577,6 +1803,7 @@ circuits:
       fr: Les résultats lésionnels ventromédians de Bechara concernent les décisions sous incertitude. Fellows et Farah ont trouvé que des lésions dorsolatérales pouvaient aussi altérer la tâche de jeu, l’apprentissage par inversion contribuant au déficit ventromédian. La tâche n’est pas propre à une seule région.
     deficit: decision-making
     references: [reward-anatomy, valuation, decision-lesions, decision-qualifier]
+    clinical_references: [decision-lesions, decision-qualifier]
     steps:
       - id: vta
         region: learning:left:vta
@@ -1634,6 +1861,7 @@ circuits:
       fr: Les cas de lésions droites de Clarke dissociaient localisation et reconnaissance des sons. La cohorte de lésions aiguës d’Adriani montrait qu’une atteinte d’un réseau auditif spécialisé ne produisait pas systématiquement le déficit correspondant ; les prédictions simples fondées sur une région sont peu fiables.
     deficit: sound-localization
     references: [auditory-space, auditory-space-lesions, auditory-space-limits]
+    clinical_references: [auditory-space-lesions, auditory-space-limits]
     steps:
       - id: superior-temporal
         region: destrieux:right:34
@@ -1687,10 +1915,11 @@ circuits:
       en: Three right-sided landmarks in bilateral visual systems. The sequence does not imply a direct V1-to-V3A-to-MT chain. Other motion-sensitive areas and white-matter pathways are omitted.
       fr: Trois repères droits dans des systèmes visuels bilatéraux. La séquence n’implique pas une chaîne directe V1–V3A–MT. D’autres aires sensibles au mouvement et les voies de substance blanche sont omises.
     clinical:
-      en: Zihl’s patient had severe visual motion impairment after bilateral lateral temporo-occipital and underlying white-matter damage. The case does not isolate one MT parcel or establish that a unilateral lesion has the same effect.
-      fr: La patiente de Zihl avait un trouble sévère de la vision du mouvement après une atteinte temporo-occipitale latérale bilatérale et de la substance blanche sous-jacente. Ce cas n’isole pas une parcelle MT et n’établit pas qu’une lésion unilatérale ait le même effet.
+      en: Zihl’s classic case involved bilateral temporo-occipital and white-matter damage. Otsuka-Hirota also reported persistent motion blindness after unilateral right subcortical hemorrhage. These cases do not isolate one MT parcel, establish a required bilateral pattern or imply identical mechanisms or severity.
+      fr: Le cas classique de Zihl impliquait une atteinte temporo-occipitale et de substance blanche bilatérale. Otsuka-Hirota rapportait aussi une cécité au mouvement persistante après hémorragie sous-corticale droite unilatérale. Ces cas n’isolent pas une parcelle MT, n’établissent pas un profil bilatéral obligatoire et n’impliquent pas des mécanismes ou une sévérité identiques.
     deficit: akinetopsia
-    references: [motion-mapping, motion-lesions, cortical-parcellation]
+    references: [motion-mapping, motion-lesions, cortical-parcellation, clinical-otsuka-hirota-2014]
+    clinical_references: [motion-lesions, clinical-otsuka-hirota-2014]
     steps:
       - id: v1
         region: hcp-mmp:right:1
@@ -1744,10 +1973,11 @@ circuits:
       en: Three right-sided landmarks in bilateral visual systems. This teaching order is not a complete serial model of colour perception. Additional ventral occipital areas, including the study’s VO1, are not visited.
       fr: Trois repères droits dans des systèmes visuels bilatéraux. Cet ordre pédagogique n’est pas un modèle sériel complet de la perception des couleurs. D’autres aires occipitales ventrales, dont VO1 de l’étude, ne sont pas parcourues.
     clinical:
-      en: Zeki’s clinical review relates acquired cerebral colour loss to ventral occipital damage. Colour decoding in healthy observers does not establish lesion boundaries, prove that one parcel is sufficient for colour vision or diagnose achromatopsia.
-      fr: La revue clinique de Zeki relie la perte acquise de la vision des couleurs à une atteinte occipitale ventrale. Le décodage des couleurs chez des sujets sains n’établit pas de limites lésionnelles, ne prouve pas qu’une parcelle suffise à la vision des couleurs et ne diagnostique pas l’achromatopsie.
+      en: Zeki’s review and Bouvier’s case-report meta-analysis associate acquired colour deficits with ventral occipital damage, often alongside other visual impairments. Bouvier’s published correction is listed with the source. Healthy-observer colour decoding does not establish lesion boundaries or diagnose achromatopsia, and atlas V4 is not the clinical lesion map.
+      fr: La revue de Zeki et la méta-analyse de cas de Bouvier associent les déficits acquis des couleurs aux atteintes occipitales ventrales, souvent avec d’autres troubles visuels. La correction publiée de Bouvier figure avec la source. Le décodage des couleurs chez des sujets sains n’établit pas de limites lésionnelles et ne diagnostique pas l’achromatopsie ; V4 de l’atlas n’est pas la carte lésionnelle clinique.
     deficit: achromatopsia
-    references: [colour-coding, colour-clinical, cortical-parcellation]
+    references: [colour-coding, colour-clinical, cortical-parcellation, clinical-bouvier-2006]
+    clinical_references: [colour-clinical, clinical-bouvier-2006]
     steps:
       - id: v1
         region: hcp-mmp:right:1
@@ -1801,10 +2031,11 @@ circuits:
       en: Left-sided landmarks illustrating Dehaene and colleagues’ proposed three-system organization. Number processing also recruits the right hemisphere and frontal regions, with recruitment varying by task in Chochon’s fMRI study. These are interacting contributions rather than serial stages.
       fr: Des repères gauches illustrant l’organisation en trois systèmes proposée par Dehaene et ses collègues. Le traitement des nombres mobilise aussi l’hémisphère droit et des régions frontales, avec un recrutement variant selon la tâche dans l’étude IRMf de Chochon. Ces contributions interagissent plutôt que de former des étapes sérielles.
     clinical:
-      en: Dehaene and Cohen described two patients with dissociable impairments of verbal arithmetic facts and numerical quantity knowledge. Acalculia has different mechanisms; the left-sided tour is not a map of both patients’ lesions.
-      fr: Dehaene et Cohen ont décrit deux patients présentant des atteintes dissociables des faits arithmétiques verbaux et des connaissances sur les quantités numériques. L’acalculie a différents mécanismes ; le parcours gauche ne cartographie pas les lésions des deux patients.
+      en: Dehaene and Cohen’s cases distinguish arithmetic facts from quantity knowledge; Baldo found partially overlapping arithmetic and language lesion associations. Duricy’s review specifically linked left intraparietal damage to approximation impairment, not every numeracy task. These broad landmarks do not map all forms of acalculia or both original patients’ lesions.
+      fr: Les cas de Dehaene et Cohen distinguent les faits arithmétiques des connaissances quantitatives ; Baldo trouvait des associations lésionnelles du calcul et du langage partiellement chevauchantes. La revue de Duricy associait spécifiquement l’atteinte intrapariétale gauche aux troubles d’approximation, et non à toute tâche numérique. Ces repères larges ne cartographient ni toute acalculie ni les lésions des deux patients initiaux.
     deficit: acalculia
-    references: [number-systems, number-tasks, number-lesions]
+    references: [number-systems, number-tasks, number-lesions, clinical-baldo-2007, clinical-duricy-2025]
+    clinical_references: [number-lesions, clinical-baldo-2007, clinical-duricy-2025]
     steps:
       - id: intraparietal
         region: destrieux:left:57
@@ -1858,10 +2089,11 @@ circuits:
       en: Three right-sided landmarks in bilateral oculomotor systems. The order does not establish a parietal-to-frontal chain. Subcortical, brainstem and cerebellar contributions are not visited; this tour concerns cortical control rather than the full motor apparatus of the eyes.
       fr: Trois repères droits dans des systèmes oculomoteurs bilatéraux. L’ordre n’établit pas une chaîne pariéto-frontale. Les contributions sous-corticales, du tronc cérébral et du cervelet ne sont pas parcourues ; ce parcours concerne le contrôle cortical plutôt que tout l’appareil moteur des yeux.
     clinical:
-      en: Ghika’s parietal stroke series reported oculomotor apraxia with bilateral posterior lesions, alongside other eye-movement findings. This acquired syndrome cannot be assigned to one right frontal parcel or equated with every failure to move the eyes.
-      fr: La série d’AVC pariétaux de Ghika rapportait une apraxie oculomotrice avec des lésions postérieures bilatérales, ainsi que d’autres signes oculomoteurs. Ce syndrome acquis ne peut pas être attribué à une parcelle frontale droite ni assimilé à toute difficulté à bouger les yeux.
+      en: Ghika reported oculomotor apraxia with bilateral posterior lesions; Aboulhosn’s selected tumor-resection case showed partial Bálint syndrome after unilateral right injury. These findings neither require bilateral damage in every patient nor isolate one right frontal parcel as causal. The functional eye-field landmarks are not reconstructed clinical lesions.
+      fr: Ghika rapportait une apraxie oculomotrice avec des lésions postérieures bilatérales ; le cas sélectionné de résection tumorale d’Aboulhosn présentait un syndrome de Bálint partiel après atteinte droite unilatérale. Ces constats n’exigent pas une atteinte bilatérale chez tout patient et n’isolent pas une parcelle frontale droite comme causale. Les repères fonctionnels oculomoteurs ne sont pas des lésions cliniques reconstruites.
     deficit: oculomotor-apraxia
-    references: [gaze-imaging, gaze-parietal, gaze-stroke, cortical-parcellation]
+    references: [gaze-imaging, gaze-parietal, gaze-stroke, cortical-parcellation, clinical-aboulhosn-2022]
+    clinical_references: [gaze-stroke, clinical-aboulhosn-2022]
     steps:
       - id: intraparietal
         region: destrieux:right:57
@@ -1902,3 +2134,697 @@ circuits:
           fr: SCEF de HCP-MMP combine des territoires oculomoteurs supplémentaire et cingulaire. Elle ne délimite pas séparément les activations du champ supplémentaire et du cortex cingulaire antérieur de Berman et ne reproduit pas leurs limites exactes.
         view: left
         plane: sagittal
+
+  - id: speech-planning
+    name: { en: Speech apraxia lesion findings, fr: Résultats lésionnels de l’apraxie de la parole }
+    summary:
+      en: Compare three left frontal and insular landmarks implicated in acquired apraxia of speech.
+      fr: Comparez trois repères frontaux et insulaires gauches impliqués dans l’apraxie acquise de la parole.
+    route:
+      en: Posterior inferior frontal cortex · anterior insula · precentral cortex
+      fr: Cortex frontal inférieur postérieur · insula antérieure · cortex précentral
+    scope:
+      en: A comparison of lesion-study landmarks, not a serial pathway or a complete speech-production network. The studies differ in stroke timing and associated aphasia; their findings do not identify a single speech-planning centre.
+      fr: Une comparaison de repères d’études lésionnelles, et non une voie sérielle ni un réseau complet de production de la parole. Les études diffèrent par le délai après AVC et l’aphasie associée ; leurs résultats n’identifient pas un centre unique de planification de la parole.
+    clinical:
+      en: Dronkers emphasized the anterior insula, Hillis emphasized posterior inferior frontal injury or hypoperfusion, and Graff-Radford’s small series with little or no aphasia overlapped motor and premotor cortex. Compare these findings with the curated speech-apraxia evidence.
+      fr: Dronkers soulignait l’insula antérieure, Hillis l’atteinte ou l’hypoperfusion frontale inférieure postérieure, et la petite série de Graff-Radford avec peu ou pas d’aphasie se chevauchait sur le cortex moteur et prémoteur. Comparez ces résultats aux données sélectionnées sur l’apraxie de la parole.
+    deficit: speech-apraxia
+    references: [speech-insula, speech-frontal, speech-motor]
+    clinical_references: [speech-insula, speech-frontal, speech-motor]
+    steps:
+      - id: inferior-frontal
+        region: destrieux:left:12
+        source_name: G_front_inf-Opercular
+        name: { en: Left inferior frontal opercular gyrus, fr: Partie operculaire du gyrus frontal inférieur gauche }
+        role: { en: Posterior frontal speech landmark, fr: Repère frontal postérieur de la parole }
+        explanation:
+          en: Hillis and colleagues associated apraxia of speech in acute stroke with posterior inferior frontal injury or reduced perfusion, rather than insular injury alone.
+          fr: Hillis et ses collègues associaient l’apraxie de la parole dans l’AVC aigu à une atteinte frontale inférieure postérieure ou à une perfusion réduite, plutôt qu’à la seule atteinte insulaire.
+        mapping:
+          en: The Destrieux opercular parcel is a coarse posterior inferior frontal landmark. It does not reproduce the patients’ lesions or perfusion maps.
+          fr: La parcelle operculaire de Destrieux est un repère frontal inférieur postérieur approximatif. Elle ne reproduit pas les lésions ni les cartes de perfusion des patients.
+        view: left
+        plane: axial
+      - id: insula
+        region: destrieux:left:18
+        source_name: G_insular_short
+        name: { en: Left short insular gyri, fr: Gyri courts de l’insula gauche }
+        role: { en: Chronic-stroke comparison, fr: Comparaison dans l’AVC chronique }
+        explanation:
+          en: Dronkers’ chronic-stroke comparison implicated the left precentral insular gyrus. The other cited studies qualify an exclusive insular account.
+          fr: La comparaison d’AVC chroniques de Dronkers impliquait le gyrus précentral insulaire gauche. Les autres études citées nuancent une explication exclusivement insulaire.
+        mapping:
+          en: This parcel groups the short insular gyri; it does not isolate the precentral insular gyrus or establish that all anterior insula plans speech.
+          fr: Cette parcelle regroupe les gyri insulaires courts ; elle n’isole pas le gyrus précentral insulaire et n’établit pas que toute l’insula antérieure planifie la parole.
+        view: left
+        plane: coronal
+      - id: precentral
+        region: destrieux:left:29
+        source_name: G_precentral
+        name: { en: Left precentral gyrus, fr: Gyrus précentral gauche }
+        role: { en: Motor and premotor comparison, fr: Comparaison motrice et prémotrice }
+        explanation:
+          en: Graff-Radford and colleagues found maximal lesion overlap across left motor and premotor cortex in seven selected stroke cases with absent or equivocal aphasia.
+          fr: Graff-Radford et ses collègues observaient un chevauchement lésionnel maximal sur le cortex moteur et prémoteur gauche dans sept cas d’AVC sélectionnés avec aphasie absente ou équivoque.
+        mapping:
+          en: The whole precentral gyrus is shown. It neither isolates speech motor representations nor delineates all adjacent premotor tissue.
+          fr: Le gyrus précentral entier est affiché. Il n’isole pas les représentations motrices de la parole et ne délimite pas tout le tissu prémoteur adjacent.
+        view: left
+        plane: coronal
+
+  - id: writing
+    name: { en: Spelling memory landmarks, fr: Repères de la mémoire orthographique }
+    summary:
+      en: Compare lesion-supported landmarks for long-term orthographic memory and letter-sequence working memory.
+      fr: Comparez les repères étayés par des lésions pour la mémoire orthographique à long terme et la mémoire de travail des séquences de lettres.
+    route:
+      en: Ventral temporal cortex · inferior frontal cortex · intraparietal sulcus
+      fr: Cortex temporal ventral · cortex frontal inférieur · sillon intrapariétal
+    scope:
+      en: Three left-sided lesion-study landmarks, not a serial pathway. Frontal and temporal long-term-memory lesions occurred in different patient subgroups; both sites need not be damaged. Motor handwriting disorders are outside this tour.
+      fr: Trois repères gauches d’étude lésionnelle, et non une voie sérielle. Les lésions frontales et temporales de mémoire à long terme concernaient des sous-groupes différents ; les deux sites n’ont pas à être lésés. Les troubles moteurs de l’écriture sont hors de ce parcours.
+    clinical:
+      en: Rapp’s dysgraphia cohort distinguished orthographic long-term-memory and working-memory deficits. These findings concern spelling, not every handwriting disorder.
+      fr: La cohorte de dysgraphie de Rapp distinguait les déficits de mémoire orthographique à long terme et de mémoire de travail. Ces résultats concernent l’orthographe, et non tous les troubles du geste d’écriture.
+    deficit: agraphia
+    references: [spelling-memory]
+    clinical_references: [spelling-memory]
+    steps:
+      - id: ventral-temporal
+        region: destrieux:left:21
+        source_name: G_oc-temp_lat-fusifor
+        name: { en: Left lateral occipitotemporal and fusiform gyrus, fr: Gyrus occipitotemporal latéral et fusiforme gauche }
+        role: { en: Orthographic long-term-memory landmark, fr: Repère de mémoire orthographique à long terme }
+        explanation:
+          en: Rapp and colleagues associated orthographic long-term-memory deficits with left ventral temporal or posterior inferior frontal lesions.
+          fr: Rapp et ses collègues associaient les déficits de mémoire orthographique à long terme à des lésions temporales ventrales ou frontales inférieures postérieures gauches.
+        mapping:
+          en: The fusiform parcel provides a broad ventral temporal landmark, not a spelling-specific area or the study’s lesion boundaries.
+          fr: La parcelle fusiforme fournit un repère temporal ventral large, et non une aire spécifique à l’orthographe ni les limites lésionnelles de l’étude.
+        view: inferior
+        plane: coronal
+      - id: inferior-frontal
+        region: destrieux:left:12
+        source_name: G_front_inf-Opercular
+        name: { en: Left inferior frontal opercular gyrus, fr: Partie operculaire du gyrus frontal inférieur gauche }
+        role: { en: Frontal orthographic-memory landmark, fr: Repère frontal de mémoire orthographique }
+        explanation:
+          en: The same study implicated posterior inferior frontal cortex in orthographic long-term-memory deficits.
+          fr: La même étude impliquait le cortex frontal inférieur postérieur dans les déficits de mémoire orthographique à long terme.
+        mapping:
+          en: The opercular gyrus is an approximate anatomical reference. The study does not establish that these two entire parcels are interchangeable or sufficient for spelling.
+          fr: Le gyrus operculaire est une référence anatomique approximative. L’étude n’établit pas que ces deux parcelles entières soient interchangeables ou suffisantes pour l’orthographe.
+        view: left
+        plane: axial
+      - id: intraparietal
+        region: destrieux:left:57
+        source_name: S_intrapariet_and_P_trans
+        name: { en: Left intraparietal and transverse parietal sulci, fr: Sillons intrapariétal et pariétal transverse gauches }
+        role: { en: Orthographic working-memory landmark, fr: Repère de mémoire de travail orthographique }
+        explanation:
+          en: In Rapp’s study, orthographic working-memory deficits were associated with left parietal lesions centred on the intraparietal sulcus.
+          fr: Dans l’étude de Rapp, les déficits de mémoire de travail orthographique étaient associés à des lésions pariétales gauches centrées sur le sillon intrapariétal.
+        mapping:
+          en: This combined sulcal parcel is broader than the implicated tissue and does not measure a person’s letter-sequence memory.
+          fr: Cette parcelle sulcale combinée dépasse le tissu impliqué et ne mesure pas la mémoire des séquences de lettres d’une personne.
+        view: superior
+        plane: axial
+
+  - id: music
+    name: { en: Music perception landmarks, fr: Repères de la perception musicale }
+    summary:
+      en: Explore right temporal, insular and striatal landmarks from acquired-amusia research.
+      fr: Explorez les repères temporaux, insulaires et striataux droits issus des recherches sur l’amusie acquise.
+    route:
+      en: Heschl’s gyrus · superior temporal gyrus · insula · putamen
+      fr: Gyrus de Heschl · gyrus temporal supérieur · insula · putamen
+    scope:
+      en: Right-sided landmarks from a stroke study, not a serial circuit or a claim that music belongs only to the right hemisphere. Musical abilities include multiple perceptual and motor processes.
+      fr: Des repères droits issus d’une étude d’AVC, et non un circuit sériel ni l’affirmation que la musique appartient au seul hémisphère droit. Les habiletés musicales comprennent plusieurs processus perceptifs et moteurs.
+    clinical:
+      en: Sihvonen’s stroke cohort associated amusia with right temporal, insular and striatal damage. These landmarks do not reproduce lesions or predict recovery.
+      fr: La cohorte d’AVC de Sihvonen associait l’amusie à des atteintes temporales, insulaires et striatales droites. Ces repères ne reproduisent pas les lésions et ne prédisent pas la récupération.
+    deficit: amusia
+    references: [music-lesions]
+    clinical_references: [music-lesions]
+    steps:
+      - id: heschl
+        region: destrieux:right:33
+        source_name: G_temp_sup-G_T_transv
+        name: { en: Right transverse temporal gyrus, fr: Gyrus temporal transverse droit }
+        role: { en: Auditory cortical landmark, fr: Repère cortical auditif }
+        explanation:
+          en: Heschl’s gyrus was part of Sihvonen’s amusia-associated lesion territory. The study assessed scale and rhythm perception after stroke.
+          fr: Le gyrus de Heschl faisait partie du territoire lésionnel associé à l’amusie de Sihvonen. L’étude évaluait la perception des gammes et du rythme après AVC.
+        mapping:
+          en: The gyral parcel does not isolate primary auditory cortex or reproduce the study’s lesion boundaries.
+          fr: La parcelle gyrale n’isole pas le cortex auditif primaire et ne reproduit pas les limites lésionnelles de l’étude.
+        view: superior
+        plane: coronal
+      - id: superior-temporal
+        region: destrieux:right:34
+        source_name: G_temp_sup-Lateral
+        name: { en: Right lateral superior temporal gyrus, fr: Partie latérale du gyrus temporal supérieur droit }
+        role: { en: Temporal lesion-study landmark, fr: Repère temporal de l’étude lésionnelle }
+        explanation:
+          en: Right superior temporal damage was also associated with impaired music perception in the stroke cohort.
+          fr: L’atteinte temporale supérieure droite était aussi associée à une perception musicale altérée dans la cohorte d’AVC.
+        mapping:
+          en: This broad lateral parcel does not reproduce the lesion map or isolate a music-specific functional field.
+          fr: Cette parcelle latérale large ne reproduit pas la carte lésionnelle et n’isole pas un champ fonctionnel propre à la musique.
+        view: right
+        plane: coronal
+      - id: insula
+        region: destrieux:right:18
+        source_name: G_insular_short
+        name: { en: Right short insular gyri, fr: Gyri courts de l’insula droite }
+        role: { en: Insular lesion-study landmark, fr: Repère insulaire de l’étude lésionnelle }
+        explanation:
+          en: Right insular damage also belonged to the amusia-associated lesion pattern.
+          fr: L’atteinte insulaire droite appartenait aussi au profil lésionnel associé à l’amusie.
+        mapping:
+          en: The short gyri mark part of the insula. They neither cover the full reported lesion territory nor identify a music-specific insular centre.
+          fr: Les gyri courts représentent une partie de l’insula. Ils ne couvrent pas tout le territoire lésionnel rapporté et n’identifient pas un centre insulaire propre à la musique.
+        view: right
+        plane: coronal
+      - id: putamen
+        region: learning:right:putamen
+        source_name: Putamen
+        name: { en: Right putamen, fr: Putamen droit }
+        role: { en: Striatal lesion-study landmark, fr: Repère striatal de l’étude lésionnelle }
+        explanation:
+          en: The study’s pitch and rhythm lesion analyses also implicated right striatal tissue. Compare this subcortical landmark with the temporal landmarks.
+          fr: Les analyses lésionnelles de hauteur et de rythme de l’étude impliquaient aussi le tissu striatal droit. Comparez ce repère sous-cortical aux repères temporaux.
+        mapping:
+          en: Putamen is one striatal landmark, not the entire striatum or a delineation of music-related subterritories. The tour order does not establish a temporal-to-insular-to-putaminal chain.
+          fr: Le putamen est un repère striatal, et non tout le striatum ni une délimitation de sous-territoires liés à la musique. L’ordre du parcours n’établit pas une chaîne temporo-insulo-putaminale.
+        view: anterior
+        plane: coronal
+
+  - id: taste
+    name: { en: Insular taste deficits, fr: Déficits gustatifs insulaires }
+    summary:
+      en: Compare bilateral insular landmarks for published taste-intensity and recognition deficits.
+      fr: Comparez les repères insulaires bilatéraux des déficits publiés d’intensité et de reconnaissance gustatives.
+    route:
+      en: Left short insular gyri · right short insular gyri
+      fr: Gyri insulaires courts gauches · gyri insulaires courts droits
+    scope:
+      en: Two broad insular landmarks, not a serial taste pathway or a precise localization within the insula. The study involved unilateral lesions; displaying both sides does not imply that bilateral injury is required.
+      fr: Deux repères insulaires larges, et non une voie gustative sérielle ni une localisation précise dans l’insula. L’étude concernait des lésions unilatérales ; afficher les deux côtés n’implique pas qu’une atteinte bilatérale soit nécessaire.
+    clinical:
+      en: Pritchard’s six insular cases support an association with altered taste intensity and recognition. The sample is too small to establish universal lateralization; these impairments do not necessarily mean complete taste loss.
+      fr: Les six cas insulaires de Pritchard étayent une association avec une intensité et une reconnaissance gustatives altérées. L’échantillon est trop petit pour établir une latéralisation universelle ; ces troubles ne signifient pas nécessairement une perte complète du goût.
+    deficit: taste-impairment
+    references: [taste-lesions]
+    clinical_references: [taste-lesions]
+    steps:
+      - id: left-insula
+        region: destrieux:left:18
+        source_name: G_insular_short
+        name: { en: Left short insular gyri, fr: Gyri courts de l’insula gauche }
+        role: { en: Left insular lesion comparison, fr: Comparaison lésionnelle insulaire gauche }
+        explanation:
+          en: Left insular injury was associated with reduced ipsilateral taste intensity and impaired bilateral taste recognition in this small series.
+          fr: L’atteinte insulaire gauche était associée à une intensité gustative ipsilatérale réduite et à une reconnaissance bilatérale altérée dans cette petite série.
+        mapping:
+          en: The short gyri provide a broad insular landmark. They do not reproduce lesion boundaries or establish a causal role for each gyrus separately.
+          fr: Les gyri courts fournissent un repère insulaire large. Ils ne reproduisent pas les limites lésionnelles et n’établissent pas un rôle causal pour chaque gyrus séparément.
+        view: left
+        plane: coronal
+      - id: right-insula
+        region: destrieux:right:18
+        source_name: G_insular_short
+        name: { en: Right short insular gyri, fr: Gyri courts de l’insula droite }
+        role: { en: Right insular lesion comparison, fr: Comparaison lésionnelle insulaire droite }
+        explanation:
+          en: Right insular injury was associated with ipsilateral taste-intensity and recognition deficits in the same series.
+          fr: L’atteinte insulaire droite était associée à des déficits ipsilatéraux d’intensité et de reconnaissance gustatives dans la même série.
+        mapping:
+          en: This is the opposite insular landmark, not a second stage of taste processing. The small series does not prove that taste recognition is exclusively left-sided.
+          fr: Il s’agit du repère insulaire opposé, et non d’une seconde étape du traitement gustatif. Cette petite série ne prouve pas que la reconnaissance gustative soit exclusivement gauche.
+        view: right
+        plane: coronal
+
+  - id: olfaction
+    name: { en: Olfactory recognition deficits, fr: Déficits de reconnaissance olfactive }
+    summary:
+      en: Compare orbital landmarks associated with odour-identification and recognition-memory impairments after surgery.
+      fr: Comparez les repères orbitaux associés aux troubles d’identification et de mémoire de reconnaissance olfactives après chirurgie.
+    route:
+      en: Left orbital gyri · right orbital gyri
+      fr: Gyri orbitaux gauches · gyri orbitaux droits
+    scope:
+      en: Two frontal landmarks from unilateral surgical-lesion studies, not an olfactory pathway. Temporal excisions also produced deficits; their extent is not reconstructed here. Detection, identification and recognition memory are distinct tasks.
+      fr: Deux repères frontaux issus d’études de lésions chirurgicales unilatérales, et non une voie olfactive. Les exérèses temporales entraînaient aussi des déficits ; leur étendue n’est pas reconstruite ici. La détection, l’identification et la mémoire de reconnaissance sont des tâches distinctes.
+    clinical:
+      en: Jones-Gotman and Zatorre reported identification deficits after temporal or orbitofrontal excision despite normal detection thresholds. A separate study found recognition-memory impairment after right temporal or right orbitofrontal excision. These findings do not establish complete anosmia.
+      fr: Jones-Gotman et Zatorre rapportaient des déficits d’identification après exérèse temporale ou orbitofrontale malgré des seuils de détection normaux. Une étude distincte trouvait un trouble de mémoire de reconnaissance après exérèse temporale ou orbitofrontale droite. Ces résultats n’établissent pas une anosmie complète.
+    deficit: olfactory-recognition
+    references: [olfactory-identification, olfactory-memory]
+    clinical_references: [olfactory-identification, olfactory-memory]
+    steps:
+      - id: left-orbitofrontal
+        region: destrieux:left:24
+        source_name: G_orbital
+        name: { en: Left orbital gyri, fr: Gyri orbitaux gauches }
+        role: { en: Odour-identification lesion landmark, fr: Repère lésionnel d’identification olfactive }
+        explanation:
+          en: The identification study found impairment after frontal excisions involving orbital cortex on either side.
+          fr: L’étude d’identification trouvait un déficit après des exérèses frontales impliquant le cortex orbital de l’un ou l’autre côté.
+        mapping:
+          en: The orbital parcel is a broad surgical-site landmark. It does not reproduce the excision or imply that each part of orbital cortex is necessary for identification.
+          fr: La parcelle orbitale est un repère chirurgical large. Elle ne reproduit pas l’exérèse et n’implique pas que chaque partie du cortex orbital soit nécessaire à l’identification.
+        view: inferior
+        plane: axial
+      - id: right-orbitofrontal
+        region: destrieux:right:24
+        source_name: G_orbital
+        name: { en: Right orbital gyri, fr: Gyri orbitaux droits }
+        role: { en: Identification and recognition-memory comparison, fr: Comparaison d’identification et de mémoire de reconnaissance }
+        explanation:
+          en: Compare the right orbital identification landmark with the separate recognition-memory finding, which implicated right temporal or right orbitofrontal excisions.
+          fr: Comparez le repère orbital droit d’identification au constat distinct de mémoire de reconnaissance, qui impliquait des exérèses temporales ou orbitofrontales droites.
+        mapping:
+          en: This parcel does not isolate an odour-memory region. The right-sided memory result does not establish right dominance for every olfactory function or a left-to-right processing chain.
+          fr: Cette parcelle n’isole pas une région de mémoire olfactive. Le résultat mnésique droit n’établit pas une dominance droite pour toute fonction olfactive ni une chaîne de traitement de gauche à droite.
+        view: inferior
+        plane: axial
+
+  - id: mentalizing
+    name: { en: Affective theory-of-mind deficits, fr: Déficits de théorie de l’esprit affective }
+    summary:
+      en: Locate broad ventromedial frontal landmarks for a published affective theory-of-mind lesion association.
+      fr: Repérez les territoires frontaux ventromédiaux larges d’une association lésionnelle publiée de théorie de l’esprit affective.
+    route:
+      en: Left gyrus rectus · right gyrus rectus
+      fr: Gyrus rectus gauche · gyrus rectus droit
+    scope:
+      en: Two anatomical references for a ventromedial lesion finding, not a serial pathway or a complete mentalizing network. The study does not establish hemispheric dominance or a specific causal role for gyrus rectus alone.
+      fr: Deux références anatomiques d’un constat lésionnel ventromédial, et non une voie sérielle ni un réseau complet de mentalisation. L’étude n’établit pas de dominance hémisphérique ni de rôle causal spécifique au seul gyrus rectus.
+    clinical:
+      en: Shamay-Tsoory and Aharon-Peretz associated ventromedial injury with poorer affective mentalizing. Evidence for a separate cognitive localization was weaker. Small groups, ceiling effects and unequal task difficulty limit the dissociation; laterality varied by task.
+      fr: Shamay-Tsoory et Aharon-Peretz associaient l’atteinte ventromédiane à une mentalisation affective moins bonne. Les données pour une localisation cognitive distincte étaient plus faibles. Les petits groupes, les effets plafond et la difficulté inégale des tâches limitent la dissociation; la latéralisation variait selon la tâche.
+    deficit: theory-of-mind
+    references: [mentalizing-lesions]
+    clinical_references: [mentalizing-lesions]
+    steps:
+      - id: left-ventromedial
+        region: destrieux:left:31
+        source_name: G_rectus
+        name: { en: Left gyrus rectus, fr: Gyrus rectus gauche }
+        role: { en: Ventromedial lesion-study reference, fr: Référence ventromédiale de l’étude lésionnelle }
+        explanation:
+          en: Ventromedial prefrontal damage was particularly associated with difficulty inferring emotional mental states.
+          fr: Les lésions préfrontales ventromédianes étaient surtout associées à une difficulté à inférer les états mentaux émotionnels.
+        mapping:
+          en: Gyrus rectus provides a coarse ventromedial reference, not the full lesion territory. Displaying this parcel does not establish left-only causation.
+          fr: Le gyrus rectus fournit une référence ventromédiane approximative, et non tout le territoire lésionnel. Afficher cette parcelle n’établit pas une causalité exclusivement gauche.
+        view: inferior
+        plane: coronal
+      - id: right-ventromedial
+        region: destrieux:right:31
+        source_name: G_rectus
+        name: { en: Right gyrus rectus, fr: Gyrus rectus droit }
+        role: { en: Contralateral anatomical comparison, fr: Comparaison anatomique controlatérale }
+        explanation:
+          en: Compare the opposite ventromedial landmark while considering the same lesion study. This is not independent evidence for a separate right-sided mechanism.
+          fr: Comparez le repère ventromédial opposé en considérant la même étude lésionnelle. Ce n’est pas une preuve indépendante d’un mécanisme droit distinct.
+        mapping:
+          en: The paired landmarks do not reproduce patients’ lesions, require bilateral injury or establish a left-to-right pathway. The lesion study does not isolate the atlas parcel boundaries.
+          fr: Les repères appariés ne reproduisent pas les lésions des patients, n’exigent pas une atteinte bilatérale et n’établissent pas une voie de gauche à droite. L’étude lésionnelle n’isole pas les limites des parcelles de l’atlas.
+        view: inferior
+        plane: coronal
+
+  - id: extinction
+    deficit: visual-extinction
+    name:
+      en: Visual extinction after right stroke
+      fr: Extinction visuelle après AVC droit
+    summary:
+      en: Compare right temporoparietal lesion landmarks with an additional Bayesian intraparietal finding.
+      fr: Comparez des repères lésionnels temporopariétaux droits au résultat intrapariétal bayésien supplémentaire.
+    route:
+      en: Angular · supramarginal · superior temporal · intraparietal
+      fr: Angulaire · supramarginal · temporal supérieur · intrapariétal
+    scope:
+      en: Selected landmarks approximate portions of lesion clusters; other cortical and white matter findings are omitted. Step order does not represent measured connections or separate proven processing stages.
+      fr: Ces repères approchent des portions d’amas lésionnels; d’autres résultats corticaux et de substance blanche sont omis. L’ordre ne représente ni des connexions mesurées ni des étapes de traitement distinctes démontrées.
+    clinical:
+      en: Sperber studied competing visual targets in 108 acute right-stroke patients, with assessment at 0–7 days and adjustment for spatial neglect. Multivariate results implicated tissue in and around the temporoparietal junction; additional intraparietal evidence depended on the Bayesian analysis.
+      fr: Sperber étudiait des cibles visuelles concurrentes chez 108 patients avec AVC droit aigu, évalués à 0–7 jours, avec ajustement pour la négligence spatiale. Les résultats multivariés impliquaient des tissus dans et autour de la jonction temporopariétale; les données intrapariétales supplémentaires dépendaient de l’analyse bayésienne.
+    references: &id001
+      - clinical-sperber-2024
+    clinical_references: *id001
+    steps:
+      - id: angular
+        region: destrieux:right:25
+        source_name: G_pariet_inf-Angular
+        name:
+          en: Right angular gyrus
+          fr: Gyrus angulaire droit
+        role:
+          en: TPJ-adjacent lesion landmark
+          fr: Repère lésionnel voisin de la JTP
+        explanation:
+          en: The largest multivariate cluster included angular tissue and adjacent occipital/temporal cortex.
+          fr: Le plus grand foyer multivarié comprenait du tissu angulaire et occipitotemporal adjacent.
+        mapping:
+          en: Whole gyrus; partial cluster landmark.
+          fr: Gyrus entier; repère partiel du foyer.
+        view: right
+        plane: axial
+      - id: supramarginal
+        region: destrieux:right:26
+        source_name: G_pariet_inf-Supramar
+        name:
+          en: Right supramarginal gyrus
+          fr: Gyrus supramarginal droit
+        role:
+          en: Inferior TPJ lesion landmark
+          fr: Repère lésionnel inférieur de la JTP
+        explanation:
+          en: Inferior supramarginal tissue lay in another multivariate temporoparietal cluster.
+          fr: Du tissu supramarginal inférieur appartenait à un autre foyer temporopariétal multivarié.
+        mapping:
+          en: Whole gyrus exceeds the inferior focus.
+          fr: Le gyrus entier dépasse le foyer inférieur.
+        view: right
+        plane: axial
+      - id: superior-temporal
+        region: destrieux:right:34
+        source_name: G_temp_sup-Lateral
+        name:
+          en: Right lateral superior temporal gyrus
+          fr: Partie latérale du gyrus temporal supérieur droit
+        role:
+          en: Posterior TPJ lesion landmark
+          fr: Repère lésionnel postérieur de la JTP
+        explanation:
+          en: Posterior superior temporal tissue appeared in multivariate clusters.
+          fr: Du tissu temporal supérieur postérieur figurait dans les foyers multivariés.
+        mapping:
+          en: The lateral parcel does not isolate posterior tissue.
+          fr: La parcelle latérale n’isole pas le tissu postérieur.
+        view: right
+        plane: coronal
+      - id: intraparietal
+        region: destrieux:right:57
+        source_name: S_intrapariet_and_P_trans
+        name:
+          en: Right intraparietal and transverse parietal sulci
+          fr: Sillons intrapariétal et pariétal transverse droits
+        role:
+          en: Additional Bayesian finding
+          fr: Résultat bayésien supplémentaire
+        explanation:
+          en: Bayesian analysis implicated part of the IPS; evidence varied across its extent.
+          fr: L’analyse bayésienne impliquait une partie du SIP; les données variaient selon ses portions.
+        mapping:
+          en: Combined sulcal parcel; no exact cytoarchitectonic match.
+          fr: Parcelle sulcale combinée; correspondance cytoarchitectonique approximative.
+        view: superior
+        plane: axial
+  - id: copying
+    name:
+      en: Figure-copying lesion findings
+      fr: Constats lésionnels de copie de figures
+    summary:
+      en: Compare two cortical landmarks associated with complex figure-copying performance after stroke.
+      fr: Comparez deux repères corticaux associés à la copie de figures complexes après AVC.
+    route:
+      en: Right fusiform · left lingual
+      fr: Fusiforme droit · lingual gauche
+    scope:
+      en: Two cortical associations survived cluster correction in all five models of this study. Thalamic findings varied by model; the remaining lesions, task components and connections are outside this tour.
+      fr: Deux associations corticales résistaient à la correction par amas dans les cinq modèles de cette étude. Les résultats thalamiques variaient selon le modèle; les autres lésions, composantes de tâche et connexions sont hors de ce parcours.
+    clinical:
+      en: Chen studied 239 originally right-handed patients within one month of ischaemic stroke. Poor copying was associated with right fusiform and left lingual damage after cognitive covariates. A low copying score alone does not establish a selective constructional apraxia.
+      fr: Chen étudiait 239 patients initialement droitiers dans le premier mois d’un AVC ischémique. Une mauvaise copie était associée aux atteintes fusiforme droite et linguale gauche après prise en compte de covariables cognitives. Un score faible ne suffit pas à établir une apraxie constructive sélective.
+    deficit: constructional-apraxia
+    references:
+      - clinical-chen-2016
+    clinical_references:
+      - clinical-chen-2016
+    steps:
+      - id: right-fusiform
+        region: destrieux:right:21
+        source_name: G_oc-temp_lat-fusifor
+        name:
+          en: Right fusiform gyrus
+          fr: Gyrus fusiforme droit
+        role:
+          en: Right ventral visual lesion landmark
+          fr: Repère lésionnel visuel ventral droit
+        explanation:
+          en: The right fusiform association persisted through successive adjustments for praxis, neglect, attention and naming.
+          fr: L’association fusiforme droite persistait après les ajustements successifs pour les praxies, la négligence, l’attention et la dénomination.
+        mapping:
+          en: The whole gyrus exceeds the lesion cluster and does not isolate a copying-specific module.
+          fr: Le gyrus entier dépasse l’amas lésionnel et n’isole pas un module propre à la copie.
+        view: inferior
+        plane: coronal
+      - id: left-lingual
+        region: destrieux:left:22
+        source_name: G_oc-temp_med-Lingual
+        name:
+          en: Left lingual gyrus
+          fr: Gyrus lingual gauche
+        role:
+          en: Left ventral visual lesion landmark
+          fr: Repère lésionnel visuel ventral gauche
+        explanation:
+          en: The left lingual association also survived cluster correction across the five models.
+          fr: L’association linguale gauche résistait aussi à la correction par amas dans les cinq modèles.
+        mapping:
+          en: This is a group association across patients. Paired landmarks do not require bilateral injury or establish a right-to-left pathway.
+          fr: Il s’agit d’une association de groupe entre patients. Ces repères appariés n’exigent pas une atteinte bilatérale et n’établissent pas de voie de droite à gauche.
+        view: inferior
+        plane: coronal
+  - id: cortical-hearing
+    name:
+      en: Cortical deafness after temporal strokes
+      fr: Surdité corticale après AVC temporaux
+    summary:
+      en: Compare bilateral Heschl-gyrus landmarks from a sequential-stroke case of profound central hearing loss.
+      fr: Comparez les repères bilatéraux des gyri de Heschl dans un cas de surdité centrale profonde après AVC successifs.
+    route:
+      en: Left Heschl gyrus · right Heschl gyrus
+      fr: Gyrus de Heschl gauche · gyrus de Heschl droit
+    scope:
+      en: One patient with wider bilateral temporal injury. These parcels do not reproduce the infarcts, auditory radiations or a complete hearing pathway, and do not establish one necessary lesion pattern.
+      fr: Un patient avec atteinte temporale bilatérale plus étendue. Ces parcelles ne reproduisent ni les infarctus, ni les radiations auditives, ni une voie auditive complète et n’établissent pas un profil lésionnel nécessaire unique.
+    clinical:
+      en: Lachowska described a 42-year-old man with an acute left temporal infarct after an older right infarct. Otoacoustic emissions and brainstem responses were normal. Sound detection partly recovered, but no presented monosyllable was discriminated at three or ten months.
+      fr: Lachowska décrivait un homme de 42 ans avec infarctus temporal gauche aigu après un ancien infarctus droit. Les otoémissions et réponses du tronc cérébral étaient normales. La détection sonore récupérait partiellement, mais aucun monosyllabe présenté n’était discriminé à trois ou dix mois.
+    deficit: cortical-deafness
+    references:
+      - clinical-lachowska-2021
+    clinical_references:
+      - clinical-lachowska-2021
+    steps:
+      - id: left-heschl
+        region: destrieux:left:33
+        source_name: G_temp_sup-G_T_transv
+        name:
+          en: Left Heschl gyrus
+          fr: Gyrus de Heschl gauche
+        role:
+          en: Acute infarct in the reported case
+          fr: Infarctus aigu dans le cas rapporté
+        explanation:
+          en: The acute left temporal infarct involved Heschl’s gyrus after the prior right-sided injury.
+          fr: L’infarctus temporal gauche aigu impliquait le gyrus de Heschl après l’atteinte droite antérieure.
+        mapping:
+          en: The transverse temporal parcel is a broad reference, not an isolated primary-auditory-cortex lesion.
+          fr: La parcelle temporale transverse est un repère large, pas une lésion isolée du cortex auditif primaire.
+        view: superior
+        plane: axial
+      - id: right-heschl
+        region: destrieux:right:33
+        source_name: G_temp_sup-G_T_transv
+        name:
+          en: Right Heschl gyrus
+          fr: Gyrus de Heschl droit
+        role:
+          en: Older infarct in the reported case
+          fr: Infarctus ancien dans le cas rapporté
+        explanation:
+          en: The older right temporal injury also extended into auditory radiations and wider temporoparietal cortex.
+          fr: L’atteinte temporale droite ancienne s’étendait aussi aux radiations auditives et à un cortex temporopariétal plus large.
+        mapping:
+          en: This parcel shows part of the cortical injury. It does not display the damaged white matter or separate sound detection from speech recognition.
+          fr: Cette parcelle montre une partie de l’atteinte corticale. Elle n’affiche pas la substance blanche lésée et ne sépare pas détection sonore et reconnaissance de la parole.
+        view: superior
+        plane: axial
+  - id: oral-praxis
+    name:
+      en: Speech and oral apraxia findings
+      fr: Apraxies de la parole et buccofaciale
+    summary:
+      en: Compare two broad left insular references for co-occurring speech and nonspeech oral apraxia.
+      fr: Comparez deux repères insulaires gauches larges pour les apraxies associées de la parole et buccofaciale.
+    route:
+      en: Left short insular gyri · left long insular gyri
+      fr: Gyri insulaires courts gauches · gyri insulaires longs gauches
+    scope:
+      en: Two landmarks for one overlapping insular association. They do not establish separate parcel functions, a serial connection or a necessary insular site for isolated oral apraxia.
+      fr: Deux repères d’une même association insulaire. Ils n’établissent ni des fonctions parcellaires distinctes, ni une connexion sérielle, ni un site insulaire nécessaire à l’apraxie buccofaciale isolée.
+    clinical:
+      en: Conterno’s acute left-stroke cohort included 137 patients; 28 had both apraxias. All 33 patients with either apraxia also had aphasia. Co-occurrence was predominantly associated with insular injury; the five cases with only one apraxia spared the insula.
+      fr: La cohorte d’AVC gauche aigu de Conterno comprenait 137 patients; 28 avaient les deux apraxies. Les 33 patients avec l’une ou l’autre avaient aussi une aphasie. Leur association était surtout liée à l’atteinte insulaire; les cinq cas avec une seule apraxie épargnaient l’insula.
+    deficit: buccofacial-apraxia
+    references:
+      - clinical-conterno-2022
+    clinical_references:
+      - clinical-conterno-2022
+    steps:
+      - id: short-insular
+        region: destrieux:left:18
+        source_name: G_insular_short
+        name:
+          en: Left short insular gyri
+          fr: Gyri insulaires courts gauches
+        role:
+          en: Anterior insular reference
+          fr: Repère insulaire antérieur
+        explanation:
+          en: The cohort linked combined speech and oral apraxia to insular damage; this is one anatomical reference for that shared finding.
+          fr: La cohorte associait les apraxies de la parole et buccofaciale combinées à l’atteinte insulaire; voici un repère anatomique de ce constat commun.
+        mapping:
+          en: Whole short gyri exceed the statistical lesion cluster and do not isolate an oral-movement programme.
+          fr: Les gyri courts entiers dépassent l’amas lésionnel statistique et n’isolent pas un programme de mouvements oraux.
+        view: left
+        plane: axial
+      - id: long-insular
+        region: destrieux:left:17
+        source_name: G_Ins_lg_and_S_cent_ins
+        name:
+          en: Left long gyri and central insular sulcus
+          fr: Gyri longs et sillon central de l’insula gauche
+        role:
+          en: Posterior insular comparison
+          fr: Comparaison insulaire postérieure
+        explanation:
+          en: Compare the posterior insular reference within the same co-occurring syndrome, rather than a separate processing stage.
+          fr: Comparez le repère insulaire postérieur au sein du même syndrome associé, sans en faire une étape distincte du traitement.
+        mapping:
+          en: This combined gyral/sulcal parcel exceeds the lesion findings. Isolated oral-apraxia cases were not confined to the insula.
+          fr: Cette parcelle combinant gyri et sillon dépasse les constats lésionnels. Les cas d’apraxie buccofaciale isolée n’étaient pas limités à l’insula.
+        view: left
+        plane: axial
+  - id: voices
+    name:
+      en: Voice-identity lesion findings
+      fr: Constats lésionnels d’identité vocale
+    summary:
+      en: Explore overlapping right temporal landmarks associated with voice-identity performance.
+      fr: Explorez des repères temporaux droits recouvrants associés à l’identification vocale.
+    route:
+      en: Right lateral superior temporal gyrus · right planum temporale
+      fr: Gyrus temporal supérieur latéral droit · planum temporale droit
+    scope:
+      en: These parcels approximate one overlapping temporal finding, not separate necessary nodes or a measured connection. Results were corrected within a hypothesized regional search area; familiar-voice-only findings were less robust.
+      fr: Ces parcelles approchent un même constat temporal, sans établir deux nœuds nécessaires distincts ni une connexion mesurée. Les résultats étaient corrigés dans une région de recherche définie par hypothèse; les résultats limités aux voix familières étaient moins robustes.
+    clinical:
+      en: Roswandowitz studied 58 patients; combined voice-score mapping included 42 and face-adjusted mapping 40. A right temporal association remained after face-recognition, hearing and lesion-volume adjustment. Task-dependent parietal findings are outside this tour.
+      fr: Roswandowitz étudiait 58 patients; la cartographie du score vocal combiné en incluait 42 et celle ajustée sur les visages 40. Une association temporale droite persistait après ajustement pour la reconnaissance faciale, l’audition et le volume lésionnel. Les résultats pariétaux dépendants de la tâche sont hors de ce parcours.
+    deficit: phonagnosia
+    references:
+      - clinical-roswandowitz-2018
+    clinical_references:
+      - clinical-roswandowitz-2018
+    steps:
+      - id: lateral-temporal
+        region: destrieux:right:34
+        source_name: G_temp_sup-Lateral
+        name:
+          en: Right lateral superior temporal gyrus
+          fr: Partie latérale du gyrus temporal supérieur droit
+        role:
+          en: Posterior temporal lesion reference
+          fr: Repère lésionnel temporal postérieur
+        explanation:
+          en: The adjusted combined-score cluster extended into mid and posterior superior temporal tissue.
+          fr: L’amas du score combiné ajusté s’étendait au tissu temporal supérieur moyen et postérieur.
+        mapping:
+          en: The whole lateral parcel is broader than the cluster; newly learned and familiar-voice tasks were not anatomically identical.
+          fr: La parcelle latérale entière dépasse l’amas; les tâches de voix nouvellement apprises et familières n’étaient pas anatomiquement identiques.
+        view: right
+        plane: coronal
+      - id: planum-temporale
+        region: destrieux:right:36
+        source_name: G_temp_sup-Plan_tempo
+        name:
+          en: Right planum temporale
+          fr: Planum temporale droit
+        role:
+          en: Centre of the adjusted temporal cluster
+          fr: Centre de l’amas temporal ajusté
+        explanation:
+          en: The combined voice-score association remained centred near planum temporale after the control adjustments.
+          fr: L’association du score vocal combiné restait centrée près du planum temporale après les ajustements de contrôle.
+        mapping:
+          en: This is another reference for the same cluster. The familiar-voice-only association did not survive hearing and lesion-volume adjustment.
+          fr: Il s’agit d’un autre repère du même amas. L’association limitée aux voix familières ne résistait pas à l’ajustement pour l’audition et le volume lésionnel.
+        view: superior
+        plane: axial
+  - id: pontine-motor
+    name:
+      en: Pontine injury in locked-in syndrome
+      fr: Atteinte pontique et syndrome d’enfermement
+    summary:
+      en: Compare broad pontine landmarks from selected locked-in cases with ventral pontine injury.
+      fr: Comparez des repères pontiques larges de cas sélectionnés de syndrome d’enfermement avec atteinte pontique ventrale.
+    route:
+      en: Left pontine territory · right pontine territory
+      fr: Territoire pontique gauche · territoire pontique droit
+    scope:
+      en: Two whole pontine territories, not isolated descending motor tracts or an arousal map. They neither reproduce patient lesions nor establish the lesion pattern of every locked-in syndrome.
+      fr: Deux territoires pontiques entiers, sans isolement des voies motrices descendantes ni cartographie de l’éveil. Ils ne reproduisent pas les lésions des patients et n’établissent pas le profil de tous les syndromes d’enfermement.
+    clinical:
+      en: Leonard studied seven selected pontine cases with diffuse diffusion-MRI abnormalities; cognition was not tested. Nilsen’s broader vascular registry included seven of 49 radiology reports without pontine injury. Preserved consciousness does not establish normal cognition in every domain.
+      fr: Leonard étudiait sept cas pontiques sélectionnés avec anomalies diffuses en IRM de diffusion; la cognition n’était pas testée. Le registre vasculaire plus large de Nilsen incluait sept comptes rendus sur 49 sans atteinte pontique. La conscience préservée n’établit pas une cognition normale dans tous les domaines.
+    deficit: locked-in
+    references:
+      - clinical-leonard-2019
+      - clinical-nilsen-2023
+    clinical_references:
+      - clinical-leonard-2019
+      - clinical-nilsen-2023
+    steps:
+      - id: left-pons
+        region: learning:left:pons
+        source_name: Pontine territory
+        name:
+          en: Left pontine territory
+          fr: Territoire pontique gauche
+        role:
+          en: Broad motor-pathway reference
+          fr: Repère large des voies motrices
+        explanation:
+          en: Ventral pontine injury can interrupt descending motor output while consciousness is preserved.
+          fr: L’atteinte pontique ventrale peut interrompre les sorties motrices descendantes avec conscience préservée.
+        mapping:
+          en: The whole territory includes more than ventral motor pathways; this highlighted volume is not a lesion prediction.
+          fr: Le territoire entier dépasse les voies motrices ventrales; ce volume sélectionné n’est pas une prédiction lésionnelle.
+        view: anterior
+        plane: axial
+      - id: right-pons
+        region: learning:right:pons
+        source_name: Pontine territory
+        name:
+          en: Right pontine territory
+          fr: Territoire pontique droit
+        role:
+          en: Contralateral anatomical comparison
+          fr: Comparaison anatomique controlatérale
+        explanation:
+          en: Compare the opposite pontine reference when considering the selected cases and their wider white matter findings.
+          fr: Comparez le repère pontique opposé en considérant les cas sélectionnés et leurs anomalies de substance blanche plus étendues.
+        mapping:
+          en: The paired territories do not delineate individual tracts, tegmental sparing or diffuse MRI abnormalities.
+          fr: Les territoires appariés ne délimitent ni les tractus individuels, ni l’épargne tegmentale, ni les anomalies diffuses en IRM.
+        view: anterior
+        plane: axial

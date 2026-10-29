@@ -90,6 +90,8 @@ const regions = [
     atlas: 'a',
     source_label_id: 1,
     kind: 'cortex',
+    centroid_ras_mm: [-30.5, 12.25, 40],
+    anchor_ras_mm: [-31, 12, 41],
   },
   {
     id: 'a-right',
@@ -1246,15 +1248,15 @@ test('an out-of-date manifest names the field it is missing, not the schema', ()
   assert.throws(() => new BrainAtlas(stale as never, loader), /cache/i);
 });
 
-test('centroidOf computes and caches surface RAS millimeter coordinates', async () => {
+test('ATLAS-46 a region’s centroid and anchor are the ones the manifest publishes, not its mesh’s box', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
-  const coords = atlas.centroidOf('a-left');
-  assert.ok(Array.isArray(coords) && coords.length === 3);
-  assert.ok(coords.every(Number.isFinite));
-  // Cached on subsequent access
-  assert.strictEqual(atlas.centroidOf('a-left'), coords);
-  assert.strictEqual(atlas.centroidOf('nonexistent'), null);
+  assert.deepEqual(atlas.centroidOf('a-left'), [-30.5, 12.25, 40]);
+  assert.deepEqual(atlas.anchorOf('a-left'), [-31, 12, 41]);
+  assert.equal(atlas.centroidOf('nonexistent'), null);
+  assert.equal(atlas.anchorOf('a-wall'), null);
+  // A placed region the manifest leaves unplaced is a build error, not a guess.
+  assert.throws(() => atlas.anchorOf('a-right'), /anchor_ras_mm for a-right/);
   atlas.dispose();
 });
 

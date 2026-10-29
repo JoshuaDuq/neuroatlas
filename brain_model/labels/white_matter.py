@@ -7,6 +7,7 @@ import re
 import numpy as np
 
 from ..sources import declares, read_color_table, sha256
+from .placement import placements
 from .volumes import encode_array, load_on_grid, offset_by
 
 ATLAS_ID = "wmparc"
@@ -56,6 +57,7 @@ def build_regions(config):
     voxel_volume = float(abs(np.linalg.det(image.header.get_vox2ras_tkr()[:3, :3])))
     cut_atlases = [atlas["id"] for atlas in config["atlases"]]
     ids, counts = np.unique(labels[is_parcel(labels)], return_counts=True)
+    placed = placements(labels, image.header.get_vox2ras_tkr(), ids)
     regions = []
     for label, count in zip(ids.tolist(), counts.tolist()):
         published = names[label][0]
@@ -75,6 +77,7 @@ def build_regions(config):
                 "voxel_count": count,
                 "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
                 "segmentation_volume_mm3": count * voxel_volume,
+                **placed[label],
             }
         )
     return regions

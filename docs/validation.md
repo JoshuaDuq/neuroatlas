@@ -2,6 +2,8 @@
 
 [`brain_model/validate.py`](https://github.com/JoshuaDuq/neuroatlas/blob/main/brain_model/validate.py) reads each built anatomy back and checks it against its sources. It establishes conversion fidelity, not clinical accuracy: every published `validation.json` has status `passed` and `clinical_accuracy_validated: false`.
 
+The [circuit evidence audit](reference/circuit-evidence.md) records clinical-source provenance for all 29 tours, the material scientific qualifications, and the remaining clinical-use work. Deficit evidence and circuit background are labeled separately in the viewer, and published corrections are shown with their sources. The audit and software checks do not establish patient-level diagnostic or prognostic validity. The clinical catalogue still contains 88 abstract-based extraction records requiring full-text review before any patient-specific use is assessed.
+
 ```bash
 uv run python -m brain_model.validate --anatomy cdmd
 uv run pytest

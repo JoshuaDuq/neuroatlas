@@ -17,6 +17,8 @@
   import type { Language, Region } from '../../lib/types/index.ts';
   import { readComparison } from '../../lib/core/assets/comparison-assets.ts';
   import { createLatestRunner } from '../../lib/core/async/latest.ts';
+  import { functionalName, functionalRegionOf } from '../../lib/core/catalog/functional-regions.ts';
+  import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import { labelOf } from '../../lib/core/catalog/labels.ts';
   import {
     comparisonPartners,
@@ -43,6 +45,7 @@
     region,
     lang,
     outlineAvailable,
+    functionalRegions,
   }: {
     engine: Pick<Engine, 'comparison'>;
     manifest: ComparisonManifest;
@@ -53,6 +56,8 @@
     lang: Language;
     /** False while a cut is drawn or a tract reference is shown (app.js:1638): no outline can be drawn. */
     outlineAvailable: boolean;
+    /** Glasser's sections, which name the part of the cortex an HCP-MMP area's code belongs to. */
+    functionalRegions: FunctionalRegions | null;
   } = $props();
 
   const FIRST_ROWS = 4;
@@ -105,6 +110,11 @@
   });
   const regionById = $derived(new Map(manifest.regions.map((entry) => [entry.id, entry])));
   const rowName = (id: string) => labelOf(regionById.get(id)!, lang)!.name;
+  /** An HCP-MMP code alone says little: its Glasser section, where one is published. */
+  const rowSection = (id: string) => {
+    const section = functionalRegionOf(functionalRegions, 'sections', id);
+    return section ? functionalName(section, lang) : null;
+  };
   const heading = $derived(shown ? copy.heading(atlasSwitchLabel(partner!, lang)) : '');
 
   const status = $derived(
@@ -252,6 +262,7 @@
 
 {#snippet row(entry: { regionId: string; areaMm2: number; meshId: string; fraction: number })}
   {@const name = rowName(entry.regionId)}
+  {@const section = rowSection(entry.regionId)}
   <li>
     <button
       type="button"
@@ -260,13 +271,16 @@
       aria-disabled={outlineAvailable ? undefined : 'true'}
       aria-describedby={outlineAvailable ? undefined : `${uid}-view-note`}
       aria-label={copy.highlight(
-        name,
+        section ? `${name}, ${section}` : name,
         withUnit(overlapArea(entry.areaMm2, lang), 'mm²', lang),
         withUnit(overlapShare(entry.fraction, lang), '%', lang),
       )}
       onclick={() => toggle(entry.meshId)}
     >
-      <span class="comparison-name">{name}</span>
+      <span class="comparison-name">
+        <span>{name}</span>
+        {#if section}<span class="comparison-section">{section}</span>{/if}
+      </span>
       <span class="measure">{overlapArea(entry.areaMm2, lang)}</span>
       <span class="measure">{overlapShare(entry.fraction, lang)}</span>
     </button>
@@ -429,6 +443,13 @@
       min-width: 0;
       overflow-wrap: anywhere;
       text-wrap: pretty;
+    }
+    .comparison-section {
+      display: block;
+      color: var(--text-secondary);
+      font-size: var(--text-caption);
+      font-weight: 400;
+      line-height: var(--lh-caption);
     }
     .comparison-row[aria-pressed='true'] {
       background: var(--accent-wash);

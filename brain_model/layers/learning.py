@@ -6,6 +6,7 @@ import yaml
 
 from ..gltf.export import add_region, published_area_mm2, write_scene
 from ..labels import cerebellum, nextbrain
+from ..labels.placement import placements
 from ..labels.volumes import LabelGrid, conformed_grid, load_on_grid
 from ..sources import ROOT, read_color_table
 from ..surfaces.geometry import extract_structure, smooth_display
@@ -204,8 +205,10 @@ def build(config):
         grids.append((source, grid))
         volume, affine = grid.labels, grid.voxel_to_surface
         combined = combine_labels(volume, groups)
+        present = [code for code in range(1, len(groups) + 1) if np.any(combined == code)]
+        placed = placements(combined, affine, present)
         for code, group in enumerate(groups, 1):
-            if not np.any(combined == code):
+            if code not in placed:
                 continue
             region = region_record(group, source, volume)
             original = extract_structure(combined, code, affine)
@@ -231,6 +234,8 @@ def build(config):
                 vertex_count=len(exported.vertices),
                 triangle_count=len(exported.faces),
                 surface_area_mm2=published_area_mm2(exported.vertices, exported.faces),
+                # After the mesh is added: the manifest carries placements, the GLB's extras do not.
+                **placed[code],
             )
             regions.append(region)
     write_scene(scene, config["output_directory"] / "learning.glb")

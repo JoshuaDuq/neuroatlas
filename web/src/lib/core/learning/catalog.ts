@@ -1,6 +1,6 @@
 import { VIEW_NAMES } from '../../types/index.ts';
 import type { Manifest, Region, ViewName } from '../../types/index.ts';
-import type { Translated } from '../clinical/types.ts';
+import type { ClinicalCorrection, Translated } from '../clinical/types.ts';
 
 /** One authored landmark of a circuit, in `data/circuits.yaml`. */
 export interface AuthoredStep {
@@ -26,6 +26,7 @@ export interface CircuitReference {
   pmid?: string;
   nbk?: string;
   pmcid?: string;
+  corrections?: readonly ClinicalCorrection[];
 }
 
 export interface AuthoredCircuit {
@@ -37,6 +38,8 @@ export interface AuthoredCircuit {
   scope: Translated;
   clinical: Translated;
   references: readonly string[];
+  /** Sources for the linked deficit; the other citations provide circuit background. */
+  clinical_references: readonly string[];
   steps: readonly AuthoredStep[];
 }
 
@@ -169,6 +172,15 @@ export function createCircuitCatalog(
     if (Object.hasOwn(reference, 'pmcid') && !/^PMC\d+$/.test(reference.pmcid!)) {
       throw new Error(`Invalid PMCID: ${reference.id}`);
     }
+    if (reference.corrections !== undefined && !Array.isArray(reference.corrections)) {
+      throw new Error(`Invalid corrections: ${reference.id}`);
+    }
+    for (const correction of reference.corrections ?? []) {
+      if (!/^10\.\d{4,9}\/\S+$/.test(correction.doi)) {
+        throw new Error(`Invalid correction DOI: ${reference.id}`);
+      }
+      requireTranslation(correction.summary, `${reference.id}.correction.summary`);
+    }
   }
   for (const circuit of authored.values()) {
     for (const key of ['name', 'summary', 'route', 'scope', 'clinical'] as const) {
@@ -180,6 +192,14 @@ export function createCircuitCatalog(
       throw new Error(`Missing references: ${circuit.id}`);
     }
     for (const id of circuit.references) requireRecord(references, id, 'reference');
+    if (
+      !Array.isArray(circuit.clinical_references) ||
+      !circuit.clinical_references.length ||
+      new Set(circuit.clinical_references).size !== circuit.clinical_references.length ||
+      circuit.clinical_references.some((id) => !circuit.references.includes(id))
+    ) {
+      throw new Error(`Invalid clinical references: ${circuit.id}`);
+    }
     const resolved = circuit.steps.map((step) => resolveStep(step, regions));
     // What other landmarks cover is uncovered again on arriving at this one.
     const covered = new Set(resolved.flatMap((step) => step.covering_regions ?? []));

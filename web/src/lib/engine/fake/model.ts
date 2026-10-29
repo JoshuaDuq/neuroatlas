@@ -155,6 +155,14 @@ export function createFakeModel({
     update();
   }
 
+  /** A placement spread by side and id, as a published one is fixed per region. */
+  function centroid(id: string | null): Vec3 | null {
+    const region = id ? regions.get(id) : undefined;
+    if (!region || region.kind === 'non-region') return null;
+    const side = region.hemisphere === 'left' ? -1 : region.hemisphere === 'right' ? 1 : 0;
+    return [side * 30, spread(region.id, 60), spread(`${region.id}:z`, 40)];
+  }
+
   const model: FakeModel = {
     manifest,
     regions,
@@ -193,11 +201,11 @@ export function createFakeModel({
         region && region.kind !== 'tissue-region' && layerLoaded(region) && !hidden(region),
       );
     },
-    centroidOf(id) {
-      const region = id ? regions.get(id) : undefined;
-      if (!region || !layerLoaded(region)) return null;
-      const side = region.hemisphere === 'left' ? -1 : region.hemisphere === 'right' ? 1 : 0;
-      return [side * 30, spread(region.id, 60), spread(`${region.id}:z`, 40)] satisfies Vec3;
+    centroidOf: centroid,
+    // A millimetre off the centroid, so a test can tell which of the two a command used.
+    anchorOf(id) {
+      const point = centroid(id);
+      return point && [point[0], point[1] + 1, point[2]];
     },
     canSelect,
 

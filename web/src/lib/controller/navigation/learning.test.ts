@@ -61,9 +61,9 @@ describe('showing a landmark', () => {
 });
 
 describe('preparing the MRI', () => {
-  test('uses the actual selected landmark centroid and authored plane', async () => {
+  test('uses the actual selected landmark anchor and authored plane', async () => {
     const calls: unknown[][] = [];
-    const model = { centroidOf: () => [12, -8, 4] } as unknown as EngineModel;
+    const model = { anchorOf: () => [12, -8, 4] } as unknown as EngineModel;
     const sections = {
       setCrosshair: (point: unknown) => calls.push(['crosshair', point]),
       setDisplay: (display: unknown) => calls.push(['display', display]),
@@ -78,23 +78,23 @@ describe('preparing the MRI', () => {
   });
 
   test('LESSON-09 missing geometry and MRI loading failures surface rather than opening another location', async () => {
-    const model = { centroidOf: (): null | number[] => null } as unknown as EngineModel;
+    const model = { anchorOf: (): null | number[] => null } as unknown as EngineModel;
     const none = {} as EngineSections;
     await assert.rejects(
       prepareCircuitMri(model, none, { region: 'missing', plane: 'axial' }),
-      /centroid/,
+      /anchor/,
     );
-    model.centroidOf = () => [1, 2] as unknown as null;
+    model.anchorOf = () => [1, 2] as unknown as null;
     await assert.rejects(
       prepareCircuitMri(model, none, { region: 'missing', plane: 'axial' }),
-      /centroid/,
+      /anchor/,
     );
-    model.centroidOf = () => [0, Number.NaN, 0];
+    model.anchorOf = () => [0, Number.NaN, 0];
     await assert.rejects(
       prepareCircuitMri(model, none, { region: 'missing', plane: 'axial' }),
-      /centroid/,
+      /anchor/,
     );
-    model.centroidOf = () => [0, 0, 0];
+    model.anchorOf = () => [0, 0, 0];
     const sections = {
       setCrosshair() {},
       setDisplay() {},

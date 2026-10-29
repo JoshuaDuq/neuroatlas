@@ -1,4 +1,4 @@
-revised: '2026-10-28'
+revised: '2026-10-29'
 
 groups:
   - id: attention-executive
@@ -846,10 +846,10 @@ references:
     doi: 10.1016/j.neuroimage.2017.08.036
     pmid: '28822751'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: 257 people with left-hemisphere stroke; Bayesian analyses at three spatial levels.
-      fr: 257 personnes ayant un AVC gauche; analyses bayésiennes à trois niveaux spatiaux.
+      en: 257 right-handed adults after first-ever left ischaemic stroke; hand/finger imitation with the ipsilesional hand; Bayesian voxel, region and region-pair analyses.
+      fr: 257 adultes droitiers après un premier AVC ischémique gauche; imitation de postures de la main et des doigts avec la main ipsilésionnelle; analyses bayésiennes par voxels, régions et paires de régions.
 
   - id: barton-2002
     title: Lesions of the fusiform face area impair perception of facial configuration in prosopagnosia
@@ -898,10 +898,10 @@ references:
     doi: 10.3389/fnhum.2012.00230
     pmid: '22907997'
     method: meta-analysis
-    scope: abstract
+    scope: full-text
     population:
-      en: Lesion-symptom mapping studies of unilateral visual neglect, pooled by anatomic likelihood estimation; the abstract reports no combined patient total.
-      fr: Études de cartographie lésion–symptôme de la négligence visuelle unilatérale, regroupées par estimation de vraisemblance anatomique; le résumé n’indique aucun effectif total.
+      en: 22 lesion-mapping studies of left visual neglect, reporting an aggregate of 1,306 participants; mainly stroke, spanning acute to chronic injury. This is not a verified count of unique individuals.
+      fr: 22 études de cartographie lésionnelle de la négligence visuelle gauche, rapportant au total 1 306 participants; surtout des AVC, des phases aiguës aux phases chroniques. Ce total ne vérifie pas le nombre de personnes distinctes.
 
   - id: zhang-2006
     title: 'Homonymous hemianopias: clinical-anatomic correlations in 904 cases'
@@ -1002,10 +1002,10 @@ references:
     doi: 10.1016/j.nicl.2015.12.005
     pmid: '26900565'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: 38 people with first-ever acute stroke, assessed within the first week.
-      fr: 38 personnes avec un premier AVC aigu, évaluées durant la première semaine.
+      en: 38 people with first-ever stroke, assessed on days 4–7; 33 ischaemic and five haemorrhagic strokes. Left lesions were flipped right for a pooled analysis.
+      fr: 38 personnes avec un premier AVC, évaluées aux jours 4–7; 33 AVC ischémiques et cinq hémorragiques. Les lésions gauches étaient retournées à droite pour une analyse regroupée.
 
   - id: gaillard-2006
     title: Direct intracranial, fMRI, and lesion evidence for the causal role of left inferotemporal cortex in reading
@@ -1454,10 +1454,10 @@ references:
     doi: 10.1016/j.nicl.2016.04.007
     pmid: '27182489'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: 239 patients with subacute ischaemic stroke, assessed using the Birmingham Cognitive Screen.
-      fr: 239 patients avec AVC ischémique subaigu, évalués par le Birmingham Cognitive Screen.
+      en: 239 originally right-handed patients with ischaemic stroke, assessed within one month using the Birmingham Cognitive Screen and clinical CT.
+      fr: 239 patients initialement droitiers avec AVC ischémique, évalués dans le premier mois par le Birmingham Cognitive Screen et un scanner clinique.
 
   - id: peters-2009
     title: 'Ischemic stroke of the cortical "hand knob" area: stroke mechanisms and prognosis'
@@ -1623,10 +1623,10 @@ references:
     doi: 10.1016/j.neuropsychologia.2007.05.021
     pmid: '17640690'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: Patients with ventromedial, dorsolateral, mixed prefrontal or posterior lesions and healthy controls; the abstract gives no sample size.
-      fr: Patients avec lésions ventromédianes, dorsolatérales, préfrontales mixtes ou postérieures et témoins sains; le résumé ne précise pas l’effectif.
+      en: Chronic mixed-etiology focal-lesion groups and healthy controls; ten ventromedial cases, all men. Participant totals conflict across the article’s text and tables.
+      fr: Groupes avec lésions focales chroniques d’étiologies mixtes et témoins sains; dix cas ventromédians, tous des hommes. Les effectifs diffèrent entre le texte et les tableaux de l’article.
 
   - id: heilman-2004
     title: Affective aprosodia from a medial frontal stroke
@@ -1662,10 +1662,10 @@ references:
     doi: 10.1093/brain/awae059
     pmid: '38797521'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: 20 published stroke cases aged 16–77, a clinical stroke cohort of 20 aged 45–87, and 20 adults with persistent developmental stuttering; lesion network mapping used the stroke datasets.
-      fr: 20 cas d’AVC publiés âgés de 16 à 77 ans, une cohorte clinique de 20 patients avec AVC âgés de 45 à 87 ans et 20 adultes avec bégaiement développemental persistant; la cartographie de réseau lésionnel utilisait les données d’AVC.
+      en: 20 published stroke cases aged 16–77 and 20 clinical stroke cases aged 45–87, with 169 and 17 stroke controls; network mapping used 1,000 healthy reference scans. Structural MRI also examined 20 adults aged 18–43 with persistent developmental stuttering.
+      fr: 20 cas d’AVC publiés âgés de 16 à 77 ans et 20 cas cliniques âgés de 45 à 87 ans, avec 169 et 17 témoins avec AVC; la cartographie de réseau utilisait 1 000 examens de référence sains. L’IRM structurelle portait aussi sur 20 adultes de 18 à 43 ans avec bégaiement développemental persistant.
 
   - id: lachowska-2021
     title: Cortical Deafness Due to Ischaemic Strokes in Both Temporal Lobes
@@ -1675,10 +1675,10 @@ references:
     doi: 10.7874/jao.2020.00269
     pmid: '33327707'
     method: case-report
-    scope: abstract
+    scope: full-text
     population:
-      en: One patient with bilateral temporal infarcts, followed with audiometry and auditory electrophysiology over ten months.
-      fr: Un patient avec infarctus temporaux bilatéraux, suivi par audiométrie et électrophysiologie auditive pendant dix mois.
+      en: One right-handed man aged 42 with an acute left temporal infarct after an old right infarct, assessed by audiometry and auditory electrophysiology at three and ten months.
+      fr: Un homme droitier de 42 ans avec infarctus temporal gauche aigu après un ancien infarctus droit, évalué par audiométrie et électrophysiologie auditive à trois et dix mois.
 
   - id: akiyoshi-2021
     title: Subcortical deafness as a subtype of auditory agnosia after injury of bilateral auditory radiations caused by two cerebrovascular accidents - normal auditory brainstem responses with I-VII waves and abolished consciousness of hearing
@@ -1857,10 +1857,10 @@ references:
     doi: 10.1212/WNL.0000000000207577
     pmid: '37442623'
     method: case-series
-    scope: abstract
+    scope: full-text
     population:
-      en: 51 patients from a Norwegian national cohort with vascular locked-in syndrome lasting at least six weeks; 43 had follow-up data.
-      fr: 51 patients d’une cohorte nationale norvégienne avec syndrome d’enfermement vasculaire durant au moins six semaines; 43 avaient des données de suivi.
+      en: 51 patients aged 14.6–76.3 from Norway’s national registry with vascular locked-in syndrome lasting over six weeks and preserved orientation; 43 had follow-up data.
+      fr: 51 patients de 14,6 à 76,3 ans du registre national norvégien avec syndrome d’enfermement vasculaire durant plus de six semaines et orientation préservée; 43 avaient des données de suivi.
 
   - id: volle-2011
     title: 'The role of rostral prefrontal cortex in prospective memory: a voxel-based lesion study'
@@ -2709,11 +2709,11 @@ associations:
       en: Egocentric neglect symptoms were associated with damage in a perisylvian network — precentral, postcentral, supramarginal and superior temporal gyri — and with subcortical damage.
       fr: Les symptômes de négligence égocentrée étaient associés à des lésions d’un réseau périsylvien — gyrus précentral, postcentral, supramarginal et temporal supérieur — et à des lésions sous-corticales.
     limitation:
-      en: Pooling across studies that diagnosed neglect with different tests. The same analysis implicated long association and projection white matter, so a disconnection account is not excluded.
-      fr: Regroupement d’études diagnostiquant la négligence avec des tests différents. La même analyse impliquait la substance blanche d’association et de projection, de sorte qu’une explication par déconnexion n’est pas exclue.
+      en: All included reports studied left visual neglect. Cortical associations varied with the tests; shared right white matter damage supported a disconnection account.
+      fr: Tous les rapports inclus étudiaient la négligence visuelle gauche. Les associations corticales variaient selon les tests; les atteintes communes de la substance blanche droite étayaient une explication par déconnexion.
     mapping_note:
-      en: Cortical parcels only. The subcortical and white-matter findings of the same meta-analysis have no parcel shown here.
-      fr: Parcelles corticales uniquement. Les résultats sous-corticaux et de substance blanche de la même méta-analyse n’ont pas de parcelle affichée ici.
+      en: Whole cortical parcels mark approximate locations. Subcortical and white matter findings are omitted; these parcels do not trace measured connections.
+      fr: Les parcelles corticales entières repèrent des localisations approximatives. Les résultats sous-corticaux et de substance blanche sont omis; ces parcelles ne tracent pas des connexions mesurées.
     mappings:
       - {region: 'destrieux:right:29', source_name: G_precentral}
       - {region: 'destrieux:right:28', source_name: G_postcentral}
@@ -2728,11 +2728,11 @@ associations:
     network: {en: Right posterior temporo-parieto-occipital cortex, fr: Cortex temporo-pariéto-occipital postérieur droit}
     laterality: right
     finding:
-      en: Allocentric neglect symptoms were associated with more posterior lesions, including the angular, middle temporal and middle occipital gyri.
-      fr: Les symptômes de négligence allocentrée étaient associés à des lésions plus postérieures, incluant les gyrus angulaire, temporal moyen et occipital moyen.
+      en: Allocentric symptoms were associated with right angular and middle temporal lesions. The analysis including line bisection also implicated middle occipital cortex.
+      fr: Les symptômes allocentrés étaient associés à des lésions angulaires et temporales moyennes droites. L’analyse incluant la bissection de lignes impliquait aussi le cortex occipital moyen.
     limitation:
-      en: Egocentric and allocentric symptoms co-occur in many patients, so these sites are a dissociation in pooled data rather than a boundary in any one person.
-      fr: Les symptômes égocentrés et allocentrés coexistent chez de nombreux patients; ces sites constituent donc une dissociation dans des données regroupées, et non une frontière chez une personne donnée.
+      en: Reports concerned left visual neglect; egocentric and allocentric symptoms often coexist. Line bisection is not a pure allocentric measure. Pooled lesion peaks do not define individual boundaries.
+      fr: Les rapports concernaient la négligence visuelle gauche; les symptômes égocentrés et allocentrés coexistent souvent. La bissection de lignes n’est pas une mesure purement allocentrée. Les pics lésionnels regroupés ne définissent pas les limites individuelles.
     mapping_note:
       en: Whole parcels are shown for a result reported as overlapping likelihood clusters, which do not follow parcel borders.
       fr: Les parcelles entières sont affichées pour un résultat rapporté sous forme d’amas de vraisemblance, qui ne suivent pas les limites des parcelles.
@@ -2949,8 +2949,8 @@ associations:
       en: 'Somatosensory deficits clustered in two regions: the central parietal white matter carrying the sensory thalamic radiation, and the parietal operculum near the insula, corresponding to secondary somatosensory cortex.'
       fr: 'Les déficits somatosensoriels se regroupaient dans deux régions : la substance blanche pariétale centrale portant la radiation thalamique sensitive et l’opercule pariétal près de l’insula, correspondant au cortex somatosensoriel secondaire.'
     limitation:
-      en: A small acute sample assessed within the first week. The primary somatosensory cortex itself was not among the significant clusters.
-      fr: Petit échantillon aigu évalué durant la première semaine. Le cortex somatosensoriel primaire lui-même ne figurait pas parmi les amas significatifs.
+      en: Small acute sample; lesions were pooled across hemispheres. S1, thalamus and brainstem were untested because lesion coverage was insufficient.
+      fr: Petit échantillon aigu; les lésions étaient regroupées entre hémisphères. S1, le thalamus et le tronc cérébral n’étaient pas testés faute de couverture lésionnelle suffisante.
     mapping_note:
       en: The posterior lateral fissure and subcentral parcels line the parietal operculum on each side; the white-matter cluster has no parcel. Sensory loss is contralateral to the lesion.
       fr: Les parcelles de la scissure latérale postérieure et subcentrale bordent l’opercule pariétal de chaque côté; l’amas de substance blanche n’a pas de parcelle. La perte sensitive est controlatérale à la lésion.
@@ -3862,14 +3862,14 @@ associations:
     network: {en: Distributed visuoconstruction network, fr: Réseau distribué de visuoconstruction}
     laterality: bilateral
     finding:
-      en: Poor copying was associated with bilateral thalamic and lingual lesions, right fusiform lesions and right inferior parietal lesions. The parietal association diminished after controlling for neglect.
-      fr: La mauvaise copie était associée aux lésions thalamiques et linguales bilatérales, fusiformes droites et pariétales inférieures droites. L’association pariétale diminuait après contrôle de la négligence.
+      en: Poor copying had cluster-corrected associations with right fusiform and left lingual damage in every model. Thalamic findings depended on the model; right lingual involvement was weaker or part of a larger fusiform cluster. The right parietal association fell below threshold after neglect adjustment.
+      fr: La mauvaise copie était associée aux atteintes fusiforme droite et linguale gauche après correction par amas dans chaque modèle. Les résultats thalamiques dépendaient du modèle; l’implication linguale droite était plus faible ou intégrée à un amas fusiforme plus large. L’association pariétale droite passait sous le seuil après ajustement pour la négligence.
     limitation:
-      en: Copying combines multiple abilities; a low score alone does not establish a selective constructional disorder or isolate one mechanism.
-      fr: La copie combine plusieurs capacités; un score faible ne suffit pas à établir un trouble constructif sélectif ni à isoler un mécanisme.
+      en: Copying combines several abilities; a low score alone does not establish a selective constructional disorder. Regional findings depended on covariates and cluster correction.
+      fr: La copie combine plusieurs capacités; un score faible ne suffit pas à établir un trouble constructif sélectif. Les résultats régionaux dépendaient des covariables et de la correction par amas.
     mapping_note:
-      en: Thalamic, lingual and right fusiform landmarks are displayed. They do not represent the complete network or the study’s component-specific maps.
-      fr: Des repères thalamiques, linguaux et fusiformes droits sont affichés. Ils ne représentent ni le réseau complet ni les cartes propres aux composantes de l’étude.
+      en: Whole thalamic, lingual and right fusiform parcels are approximate landmarks across patients; bilateral injury is not required. Right lingual evidence is model dependent. Component-specific maps are not displayed.
+      fr: Les parcelles thalamiques, linguales et fusiforme droite entières sont des repères approximatifs entre patients; une atteinte bilatérale n’est pas requise. Les données linguales droites dépendent du modèle. Les cartes propres aux composantes ne sont pas affichées.
     mappings:
       - {region: 'aseg:left:10', source_name: Left-Thalamus-Proper}
       - {region: 'aseg:right:49', source_name: Right-Thalamus-Proper}
@@ -4028,11 +4028,11 @@ associations:
     network: {en: Ventromedial prefrontal social cognition, fr: Cognition sociale préfrontale ventromédiane}
     laterality: bilateral
     finding:
-      en: Ventromedial lesions particularly impaired affective theory of mind; cognitive theory of mind was more affected by extensive prefrontal damage.
-      fr: Les lésions ventromédianes altéraient surtout la théorie de l’esprit affective; la théorie de l’esprit cognitive était davantage touchée par des lésions préfrontales étendues.
+      en: Ventromedial injury was associated with poorer affective mentalizing; evidence for a separate cognitive localization was weaker.
+      fr: L’atteinte ventromédiane était associée à une mentalisation affective moins bonne; les données pour une localisation cognitive distincte étaient plus faibles.
     limitation:
-      en: Two experimental tasks support a partial dissociation. They do not identify a unique mentalizing centre, establish laterality, or measure every aspect of empathy.
-      fr: Deux tâches expérimentales soutiennent une dissociation partielle. Elles n’identifient pas un centre unique de mentalisation, n’établissent pas sa latéralisation et ne mesurent pas tous les aspects de l’empathie.
+      en: Small groups, task ceiling effects and unequal difficulty limit the dissociation. Laterality differed by task; gyrus rectus was not isolated. These tasks do not assess every aspect of empathy.
+      fr: Les petits groupes, les effets plafond et la difficulté inégale des tâches limitent la dissociation. La latéralisation variait selon la tâche; le gyrus rectus n’était pas isolé. Ces tâches n’évaluent pas tous les aspects de l’empathie.
     mapping_note:
       en: Rectus gyri provide coarse ventromedial landmarks on both sides. They do not reproduce the lesion boundaries or imply that bilateral injury is necessary.
       fr: Les gyri rectus fournissent des repères ventromédiaux approximatifs des deux côtés. Ils ne reproduisent pas les limites lésionnelles et n’impliquent pas qu’une atteinte bilatérale soit nécessaire.
@@ -4090,8 +4090,8 @@ associations:
       en: Lesion mapping implicated left inferior frontal, superior temporal, intraparietal and basal ganglia regions and their white-matter connections, rather than one stuttering site.
       fr: La cartographie lésionnelle impliquait des régions frontales inférieures, temporales supérieures, intrapariétales et des noyaux gris gauches, ainsi que leurs connexions de substance blanche, plutôt qu’un site unique du bégaiement.
     limitation:
-      en: The 2024 study linked heterogeneous lesions to a network centred on left putamen. Functional connectivity does not mean that putamen was directly damaged in every case; these studies do not localize all developmental stuttering.
-      fr: L’étude de 2024 reliait des lésions hétérogènes à un réseau centré sur le putamen gauche. La connectivité fonctionnelle ne signifie pas que le putamen était directement lésé dans chaque cas; ces études ne localisent pas tous les bégaiements développementaux.
+      en: The 2024 study used a healthy reference connectome; its shared stroke network was bilateral. The left developmental finding concerned reported impact, without a significant volume–disfluency-frequency association. Its clinical stroke cohort reused the 2013 sample. Connectivity does not establish direct injury at every node or localize all developmental stuttering.
+      fr: L’étude de 2024 utilisait un connectome de référence sain; son réseau commun après AVC était bilatéral. Le constat développemental gauche concernait l’impact rapporté, sans association significative entre volume et fréquence des dysfluences. Sa cohorte clinique d’AVC reprenait l’échantillon de 2013. La connectivité n’établit ni une lésion directe de chaque nœud ni la localisation de tous les bégaiements développementaux.
     mapping_note:
       en: Inferior frontal opercular and lateral superior temporal parcels provide selected cortical landmarks. The other lesions and connecting white matter are not delineated.
       fr: Les parcelles frontale inférieure operculaire et temporale supérieure latérale fournissent des repères corticaux sélectionnés. Les autres lésions et la substance blanche de connexion ne sont pas délimitées.
@@ -4108,8 +4108,8 @@ associations:
     network: {en: Bilateral central auditory pathways, fr: Voies auditives centrales bilatérales}
     laterality: bilateral
     finding:
-      en: Bilateral temporal infarcts involving Heschl’s gyri caused profound hearing loss with normal otoacoustic emissions and brainstem responses. Sound detection partly recovered, but word comprehension remained absent at ten months.
-      fr: Des infarctus temporaux bilatéraux impliquant les gyri de Heschl entraînaient une surdité profonde avec otoémissions et réponses du tronc cérébral normales. La détection sonore récupérait partiellement, mais la compréhension des mots restait absente à dix mois.
+      en: An acute left temporal infarct after an old right infarct damaged both Heschl gyri, causing profound hearing loss despite normal otoacoustic emissions and brainstem responses. Sound detection partly recovered, but no presented monosyllable was discriminated at three or ten months.
+      fr: Un infarctus temporal gauche aigu après un ancien infarctus droit atteignait les deux gyri de Heschl, entraînant une surdité profonde malgré des otoémissions et des réponses du tronc cérébral normales. La détection sonore récupérait partiellement, mais aucun monosyllabe présenté n’était discriminé à trois ou dix mois.
     limitation:
       en: This is one cortical case. A separate three-patient series found bilateral auditory radiation damage, showing that severe central deafness can also arise from subcortical disconnection.
       fr: Il s’agit d’un seul cas cortical. Une série distincte de trois patients trouvait une atteinte bilatérale des radiations auditives, montrant qu’une surdité centrale sévère peut aussi résulter d’une déconnexion sous-corticale.
@@ -4310,8 +4310,8 @@ associations:
       en: Seven patients with locked-in syndrome had ventral pontine injury and diffuse white-matter abnormalities on diffusion MRI, even with little or no supratentorial injury visible on conventional images.
       fr: Sept patients avec syndrome d’enfermement avaient une atteinte pontique ventrale et des anomalies diffuses de substance blanche en IRM de diffusion, malgré peu ou pas de lésion supratentorielle visible sur les images conventionnelles.
     limitation:
-      en: This selected imaging series is not a universal lesion map. A national cohort of 51 patients frequently had additional lesions outside the brainstem. Preserved consciousness does not establish that every cognitive function is intact.
-      fr: Cette série d’imagerie sélectionnée n’est pas une carte lésionnelle universelle. Une cohorte nationale de 51 patients présentait souvent des lésions supplémentaires hors du tronc cérébral. La conscience préservée n’établit pas que toutes les fonctions cognitives sont intactes.
+      en: This selected imaging series is not a universal lesion map. In the national vascular cohort, 39 of 49 patients with radiology reports had lesions outside the brainstem, and seven had no pontine injury. Entry required preserved orientation, not normal performance in every cognitive domain.
+      fr: Cette série d’imagerie sélectionnée n’est pas une carte lésionnelle universelle. Dans la cohorte vasculaire nationale, 39 des 49 patients avec comptes rendus radiologiques avaient des lésions hors du tronc cérébral et sept n’avaient pas d’atteinte pontique. L’inclusion exigeait une orientation préservée, non des performances normales dans chaque domaine cognitif.
     mapping_note:
       en: The two pontine territories provide a coarse landmark for the pons. They do not isolate its ventral motor pathways, the tegmentum, or diffuse white-matter abnormalities.
       fr: Les deux territoires pontiques fournissent un repère approximatif du pont. Ils n’isolent ni ses voies motrices ventrales, ni le tegmentum, ni les anomalies diffuses de substance blanche.

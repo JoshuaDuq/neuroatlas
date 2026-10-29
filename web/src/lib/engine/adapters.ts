@@ -70,6 +70,7 @@ export function createEngineModel(atlas: BrainAtlas): EngineModel {
     },
     isRegionDrawn: (id) => atlas.visibleMeshes.some((mesh) => mesh.userData['region_id'] === id),
     centroidOf: (id) => atlas.centroidOf(id),
+    anchorOf: (id) => atlas.anchorOf(id),
     canSelect: (region) => atlas.canSelect(region),
 
     select: (id) => atlas.select(id),

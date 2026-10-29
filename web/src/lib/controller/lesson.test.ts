@@ -162,9 +162,9 @@ describe('the Linked MRI', () => {
     await scene.commands.openRegion('destrieux:left:25', scene.commands.begin());
     scene.engine.model.select('destrieux:left:25');
     scene.engine.sections.setCrosshair([1, 2, 3]);
-    const centroid = scene.engine.model.centroidOf('destrieux:left:25')!;
+    const anchor = scene.engine.model.anchorOf('destrieux:left:25')!;
     await scene.excursions.openLinkedMri({ atRegion: true, instant: true });
-    assert.deepEqual(scene.engine.sections.state.crosshair, centroid);
+    assert.deepEqual(scene.engine.sections.state.crosshair, anchor);
     assert.deepEqual(scene.mri.show.mock.calls[0], [{ instant: true }]);
     const timeline = scene.calls();
     assert.ok(timeline.lastIndexOf('sections.load') < timeline.lastIndexOf('mri.show'));
@@ -173,14 +173,14 @@ describe('the Linked MRI', () => {
   test('from the cut bar, moves to the selected region only from the origin', async () => {
     const scene = createScene();
     await scene.commands.openRegion('destrieux:left:25', scene.commands.begin());
-    const centroid = scene.engine.model.centroidOf('destrieux:left:25')!;
+    const anchor = scene.engine.model.anchorOf('destrieux:left:25')!;
     scene.engine.sections.setCrosshair([1, 2, 3]);
     await scene.excursions.openLinkedMri();
     assert.deepEqual(scene.engine.sections.state.crosshair, [1, 2, 3]);
 
     scene.engine.sections.setCrosshair([0, 0, 0]);
     await scene.excursions.openLinkedMri();
-    assert.deepEqual(scene.engine.sections.state.crosshair, centroid);
+    assert.deepEqual(scene.engine.sections.state.crosshair, anchor);
     assert.deepEqual(scene.mri.show.mock.calls.at(-1), [{ instant: false }]);
   });
 
@@ -220,7 +220,7 @@ describe('the Linked MRI', () => {
     assert.equal(timeline[timeline.indexOf('camera.faceCut') + 1], 'app.render');
     assert.deepEqual(
       scene.engine.sections.state.crosshair,
-      scene.engine.model.centroidOf(step!.region),
+      scene.engine.model.anchorOf(step!.region),
     );
     assert.equal(scene.engine.sections.state.mode, step!.plane);
     assert.equal(scene.engine.sections.state.overlay, true);

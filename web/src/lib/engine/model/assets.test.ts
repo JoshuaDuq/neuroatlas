@@ -175,38 +175,25 @@ describe('the published CDMD model', () => {
     assert.equal(model.state.selectedRegion, null);
   });
 
-  test(
-    'ATLAS-46 every region with a mesh has a centroid in tenths of a millimetre, and right is right of left',
-    { timeout: 120_000 },
-    async () => {
-      await model.setAtlas('hcp-mmp');
-      for (const detail of ['aseg', 'nextbrain', 'learning']) await model.setDetail(detail);
-      await model.setAtlas('destrieux');
-      let found = 0;
-      for (const id of model.regions.keys()) {
-        const centroid = model.centroidOf(id);
-        if (!centroid) continue;
-        found += 1;
-        for (const value of centroid)
-          assert.ok(Math.abs(value * 10 - Math.round(value * 10)) < 1e-6, `${id}: ${value}`);
+  test('ATLAS-46 every region the build places has a centroid and an anchor, and right is right of left', () => {
+    let placed = 0;
+    for (const [id, region] of model.regions) {
+      if (region.kind === 'non-region') {
+        assert.equal(model.anchorOf(id), null);
+        continue;
       }
-      assert.ok(found >= 400, `${found} centroids`);
-      assert.deepEqual(
-        ['destrieux:left:1', 'destrieux:right:1'].map((id) => model.centroidOf(id)),
-        [
-          [-17.4, 52.3, 35.9],
-          [22.7, 53.7, 36.1],
-        ],
-      );
-      for (const id of model.regions.keys()) {
-        const [, side, label] = id.split(':');
-        if (!id.startsWith('destrieux:left:') || Number(label) < 1) continue;
-        const left = model.centroidOf(id);
-        const right = model.centroidOf(`destrieux:right:${label}`);
-        if (left && right) assert.ok(right[0] > left[0], `${id}: ${side}`);
+      for (const point of [model.centroidOf(id), model.anchorOf(id)]) {
+        assert.ok(point?.length === 3 && point.every(Number.isFinite), id);
       }
-    },
-  );
+      placed += 1;
+    }
+    assert.ok(placed >= 2000, `${placed} placed regions`);
+    for (const id of model.regions.keys()) {
+      const [, , label] = id.split(':');
+      if (!id.startsWith('destrieux:left:') || Number(label) < 1) continue;
+      assert.ok(model.centroidOf(`destrieux:right:${label}`)![0] > model.centroidOf(id)![0], id);
+    }
+  });
 
   /** Fibonacci-sphere rays at 0.25 m aimed at the centre, as scripts/benchmark-picking.mjs lays them. */
   const rays = Array.from({ length: 100 }, (_, i) => {

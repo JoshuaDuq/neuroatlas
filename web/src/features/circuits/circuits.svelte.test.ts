@@ -205,7 +205,7 @@ describe('opening a lesson', () => {
     await wander();
     expect(world.explorer.landmarkSelected).toBe(false);
     expect(document.querySelector('.circuit-context')).toBeNull();
-    expect(document.querySelector('.circuit-note')!.textContent).toContain(
+    expect(document.querySelector('.circuit-return')!.textContent).toContain(
       'You are exploring another region.',
     );
     returnButton()!.focus();
@@ -234,6 +234,99 @@ describe('opening a lesson', () => {
     expect(rowOf('vision').hasAttribute('aria-current')).toBe(false);
     expect(progress()).toBe('Landmark 1 of 5');
   });
+});
+
+describe('the added research-based tours', () => {
+  test.each(['en', 'fr'] as const)(
+    'the clinical validation limit is visible before opening notes (%s)',
+    async (lang) => {
+      mount(lang);
+      await open('vision');
+      await expect
+        .element(
+          page.getByText(
+            lang === 'en'
+              ? /Clinical accuracy has not been validated/
+              : /L’exactitude clinique n’a pas été validée/,
+          ),
+        )
+        .toBeVisible();
+    },
+  );
+
+  test.each(['en', 'fr'] as const)(
+    'sources distinguish clinical evidence and background (%s)',
+    async (lang) => {
+      mount(lang);
+      await open('vision');
+      await userEvent.click(summary(t(lang, 'circuits').evidence));
+      await expect
+        .element(
+          page.getByText(lang === 'en' ? 'Deficit evidence' : 'Données sur le déficit', {
+            exact: true,
+          }),
+        )
+        .toBeVisible();
+      expect(
+        [...document.querySelectorAll('.source-kind')].some(
+          (element) =>
+            element.textContent === (lang === 'en' ? 'Circuit background' : 'Contexte du parcours'),
+        ),
+      ).toBe(true);
+    },
+  );
+
+  test.each(['en', 'fr'] as const)(
+    'the achromatopsia source shows its published correction (%s)',
+    async (lang) => {
+      mount(lang);
+      await open('colour');
+      await userEvent.click(summary(t(lang, 'circuits').evidence));
+      await expect
+        .element(page.getByRole('link', { name: /doi:10.1093\/cercor\/bhl065/ }))
+        .toBeVisible();
+      await expect
+        .element(
+          page.getByText(
+            lang === 'en'
+              ? /corrects the slice labels of Figure 2/
+              : /corrige les étiquettes des coupes de la figure 2/,
+          ),
+        )
+        .toBeVisible();
+    },
+  );
+
+  for (const lang of ['en', 'fr'] as const) {
+    for (const id of [
+      'speech-planning',
+      'writing',
+      'music',
+      'taste',
+      'olfaction',
+      'mentalizing',
+      'extinction',
+      'copying',
+      'cortical-hearing',
+      'oral-praxis',
+      'voices',
+      'pontine-motor',
+    ]) {
+      test(`${id} opens and visits every landmark in ${lang}`, async () => {
+        mount(lang);
+        await open(id);
+        const circuit = world.circuits.get(id);
+        for (const [index, step] of circuit.steps.entries()) {
+          await expect.poll(() => world.lesson.state.step).toBe(index);
+          expect(title().textContent).toBe(step.name[lang]);
+          expect(world.view.current.selectedRegion?.id).toBe(step.region);
+          expect(world.explorer.landmarkSelected).toBe(true);
+          if (index < circuit.steps.length - 1) await userEvent.click(control('next'));
+        }
+        expect(control('next').hidden).toBe(true);
+      });
+    }
+  }
 });
 
 describe('the stepper', () => {

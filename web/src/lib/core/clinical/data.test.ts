@@ -226,8 +226,8 @@ describe('published clinical content: fixed values', () => {
   const [, manifest] = manifests[0];
   const catalog = createClinicalCatalog(data, manifest, {});
 
-  test('CAT-50 · the published records are the revision of 2026-10-28: 6 groups, 70 deficits, 131 references, 108 associations', () => {
-    assert.equal(catalog.revised, '2026-10-28');
+  test('CAT-50 · the published records are the revision of 2026-10-29: 6 groups, 70 deficits, 131 references, 108 associations', () => {
+    assert.equal(catalog.revised, '2026-10-29');
     assert.equal(data.groups.length, 6);
     assert.equal(data.deficits.length, 70);
     assert.equal(data.references.length, 131);

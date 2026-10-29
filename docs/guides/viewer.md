@@ -50,12 +50,12 @@ A Destrieux, HCP-MMP, Julich-Brain or Schaefer region lists the regions of anoth
 
 ## Stage
 
-The dock at the bottom left holds four tools.
+The dock at the bottom left holds three tools.
 
-- **View** holds the presets: oblique, left, right, anterior, posterior, superior, inferior.
+- **View** holds the presets (oblique, left, right, anterior, posterior, superior, inferior), the turn arrows and **Reset view**.
 - **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels. **Cerebellar functions** colours the cerebellar cortex by the registered group functional atlas. With NextBrain cut labels, a selected NextBrain region is outlined on the cut: solid where its boundary is firm, dashed where soft, grey where unrated.
-- **Display** holds hemisphere, cortex and its opacity, internal anatomy, spinal cord and **Reset view**.
-- **Lesion** places a sphere (3–30 mm radius): while it is open, a click on the brain or a cut face sets the centre. Cut first to place it at depth.
+  Under the cut's controls, **Lesion** places a sphere (3–30 mm radius). Set **A click on the brain** to **Places the lesion**, then click the brain or a cut face to set the centre; the choice returns to selecting when the popover closes. Cut first to place it at depth.
+- **Display** holds hemisphere, cortex and its opacity, internal anatomy and spinal cord.
 
 ### Lesion report
 

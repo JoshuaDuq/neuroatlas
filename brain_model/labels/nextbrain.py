@@ -9,6 +9,7 @@ import numpy as np
 from nibabel.affines import apply_affine
 
 from ..sources import ROOT, declares, sha256
+from .placement import placements
 from .volumes import LabelGrid, encode_cropped_array, offset_by, place_crop
 
 ATLAS_ID = "nextbrain"
@@ -221,6 +222,11 @@ def build_regions(config, skip=()):
     shares = cortical_network_compositions(config, grid, table)
     regions = []
     skipped = set(skip)
+    placed = placements(
+        grid.labels,
+        grid.voxel_to_surface,
+        [index for index in indices.tolist() if index != BACKGROUND and index not in skipped],
+    )
     for index, count in zip(indices.tolist(), counts.tolist()):
         if index == BACKGROUND or index in skipped:
             continue
@@ -239,6 +245,7 @@ def build_regions(config, skip=()):
             "voxel_count": count,
             "voxel_size_mm": grid.spacing_mm,
             "segmentation_volume_mm3": count * grid.voxel_volume_mm3,
+            **placed[index],
         }
         composition = shares.get(region["id"])
         if composition is not None:
