@@ -464,7 +464,7 @@ export function createFraming({
     const box = boundsOf(meshes);
     const context = withContext(box);
     // A mapping wide enough to carry its own context is fitted by its silhouette, as the whole brain
-    // is, so it fills the stage as DESIGN.md's framing says; a small one keeps the context box.
+    // is, so it fills the stage; a small one keeps the context box.
     const points = context.equals(box) ? silhouette(meshes) : null;
     const direction = heading();
     const sides = new Set(

@@ -5,16 +5,11 @@ on:
     branches: [main]
     # Agent, design and repository notes are not part of the site or its checks.
     paths-ignore:
-      - .agents/**
-      - .claude/**
-      - .impeccable/**
       - deliverables/**
       - AGENTS.md
       - CLAUDE.md
-      - DESIGN.md
       - PRODUCT.md
       - README.md
-      - skills-lock.json
   workflow_dispatch:
 
 permissions:
