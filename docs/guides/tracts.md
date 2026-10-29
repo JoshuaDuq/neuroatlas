@@ -6,6 +6,12 @@ The **Tracts** tab displays bundles reconstructed from diffusion MRI. CDMD has 3
 
 Select a side (L or R), or a numbered callosal segment, to load a bundle. A subset is visible initially. Use **Restore default tracts** to return to that selection. The **Section** and **Display** controls work with the tracts; cortex opacity is shared between the Tracts tab and Display. Tracts remain visible when you return to Anatomy until you switch off **Show tracts with anatomy**.
 
+```{figure} ../../.github/assets/readme/tracts.webp
+:alt: The default tract bundles inside a translucent Destrieux-coloured brain, coloured by local direction, with streamline counts and lengths in the panel
+
+The default bundles, coloured by local direction, with each loaded side's streamline count and length range.
+```
+
 Streamline colour represents local direction:
 
 | Colour | Direction |
