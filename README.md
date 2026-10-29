@@ -36,7 +36,7 @@ It is built for people who need to understand where things are in the brain:
 
 ### Explore every region, from gyri to nuclei
 
-Search or browse 148 Destrieux parcels, 360 HCP-MMP areas or 278 Julich-Brain cytoarchitectonic areas on the cortex, and 514 NextBrain labels beneath it, down through the brainstem and a 34-region cervical spinal cord. Select any region for its volume or surface area, centroid, source label, functional division and typical arterial supply. **Focus**, **Isolate** or **Hide** it to dissect the brain layer by layer.
+Search or browse 148 Destrieux parcels, 360 HCP-MMP areas, 278 Julich-Brain cytoarchitectonic areas or 400 Schaefer parcels on the cortex, and 514 NextBrain labels beneath it, down through the brainstem, 32 functional cerebellar regions and a 34-region cervical spinal cord. Select any region for its volume or surface area, centroid, source label, functional division and typical arterial supply. **Focus**, **Isolate** or **Hide** it to dissect the brain layer by layer.
 
 ### Cut it open and check it against the scan
 
@@ -76,11 +76,11 @@ Drop a sphere of 3 to 30 mm anywhere on the brain or a cut face. The report list
 
 ### And more
 
-- **Compare atlases.** See how a Destrieux region and the HCP-MMP areas share its surface, in mm², and download every pair as CSV.
+- **Compare atlases.** See how a region of any cortical atlas shares its surface with the areas of another, in mm², and download every pair as CSV.
 - **Colour by network.** Yeo 7 or CAB-NP functional networks.
 - **Go deeper on a region.** Region details add receptor fingerprints (36, from EBRAINS) and typical arterial supply, from territories of 15 branches per hemisphere mapped in 1,298 stroke patients.
 - **Know how sure a boundary is.** NextBrain regions show where the segmentation nearly chose a neighbouring label.
-- **Share exactly what you see.** The address bar holds the selection, camera, section and display, so a link reopens the same view. **Save image** exports the stage with its orientation letters, scale bar and colour key.
+- **Share exactly what you see.** The address bar holds the selection, camera, section, display and a placed lesion, so a link reopens the same view. **Save image** exports the stage with its orientation letters, scale bar and colour key.
 - **Use it anywhere.** English or French, full keyboard control, and a touch layout for phones and tablets.
 
 ## Built to be checked

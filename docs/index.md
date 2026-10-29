@@ -68,7 +68,7 @@ A 3–30 mm sphere's overlap with functions, deficits, tissue and tracts. It pre
 
 ::::
 
-Search or browse 148 Destrieux parcels, 360 HCP-MMP areas, 278 Julich-Brain areas and 514 NextBrain labels, down to a 34-region cervical cord. Compare atlases by shared surface, colour the cortex by functional network, and share any view as a link: the address bar holds the selection, camera, section and display. The viewer works in English and French, by keyboard, and on phones.
+Search or browse 148 Destrieux parcels, 360 HCP-MMP areas, 278 Julich-Brain areas, 400 Schaefer parcels and 514 NextBrain labels, down to 32 functional cerebellar regions and a 34-region cervical cord. Compare any two cortical atlases by shared surface, colour the cortex by functional network, and share any view as a link: the address bar holds the selection, camera, section, display and a placed lesion. The viewer works in English and French, by keyboard, and on phones.
 
 ## Find your way
 
