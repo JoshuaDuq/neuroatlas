@@ -94,6 +94,7 @@ html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_permalinks_icon = "#"
 html_show_sphinx = False
+html_copy_source = False
 html_favicon = "_static/favicon.svg"
 templates_path = ["_templates"]
 highlight_language = "none"
