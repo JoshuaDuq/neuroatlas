@@ -162,7 +162,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Kind:** hygiene
 - **Level:** unit (read `index.html`)
 - **Source:** `index.html:5-26`
-- **Expected:** `<title>Planum</title>`; `link[rel=canonical]` and `og:url` = `https://planumatlas.com/`; `og:image` = `https://planumatlas.com/preview.png`, 1200×630, with a non-empty `og:image:alt`; `twitter:card` = `summary_large_image`; `og:site_name` = `Planum`. The `og:description` counts ("148 Destrieux regions, 360 HCP-MMP areas, 483 histological labels") are a data claim. It has not been checked against the published manifest, whose `regions` list has 150 `destrieux`, 362 `hcp-mmp` and 514 `nextbrain` entries, unknown and medial-wall entries included.
+- **Expected:** `<title>Planum</title>`; `link[rel=canonical]` and `og:url` = `https://planumatlas.com/`; `og:image` = `https://planumatlas.com/preview.png`, 1200×630, with a non-empty `og:image:alt`; `twitter:card` = `summary_large_image`; `og:site_name` = `Planum`. The `og:description` counts (four cortical atlases, 514 NextBrain labels, 30 diffusion tracts, 70 function maps, 70 deficit profiles, 35 tours) are a data claim, copied from the README; no test checks them against the published data.
 - **Covered by:** uncovered (BUILD-09 covers `lang` and the title only)
 
 ## Accessibility
