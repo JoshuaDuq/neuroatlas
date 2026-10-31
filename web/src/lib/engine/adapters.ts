@@ -49,6 +49,7 @@ export function createEngineModel(atlas: BrainAtlas): EngineModel {
     domains: atlas.domains,
     boundaryCertainty: atlas.boundaryCertainty,
     receptors: atlas.receptors,
+    segmentationAgreement: atlas.segmentationAgreement,
     get defaultDetail() {
       return atlas.defaultDetail;
     },
@@ -171,6 +172,7 @@ export function createEngineSections(sections: BrainSections): EngineSections {
     setAnglesReady: (tilt, azimuth) => sections.setAnglesReady(tilt, azimuth),
     setCutAtlas: (atlas) => sections.setCutAtlas(atlas),
     setDisplay: (options) => sections.setDisplay(options),
+    setAgreement: (code) => sections.setAgreement(code),
     setWindow: (center, width) => sections.setWindow(center, width),
     setSurfaceColor: (mode, current) => sections.setSurfaceColor(mode, current),
 

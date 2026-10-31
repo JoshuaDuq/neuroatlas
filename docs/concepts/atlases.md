@@ -63,6 +63,14 @@ A boundary is **soft** when a third or more of it is a near tie. The selected re
 
 It is the model's competition between its own labels, conditional on one registration. It is not agreement with another segmentation: CDMD's left amygdala, NextBrain's largest disagreement with aseg, is a confident label (median winning posterior 0.975). A firm boundary can still be misplaced.
 
+### Segmentation agreement
+
+Validation scores NextBrain against aseg on NextBrain's 0.4 mm grid, where part of every disagreement is aseg's 1 mm staircase: on CDMD, NextBrain's own 1 mm copy scores only 0.93–0.96 against NextBrain, and 18–33% of the voxels where the two disagree are ones where aseg matches that copy. To show the disagreement rather than the grid, the build voxelises each compared NextBrain union (caudate, putamen, thalamus, hippocampal formation, and amygdala with its transition areas, on each side) onto aseg's grid: a 1 mm voxel belongs to a union when over half of the 0.4 mm voxels that fall in it do. Each voxel of a structure is then labelled by both segmentations, by aseg only or by NextBrain only.
+
+On CDMD the 1 mm Dice is 0.79–0.91, only 0.01–0.02 above the 0.4 mm scores, so the disagreement is mostly the methods'. aseg labels more than NextBrain for every compared structure except the thalamus; the left amygdala has 461 mm³ that only aseg labels against 125 mm³ that only NextBrain does.
+
+The **Segmentation agreement** section, on the aseg structure, NextBrain's union or any NextBrain label in it, gives the three volumes and their Dice, and **Show on linked MRI** inks them on the scan. Neither segmentation is the reference, and agreement is not accuracy. It is also separate from boundary certainty: the left amygdala is a confident NextBrain label (median winning posterior 0.975) and the structure the two agree on least.
+
 ## Gyral white matter
 
 `wmparc` labels each white-matter voxel within 5 mm of cortex with its nearest Desikan gyrus. Cut faces name the gyrus under the pointer; deeper white matter belongs to no region.

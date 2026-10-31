@@ -647,3 +647,40 @@ describe('accessibility', () => {
     await expectAxeClean();
   });
 });
+
+describe('segmentation agreement', () => {
+  const key = () => dialog().querySelector<HTMLElement>('.agreement');
+  const overlay = () =>
+    page.getByRole('checkbox', { name: 'Segmentation overlay' }).element() as HTMLInputElement;
+
+  test('the shown structure is named with the planes’ key; it holds the overlay, and Hide clears it', async () => {
+    await render(Fixture, {
+      engine,
+      engineState: createEngineSync(engine),
+      mpr,
+      live,
+      anatomy,
+      agreementName: 'Amygdala and transition areas · Left',
+    });
+    await userEvent.click(opener());
+    expect(key()!.querySelector('.agreement-name')!.textContent).toBe(
+      'Agreement: Amygdala and transition areas · Left',
+    );
+    expect([...key()!.querySelectorAll('li')].map((item) => item.textContent!.trim())).toEqual([
+      'Both segmentations',
+      'aseg only',
+      'NextBrain only',
+    ]);
+    expect(overlay().disabled).toBe(true);
+    await userEvent.click(page.getByRole('button', { name: 'Hide agreement' }));
+    expect(calls('setAgreement').map((call) => call.args)).toEqual([[null]]);
+    await expectAxeClean();
+  });
+
+  test('without a shown structure there is no key and the overlay is free', async () => {
+    await mount();
+    await userEvent.click(opener());
+    expect(key()).toBeNull();
+    expect(overlay().disabled).toBe(false);
+  });
+});

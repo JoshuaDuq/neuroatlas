@@ -60,6 +60,38 @@ test('SLICE-13 a labelled pixel blends 0.55 of the grey with 0.45 of the label c
   assert.deepEqual(Array.from(plain.slice(0, 4)), [70, 70, 70, 255]);
 });
 
+test('shown agreement inks each voxel of the structure by which segmentation labels it, over the overlay', () => {
+  // The structure is aseg label 1 and compared code 3; NextBrain has it where x < 2, and also at
+  // x = 3, y = 3, where aseg labels nothing.
+  const segmentation = new Uint16Array(64).fill(1);
+  const compared = new Uint8Array(64);
+  for (let z = 0; z < 4; z++)
+    for (let y = 0; y < 4; y++)
+      for (let x = 0; x < 4; x++) {
+        if (x < 2) compared[x + 4 * (y + 4 * z)] = 3;
+        if (x === 3 && y === 3) {
+          compared[x + 4 * (y + 4 * z)] = 3;
+          segmentation[x + 4 * (y + 4 * z)] = 0;
+        }
+      }
+  const shown = {
+    ...volumes,
+    segmentation: new Volume(metadata, segmentation),
+    agreement: { structure: { code: 3, aseg_label: 1 }, compared: new Volume(metadata, compared) },
+  };
+  const pixels = renderSlice(shown, frame, { ...display, overlay: true });
+  const at = (x: number, y: number) =>
+    Array.from(pixels.slice((y * 4 + x) * 4, (y * 4 + x) * 4 + 4));
+  // Row 0 is y = 3, row 3 is y = 0. Grey 70 at (0, 3): 0.55 * 70 + 0.45 * 236 = 144.7.
+  assert.deepEqual(at(0, 0), [145, 145, 145, 255]);
+  // Grey 43 at (3, 0), aseg only: 0.55 * 43 + 0.45 * [235, 70, 210].
+  assert.deepEqual(at(3, 3), [129, 55, 118, 255]);
+  // (3, 3) is NextBrain's alone, and drawn although aseg has no label there.
+  const [, , blue, alpha] = at(3, 0);
+  assert.equal(alpha, 255);
+  assert.ok(blue < at(3, 0)[0]!);
+});
+
 test('SLICE-14 a size outside 2..2048 or non-integer, a flat field of view or window is a RangeError', () => {
   for (const bad of [
     { size: 1 },

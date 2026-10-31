@@ -3,7 +3,8 @@
   the commands that act on it, its measurements, then the collapsed sections that qualify it.
   Without a selection it is one hint line. The sections keep legacy's order (decision 35 on #4):
   the comparison slot (R2), constituents, functional division, domains, networks, with NextBrain's
-  boundary certainty after the comparison, both being about the labels' source, then the receptor
+  boundary certainty and segmentation agreement after the comparison, all being about the labels'
+  source, then the receptor
   densities measured in the area the region is named after; the deficits
   and circuits the region takes part in (X2, X3) follow as slots of their own.
   - the name is the `region-title` focus target; the commands that hide the selection with it
@@ -28,6 +29,7 @@
   import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
   import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
+  import type { SegmentationAgreement } from '../../lib/core/catalog/segmentation-agreement.ts';
   import type { ReceptorFingerprints } from '../../lib/core/catalog/receptor-fingerprints.ts';
   import { ARIA_KEYSHORTCUTS } from '../../lib/controller/keymap.ts';
   import { t } from '../../lib/core/i18n/index.ts';
@@ -35,6 +37,7 @@
   import { FOCUS_TARGETS, registerFocusTarget } from '../../lib/ui/focus.ts';
   import IconButton from '../../lib/ui/IconButton.svelte';
   import { isKeyboardActivation } from '../../lib/ui/instant.ts';
+  import AgreementSection from './AgreementSection.svelte';
   import BoundarySection from './BoundarySection.svelte';
   import Constituents from './Constituents.svelte';
   import DomainSection from './DomainSection.svelte';
@@ -68,6 +71,7 @@
     functionalRegions: FunctionalRegions | null;
     domains: NeuropsychDomains | null;
     boundaryCertainty: BoundaryCertainty | null;
+    segmentationAgreement: SegmentationAgreement | null;
     receptors: ReceptorFingerprints | null;
     /** The manifest's arterial territories, for each region's typical supply. */
     territories?: ArterialTerritories | null;
@@ -87,6 +91,8 @@
     onselect: (id: string) => void;
     /** S3's `openLinkedMri`; `instant` is true for a keyboard activation. */
     openLinkedMri: (options: { atRegion: true; instant: boolean }) => unknown;
+    /** Shows a compared structure's agreement in the linked MRI, opened at the region. */
+    showAgreement: (code: number, options: { instant: boolean }) => unknown;
     comparison?: Snippet;
     relatedDeficits?: Snippet;
     relatedCircuits?: Snippet;
@@ -107,6 +113,7 @@
     functionalRegions,
     domains,
     boundaryCertainty,
+    segmentationAgreement,
     receptors,
     territories = null,
     cerebellarFunctions = null,
@@ -117,6 +124,7 @@
     onregion,
     onselect,
     openLinkedMri,
+    showAgreement,
     comparison,
     relatedDeficits,
     relatedCircuits,
@@ -189,6 +197,13 @@
   {/if}
   {@render comparison?.()}
   <BoundarySection {region} {lang} certainty={boundaryCertainty} label={catalog.label} {onselect} />
+  <AgreementSection
+    {region}
+    {lang}
+    agreement={segmentationAgreement}
+    label={catalog.label}
+    onshow={showAgreement}
+  />
   <ReceptorSection {region} {lang} {receptors} />
   <Constituents {region} {lang} get={catalog.get} label={catalog.label} {onregion} />
   <FunctionalSection {region} {lang} {functionalRegions} />

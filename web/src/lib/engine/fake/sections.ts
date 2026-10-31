@@ -100,6 +100,7 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
     crosshair: [0, 0, 0],
     reverse: false,
     overlay: false,
+    agreement: null,
     tilt: 30,
     azimuth: 30,
     status: 'idle',
@@ -288,6 +289,13 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
       Object.assign(state, { reverse, overlay });
       emit();
     },
+    async setAgreement(code) {
+      const published = model.segmentationAgreement;
+      if (code !== null && !published?.structures.some((structure) => structure.code === code))
+        throw new RangeError(`No compared structure has code ${code}.`);
+      state.agreement = code;
+      emit();
+    },
     setWindow(center, width) {
       if (!display || !Number.isFinite(center) || !Number.isFinite(width) || width <= 0) {
         throw new RangeError('MRI window requires a finite center and positive width.');
@@ -333,6 +341,7 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
         region: undefined,
         intensity: Math.abs(point[2]),
         ras: point,
+        agreement: null,
       };
     },
   };

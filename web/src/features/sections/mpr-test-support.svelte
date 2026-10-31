@@ -14,6 +14,7 @@
     mpr,
     live,
     anatomy,
+    agreementName = null,
   }: {
     engine: FakeEngine;
     engineState: EngineSync;
@@ -21,6 +22,7 @@
     /** Reactive, so a test can change the language. */
     live: { lang: Language };
     anatomy: Pick<ManifestAnatomy, 'subject' | 'individual'>;
+    agreementName?: string | null;
   } = $props();
 
   let more: HTMLButtonElement;
@@ -35,4 +37,12 @@
   }}>Linked MRI</button
 >
 <button type="button" bind:this={more}>More</button>
-<MprDialog {mpr} {engine} {engineState} lang={live.lang} {anatomy} fallbackFocus={() => more} />
+<MprDialog
+  {mpr}
+  {engine}
+  {engineState}
+  lang={live.lang}
+  {anatomy}
+  {agreementName}
+  fallbackFocus={() => more}
+/>

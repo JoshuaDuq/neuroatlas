@@ -27,6 +27,7 @@ CI runs all three for `cdmd` on every pull request and deployment. A validation 
 11. **Transforms.** Projected annotations are re-derived byte for byte; CDMD's tract scanner-to-surface transform is recomputed from `orig.mgz`.
 12. **Spinal cord.** Every PAM50 region is re-voxelised from its mesh with no voxel centre crossed, and left regions lie left of their partners. The registered atlas's cord must meet SCT's own segmentation at Dice 0.95 or more on the slices it covers; `cdmd` measures 0.967 over 65 slices.
 13. **Boundary certainty.** `boundary-certainty.json` recounted per voxel and the label it touches must equal the build's per-pair counts exactly. The near-tie volume must sit on the label grid, name a runner-up from its winner's own hemisphere and never the winner, and have been made with the configured margin.
+14. **Segmentation agreement map.** The compared NextBrain volume, voxelised again point by point through the full affines rather than per axis, must equal the published one, and `segmentation-agreement.json`'s counts must equal a recount against aseg.
 
 Browser QA runs are recorded in [`deliverables/`](https://github.com/JoshuaDuq/neuroatlas/tree/main/deliverables); the docs build does not re-run them.
 
@@ -48,6 +49,10 @@ Counts are before barycentric partition; area is conserved across it to a relati
 
 [`tests/test_comparison.py`](https://github.com/JoshuaDuq/neuroatlas/blob/main/tests/test_comparison.py) checks the overlap calculation against explicit barycentric subdivision. CDMD publishes 1,202 positive Destrieux × HCP-MMP pairs, 1,056 Destrieux × Julich-Brain, 1,221 Destrieux × Schaefer, 1,537 HCP-MMP × Julich-Brain, 1,767 HCP-MMP × Schaefer and 1,556 Julich-Brain × Schaefer. Every pair file conserves both hemispheres to the same totals (about 85,619.412 mm² left, 85,458.887 mm² right); the largest discrepancy against the cortical meshes is $1.12 \times 10^{-4}$ mm², within the float32 bound. These are numerical checks, not proof that projected boundaries are biologically exact.
 
+## Segmentation agreement map
+
+On aseg's 1 mm grid, `cdmd`'s Dice is caudate 0.867 / 0.881 (left / right), putamen 0.902 / 0.908, thalamus 0.898 / 0.898, hippocampus 0.872 / 0.898 and amygdala 0.791 / 0.850, each 0.01–0.02 above its 0.4 mm score. NextBrain's own 1 mm copy scores 0.93–0.96 against NextBrain on the 0.4 mm grid, the most a perfect 1 mm segmentation of the same boundary could reach there.
+
 ## Boundary certainty
 
 On `cdmd`, 1,061,305 voxels (7.5% of those labelled) are near ties, and 93.2% of them nearly went to a label that touches them across a face. 1,738 same-hemisphere pairs are rated, covering 99.1% of interface voxels; 2,387 smaller pairs are not. A rated boundary is nearly tied on a median 19% of its interface, 26% weighted by interface. The rerun that records the posteriors reproduces the published labels byte for byte.
@@ -61,7 +66,7 @@ Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, 
 1. **One individual.** Folds, depths and asymmetries belong to that person and are not normative.
 2. **1 mm scan.** The MRI and FreeSurfer labels are 1 mm. NextBrain's 0.4 mm grid is estimated from that same scan; where structures share T1 contrast, the atlas prior places the boundary. Cortical layers and fibres are not resolved.
 3. **HCP-MMP, Julich-Brain and Schaefer are projected**: HCP-MMP is two registrations from HCP space; Julich-Brain was resampled from Colin27 to `fsaverage`, then to this brain, and leaves about a quarter of the cortex unassigned. Schaefer's parcels are a group resting-state estimate on `fsaverage`, one registration from this brain.
-4. **NextBrain is a model estimate.** Against each brain's own aseg, caudate, putamen, thalamus, hippocampus and amygdala score Dice 0.772–0.892 on `cdmd`, whose left amygdala (0.772) is a documented exception to the 0.8 floor. Agreement bounds how far two segmentations differ, not how far either is from the anatomy. The claustrum is still fragmented.
+4. **NextBrain is a model estimate.** Against each brain's own aseg, caudate, putamen, thalamus, hippocampus and amygdala score Dice 0.772–0.892 on `cdmd`, whose left amygdala (0.772) is a documented exception to the 0.8 floor. Agreement bounds how far two segmentations differ, not how far either is from the anatomy; on aseg's own grid the scores rise by only 0.01–0.02, so the disagreement is mostly the methods', not the grids'. The claustrum is still fragmented.
 5. **Cerebellar lobules are a model estimate.** CerebNet's lobules together score Dice 0.918 against `cdmd`'s aseg cerebellar cortex.
 6. **Functional cerebellar regions are a group map.** The Nettekoven et al. (2024) atlas is registered from the SUIT template; SUIT's own lobules, carried by the same warp, meet CerebNet's at a mean Dice of 0.65, so its borders lie a few millimetres off, and individual functional borders differ from the group's.
 7. **Cut faces are coarser** than NextBrain surfaces (0.8 mm blocks).

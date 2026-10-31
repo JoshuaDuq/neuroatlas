@@ -38,6 +38,15 @@ The volumetric label grids sampled on cut faces.
    :members:
 ```
 
+## Segmentation agreement
+
+`brain_model.labels.segmentation_agreement`: NextBrain's compared structures voxelised onto aseg's 1 mm grid, and the voxels both, only aseg or only NextBrain label.
+
+```{eval-rst}
+.. automodule:: brain_model.labels.segmentation_agreement
+   :members:
+```
+
 ## Boundary certainty
 
 `brain_model.labels.boundary_certainty`: How often NextBrain nearly tied each pair of touching labels, from the near-tie volume beside a subject segmentation.

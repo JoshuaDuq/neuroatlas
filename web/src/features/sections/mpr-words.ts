@@ -8,6 +8,7 @@ import { DESTRIEUX_LABELS_FR } from '../../lib/core/catalog/destrieux-labels.fr.
 import { STRUCTURE_LABELS } from '../../lib/core/catalog/structure-groups.ts';
 import { STRUCTURE_LABELS_FR } from '../../lib/core/catalog/structure-groups.fr.ts';
 import { t } from '../../lib/core/i18n/index.ts';
+import type { AgreementCategory } from '../../lib/core/catalog/segmentation-agreement.ts';
 import type { MprPlane } from '../../lib/engine/api.ts';
 import type { Language } from '../../lib/types/index.ts';
 
@@ -29,16 +30,19 @@ export function sampleName(raw: string, lang: Language): string {
 
 /**
  * The crosshair's position and what is under it (deviations/g5-unlabelled-sample.md): a sample with
- * no name is "unlabelled" rather than "(label undefined)".
+ * no name is "unlabelled" rather than "(label undefined)". Where agreement is shown, the voxel's
+ * category follows, so the picture's colours are also said.
  */
 export function readoutText(
   ras: string,
-  sample: { name: string; labelId: number },
+  sample: { name: string; labelId: number; agreement: AgreementCategory | null },
   lang: Language,
 ): string {
   const name = sampleName(sample.name, lang);
-  if (!name) return `${ras} ${EM_DASH} ${t(lang, 'mri').tissueNames.Unknown}`;
-  return t(lang, 'mpr').readout(ras, name, sample.labelId);
+  const text = name
+    ? t(lang, 'mpr').readout(ras, name, sample.labelId)
+    : `${ras} ${EM_DASH} ${t(lang, 'mri').tissueNames.Unknown}`;
+  return sample.agreement ? `${text} · ${t(lang, 'agreement').category[sample.agreement]}` : text;
 }
 
 // TODO(C1): the `mpr` additions of deviations g5-save-names, g5-save-announce and

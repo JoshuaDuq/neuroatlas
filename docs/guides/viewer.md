@@ -37,6 +37,7 @@ Search by name, or browse the **Whole brain** or **By system**. Select a region 
 - **Overlap with** another cortical atlas (see below).
 - **Functional regions (group atlas)**, for a cerebellar lobule: its share in each functional region of the registered Nettekoven et al. (2024) atlas, with each region's domain. A functional region chosen on a cut shows what the paper found it does. See [Atlases](../concepts/atlases.md#functional-cerebellar-regions).
 - **Boundary certainty**, for a NextBrain region: each rated neighbour, largest shared boundary first, with the share of that boundary where NextBrain nearly chose the other label. A name selects the neighbour without moving the camera. See [Atlases](../concepts/atlases.md#boundary-certainty).
+- **Segmentation agreement**, for the caudate, putamen, thalamus, hippocampus or amygdala, whether aseg's structure, NextBrain's union or a NextBrain label in it: the volume both segmentations label, aseg alone and NextBrain alone on aseg's 1 mm grid, with their Dice. **Show on linked MRI** opens the scan at the region with those voxels inked. See [Atlases](../concepts/atlases.md#segmentation-agreement).
 - **Functional division**, **Neuropsychological functions** and **Functional networks**, as disclosures that stay open between selections.
 - The deficits and guided-circuit landmarks that involve the region, each opening in its own tab.
 
@@ -89,6 +90,8 @@ An anatomy without a segmented cord publishes no spinal cord; Display says so.
 ### Linked MRI
 
 **Linked MRI** (region detail, section bar, or <kbd>M</kbd>) opens the subject's T1 in three orthogonal sections around a shared crosshair, with window and level, a segmentation overlay, voxel label readout and PNG export. The slices always show the full original scan; dissection does not change them.
+
+Shown from a region's **Segmentation agreement** section, the sections ink one structure instead of the overlay: white where both segmentations label it, magenta where only aseg does, orange where only NextBrain does. A key names the structure, the readout adds the crosshair voxel's category, and **Hide agreement** returns to the segmentation overlay.
 
 ```{figure} ../../.github/assets/readme/linked-mri.webp
 :alt: Linked MRI: sagittal, coronal and axial T1 sections around a shared crosshair, with the voxel's label and the window and level controls

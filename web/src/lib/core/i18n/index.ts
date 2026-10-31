@@ -1,5 +1,6 @@
 /** Bilingual UI strings (English and French) for Planum, one file per area under areas/. Area files are frozen: later changes go through the i18n amendment queue on #4. */
 import type { Language } from '../../types/index.ts';
+import * as agreement from './areas/agreement.ts';
 import * as app from './areas/app.ts';
 import * as atlases from './areas/atlases.ts';
 import * as boundary from './areas/boundary.ts';
@@ -39,6 +40,7 @@ import * as workspace from './areas/workspace.ts';
 
 export const TRANSLATIONS = {
   en: {
+    agreement: agreement.en,
     app: app.en,
     atlases: atlases.en,
     boundary: boundary.en,
@@ -77,6 +79,7 @@ export const TRANSLATIONS = {
     workspace: workspace.en,
   },
   fr: {
+    agreement: agreement.fr,
     app: app.fr,
     atlases: atlases.fr,
     boundary: boundary.fr,

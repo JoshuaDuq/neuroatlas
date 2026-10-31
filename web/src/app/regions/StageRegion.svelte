@@ -132,6 +132,15 @@
     };
   });
 
+  /** The structure whose agreement the linked MRI shows, by its union's name and side. */
+  function agreementName({ engine, engineState, catalog, view }: World): string | null {
+    const code = engineState.sections.agreement;
+    if (code === null) return null;
+    const structure = engine.model.segmentationAgreement!.structures.find((s) => s.code === code)!;
+    const side = t(view.current.lang, 'sides').capitalized[structure.hemisphere];
+    return `${catalog.label(structure.regions.learning).name} · ${side}`;
+  }
+
   /** Takes focus when a dialog's opener is gone: the Section tool, else the model. */
   function sectionToolOrCanvas(canvas: HTMLElement): HTMLElement {
     const tool = [...document.querySelectorAll<HTMLElement>('#viewport .stage-tool')].find(
@@ -318,6 +327,7 @@
     engineState={world.engineState}
     lang={current.lang}
     anatomy={world.engine.model.manifest.anatomy}
+    agreementName={agreementName(world)}
     fallbackFocus={() => sectionToolOrCanvas(engine.canvas)}
   />
   <MriNavigator

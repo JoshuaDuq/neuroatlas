@@ -15,6 +15,10 @@ import type { CabNpPartition } from '../core/catalog/networks.ts';
 import type { FunctionalRegions } from '../core/catalog/functional-regions.ts';
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { BoundaryCertainty } from '../core/catalog/boundary-certainty.ts';
+import type {
+  AgreementCategory,
+  SegmentationAgreement,
+} from '../core/catalog/segmentation-agreement.ts';
 import type { ReceptorFingerprints } from '../core/catalog/receptor-fingerprints.ts';
 import type {
   CutMode,
@@ -145,6 +149,9 @@ export type BoundaryCertaintyData = BoundaryCertainty;
 /** Receptor densities carried to regions by name (`manifest.receptor_fingerprints` file). */
 export type ReceptorFingerprintsData = ReceptorFingerprints;
 
+/** NextBrain against aseg on aseg's grid (`manifest.segmentation_agreement` file). */
+export type SegmentationAgreementData = SegmentationAgreement;
+
 // ---------------------------------------------------------------------------
 // Model (BrainAtlas, model/brain-atlas.js)
 // ---------------------------------------------------------------------------
@@ -162,6 +169,7 @@ export interface EngineModel {
   readonly domains: DomainsData | null;
   readonly boundaryCertainty: BoundaryCertaintyData | null;
   readonly receptors: ReceptorFingerprintsData | null;
+  readonly segmentationAgreement: SegmentationAgreementData | null;
   /** The grouped learning overview when published, else the first level (brain-atlas.js:212). */
   readonly defaultDetail: string;
   /** Display settings: cheap, never walks the meshes (brain-atlas.js:480). */
@@ -244,6 +252,8 @@ export interface SectionsState {
   readonly crosshair: Vec3;
   readonly reverse: boolean;
   readonly overlay: boolean;
+  /** The compared structure the linked MRI shows agreement for, by its code; null for none. */
+  readonly agreement: number | null;
   readonly tilt: number;
   readonly azimuth: number;
   readonly status: SectionsStatus;
@@ -284,6 +294,8 @@ export interface VolumeSample {
   region: Region | undefined;
   intensity: number;
   ras: Vec3;
+  /** The voxel's category for the structure whose agreement is shown; null outside it or when none is. */
+  agreement: AgreementCategory | null;
 }
 
 export interface EngineSections {
@@ -324,6 +336,11 @@ export interface EngineSections {
   setCutAtlas(atlas: string): Promise<void>;
   /** Throws a `TypeError` for a non-boolean (sections.js:363). */
   setDisplay(options: { reverse?: boolean; overlay?: boolean }): void;
+  /**
+   * Show a compared structure's agreement on the linked MRI, or none. The first downloads the compared
+   * volume; an unpublished code throws a `RangeError`.
+   */
+  setAgreement(code: number | null): Promise<void>;
   /** Throws a `RangeError` before the scan loads or for a non-positive width (sections.js:377). */
   setWindow(center: number, width: number): void;
   /**

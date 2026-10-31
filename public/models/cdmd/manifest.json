@@ -1634,6 +1634,68 @@
     "voxel_spacing_mm": 0.4,
     "method": "For each pair of touching NextBrain labels in one hemisphere, the voxels of either label with a face neighbour in the other, on the segmentation grid; of those, the ones where NextBrain's two most probable labels were this pair and the winner's posterior led by less than the margin"
   },
+  "segmentation_agreement": {
+    "id": "segmentation-agreement",
+    "file": "segmentation-agreement.json",
+    "reference_atlas": "aseg",
+    "compared_atlas": "nextbrain",
+    "method": "Each NextBrain learning-unit union validation compares with aseg, voxelised onto aseg's 1 mm grid: a voxel belongs to the union when more than half of the 0.4 mm voxels whose nearest aseg voxel it is belong to it. Voxels are then counted where both segmentations, only aseg or only NextBrain label the structure",
+    "volume": {
+      "file": "nextbrain-compared.volume",
+      "shape": [
+        69,
+        47,
+        57
+      ],
+      "dtype": "|u1",
+      "order": "F",
+      "compression": "gzip",
+      "byte_length": 184851,
+      "sha256": "1d416e94b44bf517cab608f89d2528f8bc6267e969d5368361321fcc13f84593",
+      "decoded_sha256": "9f646304376c0ed2fe334ef04ca39a3518c32cec1d8e14ae4d20732a73f62d43",
+      "voxel_to_surface_ras_mm": [
+        [
+          -1.0,
+          0.0,
+          0.0,
+          32.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -31.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          44.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "source_shape": [
+        256,
+        256,
+        256
+      ],
+      "crop_corner_voxel": [
+        96,
+        84,
+        97
+      ]
+    }
+  },
   "arterial_territories": {
     "id": "arterial",
     "label": "Arterial territories (Liu et al. 2023)",
@@ -92634,6 +92696,7 @@
     "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
     "Boundary certainty is NextBrain's competition between its own labels: the share of a boundary where its two most probable labels were within 0.2 of each other. It is conditional on one registration and is not agreement with another segmentation; a confident boundary can still be misplaced.",
     "Boundaries across the midline are not rated: each hemisphere is segmented separately and joined.",
+    "Segmentation agreement compares NextBrain, voxelised onto aseg's 1 mm grid, with aseg for five structures per side. Agreement between two segmentations of one scan is not accuracy, and neither is the reference; NextBrain's own boundary certainty does not measure it.",
     "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
     "Each region's centroid is the mean of its voxel centres (a cortical parcel's, of its voxels in the cortical ribbon), and can lie outside a curved region; its anchor, where the linked MRI and a cut go to show it, is its own voxel nearest that centroid. A parcel no ribbon voxel carries is placed by its mid-ribbon surface points instead.",
     "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",

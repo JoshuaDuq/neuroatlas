@@ -9,6 +9,17 @@ export interface ManifestFile {
   sha256?: string;
 }
 
+/** A published label grid (`slices/volume.ts` reads it). */
+export interface ManifestVolume extends ManifestFile {
+  sha256: string;
+  decoded_sha256: string;
+  byte_length: number;
+  dtype: string;
+  shape: readonly number[];
+  order: string;
+  voxel_to_surface_ras_mm: readonly (readonly number[])[];
+}
+
 export interface ManifestAtlas {
   id: string;
   label: string;
@@ -105,6 +116,8 @@ export interface Manifest {
   neuropsych_domains?: ManifestFile & Record<string, unknown>;
   neurosynth_terms?: ManifestFile & Record<string, unknown>;
   boundary_certainty?: ManifestFile & Record<string, unknown>;
+  /** The comparison's file, and the compared NextBrain volume on aseg's grid. */
+  segmentation_agreement?: ManifestFile & { volume: ManifestVolume } & Record<string, unknown>;
   arterial_territories?: ArterialTerritories;
   cerebellar_functions?: CerebellarFunctions;
   receptor_fingerprints?: ManifestFile & Record<string, unknown>;

@@ -14,6 +14,7 @@ import type {
   EngineModel,
   FunctionalRegionsData,
   OnProgress,
+  SegmentationAgreementData,
   SpinalCordLoad,
   Vec3,
 } from '../api.ts';
@@ -28,6 +29,7 @@ export interface FakeModelOptions {
   cabNp?: FakeFile;
   functionalRegions?: FakeFile;
   domains?: FakeFile;
+  segmentationAgreement?: SegmentationAgreementData;
   /** Called after every state change, as the real model's `change` event (brain-atlas.js:602). */
   changed: () => void;
 }
@@ -71,6 +73,7 @@ export function createFakeModel({
   cabNp,
   functionalRegions,
   domains,
+  segmentationAgreement,
   changed,
 }: FakeModelOptions): FakeModel {
   const regions = new Map(manifest.regions.map((region) => [region.id, region]));
@@ -171,6 +174,7 @@ export function createFakeModel({
     functionalRegions: (functionalRegions ?? null) as unknown as FunctionalRegionsData | null,
     domains: (domains ?? null) as unknown as DomainsData | null,
     boundaryCertainty: null,
+    segmentationAgreement: segmentationAgreement ?? null,
     receptors: null,
     defaultDetail,
     get settings() {

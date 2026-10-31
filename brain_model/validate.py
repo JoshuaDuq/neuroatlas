@@ -20,6 +20,9 @@ from .gltf.encode import (
 )
 from .gltf.export import compact_region
 from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
+
+# Aliased: validate_segmentation's `segmentation_agreement` scores the same structures on NextBrain's grid.
+from .labels import segmentation_agreement as agreement_map
 from .labels.volumes import conformed_grid
 from .layers import (
     arterial_territories,
@@ -849,6 +852,7 @@ def validate_layers(config, manifest, tissues):
         "boundary_certainty": (
             boundary_certainty.metadata(config) if boundary_certainty.is_published(config) else None
         ),
+        "segmentation_agreement": nextbrain.is_declared(config),
         "arterial_territories": (
             arterial_territories.metadata(config, arterial_territories.read_definition())
             if arterial_territories.LAYER in declared else None
@@ -869,6 +873,7 @@ def validate_layers(config, manifest, tissues):
         "supplemental_layers": [layer["id"] for layer in manifest["supplemental_layers"]],
         "neurosynth_terms": manifest["neurosynth_terms"],
         "boundary_certainty": manifest.get("boundary_certainty"),
+        "segmentation_agreement": "segmentation_agreement" in manifest,
         "arterial_territories": manifest.get("arterial_territories"),
         "cerebellar_functions": manifest.get("cerebellar_functions"),
     }
@@ -985,6 +990,13 @@ def main():
         **(
             {"white_matter": white_matter.validate_volume(config, tissues["white_matter"])}
             if white_matter.is_declared(config)
+            else {}
+        ),
+        **(
+            {"segmentation_agreement_map": agreement_map.validate(
+                config, manifest, nextbrain_source
+            )}
+            if nextbrain.is_declared(config)
             else {}
         ),
         "volumes": validate_volumes(config),

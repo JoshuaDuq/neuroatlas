@@ -1113,6 +1113,19 @@ export function defineEngineContract(
         );
       });
 
+      it('shows a published structure’s agreement on the linked MRI, and refuses any other code', async () => {
+        const { engine } = await fresh();
+        const { sections, model } = engine;
+        const { code } = model.segmentationAgreement!.structures[0]!;
+        await assert.rejects(sections.setAgreement(0), RangeError);
+        assert.equal(sections.state.agreement, null);
+        await sections.load();
+        await sections.setAgreement(code);
+        assert.equal(sections.state.agreement, code);
+        await sections.setAgreement(null);
+        assert.equal(sections.state.agreement, null);
+      });
+
       it('resamples the planes and samples the volume only once loaded', async () => {
         const { engine } = await fresh();
         const { sections } = engine;

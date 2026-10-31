@@ -1,0 +1,420 @@
+{
+  "id": "segmentation-agreement",
+  "voxel_volume_mm3": 1.0,
+  "structures": [
+    {
+      "code": 1,
+      "structure": "caudate",
+      "hemisphere": "left",
+      "aseg_label": 11,
+      "regions": {
+        "aseg": "aseg:left:11",
+        "learning": "learning:left:caudate",
+        "nextbrain": [
+          "nextbrain:left:48",
+          "nextbrain:left:118",
+          "nextbrain:left:393"
+        ]
+      },
+      "voxels": {
+        "both": 2633,
+        "aseg_only": 552,
+        "nextbrain_only": 254
+      }
+    },
+    {
+      "code": 2,
+      "structure": "caudate",
+      "hemisphere": "right",
+      "aseg_label": 50,
+      "regions": {
+        "aseg": "aseg:right:50",
+        "learning": "learning:right:caudate",
+        "nextbrain": [
+          "nextbrain:right:10048",
+          "nextbrain:right:10118",
+          "nextbrain:right:10393"
+        ]
+      },
+      "voxels": {
+        "both": 2786,
+        "aseg_only": 562,
+        "nextbrain_only": 188
+      }
+    },
+    {
+      "code": 3,
+      "structure": "putamen",
+      "hemisphere": "left",
+      "aseg_label": 12,
+      "regions": {
+        "aseg": "aseg:left:12",
+        "learning": "learning:left:putamen",
+        "nextbrain": [
+          "nextbrain:left:79",
+          "nextbrain:left:349"
+        ]
+      },
+      "voxels": {
+        "both": 3957,
+        "aseg_only": 655,
+        "nextbrain_only": 206
+      }
+    },
+    {
+      "code": 4,
+      "structure": "putamen",
+      "hemisphere": "right",
+      "aseg_label": 51,
+      "regions": {
+        "aseg": "aseg:right:51",
+        "learning": "learning:right:putamen",
+        "nextbrain": [
+          "nextbrain:right:10079",
+          "nextbrain:right:10349"
+        ]
+      },
+      "voxels": {
+        "both": 3999,
+        "aseg_only": 582,
+        "nextbrain_only": 233
+      }
+    },
+    {
+      "code": 5,
+      "structure": "thalamus",
+      "hemisphere": "left",
+      "aseg_label": 10,
+      "regions": {
+        "aseg": "aseg:left:10",
+        "learning": "learning:left:thalamus",
+        "nextbrain": [
+          "nextbrain:left:190",
+          "nextbrain:left:191",
+          "nextbrain:left:218",
+          "nextbrain:left:219",
+          "nextbrain:left:220",
+          "nextbrain:left:221",
+          "nextbrain:left:222",
+          "nextbrain:left:223",
+          "nextbrain:left:224",
+          "nextbrain:left:225",
+          "nextbrain:left:252",
+          "nextbrain:left:253",
+          "nextbrain:left:254",
+          "nextbrain:left:274",
+          "nextbrain:left:282",
+          "nextbrain:left:283",
+          "nextbrain:left:284",
+          "nextbrain:left:285",
+          "nextbrain:left:286",
+          "nextbrain:left:303",
+          "nextbrain:left:312",
+          "nextbrain:left:313",
+          "nextbrain:left:314",
+          "nextbrain:left:350",
+          "nextbrain:left:378",
+          "nextbrain:left:379",
+          "nextbrain:left:380",
+          "nextbrain:left:381",
+          "nextbrain:left:382",
+          "nextbrain:left:394",
+          "nextbrain:left:395",
+          "nextbrain:left:396",
+          "nextbrain:left:397",
+          "nextbrain:left:398",
+          "nextbrain:left:399",
+          "nextbrain:left:423",
+          "nextbrain:left:424",
+          "nextbrain:left:425",
+          "nextbrain:left:426",
+          "nextbrain:left:441",
+          "nextbrain:left:443",
+          "nextbrain:left:454",
+          "nextbrain:left:458",
+          "nextbrain:left:478",
+          "nextbrain:left:479",
+          "nextbrain:left:492",
+          "nextbrain:left:508",
+          "nextbrain:left:517",
+          "nextbrain:left:519",
+          "nextbrain:left:578",
+          "nextbrain:left:811",
+          "nextbrain:left:813"
+        ]
+      },
+      "voxels": {
+        "both": 5809,
+        "aseg_only": 538,
+        "nextbrain_only": 779
+      }
+    },
+    {
+      "code": 6,
+      "structure": "thalamus",
+      "hemisphere": "right",
+      "aseg_label": 49,
+      "regions": {
+        "aseg": "aseg:right:49",
+        "learning": "learning:right:thalamus",
+        "nextbrain": [
+          "nextbrain:right:10190",
+          "nextbrain:right:10191",
+          "nextbrain:right:10218",
+          "nextbrain:right:10219",
+          "nextbrain:right:10220",
+          "nextbrain:right:10221",
+          "nextbrain:right:10222",
+          "nextbrain:right:10223",
+          "nextbrain:right:10224",
+          "nextbrain:right:10225",
+          "nextbrain:right:10252",
+          "nextbrain:right:10253",
+          "nextbrain:right:10254",
+          "nextbrain:right:10274",
+          "nextbrain:right:10282",
+          "nextbrain:right:10283",
+          "nextbrain:right:10284",
+          "nextbrain:right:10285",
+          "nextbrain:right:10286",
+          "nextbrain:right:10303",
+          "nextbrain:right:10312",
+          "nextbrain:right:10313",
+          "nextbrain:right:10314",
+          "nextbrain:right:10350",
+          "nextbrain:right:10378",
+          "nextbrain:right:10379",
+          "nextbrain:right:10380",
+          "nextbrain:right:10381",
+          "nextbrain:right:10382",
+          "nextbrain:right:10394",
+          "nextbrain:right:10395",
+          "nextbrain:right:10396",
+          "nextbrain:right:10397",
+          "nextbrain:right:10398",
+          "nextbrain:right:10399",
+          "nextbrain:right:10423",
+          "nextbrain:right:10424",
+          "nextbrain:right:10425",
+          "nextbrain:right:10426",
+          "nextbrain:right:10441",
+          "nextbrain:right:10443",
+          "nextbrain:right:10454",
+          "nextbrain:right:10458",
+          "nextbrain:right:10478",
+          "nextbrain:right:10479",
+          "nextbrain:right:10492",
+          "nextbrain:right:10508",
+          "nextbrain:right:10517",
+          "nextbrain:right:10519",
+          "nextbrain:right:10578",
+          "nextbrain:right:10811",
+          "nextbrain:right:10813"
+        ]
+      },
+      "voxels": {
+        "both": 5866,
+        "aseg_only": 360,
+        "nextbrain_only": 978
+      }
+    },
+    {
+      "code": 7,
+      "structure": "hippocampus",
+      "hemisphere": "left",
+      "aseg_label": 17,
+      "regions": {
+        "aseg": "aseg:left:17",
+        "learning": "learning:left:hippocampus",
+        "nextbrain": [
+          "nextbrain:left:326",
+          "nextbrain:left:339",
+          "nextbrain:left:340",
+          "nextbrain:left:341",
+          "nextbrain:left:342",
+          "nextbrain:left:343",
+          "nextbrain:left:344",
+          "nextbrain:left:345",
+          "nextbrain:left:346",
+          "nextbrain:left:347",
+          "nextbrain:left:354",
+          "nextbrain:left:364",
+          "nextbrain:left:365",
+          "nextbrain:left:367",
+          "nextbrain:left:368",
+          "nextbrain:left:369",
+          "nextbrain:left:370",
+          "nextbrain:left:371",
+          "nextbrain:left:372",
+          "nextbrain:left:373",
+          "nextbrain:left:374",
+          "nextbrain:left:375",
+          "nextbrain:left:404",
+          "nextbrain:left:405",
+          "nextbrain:left:407",
+          "nextbrain:left:408",
+          "nextbrain:left:409",
+          "nextbrain:left:410",
+          "nextbrain:left:411",
+          "nextbrain:left:418",
+          "nextbrain:left:419",
+          "nextbrain:left:420",
+          "nextbrain:left:421",
+          "nextbrain:left:422",
+          "nextbrain:left:432",
+          "nextbrain:left:558",
+          "nextbrain:left:559",
+          "nextbrain:left:561",
+          "nextbrain:left:562",
+          "nextbrain:left:563",
+          "nextbrain:left:564",
+          "nextbrain:left:565",
+          "nextbrain:left:566",
+          "nextbrain:left:567",
+          "nextbrain:left:568",
+          "nextbrain:left:571",
+          "nextbrain:left:572",
+          "nextbrain:left:573",
+          "nextbrain:left:574",
+          "nextbrain:left:575",
+          "nextbrain:left:576"
+        ]
+      },
+      "voxels": {
+        "both": 3234,
+        "aseg_only": 852,
+        "nextbrain_only": 95
+      }
+    },
+    {
+      "code": 8,
+      "structure": "hippocampus",
+      "hemisphere": "right",
+      "aseg_label": 53,
+      "regions": {
+        "aseg": "aseg:right:53",
+        "learning": "learning:right:hippocampus",
+        "nextbrain": [
+          "nextbrain:right:10326",
+          "nextbrain:right:10339",
+          "nextbrain:right:10340",
+          "nextbrain:right:10341",
+          "nextbrain:right:10342",
+          "nextbrain:right:10343",
+          "nextbrain:right:10344",
+          "nextbrain:right:10345",
+          "nextbrain:right:10346",
+          "nextbrain:right:10347",
+          "nextbrain:right:10354",
+          "nextbrain:right:10364",
+          "nextbrain:right:10365",
+          "nextbrain:right:10367",
+          "nextbrain:right:10368",
+          "nextbrain:right:10369",
+          "nextbrain:right:10370",
+          "nextbrain:right:10371",
+          "nextbrain:right:10372",
+          "nextbrain:right:10373",
+          "nextbrain:right:10374",
+          "nextbrain:right:10375",
+          "nextbrain:right:10404",
+          "nextbrain:right:10405",
+          "nextbrain:right:10407",
+          "nextbrain:right:10408",
+          "nextbrain:right:10409",
+          "nextbrain:right:10410",
+          "nextbrain:right:10411",
+          "nextbrain:right:10418",
+          "nextbrain:right:10419",
+          "nextbrain:right:10420",
+          "nextbrain:right:10421",
+          "nextbrain:right:10422",
+          "nextbrain:right:10432",
+          "nextbrain:right:10558",
+          "nextbrain:right:10559",
+          "nextbrain:right:10561",
+          "nextbrain:right:10562",
+          "nextbrain:right:10563",
+          "nextbrain:right:10564",
+          "nextbrain:right:10565",
+          "nextbrain:right:10566",
+          "nextbrain:right:10567",
+          "nextbrain:right:10568",
+          "nextbrain:right:10571",
+          "nextbrain:right:10572",
+          "nextbrain:right:10573",
+          "nextbrain:right:10574",
+          "nextbrain:right:10575",
+          "nextbrain:right:10576"
+        ]
+      },
+      "voxels": {
+        "both": 3372,
+        "aseg_only": 673,
+        "nextbrain_only": 92
+      }
+    },
+    {
+      "code": 9,
+      "structure": "amygdala",
+      "hemisphere": "left",
+      "aseg_label": 18,
+      "regions": {
+        "aseg": "aseg:left:18",
+        "learning": "learning:left:amygdala",
+        "nextbrain": [
+          "nextbrain:left:214",
+          "nextbrain:left:215",
+          "nextbrain:left:216",
+          "nextbrain:left:217",
+          "nextbrain:left:238",
+          "nextbrain:left:240",
+          "nextbrain:left:242",
+          "nextbrain:left:277",
+          "nextbrain:left:278",
+          "nextbrain:left:279",
+          "nextbrain:left:295",
+          "nextbrain:left:301",
+          "nextbrain:left:320",
+          "nextbrain:left:377"
+        ]
+      },
+      "voxels": {
+        "both": 1107,
+        "aseg_only": 461,
+        "nextbrain_only": 125
+      }
+    },
+    {
+      "code": 10,
+      "structure": "amygdala",
+      "hemisphere": "right",
+      "aseg_label": 54,
+      "regions": {
+        "aseg": "aseg:right:54",
+        "learning": "learning:right:amygdala",
+        "nextbrain": [
+          "nextbrain:right:10214",
+          "nextbrain:right:10215",
+          "nextbrain:right:10216",
+          "nextbrain:right:10217",
+          "nextbrain:right:10238",
+          "nextbrain:right:10240",
+          "nextbrain:right:10242",
+          "nextbrain:right:10277",
+          "nextbrain:right:10278",
+          "nextbrain:right:10279",
+          "nextbrain:right:10295",
+          "nextbrain:right:10301",
+          "nextbrain:right:10320",
+          "nextbrain:right:10377"
+        ]
+      },
+      "voxels": {
+        "both": 1224,
+        "aseg_only": 292,
+        "nextbrain_only": 141
+      }
+    }
+  ]
+}

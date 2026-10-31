@@ -1,6 +1,12 @@
 import { Group, Plane, Vector3 } from 'three';
 import type { Intersection, Raycaster } from 'three';
 import type { CutMode, Region } from '../../types/index.ts';
+import { categoryAt } from '../../core/catalog/segmentation-agreement.ts';
+import type {
+  AgreementCategory,
+  ComparedStructure,
+  SegmentationAgreement,
+} from '../../core/catalog/segmentation-agreement.ts';
 import { TissueSections } from '../tissues/gpu-sections.ts';
 import type {
   Anatomy,
@@ -13,7 +19,7 @@ import { centeredFrame, clippingPlane } from './coordinates.ts';
 import type { Frame, Ras } from './coordinates.ts';
 import { renderSlice } from './sampling.ts';
 import { loadVolume } from './volume.ts';
-import type { Volume } from './volume.ts';
+import type { Volume, VolumeFile } from './volume.ts';
 import type { SurfaceColor } from '../../types/index.ts';
 
 const MODES: readonly CutMode[] = ['off', 'sagittal', 'coronal', 'axial', 'oblique'];
@@ -32,6 +38,7 @@ interface SectionsStateRecord {
   crosshair: [number, number, number];
   reverse: boolean;
   overlay: boolean;
+  agreement: number | null;
   tilt: number;
   azimuth: number;
   status: SectionsStatus;
@@ -40,6 +47,8 @@ interface SectionsStateRecord {
 
 /** The model as the sections drive it: the cut's own model plus the display commands it issues. */
 export interface SectionsModel extends CutModel {
+  readonly manifest: CutModel['manifest'] & { segmentation_agreement?: { volume: VolumeFile } };
+  readonly segmentationAgreement: SegmentationAgreement | null;
   readonly clippingPlanes: readonly Plane[];
   setClippingPlanes(planes: Plane[]): void;
   setCutState(state: { atlas: string; active: boolean }): void;
@@ -87,6 +96,10 @@ export class BrainSections extends EventTarget {
   readonly tissues: TissueSections;
   readonly group = new Group();
   volumes: LoadedVolumes | null = null;
+  /** NextBrain's compared structures on aseg's grid, loaded the first time agreement is shown. */
+  private compared: Promise<Volume> | null = null;
+  private comparedVolume: Volume | null = null;
+  private agreementRequest = 0;
   display: MriDisplay | null = null;
   readonly state: SectionsStateRecord;
   private pending: Promise<void> | null = null;
@@ -117,6 +130,7 @@ export class BrainSections extends EventTarget {
       crosshair: [0, 0, 0],
       reverse: false,
       overlay: false,
+      agreement: null,
       tilt: 30,
       azimuth: 30,
       status: 'idle',
@@ -451,6 +465,41 @@ export class BrainSections extends EventTarget {
     else this.emit();
   }
 
+  /** The compared structure the linked MRI shows, while its volume has loaded. */
+  private get shownAgreement(): { structure: ComparedStructure; compared: Volume } | null {
+    const code = this.state.agreement;
+    if (code === null || !this.comparedVolume) return null;
+    const structure = this.model.segmentationAgreement!.structures.find((s) => s.code === code)!;
+    return { structure, compared: this.comparedVolume };
+  }
+
+  /**
+   * Show one compared structure's agreement on the linked MRI, or none. The compared volume
+   * downloads once; a later choice overtakes one still waiting for it.
+   */
+  async setAgreement(code: number | null): Promise<void> {
+    const request = ++this.agreementRequest;
+    if (code !== null) {
+      const published = this.model.segmentationAgreement;
+      const record = this.model.manifest.segmentation_agreement;
+      if (!published || !record || !published.structures.some((s) => s.code === code))
+        throw new RangeError(`No compared structure has code ${code}.`);
+      this.compared ??= loadVolume(record.volume, this.metadataUrl).catch((error: unknown) => {
+        this.compared = null;
+        throw error;
+      });
+      try {
+        this.comparedVolume = await this.compared;
+      } catch (error) {
+        if (request === this.agreementRequest) this.report(error);
+        throw error;
+      }
+      if (request !== this.agreementRequest || this.disposed) return;
+    }
+    this.state.agreement = code;
+    this.emit();
+  }
+
   /** Re-read the accent that marks a chosen cut face. */
   applyTheme(): void {
     this.tissues.markWith();
@@ -496,11 +545,13 @@ export class BrainSections extends EventTarget {
   pixels(frame: Frame): Uint8ClampedArray {
     const { volumes, display } = this;
     if (!volumes || !display) throw new Error('The linked MRI has not loaded.');
+    const shown = this.shownAgreement;
     return renderSlice(
       {
         mri: volumes.mri,
         segmentation: volumes.segmentation,
         metadata: { labels: volumes.metadata.labels },
+        ...(shown && { agreement: shown }),
       },
       frame,
       { ...display, overlay: this.state.overlay },
@@ -513,6 +564,7 @@ export class BrainSections extends EventTarget {
     region: Region | undefined;
     intensity: number;
     ras: Ras;
+    agreement: AgreementCategory | null;
   } {
     const { volumes } = this;
     if (!volumes) throw new Error('The linked MRI has not loaded.');
@@ -530,7 +582,13 @@ export class BrainSections extends EventTarget {
       region,
       intensity: volumes.mri.linear(point),
       ras: point,
+      agreement: this.agreementAt(point, labelId),
     };
+  }
+
+  private agreementAt(point: Ras, labelId: number): AgreementCategory | null {
+    const shown = this.shownAgreement;
+    return shown && categoryAt(shown.structure, labelId, shown.compared.label(point));
   }
 
   /** Light the cut faces of the pointed-at and the chosen region. */

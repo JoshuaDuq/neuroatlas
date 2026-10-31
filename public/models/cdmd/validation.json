@@ -4464,6 +4464,21 @@
     ],
     "parcel_count": 68
   },
+  "segmentation_agreement_map": {
+    "file": "segmentation-agreement.json",
+    "dice_on_aseg_grid": {
+      "caudate left": 0.8673,
+      "caudate right": 0.8814,
+      "putamen left": 0.9019,
+      "putamen right": 0.9075,
+      "thalamus left": 0.8982,
+      "thalamus right": 0.8976,
+      "hippocampus left": 0.8723,
+      "hippocampus right": 0.8981,
+      "amygdala left": 0.7907,
+      "amygdala right": 0.8497
+    }
+  },
   "volumes": {
     "mri": {
       "file": "mri.volume",
@@ -4695,12 +4710,14 @@
     "mri.volume",
     "neuropsych-domains.json",
     "neurosynth-terms.json",
+    "nextbrain-compared.volume",
     "nextbrain.glb",
     "receptor-fingerprints.json",
     "ribbon-destrieux.labels",
     "ribbon-hcp-mmp.labels",
     "ribbon-julich.labels",
     "ribbon-schaefer.labels",
+    "segmentation-agreement.json",
     "spinal-cord.glb",
     "structures.glb",
     "tissue-envelopes.glb",

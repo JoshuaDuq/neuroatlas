@@ -7,6 +7,7 @@ import type {
   MriDisplay,
   Presentation,
   Rect,
+  SegmentationAgreementData,
   Size,
 } from '../api.ts';
 import { createFakeCamera } from './camera.ts';
@@ -34,6 +35,8 @@ export interface FakeEngineOptions {
   cabNp?: FakeFile;
   functionalRegions?: FakeFile;
   domains?: FakeFile;
+  /** The published segmentation agreement, which the linked MRI can show. */
+  segmentationAgreement?: SegmentationAgreementData;
   /** The stage canvas; without one, `canvas` and `captureSnapshot` need a DOM to create it. */
   canvas?: HTMLCanvasElement;
   hostSize?: Size;
@@ -81,6 +84,7 @@ export function createFakeEngine(options: FakeEngineOptions): FakeEngine {
     cabNp: options.cabNp,
     functionalRegions: options.functionalRegions,
     domains: options.domains,
+    segmentationAgreement: options.segmentationAgreement,
     changed: () => {
       if (disposed || !sectionsRef.current) return;
       events.emit('change', { model: model.state, sections: sectionsRef.current.state });

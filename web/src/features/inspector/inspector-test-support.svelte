@@ -6,12 +6,14 @@
   import domainsFile from '../../../../public/models/cdmd/neuropsych-domains.json';
   import boundaryFile from '../../../../public/models/cdmd/boundary-certainty.json';
   import receptorFile from '../../../../public/models/cdmd/receptor-fingerprints.json';
+  import agreementFile from '../../../../public/models/cdmd/segmentation-agreement.json';
   import { createCatalog } from '../../lib/core/catalog/catalog.ts';
   import type { CabNpPartition } from '../../lib/core/catalog/networks.ts';
   import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
   import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
   import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
   import type { ReceptorFingerprints } from '../../lib/core/catalog/receptor-fingerprints.ts';
+  import type { SegmentationAgreement } from '../../lib/core/catalog/segmentation-agreement.ts';
   import type {
     ArterialTerritories,
     CerebellarFunctions,
@@ -70,6 +72,7 @@
   functionalRegions={functionalFile as unknown as FunctionalRegions}
   domains={domainsFile as unknown as NeuropsychDomains}
   boundaryCertainty={boundaryFile as unknown as BoundaryCertainty}
+  segmentationAgreement={agreementFile as unknown as SegmentationAgreement}
   receptors={receptorFile as unknown as ReceptorFingerprints}
   territories={manifest.arterial_territories as unknown as ArterialTerritories}
   cerebellarFunctions={manifest.cerebellar_functions as unknown as CerebellarFunctions}
@@ -80,6 +83,7 @@
   onregion={(id) => calls.push(`region:${id}`)}
   onselect={(id) => calls.push(`select:${id}`)}
   openLinkedMri={(options) => calls.push({ mri: options })}
+  showAgreement={(code, options) => calls.push({ agreement: code, ...options })}
 >
   {#snippet comparison()}<div data-slot="comparison"></div>{/snippet}
   {#snippet relatedDeficits()}{#if slots}<div data-slot="deficits"></div>{/if}{/snippet}

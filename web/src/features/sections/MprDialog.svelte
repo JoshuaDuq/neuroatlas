@@ -19,6 +19,10 @@
   import { tick, untrack } from 'svelte';
   import { on } from 'svelte/events';
   import { MediaQuery } from 'svelte/reactivity';
+  import {
+    AGREEMENT_CATEGORIES,
+    AGREEMENT_COLORS,
+  } from '../../lib/core/catalog/segmentation-agreement.ts';
   import { decimal, formatRas, millimetres } from '../../lib/core/format.ts';
   import { t } from '../../lib/core/i18n/index.ts';
   import type { EngineSections, MprPlane, SectionsState } from '../../lib/engine/api.ts';
@@ -50,17 +54,20 @@
     engineState: { readonly sections: SectionsState };
     lang: Language;
     anatomy: Pick<ManifestAnatomy, 'subject' | 'individual'>;
+    /** The structure whose segmentation agreement the planes show; null when none is. */
+    agreementName: string | null;
     /** Takes focus on close when the opener is gone. */
     fallbackFocus?: () => HTMLElement | null;
   }
 
-  let { mpr, engine, engineState, lang, anatomy, fallbackFocus }: Props = $props();
+  let { mpr, engine, engineState, lang, anatomy, agreementName, fallbackFocus }: Props = $props();
 
   /** The readout waits for the crosshair to rest, so a drag or a held key is not said per step. */
   const READOUT_QUIET_MS = 250;
 
   const uid = $props.id();
   const copy = $derived(t(lang, 'mpr'));
+  const agreementCopy = $derived(t(lang, 'agreement'));
   const phone = new MediaQuery(PHONE_QUERY);
   // The dialog's one live region. The page's announcer is outside the modal dialog, so inert while it
   // is open; this one is inside.
@@ -89,6 +96,7 @@
       JSON.stringify([
         crosshair,
         engineState.sections.overlay,
+        engineState.sections.agreement,
         reading.display.windowCenter,
         reading.display.windowWidth,
         lang,
@@ -287,6 +295,25 @@
     </div>
 
     <p class="where measure">{readout}</p>
+    {#if agreementName}
+      <div class="agreement">
+        <p class="agreement-name">{agreementCopy.legend(agreementName)}</p>
+        <ul class="agreement-key">
+          {#each AGREEMENT_CATEGORIES as category (category)}
+            <li>
+              <span
+                class="agreement-swatch"
+                aria-hidden="true"
+                style:background="rgb({AGREEMENT_COLORS[category].join(' ')})"
+              ></span>{agreementCopy.category[category]}
+            </li>
+          {/each}
+        </ul>
+        <button type="button" class="save" onclick={() => mpr.hideAgreement()}
+          >{agreementCopy.hide}</button
+        >
+      </div>
+    {/if}
     <StatusLine class="visually-hidden" text={said} />
 
     <div class="display">
@@ -311,6 +338,7 @@
       <label class="check">
         <input
           type="checkbox"
+          disabled={agreementName !== null}
           checked={engineState.sections.overlay}
           onchange={(event) => mpr.setOverlay(event.currentTarget.checked)}
         />
@@ -429,6 +457,41 @@
       line-height: var(--lh-ui);
       overflow-wrap: anywhere;
     }
+    /* The agreement shown: what is compared, the planes' key, and the way back to the segmentation. */
+    .agreement {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2) var(--space-4);
+      font-size: var(--text-ui);
+      line-height: var(--lh-ui);
+    }
+    .agreement-name {
+      margin: 0;
+      font-weight: 600;
+    }
+    .agreement-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-1) var(--space-4);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--text-secondary);
+    }
+    .agreement-key li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .agreement-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-mark);
+    }
+    .agreement .save {
+      margin-left: auto;
+    }
     .display {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -471,6 +534,10 @@
     }
     input[type='checkbox']:checked::before {
       border-color: var(--surface-base);
+    }
+    input[type='checkbox']:disabled {
+      opacity: 0.5;
+      cursor: default;
     }
     .note {
       padding-top: var(--space-3);

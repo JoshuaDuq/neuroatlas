@@ -1,4 +1,30 @@
 {
+ "agreement": {
+  "heading": "Segmentation agreement",
+  "compared": [
+   "[\"Alpha\"] → \"Compared as part of NextBrain’s Alpha.\"",
+   "[\"\"] → \"Compared as part of NextBrain’s .\""
+  ],
+  "category": {
+   "both": "Both segmentations",
+   "aseg-only": "aseg only",
+   "nextbrain-only": "NextBrain only"
+  },
+  "dice": [
+   "[\"Alpha\"] → \"Dice Alpha\"",
+   "[\"\"] → \"Dice \""
+  ],
+  "show": "Show on linked MRI",
+  "hide": "Hide agreement",
+  "legend": [
+   "[\"Alpha\"] → \"Agreement: Alpha\"",
+   "[\"\"] → \"Agreement: \""
+  ],
+  "note": [
+   "[\"Alpha\"] → \"On aseg’s 1 mm grid, with NextBrain’s Alpha voxelised there: a voxel counts when over half of the 0.4 mm voxels that fall in it belong to it. How far two segmentations of one scan agree shows how much a boundary depends on the method; it is not accuracy, and neither is the reference. Validation scores the same structures on NextBrain’s 0.4 mm grid.\"",
+   "[\"\"] → \"On aseg’s 1 mm grid, with NextBrain’s  voxelised there: a voxel counts when over half of the 0.4 mm voxels that fall in it belong to it. How far two segmentations of one scan agree shows how much a boundary depends on the method; it is not accuracy, and neither is the reference. Validation scores the same structures on NextBrain’s 0.4 mm grid.\""
+  ]
+ },
  "app": {
   "spoken": [
    "[\"Alpha\",\"\"] → \"Selected: Alpha, \"",

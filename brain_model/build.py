@@ -9,7 +9,13 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
 from .gltf.export import add_region, compact_region, published_area_mm2, write_scene
-from .labels import boundary_certainty, cerebellum, nextbrain, white_matter
+from .labels import (
+    boundary_certainty,
+    cerebellum,
+    nextbrain,
+    segmentation_agreement,
+    white_matter,
+)
 from .labels.placement import placements, surface_placement
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
@@ -601,6 +607,11 @@ def main():
             else {}
         ),
         **(
+            {"segmentation_agreement": segmentation_agreement.export(config, regions)}
+            if nextbrain.is_declared(config)
+            else {}
+        ),
+        **(
             {"arterial_territories": arterial_territories.metadata(config, territories)}
             if arterial_territories.is_declared(config)
             else {}
@@ -629,6 +640,7 @@ def main():
             "Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; validation counts those edges, and the volume each surface encloses stays definite.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             *boundary_certainty_limitations(config),
+            *(segmentation_agreement.limitations() if nextbrain.is_declared(config) else []),
             "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
             "Each region's centroid is the mean of its voxel centres (a cortical parcel's, of its voxels in the cortical ribbon), and can lie outside a curved region; its anchor, where the linked MRI and a cut go to show it, is its own voxel nearest that centroid. A parcel no ribbon voxel carries is placed by its mid-ribbon surface points instead.",
             "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",

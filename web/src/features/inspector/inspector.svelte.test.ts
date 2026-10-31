@@ -9,6 +9,9 @@ import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
 import boundaryFile from '../../../../public/models/cdmd/boundary-certainty.json';
 import type { BoundaryCertainty } from '../../lib/core/catalog/boundary-certainty.ts';
+import agreementFile from '../../../../public/models/cdmd/segmentation-agreement.json';
+import type { SegmentationAgreement } from '../../lib/core/catalog/segmentation-agreement.ts';
+import { decimal, quantity } from '../../lib/core/format.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
 import '../../app/layout.css';
@@ -453,6 +456,57 @@ describe('boundary certainty', () => {
     boundaries.open = true;
     expect(text(boundaries)).toContain('en voxels de 0,4 mm');
     expect(text(boundaries)).toMatch(/Quasi-égalité sur \d+ % des limites évaluées/);
+  });
+});
+
+describe('segmentation agreement', () => {
+  const published = agreementFile as unknown as SegmentationAgreement;
+  // The left amygdala: validation's documented exception, where the two disagree most.
+  const amygdala = published.structures.find(
+    (structure) => structure.structure === 'amygdala' && structure.hemisphere === 'left',
+  )!;
+
+  test('an aseg structure gives the three counts and their Dice, and shows them on the linked MRI', async () => {
+    const calls: unknown[] = [];
+    render(Fixture, { regionId: amygdala.regions.aseg, calls });
+    const agreement = section('Segmentation agreement');
+    expect(agreement.open).toBe(false);
+    agreement.open = true;
+    const rows = [...agreement.querySelectorAll('.network-row')].map(text);
+    const { both, aseg_only, nextbrain_only } = amygdala.voxels;
+    // `text` collapses the unit's no-break space, as it collapses every space.
+    const volume = (voxels: number) => quantity(voxels, 'mm³').replace(/\s+/g, ' ');
+    expect(rows).toEqual([
+      `Both segmentations ${volume(both)}`,
+      `aseg only ${volume(aseg_only)}`,
+      `NextBrain only ${volume(nextbrain_only)}`,
+    ]);
+    const dice = (2 * both) / (2 * both + aseg_only + nextbrain_only);
+    expect(text(agreement)).toContain(`Dice ${decimal(dice, 2)}`);
+    expect(text(agreement)).not.toContain('Compared as part of');
+    await userEvent.click(button('Show on linked MRI'));
+    expect(calls).toEqual([{ agreement: amygdala.code, instant: false }]);
+    await expectAxeClean();
+  });
+
+  test('a NextBrain label inside a compared union says it is compared as part of it', async () => {
+    render(Fixture, { regionId: amygdala.regions.nextbrain[0]! });
+    const agreement = section('Segmentation agreement');
+    agreement.open = true;
+    expect(text(agreement)).toMatch(/^Segmentation agreement Compared as part of NextBrain’s \S/);
+  });
+
+  test('a region outside the compared structures has no section', async () => {
+    render(Fixture, { regionId: V1 });
+    expect(section('Segmentation agreement')).toBeUndefined();
+  });
+
+  test('French', async () => {
+    render(Fixture, { regionId: amygdala.regions.learning, lang: 'fr' });
+    const agreement = section('Accord des segmentations');
+    agreement.open = true;
+    expect(text(agreement)).toContain('aseg seule');
+    expect(text(agreement)).toContain('grille de 1 mm d’aseg');
   });
 });
 

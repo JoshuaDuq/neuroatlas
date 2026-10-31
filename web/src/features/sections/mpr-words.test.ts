@@ -47,10 +47,10 @@ describe('the readout', () => {
   const position = '+1.0, −2.0, +3.0 mm';
 
   test('gives the position, the structure and its label number', () => {
-    expect(readoutText(position, { name: 'CSF', labelId: 24 }, 'en')).toBe(
+    expect(readoutText(position, { name: 'CSF', labelId: 24, agreement: null }, 'en')).toBe(
       `${position} — Cerebrospinal fluid (CSF) (label 24)`,
     );
-    expect(readoutText(position, { name: 'CSF', labelId: 24 }, 'fr')).toBe(
+    expect(readoutText(position, { name: 'CSF', labelId: 24, agreement: null }, 'fr')).toBe(
       `${position} — Liquide cérébro-spinal (LCS) (étiquette 24)`,
     );
   });
@@ -58,12 +58,20 @@ describe('the readout', () => {
   test('a sample with no name is unlabelled, never "(label undefined)"', () => {
     const empty = readoutText(
       position,
-      { name: '', labelId: undefined as unknown as number },
+      { name: '', labelId: undefined as unknown as number, agreement: null },
       'en',
     );
     expect(empty).toBe(`${position} — Unlabelled`);
-    expect(readoutText(position, { name: '', labelId: 0 }, 'fr')).toBe(
+    expect(readoutText(position, { name: '', labelId: 0, agreement: null }, 'fr')).toBe(
       `${position} — Non étiqueté`,
+    );
+  });
+
+  test('where agreement is shown, says which segmentation labels the structure there', () => {
+    const sample = { name: 'Left-Hippocampus', labelId: 17, agreement: 'aseg-only' } as const;
+    expect(readoutText(position, sample, 'en')).toMatch(/\(label 17\) · aseg only$/);
+    expect(readoutText(position, { ...sample, agreement: 'nextbrain-only' }, 'fr')).toMatch(
+      /\(étiquette 17\) · NextBrain seule$/,
     );
   });
 });

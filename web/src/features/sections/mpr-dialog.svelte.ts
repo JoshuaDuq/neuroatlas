@@ -17,6 +17,7 @@ export interface MprDialogDeps {
       | 'setCrosshair'
       | 'setWindow'
       | 'setDisplay'
+      | 'setAgreement'
       | 'sample'
       | 'mprFrame'
     >;
@@ -142,6 +143,10 @@ export function createMprDialog({ engine, select }: MprDialogDeps) {
     },
     setOverlay(overlay: boolean) {
       sections.setDisplay({ overlay });
+    },
+    /** Hiding never downloads, so it cannot fail. */
+    hideAgreement() {
+      void sections.setAgreement(null);
     },
     dispose() {
       if (frame !== null) cancelAnimationFrame(frame);

@@ -6,8 +6,9 @@ import nibabel as nib
 import numpy as np
 
 from .labels import cerebellum
+from .labels.segmentation_agreement import compared_groups
 from .labels.volumes import load_on_grid, resample_nearest
-from .layers.learning import combine_labels, expand_nextbrain, read_definition
+from .layers.learning import combine_labels
 from .sources import HEMISPHERES, ROOT, sha256
 
 MEASURE = re.compile(r"^# Measure (\w+), [^,]+, [^,]+, ([^,]+), unitless\s*$", re.MULTILINE)
@@ -41,13 +42,7 @@ def segmentation_agreement(config, nextbrain_source):
     """
     settings = config["validation"]["segmentation_agreement"]
     grid, table = nextbrain_source
-    groups = [
-        group
-        for group in expand_nextbrain(read_definition(config)["nextbrain"], table)
-        if group["id"].split(":")[1] in settings["aseg_labels"]
-    ]
-    if {group["id"].split(":")[1] for group in groups} != set(settings["aseg_labels"]):
-        raise ValueError("Segmentation agreement names a unit learning does not define")
+    groups = compared_groups(config, table)
     units = combine_labels(grid.labels, groups)
     path = config["source_directory"] / "mri/aseg.mgz"
     aseg = nib.load(path)

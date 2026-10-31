@@ -35,6 +35,8 @@ import { validateNeuropsychDomains } from '../../core/catalog/neuropsych-domains
 import type { NeuropsychDomains, NeurosynthTerms } from '../../core/catalog/neuropsych-domains.ts';
 import { validateBoundaryCertainty } from '../../core/catalog/boundary-certainty.ts';
 import type { BoundaryCertainty } from '../../core/catalog/boundary-certainty.ts';
+import { validateSegmentationAgreement } from '../../core/catalog/segmentation-agreement.ts';
+import type { SegmentationAgreement } from '../../core/catalog/segmentation-agreement.ts';
 import { validateReceptorFingerprints } from '../../core/catalog/receptor-fingerprints.ts';
 import type { ReceptorFingerprints } from '../../core/catalog/receptor-fingerprints.ts';
 import { belongsToDetail, visibilityOf } from '../../core/catalog/visibility.ts';
@@ -220,7 +222,7 @@ export class BrainAtlas extends EventTarget {
     const readJson = async <T>(address: string | URL) =>
       JSON.parse(new TextDecoder().decode(await fetchAsset(address))) as T;
     const manifest = await readJson<AtlasManifest>(url.href);
-    const [cabNp, functionalRegions, domains, terms, boundaryCertainty, receptors] =
+    const [cabNp, functionalRegions, domains, terms, boundaryCertainty, receptors, agreement] =
       await Promise.all([
         manifest.cab_np ? readJson<CabNpPartition>(new URL(manifest.cab_np.file, url)) : null,
         manifest.functional_regions
@@ -237,6 +239,9 @@ export class BrainAtlas extends EventTarget {
           : null,
         manifest.receptor_fingerprints
           ? readJson<ReceptorFingerprints>(new URL(manifest.receptor_fingerprints.file, url))
+          : null,
+        manifest.segmentation_agreement
+          ? readJson<SegmentationAgreement>(new URL(manifest.segmentation_agreement.file, url))
           : null,
       ]);
     const gltf = new GLTFLoader();
@@ -256,6 +261,7 @@ export class BrainAtlas extends EventTarget {
       terms,
       boundaryCertainty,
       receptors,
+      agreement,
     );
     try {
       await model.initialize(atlasId, options);
@@ -275,6 +281,7 @@ export class BrainAtlas extends EventTarget {
   readonly domains: NeuropsychDomains | null;
   readonly boundaryCertainty: BoundaryCertainty | null;
   readonly receptors: ReceptorFingerprints | null;
+  readonly segmentationAgreement: SegmentationAgreement | null;
   /** A panel's colours for named regions, every other region in tissue colour; null for none. */
   paint: Paint | null = null;
   readonly layers = new Map<string, Layer>();
@@ -322,6 +329,7 @@ export class BrainAtlas extends EventTarget {
     terms: NeurosynthTerms | null = null,
     boundaryCertainty: BoundaryCertainty | null = null,
     receptors: ReceptorFingerprints | null = null,
+    segmentationAgreement: SegmentationAgreement | null = null,
   ) {
     super();
     validateManifest(manifest);
@@ -336,6 +344,8 @@ export class BrainAtlas extends EventTarget {
     this.boundaryCertainty =
       boundaryCertainty && validateBoundaryCertainty(boundaryCertainty, this.regions);
     this.receptors = receptors && validateReceptorFingerprints(receptors, this.regions);
+    this.segmentationAgreement =
+      segmentationAgreement && validateSegmentationAgreement(segmentationAgreement, this.regions);
     this.dissection = createDissection(this.regions);
     // What `initialize` is asked for by default; nothing is drawn until it has loaded them.
     this.atlasId = manifest.atlases[0]!.id;
