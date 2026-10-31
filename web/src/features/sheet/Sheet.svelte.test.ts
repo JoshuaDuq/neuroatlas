@@ -215,6 +215,27 @@ describe('the shell', () => {
     await vi.waitFor(() => expect(getComputedStyle(el('navigator')).visibility).toBe('hidden'));
   });
 
+  test('turning the phone moves the panel with the sheet, before the media query reports the turn', async () => {
+    await mount(PHONE);
+    await rested();
+    // The window's resize event runs a rendering step before media queries are evaluated again, so
+    // a listener added after the sheet's own sees the sheet as that step leaves it.
+    const seen: { rail: boolean; panel: string | undefined }[] = [];
+    const look = () =>
+      seen.push({ rail: sheet().style.width !== '', panel: sheet().dataset.panel });
+    addEventListener('resize', look);
+    try {
+      await resize(...SIDEWAYS);
+      await vi.waitFor(() => expect(sheet().dataset.panel).toBe('shown'));
+      await resize(...PHONE);
+      await vi.waitFor(() => expect(sheet().dataset.panel).toBe('hidden'));
+    } finally {
+      removeEventListener('resize', look);
+    }
+    expect(seen.some(({ rail }) => rail)).toBe(true);
+    expect(seen.filter(({ rail, panel }) => rail !== (panel === 'shown'))).toEqual([]);
+  });
+
   test('a narrow landscape window taller than 480 px keeps the bottom sheet', async () => {
     await mount([780, 700]);
     expect(sheet().style.height).not.toBe('');

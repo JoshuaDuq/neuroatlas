@@ -375,7 +375,11 @@
   function onResize() {
     cancelPress();
     measureSafe();
-    if (media.phone) applySpan(heights()[detent]);
+    if (!media.phone) return;
+    // The window turns a rendering step before its media query reports it, and the span already
+    // follows the turn: the panel turns with it rather than waiting for the effect above.
+    if (root.dataset.panel !== (panelHiddenAt(detent) ? 'hidden' : 'shown')) setup();
+    else applySpan(heights()[detent]);
   }
 
   onMount(() => {
