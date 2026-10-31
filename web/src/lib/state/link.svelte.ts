@@ -20,7 +20,7 @@ export function createLink({
   engine: Pick<Engine, 'on'>;
   view: ViewStore;
   /** The placed lesion, which the link carries beside the view. */
-  lesion: Pick<LesionStore, 'sphere' | 'mode' | 'selectedTract'>;
+  lesion: Pick<LesionStore, 'sphere' | 'mode' | 'selectedTract' | 'coordinate'>;
   write: () => void;
 }) {
   const writer = createLinkWriter(write);
@@ -31,6 +31,7 @@ export function createLink({
     void lesion.sphere;
     void lesion.mode;
     void lesion.selectedTract;
+    void lesion.coordinate;
     writer.schedule();
     return writer.cancel;
   });

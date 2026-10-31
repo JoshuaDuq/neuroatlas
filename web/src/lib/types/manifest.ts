@@ -119,6 +119,7 @@ export interface Manifest {
   /** The comparison's file, and the compared NextBrain volume on aseg's grid. */
   segmentation_agreement?: ManifestFile & { volume: ManifestVolume } & Record<string, unknown>;
   arterial_territories?: ArterialTerritories;
+  coordinate_spaces?: CoordinateSpaces;
   cerebellar_functions?: CerebellarFunctions;
   receptor_fingerprints?: ManifestFile & Record<string, unknown>;
   volumes?: ManifestFile;
@@ -172,5 +173,64 @@ export interface ArterialTerritories {
   major: Record<string, { name: string; name_fr: string; short: string }>;
   territories: ArterialTerritory[];
   registration: Record<string, unknown>;
+  method: string;
+}
+
+/** A published template's field: each grid node's displacement onto this brain's surface RAS. */
+export interface CoordinateField {
+  file: string;
+  /** Nodes along each axis. */
+  shape: readonly number[];
+  components: number;
+  dtype: string;
+  order: string;
+  interleaved: boolean;
+  compression: string;
+  byte_length: number;
+  sha256: string;
+  decoded_sha256: string;
+  /** Node indices to template millimetres. */
+  node_to_template_mm: Matrix4;
+  /** Millimetres per stored unit. */
+  unit_mm: number;
+  /** Stored in every component of a node beyond the template's brain. */
+  outside: number;
+}
+
+/** A template a published coordinate can be given in, and how well it registered to this brain. */
+export interface CoordinateSpace {
+  id: string;
+  label: string;
+  description: string;
+  citation: string;
+  doi: string;
+  license: string;
+  copyright: string;
+  field: CoordinateField;
+  registration: Record<string, unknown>;
+}
+
+/** Where another template's reading of the same numbers lands beside a published one's, in mm. */
+export interface CoordinateOffsets {
+  cortex_offset_mm: { median: number; p95: number; max: number };
+  subcortical_offset_mm: Record<string, number>;
+  sphere_overlap: Record<string, number>;
+}
+
+/** `manifest.coordinate_spaces`: published MNI coordinates placed on this brain by registration. */
+export interface CoordinateSpaces {
+  label: string;
+  radius_mm: number;
+  spaces: CoordinateSpace[];
+  /** A coordinate whose template is not stated is read as `reads_as`; the alternatives were measured against it. */
+  unstated: {
+    reads_as: string;
+    alternatives: {
+      id: string;
+      label: string;
+      description: string;
+      against: Record<string, CoordinateOffsets>;
+    }[];
+  };
   method: string;
 }

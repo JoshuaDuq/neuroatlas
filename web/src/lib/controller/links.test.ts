@@ -6,8 +6,9 @@ import { decodeState } from '../core/state/url-state.ts';
 import { createFakeEngine } from '../engine/fake.ts';
 import { createLessonStore, createSessionStore } from '../state/session.svelte.ts';
 import { VIEW_NAMES } from '../types/index.ts';
-import type { Manifest } from '../types/index.ts';
+import type { CoordinateSpaces, Manifest } from '../types/index.ts';
 import { readRepoJson } from '../../../test/repo.ts';
+import type { PlacedCoordinate } from '../state/lesion.svelte.ts';
 import { createLinks } from './links.ts';
 import type { LinkHooks } from './links.ts';
 
@@ -23,6 +24,7 @@ function setup(
     engineOptions?: object;
     circuits?: { all: unknown[]; get: (id: string) => unknown };
     hooks?: Partial<LinkHooks>;
+    coordinates?: Parameters<typeof createLinks>[0]['coordinates'];
   } = {},
 ) {
   const followed: string[] = [];
@@ -65,12 +67,17 @@ function setup(
     heldOpacity: null as number | null,
     restore: vi.fn(),
     remove: vi.fn(),
+    coordinate: null as PlacedCoordinate | null,
+    placeCoordinate: vi.fn((placed: PlacedCoordinate) => {
+      lesion.coordinate = placed;
+    }),
   };
   const links = createLinks({
     engine,
     session,
     lesson,
     lesion,
+    coordinates: extras.coordinates ?? null,
     view: {
       get current() {
         return {
@@ -632,5 +639,64 @@ describe('the Tracts excursion and the panels', () => {
     log.length = 0;
     await restore('tab=anatomy');
     expect(log.filter((line) => /^(showDetail|open)/.test(line))).toEqual([]);
+  });
+});
+
+describe('a published coordinate in the link', () => {
+  const metadata = {
+    radius_mm: 5,
+    spaces: [{ id: 'mni152nlin2009casym' }],
+  } as unknown as CoordinateSpaces;
+  /** Every coordinate lands 1 mm to the right, except one beyond the template's brain. */
+  const coordinates = {
+    metadata,
+    map: vi.fn(async ([x, y, z]: readonly number[], _space: string) =>
+      x! > 80 ? null : ([x! + 1, y!, z!] as [number, number, number]),
+    ),
+  };
+
+  it('carries the coordinate as entered and its space, never as a lesion or its tract', () => {
+    const { links, lesion, calls } = setup({}, undefined, { coordinates });
+    Object.assign(lesion, {
+      sphere: { centre: [-41, 22, 6], radius: 5 },
+      selectedTract: 'arcuate-left',
+      coordinate: { entered: [-42, 22, 6], space: 'unstated' },
+    });
+    links.write();
+    const hash = calls.at(-1)![1] as string;
+    expect(hash).toMatch(/&coord=-42,22,6&space=unstated$/);
+    expect(hash).not.toMatch(/lesion|lesiontract/);
+  });
+
+  it('places it where its field lands it, at the published radius, its report shown', async () => {
+    const showDetail = vi.fn();
+    const { links, lesion } = setup({}, undefined, { coordinates, hooks: { showDetail } });
+    expect(await links.restore(decodeState('coord=-42,22,6&space=unstated'), {})).toEqual([]);
+    expect(coordinates.map).toHaveBeenLastCalledWith([-42, 22, 6], 'unstated');
+    expect(lesion.placeCoordinate.mock.calls).toEqual([
+      [{ entered: [-42, 22, 6], space: 'unstated' }, [-41, 22, 6], 5],
+    ]);
+    expect(lesion.restore).not.toHaveBeenCalled();
+    expect(showDetail).toHaveBeenCalledOnce();
+  });
+
+  it('names a coordinate beyond the template’s brain as not applied, and takes the old sphere away', async () => {
+    const { links, lesion } = setup({}, undefined, { coordinates });
+    lesion.sphere = { centre: [0, 0, 0], radius: 10 };
+    expect(await links.restore(decodeState('coord=90,0,0&space=mni152nlin2009casym'), {})).toEqual([
+      'coord',
+      'space',
+    ]);
+    expect(lesion.placeCoordinate).not.toHaveBeenCalled();
+    expect(lesion.remove).toHaveBeenCalledOnce();
+  });
+
+  it('takes no coordinate on an anatomy that publishes no spaces', async () => {
+    const { links, lesion } = setup();
+    expect(await links.restore(decodeState('coord=-42,22,6&space=unstated'), {})).toEqual([
+      'coord',
+      'space',
+    ]);
+    expect(lesion.placeCoordinate).not.toHaveBeenCalled();
   });
 });

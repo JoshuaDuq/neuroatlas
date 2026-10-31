@@ -416,6 +416,8 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
     lesion: { centre: [1, 2, 3], radius: 4 },
     lesionMode: 'functions',
     lesionTract: 't',
+    coordinate: [-42, 22.5, 6],
+    coordinateSpace: 'unstated',
   });
   assert.deepEqual(
     written.split('&').map((pair) => pair.split('=')[0]),
@@ -451,11 +453,13 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
       'lesion',
       'lesionmode',
       'lesiontract',
+      'coord',
+      'space',
     ],
   );
   assert.equal(
     written,
-    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=cab-np&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr&lesion=1,2,3,4&lesionmode=functions&lesiontract=t',
+    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=cab-np&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr&lesion=1,2,3,4&lesionmode=functions&lesiontract=t&coord=-42,22.5,6&space=unstated',
   );
   assert.deepEqual(PARAMS, {
     anatomy: 'anatomy',
@@ -488,6 +492,8 @@ test('STATE-02 every field has one parameter, written in a fixed order after the
     lesion: 'lesion',
     lesionMode: 'lesionmode',
     lesionTract: 'lesiontract',
+    coordinate: 'coord',
+    coordinateSpace: 'space',
     hiddenRegions: 'hidden',
   });
 });
@@ -575,4 +581,19 @@ test('a lesion outside the volume or the radius slider is not guessed at', () =>
     assert.deepEqual(decodeState(`lesion=${value}`), { state: {}, rejected: ['lesion'] }, value);
   }
   assert.deepEqual(decodeState('lesionmode=paint').rejected, ['lesionmode']);
+});
+
+test('a published coordinate travels unrounded, as entered, with its space', () => {
+  const state: Partial<LinkInput> = {
+    coordinate: [-42.25, 22, -6.125],
+    coordinateSpace: 'mni152nlin2009casym',
+  };
+  const hash = encodeState(state);
+  assert.equal(hash, 'coord=-42.25,22,-6.125&space=mni152nlin2009casym');
+  assert.deepEqual(decoded(hash), state);
+  assert.equal(encodeState({ coordinate: null, coordinateSpace: null }), '');
+  for (const value of ['1,2', '1,2,3,4', '600,0,0', '1,x,3', '']) {
+    assert.deepEqual(decodeState(`coord=${value}`), { state: {}, rejected: ['coord'] }, value);
+  }
+  assert.deepEqual(decodeState('space=').rejected, ['space']);
 });

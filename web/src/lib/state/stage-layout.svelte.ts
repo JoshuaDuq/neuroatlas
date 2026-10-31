@@ -105,7 +105,7 @@ export function createStageLayout({
   /**
    * The room the orientation letters and the scale bar take at each edge of the stage over the dock,
    * measured where they are drawn. Boxes are read even while a popover hides the markings: framing runs
-   * as a preset closes the View popover, and the markings return with the picture.
+   * as a preset frames, and the markings return with the picture.
    */
   function markingClearance(reach: number) {
     const clear = { top: 0, bottom: 0, left: 0, right: 0 };

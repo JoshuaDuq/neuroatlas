@@ -51,11 +51,13 @@ A Destrieux, HCP-MMP, Julich-Brain or Schaefer region lists the regions of anoth
 
 ## Stage
 
-The dock at the bottom left holds three tools.
+The orientation gizmo at the top right shows the six anatomical directions as the camera sees them. Click a letter for that view (L for the left view, S from above), its centre for the oblique view; the chevrons around it turn the model one step, and the arrow under it is **Reset view**.
 
-- **View** holds the presets (oblique, left, right, anterior, posterior, superior, inferior), the turn arrows and **Reset view**.
+The dock at the bottom left holds four tools.
+
 - **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels. **Cerebellar functions** colours the cerebellar cortex by the registered group functional atlas. With NextBrain cut labels, a selected NextBrain region is outlined on the cut: solid where its boundary is firm, dashed where soft, grey where unrated.
-  Under the cut's controls, **Lesion** places a sphere (3–30 mm radius). Set **A click on the brain** to **Places the lesion**, then click the brain or a cut face to set the centre; the choice returns to selecting when the popover closes. Cut first to place it at depth.
+- **Lesion** places a sphere (3–30 mm radius). Set **A click on the brain** to **Places the lesion**, then click the brain or a cut face to set the centre; the choice returns to selecting when the popover closes. Cut first to place it at depth.
+- **Coordinate** places a published MNI coordinate, read in its template, with a 5 mm sphere; see [Atlases](../concepts/atlases.md#published-coordinates).
 - **Display** holds hemisphere, cortex and its opacity, internal anatomy and spinal cord.
 
 ### Lesion report

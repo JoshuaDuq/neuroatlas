@@ -1,6 +1,7 @@
 import { flushSync, getContext } from 'svelte';
 import type { AnatomyCommands } from '../lib/controller/anatomy.ts';
 import type { AppContext } from '../lib/controller/context.ts';
+import type { CoordinatePlacement } from '../lib/controller/coordinates.ts';
 import type { Excursions } from '../lib/controller/excursion.svelte.ts';
 import type { Links } from '../lib/controller/links.ts';
 import type { createCatalog } from '../lib/core/catalog/catalog.ts';
@@ -46,6 +47,8 @@ export interface World extends AppContext {
   speech: ReturnType<typeof announceView>;
   /** The placed lesion, its measurement and the findings near it. */
   lesion: LesionStore;
+  /** Placing a published coordinate, or null on an anatomy that publishes no coordinate spaces. */
+  coordinates: CoordinatePlacement | null;
 }
 
 /** Runs `build` where `$effect`s may be created and settles them, as a component's setup would. */

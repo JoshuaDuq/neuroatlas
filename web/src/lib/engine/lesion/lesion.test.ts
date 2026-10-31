@@ -106,6 +106,21 @@ test('reads each region from its own atlas volume, and the aseg from the tissue 
   assert.equal(measured.volume, 3);
 });
 
+test('names the tissue at the centre, and the tissue class of each region it reaches', async () => {
+  const measured = await lesion().measure({ centre: [1, 0, 0], radius: 1 });
+  assert.deepEqual(measured.centre, { tissue: 'deep', region: 'aseg:left:10' });
+  assert.deepEqual(
+    measured.tissueOf,
+    new Map([
+      ['destrieux:left:1', 'cortex'],
+      ['aseg:left:10', 'deep'],
+    ]),
+  );
+  const atCortex = await lesion().measure({ centre: [3, 0, 0], radius: 0.5 });
+  assert.deepEqual(atCortex.centre, { tissue: 'cortex', region: 'destrieux:left:1' });
+  assert.deepEqual(atCortex.tissueOf, new Map([['destrieux:left:1', 'cortex']]));
+});
+
 test('refuses a radius that is not positive before drawing or measuring', async () => {
   const domain = lesion();
   assert.throws(() => domain.show({ centre: [0, 0, 0], radius: 0 }), RangeError);

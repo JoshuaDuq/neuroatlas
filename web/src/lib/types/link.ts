@@ -60,6 +60,10 @@ export interface LinkState {
   lesionMode: (typeof LESION_MODES)[number];
   /** The tract bundle whose streamlines through the lesion are drawn. */
   lesionTract: string | null;
+  /** A published coordinate the sphere marks, as entered, in the space `coordinateSpace` names. */
+  coordinate: [number, number, number] | null;
+  /** A published coordinate space's id, or `unstated`. */
+  coordinateSpace: string | null;
 }
 
 /**

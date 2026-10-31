@@ -12,7 +12,7 @@ freesurfer_build: freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45
 
 # Every anatomy lists the optional layers it publishes, out of networks,
 # nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms,
-# arterial_territories and cerebellar_functions. Build and
+# arterial_territories, cerebellar_functions and coordinate_spaces. Build and
 # validate fail when a declared layer's input is missing and publish no layer
 # that is undeclared.
 anatomies:
@@ -43,7 +43,7 @@ anatomies:
     # fewest surface defect holes (14); its own diffusion scan gives the tracts
     # their frame.
     source_url: https://doi.org/10.6084/m9.figshare.c.5315474.v1
-    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms, arterial_territories, cerebellar_functions]
+    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms, arterial_territories, cerebellar_functions, coordinate_spaces]
     # Reconstructed here with FreeSurfer 8.2 from the T1 the
     # published FreeSurfer 6 run imported (voxel for voxel). With that run's
     # aseg, NextBrain's left amygdala met it at Dice 0.793, below the floor.

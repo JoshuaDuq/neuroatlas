@@ -1,5 +1,6 @@
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalAssociation } from '../core/clinical/types.ts';
+import type { Coordinate } from '../core/coordinates/parse.ts';
 import { SLIGHT_SHARE, findingsPaint, rankFindings } from '../core/lesion/findings.ts';
 import { functionReach, functionsPaint, lesionProfile } from '../core/lesion/functions.ts';
 import type { LesionPaint } from '../core/state/paint.ts';
@@ -33,11 +34,20 @@ export type TractView =
 
 export type LesionMode = (typeof LESION_MODES)[number];
 
+/** A published coordinate the sphere marks: the numbers as entered, and the space chosen for them. */
+export interface PlacedCoordinate {
+  entered: Coordinate;
+  /** A published space's id, or `unstated`. */
+  space: string;
+}
+
 const tenth = (value: number) => Math.round(value * 10) / 10;
 
 /**
  * The placed lesion: what the stage draws and where a click places it, its measurement and tract
  * count, each answered only for the placement that asked, and the functions and findings near it.
+ * The one sphere may instead mark a published coordinate, at its own fixed radius; placing either
+ * replaces the other.
  */
 export function createLesionStore({
   lesion,
@@ -58,6 +68,7 @@ export function createLesionStore({
   deficitGroup: (deficit: string) => string;
 }) {
   let sphere = $state.raw<LesionSphere | null>(null);
+  let coordinate = $state.raw<PlacedCoordinate | null>(null);
   let radius = $state<number>(LESION_RADIUS.initial);
   let placing = $state(false);
   let measured = $state.raw<Measured | null>(null);
@@ -201,6 +212,14 @@ export function createLesionStore({
     get sphere() {
       return sphere;
     },
+    /** What the sphere is: a lesion, or a published coordinate. */
+    get kind(): 'lesion' | 'coordinate' {
+      return coordinate ? 'coordinate' : 'lesion';
+    },
+    /** The coordinate the sphere marks, or null for a lesion. */
+    get coordinate() {
+      return coordinate;
+    },
     get radius() {
       return radius;
     },
@@ -247,6 +266,7 @@ export function createLesionStore({
       return paint;
     },
     place([right, anterior, superior]: Vec3): void {
+      coordinate = null;
       sphere = { centre: [tenth(right), tenth(anterior), tenth(superior)], radius };
       measure(sphere);
       follow(sphere);
@@ -254,14 +274,27 @@ export function createLesionStore({
     /** The slider moving: the stage follows, and the measurement waits for `commitRadius`. */
     previewRadius(next: number): void {
       radius = next;
-      if (!sphere) return;
+      // A coordinate's radius is fixed; the slider is the next lesion's.
+      if (!sphere || coordinate) return;
       sphere = { ...sphere, radius: next };
       follow(sphere);
     },
     commitRadius(next: number): void {
       radius = next;
-      if (!sphere) return;
+      if (!sphere || coordinate) return;
       sphere = { ...sphere, radius: next };
+      measure(sphere);
+      follow(sphere);
+    },
+    /** Mark a published coordinate where it landed on this brain, in surface RAS millimetres. */
+    placeCoordinate(
+      placed: PlacedCoordinate,
+      [right, anterior, superior]: Vec3,
+      fixed: number,
+    ): void {
+      coordinate = placed;
+      mode = 'lesion';
+      sphere = { centre: [tenth(right), tenth(anterior), tenth(superior)], radius: fixed };
       measure(sphere);
       follow(sphere);
     },
@@ -279,6 +312,7 @@ export function createLesionStore({
     /** A link's lesion: placed, coloured and, with a bundle, counted and drawn, as the reader left it. */
     restore(next: LesionSphere, nextMode: LesionMode, tract: string | null): void {
       radius = next.radius;
+      coordinate = null;
       sphere = next;
       mode = nextMode;
       tractsWanted = tract !== null;
@@ -293,6 +327,7 @@ export function createLesionStore({
     remove(): void {
       request++;
       sphere = null;
+      coordinate = null;
       measured = null;
       counted = { status: 'idle' };
       mode = 'lesion';

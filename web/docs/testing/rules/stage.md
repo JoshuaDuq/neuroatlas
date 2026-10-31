@@ -1,13 +1,15 @@
 # Stage rules: overlays, dock, colour keys and full screen
 
 Scope: chunks G1 (#44, the stage overlays: hints, orientation letters, scale bar, hover chip, focus ring),
-G2 (#46, the stage dock, the View popover with its presets and turn buttons, the Display popover), G3
+G2 (#46, the stage dock with its Section, Lesion, Coordinate and Display popovers, and the orientation gizmo
+with its views, turn buttons and Reset view), G3
 (#47, the network, paint and direction keys) and the full-screen part of G6 (#50). Legacy
 sources: `viewer/ui/chrome/viewport-chrome.js`, `viewer/ui/chrome/stage-tools.js` (+ `stage-tools.test.js`),
-`viewer/ui/chrome/display.js`, `viewer/app.js` (hover words 1694-1717). New code: `web/src/features/stage/`.
+`viewer/ui/chrome/display.js`, `viewer/app.js` (hover words 1694-1717). New code: `web/src/features/stage/`
+(the gizmo's projection is `projectAxes` in `web/src/lib/engine/render/orientation.ts`).
 Deviations: `g1-hover-chip-dismiss.md`, `g1-measurements-follow-text.md`, `g1-touch-hints.md`,
 `g1-viewport-host-size.md`, `g2-dock-toolbar.md`, `g2-focus-when-tool-hidden.md`, `g2-orbit-step-buttons.md`,
-`g2-text-reflow.md`, `g3-absent-text.md`, `g3-focus-handoff.md`, `g3-list-role.md`,
+`g2-gizmo-letter-targets.md`, `g2-text-reflow.md`, `g3-absent-text.md`, `g3-focus-handoff.md`, `g3-list-role.md`,
 `g3-paint-toolbar.md`, `g6-fullscreen-exit.md`, `g6-fullscreen-failure.md`, `g6-fullscreen-focus.md`,
 `u3-segmented-controls.md`. The stage status screens (`StageStatus`) are BOOT-12 to BOOT-29 in
 `boot-and-assets.md`. Which letter faces each edge, the scale bar's 1-2-5 length and the 5 degree arrow
@@ -179,22 +181,22 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 
 ## The dock
 
-### STAGE-18 · The dock is one labelled toolbar of three tools
+### STAGE-18 · The dock is one labelled toolbar of four tools
 
-- **Rule:** While View, Section and Display are shown the dock row is a toolbar named "3D viewer tools" with one Tab stop. The arrow keys and Home/End move between the tools, wrapping. Tab leaves the toolbar, and Shift+Tab back into it lands on the focused tool, else the first.
+- **Rule:** Section, Lesion, Coordinate and Display form a toolbar named "3D viewer tools" with one Tab stop. The arrow keys and Home/End move between the tools shown, wrapping. Tab leaves the toolbar, and Shift+Tab back into it lands on the focused tool, else the first. Coordinate is offered only while the anatomy publishes coordinate spaces; without it the arrows pass from Lesion to Display.
 - **Kind:** accessibility
 - **Level:** browser: focus and keyboard
 - **Source:** `viewer/index.html:433-490`; deviation `g2-dock-toolbar.md` (APG Toolbar)
-- **Expected:** Tools named "Anatomical view: Oblique", "Section", "Display", `tabIndex` [0, −1, −1]. From View: → Section; ↓ → Display, → wraps to View; ← → Display; Home → View; End → Display. From Display, Tab → the next control after the dock; Shift+Tab → View; Shift+Tab → the canvas. French: toolbar "Outils du visualiseur 3D", tools "Vue anatomique…", "Coupe", "Affichage". Each tool has `aria-haspopup="dialog"`, `aria-expanded="false"`.
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
+- **Expected:** Tools "Section", "Lesion", "Coordinate", "Display", `tabIndex` [0, −1, −1, −1]. From Section: → Lesion; ↓ → Coordinate; → twice wraps past Display to Section; ← → Display; Home → Section; End → Display. From Display, Tab → the next control after the dock; Shift+Tab → Section; Shift+Tab → the canvas. No coordinate spaces → no "Coordinate"; → from Lesion → Display; spaces back → ← from Display → Coordinate. French: toolbar "Outils du visualiseur 3D", tools "Coupe", "Lésion", "Coordonnée", "Affichage". Each tool has `aria-haspopup="dialog"`, `aria-expanded="false"`. In the app, Coordinate is offered for CDMD, its dialog holding the coordinate field and template select, and the Lesion dialog the radius slider and no coordinate field.
+- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `src/app/regions/StageRegion.svelte.test.ts` (R, the app's Coordinate and Lesion dialogs)
 
-### STAGE-19 · Over the tract reference only View is left, and it is not a toolbar
+### STAGE-19 · Over the tract reference no tool is left and the dock is not drawn
 
-- **Rule:** The tract reference hides Section and Display. The lone View button is an ordinary Tab stop: no toolbar role, no name, arrows do nothing. Showing the anatomy again restores the toolbar.
+- **Rule:** The tract reference has no sections, lesion or display settings, so all four tools go and the dock is not drawn; the orientation gizmo stays. Showing the anatomy again restores the dock and its toolbar.
 - **Kind:** accessibility
-- **Level:** browser: roles and focus
+- **Level:** browser: roles and computed visibility
 - **Source:** `viewer/ui/chrome/display.js:200-203` (`data-anatomy-display`); deviation `g2-dock-toolbar.md`
-- **Expected:** Tract reference on: `getByRole('toolbar')` count 0, `.stage-toolbar` has no `aria-label`, no "Section" or "Display" button; → on View keeps focus. Off: one toolbar "3D viewer tools"; → moves to Section.
+- **Expected:** Tract reference on: no "Section", "Lesion", "Coordinate" or "Display" button; dock `visibility: hidden`. Off: dock `visible`, one toolbar "3D viewer tools".
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-20 · Each tool opens a named, non-modal popover, one at a time
@@ -203,7 +205,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Kind:** behaviour
 - **Level:** browser: focus and keyboard (U5's popover mechanics are in `ui-kit.md`)
 - **Source:** `viewer/ui/chrome/stage-tools.js:36-136`; `stage-tools.test.js:87-101`; decision 14 on #4; deviation `g2-dock-toolbar.md`
-- **Expected:** Dialogs "Anatomical view", "Section", "Display"; no `aria-modal`. Display opens with focus on the "Both" radio. View with `left` held opens on "Left"; with no view held, on "Oblique". Open View then Display → View `aria-expanded="false"`, Display "true", Section "false". Escape → one keydown seen with `defaultPrevented === true`, focus on the tool. Shift+Tab from the first control of Display or Section → the tool, popover open. Tab from Section's last control → the next control after the dock, Section `aria-expanded="false"`.
+- **Expected:** Dialogs "Section", "Lesion", "Coordinate", "Display", each named by its tool; no `aria-modal`. Display opens with focus on the "Both" radio. Open Section then Display → Section `aria-expanded="false"`, Display "true", Lesion "false". Escape → one keydown seen with `defaultPrevented === true`, focus on the tool. Shift+Tab from the first control of each of the four → the tool, popover open. Tab from Lesion's last control → the next control after the dock, Lesion `aria-expanded="false"`.
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-21 · A popover opened from the keyboard appears at once; from a pointer it grows from the dock
@@ -221,64 +223,91 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Kind:** behaviour
 - **Level:** unit (placement numbers); browser for the drawn popover
 - **Source:** `viewer/ui/chrome/stage-tools.js:11-31, 49-69`; `stage-tools.test.js:8-44`
-- **Expected:** `placePopover({ toolbar: {16, 770}, visible: 1120×824 at 0,0, width: 288 })` → `{ left: 0, width: 288, maxHeight: 746 }`. Visible 420 wide, toolbar left 200 → `left + 200 + width = 404`. Phone fill, visible 390×600, toolbar (16, 540) → `{ left: 0, width: 358, maxHeight: 352 }`. Side sheet, visible x 220, 624×338, toolbar (236, 282) → `left + 236 = 236`, `maxHeight: 258`. Visible 20×20, toolbar (0, 10) → width 0, maxHeight 0. In the app: desktop popover 272 px wide, left edge on the dock's, bottom above the dock's top. Phone 390×700, sheet inset 200, 200 % text → width 350, top ≥ (dock top / 3) − 1, left 20, scrolls, and focused "Reset view" lies inside the shown part. Built site 390 wide: popover inside 0–390 and wider than 272.
+- **Expected:** `placePopover({ toolbar: {16, 770}, visible: 1120×824 at 0,0, width: 288 })` → `{ left: 0, width: 288, maxHeight: 746 }`. Visible 420 wide, toolbar left 200 → `left + 200 + width = 404`. Phone fill, visible 390×600, toolbar (16, 540) → `{ left: 0, width: 358, maxHeight: 352 }`. Side sheet, visible x 220, 624×338, toolbar (236, 282) → `left + 236 = 236`, `maxHeight: 258`. Visible 20×20, toolbar (0, 10) → width 0, maxHeight 0. In the app: desktop popover 272 px wide, left edge on the dock's, bottom above the dock's top. Phone 390×700, sheet inset 200, 200 % text → width 350, top ≥ (dock top / 3) − 1, left 20, scrolls, and Display's last control, "Show spinal cord", focused, lies inside the shown part. Built site 390 wide: popover inside 0–390 and wider than 272.
 - **Covered by:** `src/features/stage/place-popover.test.ts` (R); `src/features/stage/Dock.svelte.test.ts` (R, placement)
 
-## The View popover
+## The orientation gizmo
 
-### STAGE-23 · The View tool names the preset the camera holds
+### STAGE-23 · The gizmo draws the six directions as the camera sees them
 
-- **Rule:** While the camera sits on a named view the View tool reads that view's name and is named "Anatomical view: <view>"; once the camera is moved off it, the tool reads "View" and is named "Anatomical view". Every name the tool shows is inside its accessible name (WCAG 2.5.3), and only the current name is exposed.
+- **Rule:** Each anatomical direction (R, L, A, P, S, I; French D, G) is a lettered circle placed by projecting it on the camera's basis: screen x = d · right, screen y = −(d · up). A direction toward the viewer (d · back ≥ 0) draws in front, over the centre; one pointing away draws behind it, smaller and dimmer. Three faint axes run through the centre. The positions follow every `camera` event, written straight into the DOM. The engine publishes the basis with the event, the fake engine too.
+- **Kind:** behaviour
+- **Level:** unit (basis and projection); browser for the drawn letters
+- **Source:** Blender's navigation gizmo; `web/src/lib/engine/render/orientation.ts` (`cameraBasis`, `projectAxes`, the AXES table: x = right, y = superior, z = posterior)
+- **Expected:** Left view basis right [0, 0, 1], up [0, 1, 0], back [−1, 0, 0]; superior right [1, 0, 0], up [0, 0, −1], back [0, 1, 0], for both engines; with a target, the basis lookAt gives, not a rotation left on the camera. Posterior view: R x ≈ 1, S y ≈ −1, P depth ≈ 1; anterior: R x ≈ −1, L x ≈ 1, A depth ≈ 1. Drawn, anterior held: L > 20 px right of centre, R > 20 px left, S > 20 px above, I > 20 px below; A at the centre with the highest z-index and wider than P, which is `data-facing="away"`. A camera event with right [0, 1, 0], up [−1, 0, 0] → S right, R below. Every letter facing away has a lower z-index than the centre, every one facing the viewer one at least as high.
+- **Covered by:** `src/lib/engine/render/orientation.test.ts` (R); `src/lib/engine/fake/contract-suite.ts` (R, fake and headless real engine); `src/features/stage/OrientationGizmo.svelte.test.ts` (R)
+
+### STAGE-24 · A letter frames its view; the centre frames the oblique one
+
+- **Rule:** A letter asks for the view from that side (L left, R right, A anterior, P posterior, S superior, I inferior), the centre for the oblique view, through the same command the dock's presets used, and retires the navigation hint. Each is named "<view> view" (French "Vue <view>") with a matching tooltip; the drawn letter is hidden from assistive technology.
+- **Kind:** behaviour
+- **Level:** browser: real pointer clicks (the command is a mock, the gizmo-to-controller contract)
+- **Source:** `viewer/ui/chrome/viewport-chrome.js:498-509`
+- **Expected:** Looking down a diagonal, so nothing overlaps: "Right view" → `chooseView` calls `[['right']]`, likewise left, anterior, posterior, superior, inferior; "Oblique view" → `[['oblique']]`; hint retired each time. Letter texts map R/L/S/I/P/A to "Right/Left/Superior/Inferior/Posterior/Anterior view". French "Vue gauche" is the L button. In the app, "Superior view" sets the session's view to `superior`, calls `camera.applyView('superior')` and is pressed.
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R); `src/app/regions/StageRegion.svelte.test.ts` (R)
+
+### STAGE-25 · A view is pressed only while the camera holds it
+
+- **Rule:** Of the centre and the six letters, the one whose view the camera holds is `aria-pressed` and drawn in the accent; a drag, a camera key or a chevron moves the camera off it and none is pressed, while the session still names the view.
+- **Kind:** behaviour
+- **Level:** browser: the pressed state follows `camera.viewHeld` and the session view
+- **Source:** `viewer/ui/chrome/viewport-chrome.js:491-541, 560-597`
+- **Expected:** At start pressed = ["Oblique view"]; after "Left view" → ["Left view"], its background differing from R's; `orbitBy({ azimuth: 0.1 })` → [], session view still `left`. After a chevron → [].
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R); camera-key release is FACADE-21
+
+### STAGE-26 · The gizmo is one toolbar, shown with the anatomy
+
+- **Rule:** The gizmo is a toolbar named "Anatomical view" (French "Vue anatomique") with one Tab stop, on the held view, else the first control; the arrows and Home/End walk the centre, the letters, the chevrons and Reset view, Enter and Space press. Its root marks its keys as its own (decision 7). It is not drawn while the anatomy is not on screen, nor under the raised phone sheet; over the tract reference it stays.
 - **Kind:** accessibility
-- **Level:** unit (view-model) for the name; browser for which name is visible
-- **Source:** `viewer/ui/chrome/viewport-chrome.js:491-531`
-- **Expected:** At start (oblique held) "Anatomical view: Oblique"; `left` held → "Anatomical view: Left" (FR "Vue anatomique : gauche"); after `orbitBy` → "Anatomical view", drawn "View" (FR "Vue"), and the session's view is still `left`. For each of the eight states, the drawn text lower-cased is inside the lower-cased `aria-label`, EN and FR. Of the 8 name spans only one is visible ("Oblique" at start).
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
+- **Level:** browser: focus, keyboard and computed visibility
+- **Source:** WAI-ARIA APG Toolbar; deviation `g2-dock-toolbar.md`
+- **Expected:** Tab from the canvas → "Oblique view"; → → "Right view"; End → "Reset view"; Enter → `reset` once; Tab → the next control after the stage. `data-own-keys` on the root. `ready: false` → not visible; true → visible. `sheetFull = true` → `visibility: hidden`.
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R); `src/app/regions/StageRegion.svelte.test.ts` (R, the sheet)
 
-### STAGE-24 · The View tool keeps one width whatever it names
+### STAGE-27 · Four chevrons on the ring orbit the model one step without dragging
 
-- **Rule:** All names sit in one grid cell, so a change of view never moves the other tools.
+- **Rule:** A group "Turn the model" of four chevrons sits on the gizmo's ring, one on each side. Each press turns the camera one keyboard-arrow step in that direction, leaves the held view and retires the hint. They are quiet (muted ink, brighter on hover and focus) and always shown. Nothing is announced.
+- **Kind:** accessibility
+- **Level:** browser (the step mapping is RENDER-21)
+- **Source:** deviation `g2-orbit-step-buttons.md` (WCAG 2.5.7); decisions 10a, 10b and 22 on #4
+- **Expected:** "Turn left" → `orbitBy({ azimuth: π/36 })`, "Turn right" → `{ azimuth: −π/36 }`, "Turn up" → `{ polar: π/36 }`, "Turn down" → `{ polar: −π/36 }`, one call per press, each with its name as tooltip; then nothing pressed, hint retired. Each chevron's centre lies more than 30 px from the gizmo's centre on its own side.
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R)
+
+### STAGE-28 · Reset view resets through the controller
+
+- **Rule:** Reset view, an icon button in the gizmo's corner under the axes, calls the controller's reset once (the opening picture, oblique view included). It is named and tooltipped "Reset view".
+- **Kind:** behaviour
+- **Level:** browser
+- **Source:** `viewer/ui/chrome/display.js:193`
+- **Expected:** Pointer on "Reset view" → `reset` called once, `data-tooltip` "Reset view". In the app → `model.reset` once.
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R); `src/app/regions/StageRegion.svelte.test.ts` (R)
+
+### STAGE-52 · The gizmo sits top right, plateless, clear of the keys and the letters
+
+- **Rule:** The gizmo stands on the stage gutter at the top right of the visible stage, inside the colour keys' band, and clear of the top and right orientation letters. It draws no plate: the letters, axes and glyphs are markings held off tissue by the stage's halo. In full screen it moves below the exit control.
 - **Kind:** behaviour
 - **Level:** browser: layout
-- **Source:** `viewer/ui/chrome/viewport-chrome.js:512-518`
-- **Expected:** Across "View" and the seven view names, `getBoundingClientRect().width` of the tool (to 0.1 px) takes one value, EN and FR.
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
+- **Source:** decision of 2026-10-31 (transparent gizmo)
+- **Expected:** Insets top 30, right 40, key band right 120 → gizmo top − host top = 30 + gutter, host right − gizmo right = 160 + gutter. No background on the root or the field; root ≤ 120 px wide. In the app at 1280×800 and 390×844: within 40 px of the stage's top and right edges, and its box intersects neither the top nor the right letter.
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R); `src/app/regions/StageRegion.svelte.test.ts` (R); the full-screen offset is uncovered
 
-### STAGE-25 · A preset is pressed only while the camera holds it
+### STAGE-53 · Gizmo targets are 24 px; the chevrons and Reset view grow to 44 px on a coarse pointer
 
-- **Rule:** Of the seven presets (Oblique, Left, Right, Anterior, Posterior, Superior, Inferior), the one the camera holds reads as pressed; a drag, a camera key or a turn button moves the camera off it and none is pressed. A view held before the dock mounted is pressed at once.
-- **Kind:** behaviour
-- **Level:** unit (view-model): the pressed state follows `camera.viewHeld` and the session view
-- **Source:** `viewer/ui/chrome/viewport-chrome.js:491-541, 560-597`
-- **Expected:** At start pressed = `['oblique']`; `left` held → `['left']`; `orbitBy({ azimuth: 0.1 })` → `[]`. Mounted with `superior` held → tool "Anatomical view: Superior". Built site: after Left, an arrow key on the focused canvas → tool "Anatomical view", "Left" `aria-pressed="false"`.
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); camera-key release is FACADE-21
-
-### STAGE-26 · Pressing a preset frames it, closes the popover and returns focus to the View tool
-
-- **Rule:** A preset, by Enter or pointer, asks for that view, closes the popover, puts focus on the View tool and retires the navigation hint.
-- **Kind:** behaviour
-- **Level:** browser: focus
-- **Source:** `viewer/ui/chrome/viewport-chrome.js:498-509`; `stage-tools.js:119-123`
-- **Expected:** Open View, → Enter → `chooseView` calls `[['left']]`, no dialog, focus on the View tool, hint retired. Pointer on "Anterior" → `[['anterior']]`, same closing and focus. Built site: after Left, focus on "Anatomical view: Left".
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R; the command is a mock, which is the dock-to-controller contract)
-
-### STAGE-27 · Four turn buttons orbit the model one step without dragging
-
-- **Rule:** The View popover has a group "Turn the model" of four buttons between the presets and Reset view. Each press turns the camera one keyboard-arrow step in that direction, leaves the held preset and retires the hint; the popover stays open and focus stays on the button so it can be pressed again. Nothing is announced.
+- **Rule:** The centre, the letters, the chevrons and Reset view are 24 × 24 px targets. On a coarse pointer the chevrons and Reset view grow to 44 × 44 px outward from the axes, their glyphs staying where they were drawn; the letters stay 24 px (deviation `g2-gizmo-letter-targets.md`).
 - **Kind:** accessibility
-- **Level:** browser: focus stays (the step mapping is RENDER-21)
-- **Source:** deviation `g2-orbit-step-buttons.md` (WCAG 2.5.7); decisions 10a, 10b and 22 on #4
-- **Expected:** "Turn left" → `orbitBy({ azimuth: π/36 })`, "Turn right" → `{ azimuth: −π/36 }`, "Turn up" → `{ polar: π/36 }`, "Turn down" → `{ polar: −π/36 }`, one call per press, focus on the pressed button, View `aria-expanded="true"`. Enter then Space on "Turn right" → two calls. Anterior held, "Turn up" → "Anterior" `aria-pressed="false"`, hint retired. French: group "Faire pivoter le modèle", "Tourner à gauche", "Tourner à droite", "Tourner vers le haut", "Tourner vers le bas". Sizes 32 px, 44 px on a coarse pointer (STAGE-33).
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
+- **Level:** browser: layout under touch emulation (WCAG 2.5.8)
+- **Source:** deviation `g2-gizmo-letter-targets.md`
+- **Expected:** Every gizmo button 24 × 24; touch emulation on → the five icon buttons `[44, 44]`, and "Turn right"'s glyph centre unchanged (to 1 px).
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R)
 
-### STAGE-28 · Reset view resets through the controller and returns focus to the View tool
+### STAGE-54 · The gizmo passes axe
 
-- **Rule:** Reset view, at the foot of the View popover, calls the controller's reset once, closes the popover and gives focus to the View tool.
-- **Kind:** behaviour
-- **Level:** browser: focus
-- **Source:** `viewer/ui/chrome/display.js:193`; `stage-tools.js:119-123`
-- **Expected:** Pointer on "Reset view" → `reset` called once, no dialog, focus on the View tool.
-- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
+- **Rule:** axe finds no violation with the gizmo on the stage, in English and French.
+- **Kind:** accessibility
+- **Level:** browser: axe
+- **Source:** WCAG 2.2 AA
+- **Expected:** `expectAxeClean()` passes in each language.
+- **Covered by:** `src/features/stage/OrientationGizmo.svelte.test.ts` (R)
 
 ## The Display popover
 
@@ -313,49 +342,60 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 
 ### STAGE-32 · A popover whose tool or dock goes closes, and focus is not lost
 
-- **Rule:** When the tract reference hides Section and Display, their open popover closes and focus inside it, or on the hidden tool, moves to View. An open View popover is left alone. While the dock is not drawn (loading, error, lost context) or the raised phone sheet covers it, any popover closes and nothing in the dock keeps focus.
+- **Rule:** When the tract reference hides every tool, the open popover closes and focus inside it, or on a hidden tool, moves to the model (the canvas). When the coordinate spaces go, the Coordinate popover closes and focus moves to the first tool left. While the dock is not drawn (loading, error, lost context) or the raised phone sheet covers it, any popover closes and nothing in the dock keeps focus.
 - **Kind:** accessibility
 - **Level:** browser: focus
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:634-640`; deviation `g2-focus-when-tool-hidden.md`
-- **Expected:** Display open, focus on "Both", tract reference on → no dialog, focus on View. Focus on Display, tract reference on → focus on View. View open, tract reference on → "Anatomical view" dialog still there. Display open, `sheetFull = true` → no dialog, Display `aria-expanded="false"`, focus not inside the dock. View open, status `loading` → no dialog, dock `visibility: hidden`; `switching` → `visible`.
+- **Expected:** Display open, focus on "Both", tract reference on → no dialog, focus on the canvas. Focus on Section, tract reference on → focus on the canvas. Coordinate open, spaces gone → no dialog, focus on Section. Display open, `sheetFull = true` → no dialog, Display `aria-expanded="false"`, focus not inside the dock. Display open, status `loading` → no dialog, dock `visibility: hidden`; `switching` → `visible`.
+- **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
+
+## The Lesion popover
+
+### STAGE-55 · A click on the brain places the lesion only while chosen in the open Lesion popover
+
+- **Rule:** The Lesion popover opens on selecting. Once the reader chooses to place, a click on the brain places the lesion and a press on the stage keeps the popover open. Closing it, or opening another tool in its place, returns to selecting. Without that choice a press on the stage closes the popover, as it closes Section's. Over the tract reference nothing is placed.
+- **Kind:** behaviour
+- **Level:** browser: real pointer presses on the canvas (the lesion store is a mock)
+- **Source:** `web/src/features/lesion/LesionPopover.svelte`; `web/src/features/stage/Dock.svelte`
+- **Expected:** Lesion open → placing `false`; "Place" → `true`; a click on the canvas → still open, `true`; a press outside → closed, `false`; reopened → "Place" `aria-pressed="false"`. Placing, then Section → `false`. Lesion open, canvas click → closed, never `true`. Section open, canvas click → closed. Tract reference → no "Lesion", placing `false`.
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ## Size, reflow and media
 
 ### STAGE-33 · Dock targets are 24 px, 44 px on a coarse pointer, at the legacy sizes
 
-- **Rule:** Every tool, popover button, radio and tick-box label is at least 24 × 24 px, and 44 × 44 px on a coarse pointer. At 100 % text the presets are 32 px and the hemisphere radios 28 px tall; under the phone query every choice is 44 px; on a coarse pointer the tick box is 20 × 20 px with an 11 × 6 px tick.
+- **Rule:** Every tool, radio and tick-box label is at least 24 × 24 px, and 44 × 44 px on a coarse pointer. At 100 % text the hemisphere radios are 28 px tall; under the phone query every choice is 44 px; on a coarse pointer the tick box is 20 × 20 px with an 11 × 6 px tick. The gizmo's targets are STAGE-53.
 - **Kind:** accessibility
 - **Level:** browser: layout (WCAG 2.5.8)
 - **Source:** `viewer/styles/stage.css:445, 638`; `components.css:221`; `phone.css:329, 335`; deviation `g2-text-reflow.md`
-- **Expected:** As stated; presets `Array(7).fill(32)`, radios `Array(3).fill(28)`; at 390×844 `Array(7).fill(44)` and `Array(3).fill(44)`; coarse tick box `[20, 20]`, `::before` `['11px', '6px']`.
+- **Expected:** As stated; radios `Array(3).fill(28)`; at 390×844 `Array(3).fill(44)`; coarse tick box `[20, 20]`, `::before` `['11px', '6px']`.
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-34 · At 200 % text and with text spacing nothing in the dock is clipped
 
-- **Rule:** With 200 % text and the WCAG 1.4.12 spacing override no tool, preset, button, label or paragraph is clipped and no popover scrolls sideways, in either language. On a phone at 200 % the tools wrap inside the dock, which stays inside the stage.
+- **Rule:** With 200 % text and the WCAG 1.4.12 spacing override no tool, button, label or paragraph is clipped and no popover scrolls sideways, in either language. On a phone at 200 % the tools wrap inside the dock, which stays inside the stage.
 - **Kind:** accessibility
 - **Level:** browser: layout (WCAG 1.4.4, 1.4.10, 1.4.12)
 - **Source:** deviation `g2-text-reflow.md`
-- **Expected:** Every listed node: `scrollWidth ≤ clientWidth + 0.5` and `scrollHeight ≤ clientHeight + 0.5`, dock and View/Display popovers, EN and FR; popover `scrollWidth ≤ clientWidth`. Phone 390×700: dock right ≤ stage right; each tool's right ≤ dock right.
+- **Expected:** Every listed node: `scrollWidth ≤ clientWidth + 0.5` and `scrollHeight ≤ clientHeight + 0.5`, dock and Display popover, EN and FR; popover `scrollWidth ≤ clientWidth`. Phone 390×700: dock right ≤ stage right; each tool's right ≤ dock right.
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-35 · The dock answers forced colours, increased contrast and reduced motion
 
-- **Rule:** In forced colours the open tool gets an outline of its own; with increased contrast Reset view gets an edge; with reduced motion the tool chevron turns at once.
+- **Rule:** In forced colours the open tool gets an outline of its own; with reduced motion the tool chevron turns at once.
 - **Kind:** accessibility
 - **Level:** browser: computed style under media emulation
 - **Source:** `viewer/styles/a11y.css:13-15, 34-38, 57-61`
-- **Expected:** Display open: `outline-style: none`; forced colours → `solid`, `2px`. Reset view `border-top-width: 0px`; `prefers-contrast: more` → `1px`. Chevron `transition-duration > 0`; reduced motion → `0`.
+- **Expected:** Display open: `outline-style: none`; forced colours → `solid`, `2px`. Chevron `transition-duration > 0`; reduced motion → `0`.
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-36 · The dock passes axe with each popover open
 
-- **Rule:** axe finds no violation with the dock alone and with each of the three popovers open, in English and French.
+- **Rule:** axe finds no violation with the dock alone and with each of the four popovers open, in English and French.
 - **Kind:** accessibility
 - **Level:** browser: axe
 - **Source:** WCAG 2.2 AA
-- **Expected:** `expectAxeClean()` passes 4 times per language.
+- **Expected:** `expectAxeClean()` passes 5 times per language.
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ## Colour keys

@@ -2168,6 +2168,250 @@
     },
     "method": "The SUIT cerebellar template registered to this brain's skull-stripped T1, kept to its infratentorial compartment, with SynthMorph (joint affine and deformable); the atlas carried across by nearest neighbour and kept to this brain's cerebellar cortex. Each lobule's shares count its own voxels"
   },
+  "coordinate_spaces": {
+    "label": "Published coordinates",
+    "radius_mm": 5,
+    "spaces": [
+      {
+        "id": "mni152nlin2009casym",
+        "label": "MNI152NLin2009cAsym",
+        "description": "ICBM 152 nonlinear asymmetric 2009c, fMRIPrep's default output space",
+        "citation": "Fonov VS, Evans AC, McKinstry RC, Almli CR, Collins DL (2009) Unbiased nonlinear average age-appropriate brain templates from birth to adulthood. NeuroImage 47:S102",
+        "doi": "https://doi.org/10.1016/S1053-8119(09)70884-5",
+        "license": "MNI template licence (use, copy, modify and distribute with the copyright notice)",
+        "copyright": "Copyright (C) 1993\u20132004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
+        "field": {
+          "file": "coordinates-mni152nlin2009casym.field",
+          "shape": [
+            103,
+            128,
+            110
+          ],
+          "components": 3,
+          "dtype": "<i2",
+          "order": "F",
+          "interleaved": true,
+          "compression": "gzip",
+          "byte_length": 8701440,
+          "sha256": "7c5983402456df06e354c150d93091050fde704098ea4aca24d027351c7cb2cb",
+          "decoded_sha256": "8f765c92430e21bcb56dc54c9f99e62cf97602d9b56aaf7ab0c90cfdd9859bb9",
+          "node_to_template_mm": [
+            [
+              1.5,
+              0.0,
+              0.0,
+              -76.5
+            ],
+            [
+              0.0,
+              1.5,
+              0.0,
+              -112.5
+            ],
+            [
+              0.0,
+              0.0,
+              1.5,
+              -76.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "unit_mm": 0.01,
+          "outside": -32768
+        },
+        "registration": {
+          "hemisphere_agreement": 0.9977,
+          "subcortical_dice": {
+            "thalamus-left": 0.8868,
+            "thalamus-right": 0.9166,
+            "caudate-left": 0.8962,
+            "caudate-right": 0.8887,
+            "putamen-left": 0.9238,
+            "putamen-right": 0.9,
+            "pallidum-left": 0.9019,
+            "pallidum-right": 0.8778,
+            "hippocampus-left": 0.8769,
+            "hippocampus-right": 0.8783,
+            "amygdala-left": 0.8938,
+            "amygdala-right": 0.8872,
+            "lateral-ventricle-left": 0.8783,
+            "lateral-ventricle-right": 0.8799
+          },
+          "cortex_dice": 0.7373,
+          "round_trip_mm": {
+            "median": 0.0589,
+            "p95": 0.2345
+          }
+        }
+      },
+      {
+        "id": "spm12",
+        "label": "SPM12 (TPM)",
+        "description": "SPM12's tissue probability maps (IXI549), the space of SPM12's unified segmentation",
+        "citation": "Ashburner J, Friston KJ (2005) Unified segmentation. NeuroImage 26:839\u2013851",
+        "doi": "https://doi.org/10.1016/j.neuroimage.2005.02.018",
+        "license": "GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)",
+        "copyright": "Copyright (C) 1991,1994-2020 Wellcome Centre for Human Neuroimaging.",
+        "field": {
+          "file": "coordinates-spm12.field",
+          "shape": [
+            100,
+            126,
+            112
+          ],
+          "components": 3,
+          "dtype": "<i2",
+          "order": "F",
+          "interleaved": true,
+          "compression": "gzip",
+          "byte_length": 8467200,
+          "sha256": "cda58366e957c1533ff68a80a6a38b6fc5b52cfb83067a5c4c7b0eb6413d3e0f",
+          "decoded_sha256": "79922256bad8fda16dcab8af9e15169c51c1be8ab0626bf96b365bde2bb8fd80",
+          "node_to_template_mm": [
+            [
+              1.5,
+              0.0,
+              0.0,
+              -73.5
+            ],
+            [
+              0.0,
+              1.5,
+              0.0,
+              -109.5
+            ],
+            [
+              0.0,
+              0.0,
+              1.5,
+              -76.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "unit_mm": 0.01,
+          "outside": -32768
+        },
+        "registration": {
+          "hemisphere_agreement": 0.9981,
+          "subcortical_dice": {
+            "thalamus-left": 0.8036,
+            "thalamus-right": 0.9024,
+            "caudate-left": 0.8747,
+            "caudate-right": 0.8806,
+            "putamen-left": 0.8839,
+            "putamen-right": 0.8775,
+            "pallidum-left": 0.8478,
+            "pallidum-right": 0.834,
+            "hippocampus-left": 0.8599,
+            "hippocampus-right": 0.8459,
+            "amygdala-left": 0.8345,
+            "amygdala-right": 0.8609,
+            "lateral-ventricle-left": 0.8818,
+            "lateral-ventricle-right": 0.8898
+          },
+          "cortex_dice": 0.7168,
+          "round_trip_mm": {
+            "median": 0.0497,
+            "p95": 0.1834
+          }
+        }
+      }
+    ],
+    "unstated": {
+      "reads_as": "mni152nlin2009casym",
+      "alternatives": [
+        {
+          "id": "mni152nlin6asym",
+          "label": "MNI152NLin6Asym",
+          "description": "FSL's MNI152 (MNI152_T1_1mm), nonlinear 6th generation",
+          "against": {
+            "mni152nlin2009casym": {
+              "cortex_offset_mm": {
+                "median": 1.5562,
+                "p95": 3.1959,
+                "max": 6.1358
+              },
+              "sphere_overlap": {
+                "median": 0.8961,
+                "p10": 0.7222
+              },
+              "subcortical_offset_mm": {
+                "median": 0.7072,
+                "p95": 1.2611,
+                "max": 2.3895
+              }
+            },
+            "spm12": {
+              "cortex_offset_mm": {
+                "median": 1.6148,
+                "p95": 3.395,
+                "max": 6.4359
+              },
+              "sphere_overlap": {
+                "median": 0.8942,
+                "p10": 0.7099
+              },
+              "subcortical_offset_mm": {
+                "median": 0.9914,
+                "p95": 1.903,
+                "max": 3.3584
+              }
+            }
+          }
+        },
+        {
+          "id": "mni152lin",
+          "label": "MNI152Lin",
+          "description": "ICBM 152 linear average (avg152T1), the template of SPM96 to SPM8's normalisation",
+          "against": {
+            "mni152nlin2009casym": {
+              "cortex_offset_mm": {
+                "median": 1.6971,
+                "p95": 3.1912,
+                "max": 6.763
+              },
+              "sphere_overlap": {
+                "median": 0.8901,
+                "p10": 0.7236
+              },
+              "subcortical_offset_mm": {
+                "median": 0.6494,
+                "p95": 1.0507,
+                "max": 1.4126
+              }
+            },
+            "spm12": {
+              "cortex_offset_mm": {
+                "median": 1.1415,
+                "p95": 2.5652,
+                "max": 5.6979
+              },
+              "sphere_overlap": {
+                "median": 0.9198,
+                "p10": 0.7883
+              },
+              "subcortical_offset_mm": {
+                "median": 0.805,
+                "p95": 1.5715,
+                "max": 3.1943
+              }
+            }
+          }
+        }
+      ]
+    },
+    "method": "mri_synthmorph register -m joint (skull-stripped template \u2192 brain.mgz); SynthSeg --parc --robust reads the template, carried by apply -m nearest onto aseg's grid and scored against aseg. A published field samples the inverse warp every 1.5 mm over the template's brain dilated 4 mm. Offsets read the same numbers as each template at the first published template's own cortex and deep grey, with 5 mm sphere overlap of this brain's Schaefer-400 parcels."
+  },
   "cut_atlases": [
     {
       "id": "destrieux",
@@ -92728,7 +92972,10 @@
     "The atlas's anterior cerebral artery territory rests on 29 cases, and its medial lenticulostriate and anterior thalamoperforating territories on anatomical knowledge rather than lesions. It places the anterior choroidal and thalamoperforating territory under the posterior circulation, as published.",
     "Territory borders are where one territory's lesions give way to another's, not watershed zones; border-zone probabilities are not published here.",
     "Functional cerebellar regions are a group atlas (Nettekoven et al. 2024) fused from seven task-based fMRI datasets and registered onto this brain from the SUIT template; this brain's function was not measured. Individual functional boundaries differ from the group's, and the authors show that an individual's own localizer data place them better.",
-    "Registration from a group template places lobule borders a few millimetres off: SUIT's own lobules, carried by the same warp, meet this brain's CerebNet lobules at a mean Dice of 0.65. A region's border on a cut is approximate; a lobule's shares, summed over its whole volume, are steadier."
+    "Registration from a group template places lobule borders a few millimetres off: SUIT's own lobules, carried by the same warp, meet this brain's CerebNet lobules at a mean Dice of 0.65. A region's border on a cut is approximate; a lobule's shares, summed over its whole volume, are steadier.",
+    "A published coordinate is placed by registering its template to this brain (SynthMorph, joint affine and deformable); it marks where that template location falls on this one brain, not where this person's own peak would be, and not what this brain does there.",
+    "Cortical coordinates are reported as the regions within 5 mm, not as one parcel: at template cortex, a single Schaefer parcel agreed between an MNI-space lookup and this brain's own projection only about 60% of the time.",
+    "An MNI coordinate whose template is not stated is read as the first published template; the other MNI152 templates measured land a few millimetres away on this brain, and the report gives those measured offsets."
   ],
   "provenance": {
     "sources": [
@@ -93997,6 +94244,120 @@
         "procedure": "scripts/register_cerebellar_functions.py: SynthMorph registration of the SUIT template to brain.mgz's infratentorial compartment, nearest-neighbour transfer",
         "citation": "https://doi.org/10.1038/s41467-024-52371-w",
         "license": "CC BY-NC 3.0"
+      },
+      {
+        "path": "data/cdmd/coordinates/mni152nlin2009casym-field.nii.gz",
+        "sha256": "2c20d8cbcdc31bb41e2acb875fef6f11bb5fb402af3f6000a03d4baf4d9104db",
+        "anatomy": "cdmd",
+        "derived_from": [
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz",
+            "sha256": "1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz",
+            "sha256": "e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8/tpm/TPM.nii",
+            "sha256": "259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_T1w.nii.gz",
+            "sha256": "f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz",
+            "sha256": "6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_T1w.nii.gz",
+            "sha256": "2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz",
+            "sha256": "1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3"
+          }
+        ],
+        "procedure": "scripts/register_coordinate_spaces.py: SynthMorph registration of each MNI template to brain.mgz, inverse warp sampled on a coarse grid",
+        "citation": "https://doi.org/10.1016/S1053-8119(09)70884-5; https://doi.org/10.1016/j.neuroimage.2005.02.018",
+        "license": "MNI template licence (use, copy, modify and distribute with the copyright notice); GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)"
+      },
+      {
+        "path": "data/cdmd/coordinates/spm12-field.nii.gz",
+        "sha256": "2a57771bf6cd3b9d049210116e31e3bfb43952734ee6da5672cc1cfe6fdef33e",
+        "anatomy": "cdmd",
+        "derived_from": [
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz",
+            "sha256": "1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz",
+            "sha256": "e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8/tpm/TPM.nii",
+            "sha256": "259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_T1w.nii.gz",
+            "sha256": "f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz",
+            "sha256": "6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_T1w.nii.gz",
+            "sha256": "2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz",
+            "sha256": "1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3"
+          }
+        ],
+        "procedure": "scripts/register_coordinate_spaces.py: SynthMorph registration of each MNI template to brain.mgz, inverse warp sampled on a coarse grid",
+        "citation": "https://doi.org/10.1016/S1053-8119(09)70884-5; https://doi.org/10.1016/j.neuroimage.2005.02.018",
+        "license": "MNI template licence (use, copy, modify and distribute with the copyright notice); GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)"
+      },
+      {
+        "path": "data/cdmd/coordinate-registration.json",
+        "sha256": "042918d61f2135f489050be43eeb4d756d976baa23ce59e9a09fa59ad22aefcb",
+        "anatomy": "cdmd",
+        "derived_from": [
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz",
+            "sha256": "1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz",
+            "sha256": "e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8/tpm/TPM.nii",
+            "sha256": "259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_T1w.nii.gz",
+            "sha256": "f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz",
+            "sha256": "6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_T1w.nii.gz",
+            "sha256": "2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd"
+          },
+          {
+            "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz",
+            "sha256": "1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3"
+          }
+        ],
+        "procedure": "scripts/register_coordinate_spaces.py: SynthMorph registration of each MNI template to brain.mgz, inverse warp sampled on a coarse grid",
+        "citation": "https://doi.org/10.1016/S1053-8119(09)70884-5; https://doi.org/10.1016/j.neuroimage.2005.02.018",
+        "license": "MNI template licence (use, copy, modify and distribute with the copyright notice); GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)"
       }
     ]
   },

@@ -905,6 +905,56 @@
     },
     "regions_with_shares": 27
   },
+  "coordinate_spaces": {
+    "mni152nlin2009casym": {
+      "hemisphere_agreement": 0.9977,
+      "subcortical_dice": {
+        "thalamus-left": 0.8868,
+        "thalamus-right": 0.9166,
+        "caudate-left": 0.8962,
+        "caudate-right": 0.8887,
+        "putamen-left": 0.9238,
+        "putamen-right": 0.9,
+        "pallidum-left": 0.9019,
+        "pallidum-right": 0.8778,
+        "hippocampus-left": 0.8769,
+        "hippocampus-right": 0.8783,
+        "amygdala-left": 0.8938,
+        "amygdala-right": 0.8872,
+        "lateral-ventricle-left": 0.8783,
+        "lateral-ventricle-right": 0.8799
+      },
+      "cortex_dice": 0.7373,
+      "round_trip_mm": {
+        "median": 0.0589,
+        "p95": 0.2345
+      }
+    },
+    "spm12": {
+      "hemisphere_agreement": 0.9981,
+      "subcortical_dice": {
+        "thalamus-left": 0.8036,
+        "thalamus-right": 0.9024,
+        "caudate-left": 0.8747,
+        "caudate-right": 0.8806,
+        "putamen-left": 0.8839,
+        "putamen-right": 0.8775,
+        "pallidum-left": 0.8478,
+        "pallidum-right": 0.834,
+        "hippocampus-left": 0.8599,
+        "hippocampus-right": 0.8459,
+        "amygdala-left": 0.8345,
+        "amygdala-right": 0.8609,
+        "lateral-ventricle-left": 0.8818,
+        "lateral-ventricle-right": 0.8898
+      },
+      "cortex_dice": 0.7168,
+      "round_trip_mm": {
+        "median": 0.0497,
+        "p95": 0.1834
+      }
+    }
+  },
   "neuropsych_domains": {
     "assigned_areas": 273,
     "assigned_structures": 16,
@@ -4682,7 +4732,8 @@
     "spinal_cord",
     "neurosynth_terms",
     "arterial_territories",
-    "cerebellar_functions"
+    "cerebellar_functions",
+    "coordinate_spaces"
   ],
   "published_files": [
     "aseg.volume",
@@ -4700,6 +4751,8 @@
     "atlas-overlaps.glb",
     "boundary-certainty.json",
     "cab-np.json",
+    "coordinates-mni152nlin2009casym.field",
+    "coordinates-spm12.field",
     "cortex-destrieux.glb",
     "cortex-hcp-mmp.glb",
     "cortex-julich.glb",

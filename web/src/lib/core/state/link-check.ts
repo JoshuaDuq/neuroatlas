@@ -15,6 +15,8 @@ export interface KnownLinkIds {
   /** Each circuit's step count. */
   circuits: ReadonlyMap<string, number>;
   spinalCord: boolean;
+  /** The coordinate spaces published, `unstated` among them; none on an anatomy without them. */
+  coordinateSpaces: ReadonlySet<string>;
   /** The anatomy's own tract bundles a lesion reaches; none on an anatomy without tracts of its own. */
   lesionBundles(lesion: NonNullable<LinkState['lesion']>): readonly string[];
 }
@@ -59,6 +61,18 @@ export function checkLink(
     reject('circuitStep');
   }
   if (state.spinalCordVisible && !known.spinalCord) reject('spinalCordVisible');
+  // A coordinate needs its space, one this anatomy publishes; it and a lesion are the one sphere.
+  const coordinate = 'coordinate' in state,
+    space = 'coordinateSpace' in state;
+  if (
+    (coordinate && state.lesion) ||
+    coordinate !== space ||
+    (space && !known.coordinateSpaces.has(state.coordinateSpace!))
+  ) {
+    if (coordinate && state.lesion) reject('lesion');
+    if (coordinate) reject('coordinate');
+    if (space) reject('coordinateSpace');
+  }
   // A lesion's colouring and drawn tract mean nothing without it; the tract must be one it reaches.
   if ('lesionMode' in state && !state.lesion) reject('lesionMode');
   if (

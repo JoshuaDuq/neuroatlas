@@ -58,6 +58,36 @@ function basis(camera: Object3D, column: number, target: Vector3 | null): Direct
   return [x / length, y / length, z / length];
 }
 
+/** The camera's world basis; pass the orbit target for the basis of the frame about to be drawn. */
+export function cameraBasis(
+  camera: Object3D,
+  target: Vector3 | null = null,
+): Record<'right' | 'up' | 'back', Direction> {
+  return {
+    right: basis(camera, 0, target),
+    up: basis(camera, 1, target),
+    back: basis(camera, 2, target),
+  };
+}
+
+/**
+ * Where each anatomical direction lands on a gizmo drawn from a camera basis: x right and y down,
+ * -1 to 1, and `depth` from -1 (away from the viewer) to 1 (toward the viewer).
+ */
+export function projectAxes({ right, up, back }: Record<'right' | 'up' | 'back', Direction>): {
+  letter: Letter;
+  x: number;
+  y: number;
+  depth: number;
+}[] {
+  return AXES.map(({ letter, axis, sign }) => ({
+    letter,
+    x: sign * right[axis],
+    y: -sign * up[axis],
+    depth: sign * back[axis],
+  }));
+}
+
 /** The anatomical letter for the axis most closely aligned with a direction. */
 function letterFor([x, y, z]: Direction): Letter {
   const components = [x, y, z];

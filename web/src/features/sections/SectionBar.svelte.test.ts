@@ -77,7 +77,7 @@ async function mount(
       });
     }),
   );
-  const result = await render(Fixture, { engine, stage, controls, live, width, height });
+  const result = await render(Fixture, { stage, controls, live, width, height });
   stage.setGutter(20);
   stage.setViewport(engine.camera.visibleRect, engine.camera.hostSize);
   flushSync();
@@ -414,15 +414,14 @@ describe('the section row', () => {
     expect(active()).toBe(tool('Section'));
   });
 
-  test('over the tract reference the row goes and focus inside it goes to the dock’s first tool', async () => {
+  test('over the tract reference, which has no dock tools, the row goes and focus inside it goes to the model', async () => {
     await mount();
     await cutPlane('axial');
     exact().focus();
     live.tractReference = true;
     flushSync();
     expect(group()).toBeNull();
-    expect(active()).toBe(document.querySelector('.stage-tool'));
-    expect((active() as HTMLElement).checkVisibility()).toBe(true);
+    expect(active()).toBe(document.getElementById('stage-canvas'));
   });
 
   test('an oblique cut adds tilt and azimuth sliders, named by their words, in degrees', async () => {

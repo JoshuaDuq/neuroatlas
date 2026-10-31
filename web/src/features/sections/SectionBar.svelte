@@ -126,14 +126,18 @@
   };
 
   /**
-   * The Section tool, or the dock's first tool when the tract reference hides it. Decided by the tract
+   * The Section tool, or the model when the tract reference hides every tool. Decided by the tract
    * reference, not by what is drawn: this runs before the dock hides the tool.
    */
   function focusTool() {
-    const tools = [...bar.parentElement!.querySelectorAll<HTMLElement>('.stage-tool')];
+    const dock = bar.parentElement!;
     // G2's Section tool carries its label as `section-tool-…` (Dock.svelte); a hand-off is requested on #4.
-    const section = tools.find((tool) => tool.querySelector('[id^="section-tool-"]'));
-    (tractReference ? tools[0] : section)!.focus({ preventScroll: true });
+    const next = tractReference
+      ? dock.parentElement!.querySelector<HTMLElement>(':scope > canvas')
+      : [...dock.querySelectorAll<HTMLElement>('.stage-tool')].find((tool) =>
+          tool.querySelector('[id^="section-tool-"]'),
+        );
+    next!.focus({ preventScroll: true });
   }
 
   // Before the row goes: focus inside it would otherwise fall to the page (g4-focus-when-bar-hidden).

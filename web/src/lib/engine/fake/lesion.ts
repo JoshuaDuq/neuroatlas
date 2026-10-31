@@ -14,6 +14,8 @@ const EMPTY: LesionMeasurement = {
   tissue: { cortex: 0, white: 0, deep: 0, fluid: 0, outside: 0 },
   regions: new Map(),
   sizes: new Map(),
+  centre: { tissue: 'outside', region: null },
+  tissueOf: new Map(),
 };
 
 function requireRadius({ radius }: LesionSphere): void {

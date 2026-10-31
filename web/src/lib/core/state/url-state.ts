@@ -43,6 +43,8 @@ type Defaults = Pick<
   | 'lesion'
   | 'lesionMode'
   | 'lesionTract'
+  | 'coordinate'
+  | 'coordinateSpace'
 >;
 
 export const DEFAULTS: Defaults = {
@@ -72,6 +74,8 @@ export const DEFAULTS: Defaults = {
   lesion: null,
   lesionMode: 'lesion',
   lesionTract: null,
+  coordinate: null,
+  coordinateSpace: null,
 };
 
 type Reader<T> = (value: string) => T | undefined;
@@ -198,6 +202,13 @@ const lesion: Reader<LinkLesion> = (value) => {
   return { centre: centre as LinkLesion['centre'], radius };
 };
 
+/** A published coordinate as entered, unrounded: the paper's own numbers, within the volume's range. */
+const coordinate: Reader<NonNullable<LinkState['coordinate']>> = (value) => {
+  const list = numbers(value);
+  if (list?.length !== 3 || list.some((n) => Math.abs(n) > 512)) return undefined;
+  return list as NonNullable<LinkState['coordinate']>;
+};
+
 /** Circuit steps are counted from one in the link, as the stepper shows them. */
 const circuitStep: Reader<number> = (value) => {
   const number = numberOf(value);
@@ -273,6 +284,8 @@ const FIELDS: Field[] = [
   ),
   field('lesionMode', 'lesionmode', oneOf(LESION_MODES)),
   field('lesionTract', 'lesiontract', nonempty),
+  field('coordinate', 'coord', coordinate, (point) => point.join(',')),
+  field('coordinateSpace', 'space', nonempty),
 ];
 
 /** The link parameter each state field travels under. */

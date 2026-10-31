@@ -1,6 +1,5 @@
 <!-- Fixture for the section tests: G2's dock on the stage host, with the Section popover and the section row as its snippets, and a tab stop each side. Not shipped. -->
 <script lang="ts">
-  import type { FakeEngine } from '../../lib/engine/fake.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
   import type { Language, Paint, SurfaceColor } from '../../lib/types/index.ts';
   import '../../styles/index.css';
@@ -13,7 +12,6 @@
   import type { SectionControls } from './section-controls.svelte.ts';
 
   interface Props {
-    engine: FakeEngine;
     stage: StageLayout;
     controls: SectionControls;
     /** Reactive, so a test can change the language, the phone layout, the colouring or the tract reference. */
@@ -27,11 +25,9 @@
     height: number;
   }
 
-  let { engine, stage, controls, live, width, height }: Props = $props();
+  let { stage, controls, live, width, height }: Props = $props();
 
-  const commands: DockCommands = {
-    chooseView() {},
-    reset() {},
+  const commands: Omit<DockCommands, 'chooseView' | 'reset'> = {
     setHemisphere() {},
     setCortexVisible() {},
     setCortexOpacity() {},
@@ -62,8 +58,8 @@
   style:height="{height}px"
   style="--vis-top: 0px; --vis-left: 0px; --vis-right: 0px; --vis-bottom: 0px; --stage-edge: #3a3d42;"
 >
+  <canvas id="stage-canvas" tabindex="0" aria-label="Brain model"></canvas>
   <Dock
-    {engine}
     {stage}
     media={{
       get phone() {
@@ -74,7 +70,6 @@
     status="ready"
     tractReference={live.tractReference}
     view={{
-      view: 'oblique',
       hemisphere: 'both',
       cortexVisible: true,
       cortexOpacity: 1,
@@ -97,7 +92,7 @@
         tractReference={live.tractReference}
       />
     {/snippet}
-    {#snippet lesionControls()}{/snippet}
+    {#snippet lesionPopover()}{/snippet}
   </Dock>
 </main>
 <button type="button">After</button>

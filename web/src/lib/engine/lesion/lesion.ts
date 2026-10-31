@@ -6,7 +6,14 @@ import type { TissueAtlasRecord, TissueMetadata } from '../tissues/gpu-sections.
 import { loadVolume as loadPublishedVolume } from '../slices/volume.ts';
 import type { Volume, VolumeFile } from '../slices/volume.ts';
 import { createLesionMarking } from './marking.ts';
-import { labelTotals, regionSizes, regionsInSphere, tissueInSphere } from './measure.ts';
+import {
+  labelTotals,
+  regionSizes,
+  regionsInSphere,
+  tissueAt,
+  tissueClass,
+  tissueInSphere,
+} from './measure.ts';
 import type { MeasuredLabel, RegionShares } from './measure.ts';
 
 /** aparc.a2009s+aseg: FreeSurfer's own tissue labels, which the tissue composition is read from. */
@@ -139,6 +146,14 @@ export function createLesion({
         tissue: composition,
         regions,
         sizes,
+        centre: tissueAt(tissue.volume, tissue.labels, sphere.centre),
+        tissueOf: new Map(
+          tissue.labels.flatMap((label) =>
+            label.region_id && regions.has(label.region_id)
+              ? [[label.region_id, tissueClass(label)] as const]
+              : [],
+          ),
+        ),
       };
       return measurement;
     },

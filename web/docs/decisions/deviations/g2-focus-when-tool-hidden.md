@@ -9,7 +9,7 @@ When the tract reference hides Section and Display, or the dock stops being visi
 
 ## New behaviour
 
-A popover whose tool is hidden, or whose dock is not drawn (loading, an error, a lost context) or is covered by the raised phone sheet, closes. If focus was on the tool or inside the popover, it moves to the first tool that is still shown (View). While the dock itself is not drawn or is covered nothing can take focus, and the owner of that change places it.
+A popover whose tool is hidden, or whose dock is not drawn (loading, an error, a lost context) or is covered by the raised phone sheet, closes. If focus was on the tool or inside the popover, it moves to the first tool that is still shown; when the tract reference hides every tool, to the model (the canvas), as the section row's focus does. While the dock itself is not drawn or is covered nothing can take focus, and the owner of that change places it.
 
 ## Standard cited
 

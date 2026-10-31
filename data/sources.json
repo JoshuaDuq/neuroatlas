@@ -1420,6 +1420,120 @@
       "procedure": "scripts/register_cerebellar_functions.py: SynthMorph registration of the SUIT template to brain.mgz's infratentorial compartment, nearest-neighbour transfer",
       "citation": "https://doi.org/10.1038/s41467-024-52371-w",
       "license": "CC BY-NC 3.0"
+    },
+    {
+      "path": "data/cdmd/coordinates/mni152nlin2009casym-field.nii.gz",
+      "sha256": "2c20d8cbcdc31bb41e2acb875fef6f11bb5fb402af3f6000a03d4baf4d9104db",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz",
+          "sha256": "1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz",
+          "sha256": "e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8/tpm/TPM.nii",
+          "sha256": "259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_T1w.nii.gz",
+          "sha256": "f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz",
+          "sha256": "6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_T1w.nii.gz",
+          "sha256": "2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz",
+          "sha256": "1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3"
+        }
+      ],
+      "procedure": "scripts/register_coordinate_spaces.py: SynthMorph registration of each MNI template to brain.mgz, inverse warp sampled on a coarse grid",
+      "citation": "https://doi.org/10.1016/S1053-8119(09)70884-5; https://doi.org/10.1016/j.neuroimage.2005.02.018",
+      "license": "MNI template licence (use, copy, modify and distribute with the copyright notice); GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)"
+    },
+    {
+      "path": "data/cdmd/coordinates/spm12-field.nii.gz",
+      "sha256": "2a57771bf6cd3b9d049210116e31e3bfb43952734ee6da5672cc1cfe6fdef33e",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz",
+          "sha256": "1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz",
+          "sha256": "e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8/tpm/TPM.nii",
+          "sha256": "259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_T1w.nii.gz",
+          "sha256": "f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz",
+          "sha256": "6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_T1w.nii.gz",
+          "sha256": "2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz",
+          "sha256": "1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3"
+        }
+      ],
+      "procedure": "scripts/register_coordinate_spaces.py: SynthMorph registration of each MNI template to brain.mgz, inverse warp sampled on a coarse grid",
+      "citation": "https://doi.org/10.1016/S1053-8119(09)70884-5; https://doi.org/10.1016/j.neuroimage.2005.02.018",
+      "license": "MNI template licence (use, copy, modify and distribute with the copyright notice); GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)"
+    },
+    {
+      "path": "data/cdmd/coordinate-registration.json",
+      "sha256": "042918d61f2135f489050be43eeb4d756d976baa23ce59e9a09fa59ad22aefcb",
+      "anatomy": "cdmd",
+      "derived_from": [
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz",
+          "sha256": "1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz",
+          "sha256": "e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8/tpm/TPM.nii",
+          "sha256": "259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_T1w.nii.gz",
+          "sha256": "f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz",
+          "sha256": "6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_T1w.nii.gz",
+          "sha256": "2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd"
+        },
+        {
+          "url": "https://templateflow.s3.amazonaws.com/tpl-MNI152Lin/tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz",
+          "sha256": "1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3"
+        }
+      ],
+      "procedure": "scripts/register_coordinate_spaces.py: SynthMorph registration of each MNI template to brain.mgz, inverse warp sampled on a coarse grid",
+      "citation": "https://doi.org/10.1016/S1053-8119(09)70884-5; https://doi.org/10.1016/j.neuroimage.2005.02.018",
+      "license": "MNI template licence (use, copy, modify and distribute with the copyright notice); GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)"
     }
   ]
 }

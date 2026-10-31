@@ -287,6 +287,70 @@
   },
   "correspondence": "This is spatial correspondence, not functional equivalence."
  },
+ "coordinate": {
+  "field": "MNI coordinate, mm",
+  "example": "−42, 22, 6",
+  "space": "Template",
+  "unstated": "MNI, template not stated",
+  "place": "Place",
+  "placing": "Placing…",
+  "note": "MNI152 coordinates only; Talairach and other spaces are not accepted.",
+  "unreadable": "Enter three numbers, x, y, z, in millimetres.",
+  "outside": "This coordinate lies beyond the template’s brain, so it is not placed.",
+  "failed": "The coordinate could not be placed.",
+  "reportTitle": "Published coordinate",
+  "entered": [
+   "[\"Alpha\",\"\"] → \"Alpha in \"",
+   "[\"\",\"Alpha\"] → \" in Alpha\""
+  ],
+  "landed": [
+   "[\"Alpha\"] → \"Lands at Alpha on this brain (surface RAS)\"",
+   "[\"\"] → \"Lands at  on this brain (surface RAS)\""
+  ],
+  "at": "At that point",
+  "readsAs": [
+   "[\"Alpha\"] → \"Template not stated: read as Alpha.\"",
+   "[\"\"] → \"Template not stated: read as .\""
+  ],
+  "alternativesNote": "Read in another template, the same numbers land elsewhere (offsets measured over template cortex):",
+  "alternative": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha lands a median  (95%: Alpha) away on this brain\"",
+   "[\"\",\"Alpha\",\"\"] → \" lands a median Alpha (95%: ) away on this brain\""
+  ],
+  "caveat": "A template location carried onto this one brain by registration. It is not where this person’s own peak would be, and not what this brain does here.",
+  "failedMeasure": "What lies near the coordinate could not be measured.",
+  "within": [
+   "[\"Alpha\"] → \"Within Alpha\"",
+   "[\"\"] → \"Within \""
+  ],
+  "shareNote": "Share of the sphere in each region; no one region is the coordinate’s label",
+  "rest": "In none of these regions",
+  "networks": "Yeo 7 networks, from Schaefer’s parcels",
+  "deep": "Deep grey (aseg)",
+  "territoryNote": "Typical territories (Liu et al. 2023, registered onto this brain); not this brain’s own vessels",
+  "download": "Download CSV",
+  "restCsv": "(in none of these regions)",
+  "tracts": {
+   "tracts": [
+    "[\"Alpha\"] → \"Tracts passing within Alpha\"",
+    "[\"\"] → \"Tracts passing within \""
+   ],
+   "tractsNote": [
+    "[\"Alpha\"] → \"Streamlines with a point within Alpha\"",
+    "[\"\"] → \"Streamlines with a point within \""
+   ],
+   "tractsChoose": "Choose a bundle to draw only its streamlines passing near.",
+   "showTract": [
+    "[\"Alpha\",\"\"] → \"Draw the  streamlines of Alpha that pass near\"",
+    "[\"\",\"Alpha\"] → \"Draw the Alpha streamlines of  that pass near\""
+   ],
+   "tractShown": [
+    "[\"Alpha\"] → \"Drawing Alpha where it passes near.\"",
+    "[\"\"] → \"Drawing  where it passes near.\""
+   ],
+   "tractsCaveat": "Reconstructed streamlines from this brain’s diffusion scan, not axons; passing near is not a connection to the coordinate."
+  }
+ },
  "cuts": {
   "cuttingPlane": "Cutting plane",
   "modes": {
@@ -1402,12 +1466,13 @@
   "navigationHintTractsTouch": "Drag to rotate · Pinch to zoom",
   "keyboardHint": "3D view · Arrow keys rotate · + − zoom",
   "viewAria": "Anatomical view",
-  "viewToolAria": [
-   "[\"Alpha\"] → \"Anatomical view: Alpha\"",
-   "[\"\"] → \"Anatomical view: \""
+  "namedView": [
+   "[\"Alpha\"] → \"Alpha view\"",
+   "[\"\"] → \" view\""
   ],
-  "viewTool": "View",
   "sectionTool": "Section",
+  "lesionTool": "Lesion",
+  "coordinateTool": "Coordinate",
   "displayTool": "Display",
   "dockLabel": "3D viewer tools",
   "orbitGroup": "Turn the model",
@@ -1423,10 +1488,6 @@
   },
   "keyAbsent": "Not shown in this view",
   "snapshot": "Save image (PNG)",
-  "snapshotView": [
-   "[\"Alpha\"] → \"Alpha view\"",
-   "[\"\"] → \" view\""
-  ],
   "snapshotStatement": "Planum · Not clinical anatomy",
   "fullscreen": "Full screen",
   "exitFullscreen": "Exit full screen",

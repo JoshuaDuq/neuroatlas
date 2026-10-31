@@ -28,6 +28,7 @@ from .layers import (
     arterial_territories,
     cab_np,
     cerebellar_functions,
+    coordinate_spaces,
     functional_regions,
     networks,
     neuropsych_domains,
@@ -861,6 +862,7 @@ def validate_layers(config, manifest, tissues):
             cerebellar_functions.metadata(config, cerebellar_functions.read_definition())
             if cerebellar_functions.LAYER in declared else None
         ),
+        "coordinate_spaces": coordinate_spaces.LAYER in declared,
     }
     published = {
         "networks": manifest["networks"],
@@ -876,6 +878,7 @@ def validate_layers(config, manifest, tissues):
         "segmentation_agreement": "segmentation_agreement" in manifest,
         "arterial_territories": manifest.get("arterial_territories"),
         "cerebellar_functions": manifest.get("cerebellar_functions"),
+        "coordinate_spaces": "coordinate_spaces" in manifest,
     }
     differ = [key for key in expected if published[key] != expected[key]]
     if differ:
@@ -965,6 +968,8 @@ def main():
            if arterial_territories.is_declared(config) else {}),
         **({"cerebellar_functions": cerebellar_functions.validate(config, manifest)}
            if cerebellar_functions.is_declared(config) else {}),
+        **({"coordinate_spaces": coordinate_spaces.validate(config, manifest)}
+           if coordinate_spaces.is_declared(config) else {}),
         "neuropsych_domains": neuropsych_domains.validate(config, manifest),
         "receptor_fingerprints": receptor_fingerprints.validate(config, manifest),
         **({"neurosynth_terms": neurosynth_terms.validate(config, manifest)}

@@ -304,7 +304,7 @@ function csvCell(value: unknown) {
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
-function encodeCsv(records: readonly Record<string, unknown>[]) {
+export function encodeCsv(records: readonly Record<string, unknown>[]) {
   const columns = Object.keys(records[0]);
   const lines = [columns, ...records.map((record) => columns.map((column) => record[column]))];
   return `${lines.map((line) => line.map(csvCell).join(',')).join('\r\n')}\r\n`;

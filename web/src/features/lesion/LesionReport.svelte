@@ -8,22 +8,23 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import '../inspector/inspector.css';
+  import './report.css';
   import { networkCss } from '../../lib/core/catalog/networks.ts';
   import { count, decimal, grouped, withUnit } from '../../lib/core/format.ts';
   import { t } from '../../lib/core/i18n/index.ts';
   import {
     lesionSides,
     regionRows,
+    sharePercent,
     territoryRows,
-    tractRows,
   } from '../../lib/core/lesion/report.ts';
   import type { RegionRow } from '../../lib/core/lesion/report.ts';
   import type { LesionMode, LesionStore } from '../../lib/state/lesion.svelte.ts';
   import type { Language } from '../../lib/types/index.ts';
   import ChoiceGroup from '../../lib/ui/ChoiceGroup.svelte';
   import Disclosure from '../../lib/ui/Disclosure.svelte';
-  import StatusLine from '../../lib/ui/StatusLine.svelte';
   import Swatch from '../../lib/ui/Swatch.svelte';
+  import SphereTracts from './SphereTracts.svelte';
 
   let {
     lesion,
@@ -88,18 +89,6 @@
   const deep = $derived(measurement && regionRows(measurement.regions, 'aseg'));
   const white = $derived(measurement && regionRows(measurement.regions, 'wmparc'));
   const territories = $derived(measurement && territoryRows(measurement.regions));
-  const counted = $derived(lesion.counted);
-  const tracts = $derived(counted.status === 'ready' ? tractRows(counted.crossings) : null);
-  const tractView = $derived(lesion.tractView);
-  const tractStatus = $derived(
-    lesion.selectedTract === null
-      ? ''
-      : tractView.status === 'loading'
-        ? copy.tractLoading
-        : tractView.status === 'ready'
-          ? copy.tractShown(bundleName(lesion.selectedTract))
-          : '',
-  );
   const findings = $derived(lesion.findings);
   const profile = $derived(lesion.profile);
   // Each row's colour while its kind is on the brain.
@@ -117,9 +106,7 @@
   /** Functions shown under each group before the rest fold. */
   const LEADING = 3;
 
-  /** A share as a percentage: whole above 10%, to a tenth below, where the small ones differ. */
-  const share = (fraction: number) =>
-    withUnit(decimal(fraction * 100, fraction < 0.1 ? 1 : 0, lang, { trim: true }), '%', lang);
+  const share = (fraction: number) => sharePercent(fraction, lang);
   const cm3 = (mm3: number) => decimal(mm3 / 1000, 1, lang);
   const mm3 = (value: number) => withUnit(grouped(Math.round(value)), 'mm³', lang);
 </script>
@@ -405,70 +392,7 @@
 
     <div class="evidence-section">
       <Disclosure variant="section" summary={copy.tracts} bind:open={tractsOpen}>
-        {@const bundles = lesion.bundles}
-        {#if !bundles.length}
-          <p class="detail-note">{copy.noTracts}</p>
-        {:else if counted.status === 'idle'}
-          <div class="actions">
-            <button type="button" onclick={lesion.countTracts}>
-              {copy.countTracts(count(bundles.length, 'bundle', lang))}
-            </button>
-          </div>
-          <p class="detail-note">{copy.tractsDownload}</p>
-        {:else if counted.status === 'counting'}
-          <p class="detail-note" role="status">
-            {copy.counting(
-              grouped(Math.min(counted.counted + 1, counted.total)),
-              grouped(counted.total),
-            )}
-          </p>
-        {:else if counted.status === 'error'}
-          <p class="detail-note lesion-error" role="alert">{copy.tractsFailed}</p>
-        {:else if tracts}
-          <p class="detail-note">
-            {copy.tractsNote}. {tracts.crossed.length ? copy.tractsChoose : ''}
-          </p>
-          {#key lang}
-            <StatusLine
-              class="detail-note lesion-tract-status{tractView.status === 'ready'
-                ? ' visually-hidden'
-                : ''}"
-              text={tractStatus}
-            />
-          {/key}
-          {#if tractView.status === 'error'}
-            <p class="detail-note lesion-error" role="alert">{copy.tractShowFailed}</p>
-          {/if}
-          <ul class="lesion-tracts" aria-busy={tractView.status === 'loading'}>
-            {#each tracts.crossed as bundle (bundle.id)}
-              <li>
-                <button
-                  type="button"
-                  class="lesion-tract"
-                  aria-pressed={lesion.selectedTract === bundle.id}
-                  aria-label={copy.showTract(bundleName(bundle.id), grouped(bundle.crossing))}
-                  onclick={() =>
-                    lesion.selectedTract === bundle.id
-                      ? lesion.clearTract()
-                      : lesion.showTract(bundle.id)}
-                >
-                  <span class="lesion-tract-name">
-                    {bundleName(bundle.id)}
-                    <span class="lesion-row-volume">
-                      {copy.ofTotal(grouped(bundle.crossing), grouped(bundle.total))}
-                    </span>
-                  </span>
-                  <Swatch kind="bar" share={bundle.share} />
-                  <span class="measure">{share(bundle.share)}</span>
-                </button>
-              </li>
-            {/each}
-          </ul>
-          {#if tracts.missed.length}
-            <p class="detail-note">{copy.notReached(tracts.missed.map(bundleName).join(', '))}</p>
-          {/if}
-          <p class="detail-note">{copy.tractsCaveat}</p>
-        {/if}
+        <SphereTracts {lesion} {lang} {bundleName} {copy} />
       </Disclosure>
     </div>
   {/if}
@@ -476,9 +400,6 @@
 
 <style>
   @layer features {
-    .lesion-report .lesion-error {
-      color: var(--danger);
-    }
     .lesion-label {
       margin: var(--space-4) 0 var(--space-2);
       font-size: var(--text-caption);
@@ -494,12 +415,6 @@
       min-width: 0;
       padding: 0 var(--space-2);
       white-space: normal;
-    }
-    .lesion-heading {
-      margin: var(--space-6) 0 0;
-      font-size: var(--text-title);
-      font-weight: 600;
-      line-height: var(--lh-title);
     }
     /* One ruled block per group, the group named as the two tabs name it. */
     .lesion-group {
@@ -573,10 +488,6 @@
       border-bottom: 1.5px solid var(--text-tertiary);
       transform: rotate(-45deg);
     }
-    .lesion-first-section {
-      margin-top: var(--space-4);
-      border-top: 1px solid var(--border-subtle);
-    }
     .lesion-tissue {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
@@ -599,107 +510,6 @@
       font-size: var(--text-title);
       font-weight: 600;
       line-height: var(--lh-title);
-    }
-    /* No swatch: the region names itself, the bar measures it. */
-    .lesion-report :global(.network-row.lesion-row) {
-      grid-template-columns: minmax(0, 1fr) minmax(32px, 56px) 3rem;
-    }
-    .lesion-row-volume {
-      display: block;
-      font-size: var(--text-caption);
-      line-height: var(--lh-caption);
-      color: var(--text-tertiary);
-      font-variant-numeric: tabular-nums;
-    }
-    .lesion-atlases {
-      display: inline-flex;
-      gap: 2px;
-      margin: 0 0 var(--space-1);
-      padding: 2px;
-      border-radius: var(--radius-control);
-      background: var(--surface-tonal);
-    }
-    .lesion-atlases button {
-      min-height: calc(var(--control-height) - 4px);
-      padding: 0 var(--space-3);
-      border: 0;
-      border-radius: var(--radius-small);
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: var(--text-ui);
-      cursor: pointer;
-    }
-    .lesion-atlases button[aria-pressed='true'] {
-      background: var(--surface-raised);
-      box-shadow: inset 0 0 0 1px var(--thumb-ring);
-      color: var(--text-primary);
-      font-weight: 500;
-    }
-    /* A row draws its bundle's crossing streamlines alone, as a comparison row outlines its overlap. */
-    .lesion-tracts {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .lesion-tract {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(32px, 56px) 3rem;
-      align-items: start;
-      gap: var(--space-2);
-      box-sizing: border-box;
-      width: calc(100% + 2 * var(--panel-inset));
-      min-height: var(--row-height);
-      margin-inline: calc(-1 * var(--panel-inset));
-      padding: calc((var(--row-height) - var(--lh-ui)) / 2) var(--panel-inset);
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      color: var(--text-primary);
-      font: inherit;
-      font-size: var(--text-ui);
-      line-height: var(--lh-ui);
-      text-align: left;
-      cursor: pointer;
-    }
-    .lesion-tract-name {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-    .lesion-tract .measure {
-      text-align: right;
-      color: var(--text-secondary);
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-    .lesion-tract[aria-pressed='true'] {
-      background: var(--accent-wash);
-      color: var(--accent);
-    }
-    .lesion-tract[aria-pressed='true'] .lesion-tract-name {
-      font-weight: 600;
-    }
-    .lesion-tract[aria-pressed='true'] .measure,
-    .lesion-tract[aria-pressed='true'] .lesion-row-volume {
-      color: var(--accent);
-    }
-    @media (hover: hover) and (pointer: fine) {
-      .lesion-tract:hover {
-        background: var(--surface-hover);
-      }
-      .lesion-tract[aria-pressed='true']:hover {
-        background: var(--accent-wash);
-      }
-    }
-    .lesion-tract:focus-visible {
-      outline-offset: -2px;
-    }
-    @media (pointer: coarse) {
-      .lesion-tract {
-        min-height: 44px;
-      }
-    }
-    .lesion-report :global(.lesion-tract-status:empty) {
-      display: none;
     }
     .lesion-findings {
       margin: var(--space-2) 0 0;

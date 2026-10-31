@@ -63,6 +63,8 @@ export interface CameraView {
   edges: Record<'top' | 'right' | 'bottom' | 'left', 'R' | 'L' | 'S' | 'I' | 'P' | 'A'>;
   /** The scale bar in true millimetres, or null while the stage has no size (scale-bar.js:28). */
   scale: { millimetres: number; pixels: number } | null;
+  /** The camera's world basis, unit vectors toward screen right, screen up and out of the screen. */
+  basis: { right: Vec3; up: Vec3; back: Vec3 };
 }
 
 /** Where the pointer is over the stage, in CSS pixels relative to the canvas (picking.js:93). */
@@ -614,6 +616,10 @@ export interface LesionMeasurement {
   regions: ReadonlyMap<string, { inside: number; whole: number }>;
   /** Every labelled region's whole size in mm³, reached or not: what a function's territory adds up to. */
   sizes: ReadonlyMap<string, number>;
+  /** The tissue at the centre, and the region labelled there, on the FreeSurfer segmentation. */
+  centre: { tissue: keyof LesionTissue; region: string | null };
+  /** The tissue class of each region it reaches on the FreeSurfer segmentation (aseg and cortex). */
+  tissueOf: ReadonlyMap<string, keyof LesionTissue>;
 }
 
 /** One tract bundle's streamlines, and how many have a point inside the lesion. */

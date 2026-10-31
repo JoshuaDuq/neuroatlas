@@ -1199,6 +1199,23 @@ export function defineEngineContract(
         );
       });
 
+      it('reports the camera basis a named view leaves', () => {
+        const { camera } = world().engine;
+        const near = (actual: readonly number[], expected: number[], label: string) =>
+          assert.ok(
+            actual.every((value, axis) => Math.abs(value - expected[axis]!) < 1e-6),
+            `${label}: ${actual}`,
+          );
+        camera.applyView('left', { immediate: true });
+        near(camera.view.basis.right, [0, 0, 1], 'left, right');
+        near(camera.view.basis.up, [0, 1, 0], 'left, up');
+        near(camera.view.basis.back, [-1, 0, 0], 'left, back');
+        camera.applyView('superior', { immediate: true });
+        near(camera.view.basis.right, [1, 0, 0], 'superior, right');
+        near(camera.view.basis.up, [0, 0, -1], 'superior, up');
+        near(camera.view.basis.back, [0, 1, 0], 'superior, back');
+      });
+
       it('releases the view when it frames something other than a preset', () => {
         const { engine, left, otherAtlas, cortex } = world();
         const { camera } = engine;

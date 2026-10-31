@@ -1,0 +1,79 @@
+# Published coordinates: a coordinate from a paper, given in a named MNI
+# template, placed on this brain. scripts/register_coordinate_spaces.py registers
+# each template to this brain with SynthMorph and scores the warp with SynthSeg's
+# reading of the template against this brain's aseg. A published space ships its
+# template → surface RAS field; an alternative is registered only to measure where
+# its reading of the same numbers lands beside each published one. A coordinate
+# whose template is not stated reads as the first published space, and the report
+# gives those measured offsets.
+label: Published coordinates
+# Cortical coordinates are reported as the regions within this radius, never as
+# one parcel: a single Schaefer parcel agreed between an MNI lookup and this
+# brain's projection at about 60% of template cortex, and a miss lay a median
+# 2.2 mm (90%: 5.9 mm) from the parcel it named (measured on CDMD, 2026-10-31).
+radius_mm: 5
+# 2 mm reproduced SPM12's full field with a p95 error of 0.1008 mm, past the limit below.
+grid_spacing_mm: 1.5
+# A grid node beyond the template's brain dilated by this carries no displacement,
+# and a coordinate needing such a node is refused rather than extrapolated.
+mask_margin_mm: 4
+# Set before any template was registered.
+acceptance:
+  hemisphere_agreement_min: 0.98
+  subcortical_dice_min: 0.70
+  subcortical_dice_median_min: 0.80
+  cortex_dice_min: 0.65
+  round_trip_median_max_mm: 0.5
+  round_trip_p95_max_mm: 1.0
+  grid_error_p95_max_mm: 0.1
+  unstated_offset_median_max_mm: 2.0
+  unstated_offset_p95_max_mm: 5.0
+  unstated_sphere_overlap_median_min: 0.8
+spaces:
+  - id: mni152nlin2009casym
+    label: MNI152NLin2009cAsym
+    description: ICBM 152 nonlinear asymmetric 2009c, fMRIPrep's default output space
+    citation: Fonov VS, Evans AC, McKinstry RC, Almli CR, Collins DL (2009) Unbiased nonlinear average age-appropriate brain templates from birth to adulthood. NeuroImage 47:S102
+    doi: https://doi.org/10.1016/S1053-8119(09)70884-5
+    license: MNI template licence (use, copy, modify and distribute with the copyright notice)
+    copyright: Copyright (C) 1993–2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.
+    source:
+      base: https://templateflow.s3.amazonaws.com/tpl-MNI152NLin2009cAsym
+      files:
+        t1: [tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz, 1f27aabea9f7183dc0c69dafa71e1787b921ca778d655d9c1bf302b273d5627a]
+        mask: [tpl-MNI152NLin2009cAsym_res-01_desc-brain_mask.nii.gz, e40bb1816736504d4c25abc243c1c8503df1d308f64c048318aa4b829e09a7ae]
+  # SPM12's unified segmentation normalises to its tissue probability maps, not to a T1;
+  # the script registers a T1-like image made from their grey, white and fluid classes.
+  # Read as MNI152NLin2009cAsym, its coordinates landed a median 2.35 mm away on
+  # CDMD, past the limit for an unstated template, so it is published as its own space.
+  - id: spm12
+    label: SPM12 (TPM)
+    description: SPM12's tissue probability maps (IXI549), the space of SPM12's unified segmentation
+    citation: Ashburner J, Friston KJ (2005) Unified segmentation. NeuroImage 26:839–851
+    doi: https://doi.org/10.1016/j.neuroimage.2005.02.018
+    license: GPL-2.0 or later (SPM12, version 7771); the maps derive from the IXI dataset (CC BY-SA 3.0)
+    copyright: Copyright (C) 1991,1994-2020 Wellcome Centre for Human Neuroimaging.
+    source:
+      base: https://raw.githubusercontent.com/spm/spm12/03ac9473cad402407b6472228377c0167fdc54b8
+      files:
+        tissue_probability_maps: [tpm/TPM.nii, 259527f0d92ca5eb0c21684f854e9d8cd7104f9f6a7ebf17ee98de420d9fc68f]
+# Registered only to measure them: each must land near the first published space, which an
+# unstated "MNI" is read as.
+alternatives:
+  # TemplateFlow publishes no licence file for it, so no field derived from it is published.
+  - id: mni152nlin6asym
+    label: MNI152NLin6Asym
+    description: FSL's MNI152 (MNI152_T1_1mm), nonlinear 6th generation
+    source:
+      base: https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym
+      files:
+        t1: [tpl-MNI152NLin6Asym_res-01_T1w.nii.gz, f675946c0a077e0682885c3d6085f10acb0dd22b2274a6cbbf04969c08a77258]
+        mask: [tpl-MNI152NLin6Asym_res-01_desc-brain_mask.nii.gz, 6d540075dac093fa5070a929dc5ea52795d54cc9ab57fe1272086dc70314b428]
+  - id: mni152lin
+    label: MNI152Lin
+    description: ICBM 152 linear average (avg152T1), the template of SPM96 to SPM8's normalisation
+    source:
+      base: https://templateflow.s3.amazonaws.com/tpl-MNI152Lin
+      files:
+        t1: [tpl-MNI152Lin_res-01_T1w.nii.gz, 2d1c67e92048d2457b1fde408383ae2f291d0c30004fe6314fe01d8933e46acd]
+        mask: [tpl-MNI152Lin_res-01_desc-brain_mask.nii.gz, 1b6e585e53cb5ba01fd90701fc4f24ff7898b36ec97b3ec7c8f1a93190b3e7e3]

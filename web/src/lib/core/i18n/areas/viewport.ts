@@ -12,11 +12,13 @@ export const en = {
   // Shown while the model has keyboard focus.
   keyboardHint: '3D view · Arrow keys rotate · + − zoom',
   viewAria: 'Anatomical view',
-  viewToolAria: (name: string) => `Anatomical view: ${name}`,
-  viewTool: 'View',
+  // A named view: the orientation gizmo's buttons, and the caption written onto an exported image.
+  namedView: (name: string) => `${name} view`,
   sectionTool: 'Section',
+  lesionTool: 'Lesion',
+  coordinateTool: 'Coordinate',
   displayTool: 'Display',
-  // The stage dock and the View popover's turn buttons (decision 22 on #4).
+  // The stage dock and the orientation gizmo's turn buttons (decision 22 on #4).
   dockLabel: '3D viewer tools',
   orbitGroup: 'Turn the model',
   orbitLeft: 'Turn left',
@@ -34,7 +36,6 @@ export const en = {
   keyAbsent: 'Not shown in this view',
   snapshot: 'Save image (PNG)',
   // Written onto the exported image, which travels without the page around it.
-  snapshotView: (name: string) => `${name} view`,
   snapshotStatement: 'Planum · Not clinical anatomy',
   fullscreen: 'Full screen',
   exitFullscreen: 'Exit full screen',
@@ -58,9 +59,10 @@ export const fr: typeof en = {
   navigationHintTractsTouch: 'Glisser\u202f: tourner · Pincer\u202f: zoom',
   keyboardHint: 'Vue 3D · Flèches : tourner · + − : zoom',
   viewAria: 'Vue anatomique',
-  viewToolAria: (name: string) => `Vue anatomique : ${name.toLowerCase()}`,
-  viewTool: 'Vue',
+  namedView: (name: string) => `Vue ${name.toLowerCase()}`,
   sectionTool: 'Coupe',
+  lesionTool: 'Lésion',
+  coordinateTool: 'Coordonnée',
   displayTool: 'Affichage',
   dockLabel: 'Outils du visualiseur 3D',
   orbitGroup: 'Faire pivoter le modèle',
@@ -76,7 +78,6 @@ export const fr: typeof en = {
   },
   keyAbsent: 'Absent de cette vue',
   snapshot: 'Enregistrer l’image (PNG)',
-  snapshotView: (name: string) => `Vue ${name.toLowerCase()}`,
   snapshotStatement: 'Planum · Pas une anatomie clinique',
   fullscreen: 'Plein écran',
   exitFullscreen: 'Quitter le plein écran',

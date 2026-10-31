@@ -1,69 +1,60 @@
 <!--
-  The stage dock: one plate of three worded tools, View, Section and Display, each opening a popover
-  (index.html:433-490, stage.css:311-440). APG Toolbar (deviation g2-dock-toolbar): while three or more tools
-  are shown the row is a labelled `role="toolbar"` with one Tab stop; ← → ↑ ↓ and Home/End move between the
-  visible tools, Enter and Space open. Over the tract reference only View is left, and a lone button is
-  not a toolbar.
+  The stage dock: one plate of worded tools, Section, Lesion, Coordinate and Display, each opening a popover
+  (index.html:433-490, stage.css:311-440). APG Toolbar (deviation g2-dock-toolbar): the row is a labelled
+  `role="toolbar"` with one Tab stop; ← → ↑ ↓ and Home/End move between the visible tools, Enter and Space
+  open. The tract reference has none of them, so the dock is not drawn over it.
   - U5's popover keeps its trigger and its content together, so the popovers' controls sit inside the toolbar
     element. Only the tools rove (`.stage-tool`); keys inside a popover are the popover's own.
   - The popovers are placed above the whole dock on its start edge, inside the visible stage (place-popover.ts).
-  - Section's popover and the section row above the tools are G4's: they come in as snippets. The lesion's
-    controls come last in the Section popover: a click on the brain places the lesion only while the reader has
-    chosen so there and the popover is open, and while it does, a press on the stage keeps it open.
-  - The View tool names the held preset, and keeps the width of the widest name so the other tools never move.
+  - Section's popover and the section row above the tools are G4's, the Lesion's and Coordinate's bodies the
+    lesion feature's: they come in as snippets. Coordinate is offered only with a body (published spaces).
+  - A click on the brain places the lesion only while the reader has chosen so in the Lesion popover and it is
+    open, and while it does, a press on the stage keeps it open.
   - The dock root carries `data-own-keys` (decision 7): the page's single-key shortcuts skip its controls.
 -->
 <script lang="ts">
   import { tick } from 'svelte';
   import type { Snippet } from 'svelte';
   import { t } from '../../lib/core/i18n/index.ts';
-  import type { Engine, OrbitTurn } from '../../lib/engine/api.ts';
   import type { Media } from '../../lib/state/media.svelte.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
   import type { View } from '../../lib/state/view.svelte.ts';
-  import { VIEW_NAMES } from '../../lib/types/index.ts';
-  import type { Language, SessionState, ViewName } from '../../lib/types/index.ts';
+  import type { Language, SessionState } from '../../lib/types/index.ts';
   import { OWN_KEYS_ATTRIBUTE } from '../../lib/ui/keys.ts';
   import { bindRoving } from '../../lib/ui/roving.ts';
   import type { DockCommands } from './dock-commands.ts';
   import DisplayPopover from './DisplayPopover.svelte';
   import { POPOVER_WIDTH, placePopover } from './place-popover.ts';
   import StagePopover from './StagePopover.svelte';
-  import ViewPopover from './ViewPopover.svelte';
 
   interface Props {
-    engine: Pick<Engine, 'on'> & { camera: Pick<Engine['camera'], 'viewHeld' | 'orbitBy'> };
     stage: StageLayout;
     media: Pick<Media, 'phone'>;
     lang: Language;
     status: SessionState['status'];
-    /** The tract reference alone is shown: it has no sections or display settings. */
+    /** The tract reference alone is shown: it has no sections, lesion or display settings. */
     tractReference: boolean;
-    /** The session's named view, and the display settings the Display popover shows. */
+    /** The display settings the Display popover shows. */
     view: Pick<
       View,
-      | 'view'
-      | 'hemisphere'
-      | 'cortexVisible'
-      | 'cortexOpacity'
-      | 'internalVisible'
-      | 'spinalCordVisible'
+      'hemisphere' | 'cortexVisible' | 'cortexOpacity' | 'internalVisible' | 'spinalCordVisible'
     >;
     /** The subject publishes a spinal cord. */
     hasSpinalCord: boolean;
-    commands: DockCommands;
+    commands: Omit<DockCommands, 'chooseView' | 'reset'>;
     /** G4: the body of the Section popover, and the section row above the tools. */
     sectionPopover: Snippet<[{ close: () => void }]>;
     sectionBar?: Snippet;
-    /** The lesion's controls under the Section popover's, with the choice of what a click on the brain does. */
-    lesionControls: Snippet<
+    /** The Lesion popover's body, with the choice of what a click on the brain does. */
+    lesionPopover: Snippet<
       [{ close: () => void; placing: boolean; setPlacing: (placing: boolean) => void }]
     >;
+    /** The Coordinate popover's body; without one the tool is not offered. */
+    coordinatePopover?: Snippet<[{ close: () => void }]>;
     onLesionPlacing: (placing: boolean) => void;
   }
 
   let {
-    engine,
     stage,
     media,
     lang,
@@ -74,43 +65,34 @@
     commands,
     sectionPopover,
     sectionBar,
-    lesionControls,
+    lesionPopover,
+    coordinatePopover,
     onLesionPlacing,
   }: Props = $props();
 
   const uid = $props.id();
-  const viewCaptionId = `view-caption-${uid}`;
   const sectionLabelId = `section-tool-${uid}`;
+  const lesionLabelId = `lesion-tool-${uid}`;
+  const coordinateLabelId = `coordinate-tool-${uid}`;
   const displayLabelId = `display-tool-${uid}`;
 
   const copy = $derived(t(lang, 'viewport'));
-  const viewNames = $derived(t(lang, 'views'));
   // The dock is not drawn while the anatomy loads, failed or lost its context (stage.css:315).
   const shown = $derived(status === 'ready' || status === 'switching');
   // A phone sheet raised over the stage covers it.
   const covered = $derived(!shown || stage.sheetFull);
-  const toolCount = $derived(tractReference ? 1 : 3);
-  const toolbar = $derived(toolCount >= 3);
 
-  // Whether the camera still sits on the named view; the engine says when it stops (viewport-chrome.js:560).
-  let held = $state(false);
-  $effect(() => {
-    held = engine.camera.viewHeld;
-    return engine.on('viewHeld', (event) => (held = event.held));
-  });
-
-  const heldName = $derived((held ? view.view : '') as ViewName | '');
-
-  let viewOpen = $state(false);
   let sectionOpen = $state(false);
+  let lesionOpen = $state(false);
+  let coordinateOpen = $state(false);
   let displayOpen = $state(false);
-  const anyOpen = $derived(viewOpen || sectionOpen || displayOpen);
-  // A click places the lesion only while the reader chose so, and only until the Section popover closes.
+  const anyOpen = $derived(sectionOpen || lesionOpen || coordinateOpen || displayOpen);
+  // A click places the lesion only while the reader chose so, and only until the Lesion popover closes.
   let placing = $state(false);
   $effect(() => {
-    if (!sectionOpen) placing = false;
+    if (!lesionOpen) placing = false;
   });
-  $effect(() => onLesionPlacing(sectionOpen && placing && !tractReference));
+  $effect(() => onLesionPlacing(lesionOpen && placing && !tractReference));
 
   let dock: HTMLElement;
   let tools: HTMLElement;
@@ -135,8 +117,12 @@
     };
   }
 
-  function focusFirstTool() {
-    tools.querySelector<HTMLElement>('.stage-tool:not([hidden])')?.focus({ preventScroll: true });
+  /** The first tool left, or the model once the tract reference takes them all; runs before they hide. */
+  function rescueFocus() {
+    const next = tractReference
+      ? dock.parentElement!.querySelector<HTMLElement>(':scope > canvas')
+      : tools.querySelector<HTMLElement>('.stage-tool:not([hidden])');
+    next?.focus({ preventScroll: true });
   }
 
   // Where the open popover goes: measured once the dock has moved to where the stage's variables put it.
@@ -175,74 +161,56 @@
   /** The stage's own canvas, where a press places the lesion while the reader has chosen so. */
   const onStage = (node: Node) =>
     node instanceof HTMLCanvasElement && (dock.offsetParent?.contains(node) ?? false);
-
-  function turn(step: OrbitTurn) {
-    stage.retireHint();
-    engine.camera.orbitBy(step);
-  }
-
-  function chooseView(name: ViewName) {
-    stage.retireHint();
-    commands.chooseView(name);
-  }
 </script>
 
-<div bind:this={dock} class="stage-dock" data-shown={shown} {...{ [OWN_KEYS_ATTRIBUTE]: '' }}>
+<div
+  bind:this={dock}
+  class="stage-dock"
+  data-shown={shown && !tractReference}
+  {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
+>
   <div
     bind:this={tools}
     class="stage-toolbar"
-    role={toolbar ? 'toolbar' : undefined}
-    aria-label={toolbar ? copy.dockLabel : undefined}
+    role="toolbar"
+    aria-label={copy.dockLabel}
     {@attach rove}
   >
-    <StagePopover
-      bind:open={viewOpen}
-      hidden={false}
-      {covered}
-      class="view-tool"
-      ariaLabel={heldName ? copy.viewToolAria(viewNames[heldName]) : copy.viewAria}
-      style={popoverStyle}
-      dialogLabelledby={viewCaptionId}
-      rescueFocus={focusFirstTool}
-    >
-      {#snippet name()}
-        <!-- Every name in one grid cell: the widest sets the tool's width, and only the current one shows. -->
-        <span class="view-tool-label">
-          {#each ['', ...VIEW_NAMES] as preset (preset)}
-            <span data-current={preset === heldName ? '' : undefined}>
-              {preset ? viewNames[preset as ViewName] : copy.viewTool}
-            </span>
-          {/each}
-        </span>
-      {/snippet}
-      {#snippet body({ close })}
-        <ViewPopover
-          {lang}
-          viewName={view.view}
-          {held}
-          captionId={viewCaptionId}
-          {close}
-          onView={chooseView}
-          onReset={commands.reset}
-          onTurn={turn}
-        />
-      {/snippet}
-    </StagePopover>
     <StagePopover
       bind:open={sectionOpen}
       hidden={tractReference}
       {covered}
       style={popoverStyle}
       dialogLabelledby={sectionLabelId}
-      rescueFocus={focusFirstTool}
-      holdsOpen={(node) => placing && onStage(node)}
+      {rescueFocus}
     >
       {#snippet name()}<span id={sectionLabelId}>{copy.sectionTool}</span>{/snippet}
+      {#snippet body({ close })}{@render sectionPopover({ close })}{/snippet}
+    </StagePopover>
+    <StagePopover
+      bind:open={lesionOpen}
+      hidden={tractReference}
+      {covered}
+      style={popoverStyle}
+      dialogLabelledby={lesionLabelId}
+      {rescueFocus}
+      holdsOpen={(node) => placing && onStage(node)}
+    >
+      {#snippet name()}<span id={lesionLabelId}>{copy.lesionTool}</span>{/snippet}
       {#snippet body({ close })}
-        <!-- On a phone the cut's controls fold away while placing, so the popover leaves the brain to click. -->
-        <div hidden={placing && media.phone}>{@render sectionPopover({ close })}</div>
-        {@render lesionControls({ close, placing, setPlacing: (next) => (placing = next) })}
+        {@render lesionPopover({ close, placing, setPlacing: (next) => (placing = next) })}
       {/snippet}
+    </StagePopover>
+    <StagePopover
+      bind:open={coordinateOpen}
+      hidden={tractReference || !coordinatePopover}
+      {covered}
+      style={popoverStyle}
+      dialogLabelledby={coordinateLabelId}
+      {rescueFocus}
+    >
+      {#snippet name()}<span id={coordinateLabelId}>{copy.coordinateTool}</span>{/snippet}
+      {#snippet body({ close })}{@render coordinatePopover?.({ close })}{/snippet}
     </StagePopover>
     <StagePopover
       bind:open={displayOpen}
@@ -250,7 +218,7 @@
       {covered}
       style={popoverStyle}
       dialogLabelledby={displayLabelId}
-      rescueFocus={focusFirstTool}
+      {rescueFocus}
     >
       {#snippet name()}<span id={displayLabelId}>{copy.displayTool}</span>{/snippet}
       {#snippet body()}
@@ -343,34 +311,6 @@
     }
     :global(.stage-tool[aria-expanded='true']) {
       background: var(--overlay-track);
-    }
-    /*
-     * The chevron follows the current name; the hidden names, padded by the chevron's room, span the row
-     * behind them, so the tool keeps the widest localized preset's width and never moves the others.
-     */
-    :global(.stage-tool.view-tool) {
-      display: inline-grid;
-      grid-template-columns: minmax(0, auto) auto 1fr;
-      column-gap: 0;
-    }
-    .view-tool-label {
-      display: contents;
-    }
-    .view-tool-label > span {
-      grid-area: 1 / 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: left;
-    }
-    .view-tool-label > span:not([data-current]) {
-      grid-column: 1 / -1;
-      padding-right: calc(var(--space-2) + 6px);
-      visibility: hidden;
-    }
-    :global(.stage-tool.view-tool > .stage-tool-chevron) {
-      grid-area: 1 / 2;
-      margin-left: var(--space-2);
     }
     /* Drawn, like every disclosure chevron. It points up while its popover is open. */
     :global(.stage-tool-chevron) {

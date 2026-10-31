@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { edgeLabels, localizeEdges } from './orientation.ts';
+import { cameraBasis, edgeLabels, localizeEdges, projectAxes } from './orientation.ts';
 
 // manifest coordinate_system: x = right, y = superior, z = posterior.
 const VIEWS = {
@@ -128,4 +128,43 @@ test('with a target, letters follow where the camera stands, not a rotation a fr
     top: 'A',
     bottom: 'P',
   });
+});
+
+const close = (actual: readonly number[], expected: readonly number[]) =>
+  actual.forEach((value, axis) => assert.ok(Math.abs(value - expected[axis]!) < 1e-9, `${actual}`));
+
+test('the basis points to screen right, screen up and out of the screen, in world axes', () => {
+  // From the left the viewer looks along +x: posterior is to the right, superior up, left toward them.
+  const left = cameraBasis(cameraFor('left'));
+  close(left.right, [0, 0, 1]);
+  close(left.up, [0, 1, 0]);
+  close(left.back, [-1, 0, 0]);
+  const superior = cameraBasis(cameraFor('superior'));
+  close(superior.right, [1, 0, 0]);
+  close(superior.up, [0, 0, -1]);
+  close(superior.back, [0, 1, 0]);
+});
+
+test('with a target, the basis is the one lookAt gives, not a rotation a plan left on the camera', () => {
+  const camera = cameraFor('left');
+  camera.quaternion.copy(cameraFor('anterior').quaternion);
+  camera.updateMatrixWorld(true);
+  close(cameraBasis(camera, new Vector3(0, 0, 0)).back, [-1, 0, 0]);
+  close(cameraBasis(camera).back, [0, 0, -1]);
+});
+
+test('the gizmo puts R right of the centre and S above it, and the axis toward the viewer in front', () => {
+  const at = (basis: Parameters<typeof projectAxes>[0]) =>
+    Object.fromEntries(projectAxes(basis).map(({ letter, ...rest }) => [letter, rest]));
+  // Seen from behind: the subject's right is the viewer's right.
+  const posterior = at(cameraBasis(cameraFor('posterior')));
+  assert.ok(posterior.R!.x > 0.99 && Math.abs(posterior.R!.y) < 1e-9);
+  assert.ok(posterior.L!.x < -0.99);
+  assert.ok(posterior.S!.y < -0.99 && Math.abs(posterior.S!.x) < 1e-9);
+  assert.ok(posterior.I!.y > 0.99);
+  assert.ok(posterior.P!.depth > 0.99 && posterior.A!.depth < -0.99);
+  // Seen from the front, the sides swap and A faces the viewer.
+  const anterior = at(cameraBasis(cameraFor('anterior')));
+  assert.ok(anterior.R!.x < -0.99 && anterior.L!.x > 0.99);
+  assert.ok(anterior.A!.depth > 0.99);
 });

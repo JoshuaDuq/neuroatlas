@@ -1,6 +1,5 @@
-<!-- Fixture for the dock tests: the stage host as the Stage region renders it, with the dock, stubs for the Section popover's body and its lesion controls, and a tab stop each side. Not shipped. -->
+<!-- Fixture for the dock tests: the stage host as the Stage region renders it, with the dock, stubs for the Section, Lesion and Coordinate popovers' bodies, and a tab stop each side. Not shipped. -->
 <script lang="ts">
-  import type { FakeEngine } from '../../lib/engine/fake.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
   import type { Hemisphere, Language, SessionState } from '../../lib/types/index.ts';
   import '../../styles/index.css';
@@ -9,17 +8,16 @@
   import './stage-vars.css';
 
   interface Props {
-    engine: FakeEngine;
     stage: StageLayout;
-    /** Reactive, so a test can change the language, the status or the tract reference. */
+    /** Reactive, so a test can change the language, the status, the tract reference or the coordinate spaces. */
     live: {
       lang: Language;
       status: SessionState['status'];
       tractReference: boolean;
       hasSpinalCord: boolean;
+      coordinates: boolean;
       phone: boolean;
       view: {
-        view: string;
         hemisphere: Hemisphere;
         cortexVisible: boolean;
         cortexOpacity: number;
@@ -27,14 +25,14 @@
         spinalCordVisible: boolean;
       };
     };
-    commands: DockCommands;
+    commands: Omit<DockCommands, 'chooseView' | 'reset'>;
     width: number;
     height: number;
     /** Each placing state the dock asks for. */
     placing: boolean[];
   }
 
-  let { engine, stage, live, commands, width, height, placing }: Props = $props();
+  let { stage, live, commands, width, height, placing }: Props = $props();
 
   let host: HTMLElement;
 
@@ -60,7 +58,6 @@
 >
   <canvas id="stage-canvas" tabindex="0" aria-label="Brain model"></canvas>
   <Dock
-    {engine}
     {stage}
     media={{
       get phone() {
@@ -74,17 +71,20 @@
     hasSpinalCord={live.hasSpinalCord}
     {commands}
     onLesionPlacing={(next) => placing.push(next)}
+    coordinatePopover={live.coordinates ? coordinates : undefined}
   >
     {#snippet sectionPopover()}
       <p class="stage-field-label">Cutting plane</p>
       <button type="button">Sagittal</button>
     {/snippet}
-    {#snippet lesionControls({ placing: on, setPlacing })}
-      <div class="stage-field">
-        <button type="button" aria-pressed={on} onclick={() => setPlacing(!on)}>Place</button>
-      </div>
+    {#snippet lesionPopover({ placing: on, setPlacing })}
+      <button type="button" aria-pressed={on} onclick={() => setPlacing(!on)}>Place</button>
     {/snippet}
   </Dock>
+  {#snippet coordinates()}
+    <label class="stage-field-label" for="coordinate-field">MNI coordinate</label>
+    <input id="coordinate-field" type="text" />
+  {/snippet}
 </main>
 <button type="button">After</button>
 

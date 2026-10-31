@@ -1,5 +1,5 @@
-// The stage dock against the legacy stage-tools.js, display.js and viewport-chrome.js:491-541 behaviour, the
-// APG Toolbar and non-modal Dialog patterns and WCAG 2.2 (1.4.4, 1.4.12, 2.1.1, 2.4.3, 2.5.3, 2.5.7, 2.5.8),
+// The stage dock against the legacy stage-tools.js and display.js behaviour, the
+// APG Toolbar and non-modal Dialog patterns and WCAG 2.2 (1.4.4, 1.4.12, 2.1.1, 2.4.3, 2.5.8),
 // over the fake engine in a real browser. U5's popover rules (one open, Escape, Tab-out, outside press) are
 // proved in its own tests; here only what the dock wires onto them.
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
@@ -8,14 +8,12 @@ import { flushSync } from 'svelte';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
-import { t } from '../../lib/core/i18n/index.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import { createStageLayout } from '../../lib/state/stage-layout.svelte.ts';
 import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
 import { PREF_KEYS } from '../../lib/state/prefs.ts';
-import { VIEW_NAMES } from '../../lib/types/index.ts';
-import type { Manifest, ViewName } from '../../lib/types/index.ts';
+import type { Manifest } from '../../lib/types/index.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { DockCommands } from './dock-commands.ts';
 import Fixture from './dock-test-support.svelte';
@@ -27,9 +25,9 @@ interface Live {
   status: 'loading' | 'ready' | 'switching' | 'error' | 'context-lost';
   tractReference: boolean;
   hasSpinalCord: boolean;
+  coordinates: boolean;
   phone: boolean;
   view: {
-    view: string;
     hemisphere: 'both' | 'left' | 'right';
     cortexVisible: boolean;
     cortexOpacity: number;
@@ -41,7 +39,8 @@ interface Live {
 let engine: FakeEngine;
 let stage: StageLayout;
 let live: Live;
-let commands: { [K in keyof DockCommands]: Mock<DockCommands[K]> };
+type Commands = Omit<DockCommands, 'chooseView' | 'reset'>;
+let commands: { [K in keyof Commands]: Mock<Commands[K]> };
 let cleanups: (() => void)[];
 /** What the stage layout's `onDock` runs: the camera refit in the app. */
 let onDock: () => void;
@@ -54,9 +53,9 @@ function liveState(overrides: Partial<Live>): Live {
     status: 'ready',
     tractReference: false,
     hasSpinalCord: true,
+    coordinates: true,
     phone: false,
     view: {
-      view: 'oblique',
       hemisphere: 'both',
       cortexVisible: true,
       cortexOpacity: 1,
@@ -74,17 +73,12 @@ async function mount(
     width = 900,
     height = 600,
     bottomInset = 0,
-    held,
-  }: { width?: number; height?: number; bottomInset?: number; held?: ViewName } = {},
+  }: { width?: number; height?: number; bottomInset?: number } = {},
 ) {
   engine = createFakeEngine({ manifest: published, hostSize: { width, height } });
   engine.camera.setChromeInsets({ bottom: bottomInset }, {});
-  // The engine boots holding the oblique view, so the View tool opens named "Anatomical view: Oblique".
-  if (held) engine.camera.applyView(held, { immediate: true });
   live = liveState(overrides);
   commands = {
-    chooseView: vi.fn<DockCommands['chooseView']>(),
-    reset: vi.fn<DockCommands['reset']>(),
     setHemisphere: vi.fn<DockCommands['setHemisphere']>(),
     setCortexVisible: vi.fn<DockCommands['setCortexVisible']>(),
     setCortexOpacity: vi.fn<DockCommands['setCortexOpacity']>(),
@@ -104,21 +98,15 @@ async function mount(
     }),
   );
   placing = [];
-  const result = await render(Fixture, { engine, stage, live, commands, width, height, placing });
+  const result = await render(Fixture, { stage, live, commands, width, height, placing });
   stage.setGutter(20);
   stage.setViewport(engine.camera.visibleRect, engine.camera.hostSize);
   flushSync();
   return result;
 }
 
-/** The View tool's name follows the held preset, so it is found by its stem; every other name is exact. */
 const locate = (role: 'button' | 'radio' | 'checkbox' | 'slider', name: string) =>
-  page.getByRole(
-    role,
-    name === 'Anatomical view' || name === 'Vue anatomique'
-      ? { name: new RegExp(`^${name}`) }
-      : { name, exact: true },
-  );
+  page.getByRole(role, { name, exact: true });
 const control = (role: 'button' | 'radio' | 'checkbox' | 'slider', name: string) =>
   locate(role, name).element() as HTMLElement;
 const tool = (name: string) => control('button', name);
@@ -128,20 +116,13 @@ const active = () => document.activeElement;
 const dock = () => document.querySelector<HTMLElement>('.stage-dock')!;
 const popover = () => document.querySelector<HTMLElement>('.popover')!;
 const dialogs = () => document.querySelectorAll('[role="dialog"]');
-const viewTool = () => document.querySelector<HTMLElement>('.view-tool')!;
+const canvas = () => document.getElementById('stage-canvas');
 
 /** Opens a tool from the keyboard: focus lands in its popover. */
 async function open(name: string) {
   tool(name).focus();
   await userEvent.keyboard('{Enter}');
   await vi.waitFor(() => expect(tool(name).getAttribute('aria-expanded')).toBe('true'));
-}
-
-/** The engine holds a named view, as a preset press frames it. */
-function hold(view: ViewName) {
-  engine.camera.applyView(view, { immediate: true });
-  live.view.view = view;
-  flushSync();
 }
 
 beforeEach(async () => {
@@ -158,24 +139,29 @@ afterEach(() => {
 });
 
 describe('the toolbar', () => {
-  test('is a labelled toolbar of three tools with one Tab stop that the arrows walk, wrapping', async () => {
+  test('is a labelled toolbar of four tools with one Tab stop that the arrows walk, wrapping', async () => {
     await mount();
     const bar = page.getByRole('toolbar', { name: '3D viewer tools' }).element();
     const tools = [...bar.querySelectorAll<HTMLElement>('.stage-tool')];
-    expect(
-      tools.map((node) => node.getAttribute('aria-label') ?? node.textContent!.trim()),
-    ).toEqual(['Anatomical view: Oblique', 'Section', 'Display']);
-    expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1]);
+    expect(tools.map((node) => node.textContent!.trim())).toEqual([
+      'Section',
+      'Lesion',
+      'Coordinate',
+      'Display',
+    ]);
+    expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1, -1]);
 
-    tool('Anatomical view').focus();
+    tool('Section').focus();
     await userEvent.keyboard('{ArrowRight}');
+    expect(active()).toBe(tool('Lesion'));
+    await userEvent.keyboard('{ArrowDown}');
+    expect(active()).toBe(tool('Coordinate'));
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}');
     expect(active()).toBe(tool('Section'));
-    await userEvent.keyboard('{ArrowDown}{ArrowRight}');
-    expect(active()).toBe(tool('Anatomical view'));
     await userEvent.keyboard('{ArrowLeft}');
     expect(active()).toBe(tool('Display'));
     await userEvent.keyboard('{Home}');
-    expect(active()).toBe(tool('Anatomical view'));
+    expect(active()).toBe(tool('Section'));
     await userEvent.keyboard('{End}');
     expect(active()).toBe(tool('Display'));
   });
@@ -187,26 +173,34 @@ describe('the toolbar', () => {
     expect(active()).toBe(control('button', 'After'));
     // The Tab stop is the focused tool, else the first (ui/roving.js), as in the legacy dock.
     await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
-    expect(active()).toBe(tool('Anatomical view'));
+    expect(active()).toBe(tool('Section'));
     await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
-    expect(active()).toBe(document.getElementById('stage-canvas'));
+    expect(active()).toBe(canvas());
   });
 
-  test('over the tract reference only View is left, and a lone button is not a toolbar', async () => {
-    await mount({ tractReference: true });
-    expect(page.getByRole('toolbar').elements()).toHaveLength(0);
-    expect(document.querySelector('.stage-toolbar')!.hasAttribute('aria-label')).toBe(false);
-    expect(page.getByRole('button', { name: 'Section' }).elements()).toHaveLength(0);
-    expect(page.getByRole('button', { name: 'Display' }).elements()).toHaveLength(0);
-    tool('Anatomical view').focus();
+  test('without published coordinate spaces there is no Coordinate tool, and the arrows pass it', async () => {
+    await mount({ coordinates: false });
+    expect(page.getByRole('button', { name: 'Coordinate' }).elements()).toHaveLength(0);
+    tool('Lesion').focus();
     await userEvent.keyboard('{ArrowRight}');
-    expect(active()).toBe(tool('Anatomical view'));
+    expect(active()).toBe(tool('Display'));
+    live.coordinates = true;
+    flushSync();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(active()).toBe(tool('Coordinate'));
+  });
+
+  test('over the tract reference no tool is left and the dock is not drawn; it comes back with them', async () => {
+    await mount({ tractReference: true });
+    for (const name of ['Section', 'Lesion', 'Coordinate', 'Display']) {
+      expect(page.getByRole('button', { name }).elements(), name).toHaveLength(0);
+    }
+    expect(getComputedStyle(dock()).visibility).toBe('hidden');
 
     live.tractReference = false;
     flushSync();
+    expect(getComputedStyle(dock()).visibility).toBe('visible');
     expect(page.getByRole('toolbar', { name: '3D viewer tools' }).elements()).toHaveLength(1);
-    await userEvent.keyboard('{ArrowRight}');
-    expect(active()).toBe(tool('Section'));
   });
 
   test('is named in French, with the tools in French', async () => {
@@ -214,9 +208,9 @@ describe('the toolbar', () => {
     expect(page.getByRole('toolbar', { name: 'Outils du visualiseur 3D' }).elements()).toHaveLength(
       1,
     );
-    expect(tool('Vue anatomique')).toBeTruthy();
-    expect(tool('Coupe')).toBeTruthy();
-    expect(tool('Affichage')).toBeTruthy();
+    for (const name of ['Coupe', 'Lésion', 'Coordonnée', 'Affichage']) {
+      expect(tool(name), name).toBeTruthy();
+    }
   });
 
   test('the dock root marks its keys as its own (decision 7), and no control does', async () => {
@@ -258,26 +252,25 @@ describe('a tool and its popover', () => {
     }
   });
 
-  test('each popover is named by its own words: the View caption, the tools', async () => {
-    await mount();
-    await open('Anatomical view');
-    expect(page.getByRole('dialog', { name: 'Anatomical view' }).elements()).toHaveLength(1);
-    await open('Section');
-    expect(page.getByRole('dialog', { name: 'Section' }).elements()).toHaveLength(1);
-  });
+  test.each(['Section', 'Lesion', 'Coordinate', 'Display'])(
+    'the %s popover is named by its tool',
+    async (name) => {
+      await mount();
+      await open(name);
+      expect(page.getByRole('dialog', { name, exact: true }).elements()).toHaveLength(1);
+    },
+  );
 
   test('another tool replaces the open one: never two at once', async () => {
     await mount();
-    await open('Anatomical view');
+    await open('Section');
     await open('Display');
-    await vi.waitFor(() =>
-      expect(tool('Anatomical view').getAttribute('aria-expanded')).toBe('false'),
-    );
+    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
     expect(tool('Display').getAttribute('aria-expanded')).toBe('true');
-    expect(tool('Section').getAttribute('aria-expanded')).toBe('false');
+    expect(tool('Lesion').getAttribute('aria-expanded')).toBe('false');
   });
 
-  test.each(['Display', 'Section'])(
+  test.each(['Display', 'Section', 'Lesion', 'Coordinate'])(
     'Shift+Tab from the first control of %s returns to its own tool with the popover still open',
     async (name) => {
       await mount();
@@ -293,25 +286,11 @@ describe('a tool and its popover', () => {
 
   test('Tab from the last control of a popover leaves the dock', async () => {
     await mount();
-    await open('Section');
-    // Its last control is the lesion's, after the cut's.
-    await userEvent.keyboard('{Tab}');
+    await open('Lesion');
     expect(active()).toBe(control('button', 'Place'));
     await userEvent.keyboard('{Tab}');
     expect(active()).toBe(control('button', 'After'));
-    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
-  });
-
-  test('opens on the held preset, else the first', async () => {
-    await mount();
-    hold('left');
-    await open('Anatomical view: Left');
-    expect(active()).toBe(control('button', 'Left'));
-    await userEvent.keyboard('{Escape}');
-    engine.camera.orbitBy({ azimuth: 0.1 });
-    flushSync();
-    await open('Anatomical view');
-    expect(active()).toBe(control('button', 'Oblique'));
+    await vi.waitFor(() => expect(tool('Lesion').getAttribute('aria-expanded')).toBe('false'));
   });
 
   test('from the keyboard it is instant, from the pointer it grows from the dock', async () => {
@@ -322,150 +301,6 @@ describe('a tool and its popover', () => {
     await press('button', 'Display');
     await vi.waitFor(() => expect(tool('Display').getAttribute('aria-expanded')).toBe('true'));
     expect(popover().hasAttribute('data-instant')).toBe(false);
-  });
-});
-
-describe('the View tool and the presets', () => {
-  test('a preset reads as pressed only while the engine holds the view, and the tool names it', async () => {
-    await mount();
-    await open('Anatomical view');
-    const pressed = () =>
-      VIEW_NAMES.filter((name) => control('button', t('en', 'views')[name]).ariaPressed === 'true');
-    // The opening picture holds the oblique view.
-    expect(pressed()).toEqual(['oblique']);
-
-    hold('left');
-    expect(pressed()).toEqual(['left']);
-    expect(tool('Anatomical view: Left')).toBe(viewTool());
-
-    // A drag, a key or a turn button moves the camera off it; the session still names the view.
-    engine.camera.orbitBy({ azimuth: 0.1 });
-    flushSync();
-    expect(pressed()).toEqual([]);
-    expect(viewTool().getAttribute('aria-label')).toBe('Anatomical view');
-    expect(live.view.view).toBe('left');
-  });
-
-  test('a view held before the dock mounted is pressed at once', async () => {
-    await mount({ view: { ...liveState({}).view, view: 'superior' } }, { held: 'superior' });
-    expect(tool('Anatomical view: Superior')).toBe(viewTool());
-  });
-
-  test('pressing one frames it, closes the popover, returns focus to the tool and retires the hint', async () => {
-    await mount();
-    expect(stage.hintRetired).toBe(false);
-    await open('Anatomical view');
-    await userEvent.keyboard('{ArrowRight}{Enter}');
-    expect(commands.chooseView.mock.calls).toEqual([['left']]);
-    await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
-    expect(active()).toBe(viewTool());
-    expect(stage.hintRetired).toBe(true);
-  });
-
-  test('a pointer press does the same', async () => {
-    await mount();
-    await press('button', 'Anatomical view');
-    await press('button', 'Anterior');
-    expect(commands.chooseView.mock.calls).toEqual([['anterior']]);
-    await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
-    expect(active()).toBe(viewTool());
-  });
-
-  test.each(['en', 'fr'] as const)(
-    '%s: every name the tool shows is in its accessible name (2.5.3), and the tool keeps one width',
-    async (lang) => {
-      await mount({ lang });
-      const views = t(lang, 'views');
-      const widths = new Set<number>();
-      for (const name of ['', ...VIEW_NAMES] as const) {
-        if (name) hold(name);
-        else {
-          engine.camera.orbitBy({ azimuth: 0.1 });
-          flushSync();
-        }
-        const drawn = viewTool().querySelector('[data-current]')!.textContent!.trim();
-        expect(drawn).toBe(name ? views[name] : t(lang, 'viewport').viewTool);
-        expect(viewTool().getAttribute('aria-label')!.toLowerCase()).toContain(drawn.toLowerCase());
-        widths.add(Math.round(viewTool().getBoundingClientRect().width * 10));
-      }
-      expect(widths.size, 'the width never changes with the name').toBe(1);
-    },
-  );
-
-  test('only the current name is exposed; the others are there for the width alone', async () => {
-    await mount();
-    const names = [...viewTool().querySelectorAll<HTMLElement>('.view-tool-label > span')];
-    expect(names).toHaveLength(1 + VIEW_NAMES.length);
-    const visible = names.filter((node) => getComputedStyle(node).visibility === 'visible');
-    expect(visible.map((node) => node.textContent!.trim())).toEqual(['Oblique']);
-  });
-
-  test('Reset view does it all through the controller, closes the popover and returns focus', async () => {
-    await mount();
-    await open('Anatomical view');
-    await press('button', 'Reset view');
-    expect(commands.reset).toHaveBeenCalledOnce();
-    await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
-    expect(active()).toBe(viewTool());
-  });
-});
-
-describe('the turn buttons (WCAG 2.5.7)', () => {
-  const STEP = Math.PI / 36;
-
-  test('are a named group of four, one arrow key each, and the popover and focus stay', async () => {
-    await mount();
-    const turn = vi.spyOn(engine.camera, 'orbitBy');
-    await open('Anatomical view');
-    const group = page.getByRole('group', { name: 'Turn the model' }).element();
-    expect(group.querySelectorAll('button')).toHaveLength(4);
-    const expected = [
-      ['Turn left', { azimuth: STEP }],
-      ['Turn right', { azimuth: -STEP }],
-      ['Turn up', { polar: STEP }],
-      ['Turn down', { polar: -STEP }],
-    ] as const;
-    for (const [name, step] of expected) {
-      turn.mockClear();
-      await press('button', name);
-      expect(turn.mock.calls, name).toEqual([[step]]);
-      expect(active(), name).toBe(control('button', name));
-      expect(tool('Anatomical view').getAttribute('aria-expanded')).toBe('true');
-    }
-  });
-
-  test('also work from the keyboard, press after press', async () => {
-    await mount();
-    const turn = vi.spyOn(engine.camera, 'orbitBy');
-    await open('Anatomical view');
-    control('button', 'Turn right').focus();
-    await userEvent.keyboard('{Enter}{Space}');
-    expect(turn).toHaveBeenCalledTimes(2);
-    expect(active()).toBe(control('button', 'Turn right'));
-  });
-
-  test('turning leaves the held preset and retires the hint', async () => {
-    await mount();
-    hold('anterior');
-    await open('Anatomical view: Anterior');
-    expect(control('button', 'Anterior').ariaPressed).toBe('true');
-    await press('button', 'Turn up');
-    expect(control('button', 'Anterior').ariaPressed).toBe('false');
-    expect(stage.hintRetired).toBe(true);
-  });
-
-  test('are named in French', async () => {
-    await mount({ lang: 'fr' });
-    await open('Vue anatomique');
-    expect(page.getByRole('group', { name: 'Faire pivoter le modèle' }).elements()).toHaveLength(1);
-    for (const name of [
-      'Tourner à gauche',
-      'Tourner à droite',
-      'Tourner vers le haut',
-      'Tourner vers le bas',
-    ]) {
-      expect(control('button', name)).toBeTruthy();
-    }
   });
 });
 
@@ -532,30 +367,31 @@ describe('the Display popover', () => {
 });
 
 describe('a tool that goes away', () => {
-  test('closes its popover and hands focus to the first tool left, not the page', async () => {
+  test('over the tract reference closes its popover and hands focus to the model, not the page', async () => {
     await mount();
     await open('Display');
     expect(active()).toBe(control('radio', 'Both'));
     live.tractReference = true;
     flushSync();
     await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
-    expect(active()).toBe(viewTool());
+    expect(active()).toBe(canvas());
   });
 
   test('a focused tool that goes hands focus on too', async () => {
     await mount();
-    tool('Display').focus();
+    tool('Section').focus();
     live.tractReference = true;
     flushSync();
-    await vi.waitFor(() => expect(active()).toBe(viewTool()));
+    await vi.waitFor(() => expect(active()).toBe(canvas()));
   });
 
-  test('an open View popover is left alone by the tract reference', async () => {
+  test('the Coordinate tool goes with the coordinate spaces, handing focus to the first tool', async () => {
     await mount();
-    await open('Anatomical view');
-    live.tractReference = true;
+    await open('Coordinate');
+    live.coordinates = false;
     flushSync();
-    expect(page.getByRole('dialog', { name: 'Anatomical view' }).elements()).toHaveLength(1);
+    await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
+    expect(active()).toBe(tool('Section'));
   });
 
   test('a dock the sheet has covered closes whatever is open, and leaves focus where it was put', async () => {
@@ -571,7 +407,7 @@ describe('a tool that goes away', () => {
 
   test('is not drawn while the anatomy loads, and a popover open then closes', async () => {
     await mount();
-    await open('Anatomical view');
+    await open('Display');
     live.status = 'loading';
     flushSync();
     await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
@@ -587,7 +423,7 @@ describe('placement', () => {
 
   test('opens above the whole dock on its start edge, whichever tool opened it', async () => {
     await mount();
-    for (const name of ['Anatomical view', 'Display']) {
+    for (const name of ['Section', 'Display']) {
       await open(name);
       const box = popover().getBoundingClientRect();
       const plate = dock().getBoundingClientRect();
@@ -604,7 +440,7 @@ describe('placement', () => {
     // Text at 200 % makes the popover taller than the room.
     document.documentElement.style.fontSize = '200%';
     try {
-      await open('Anatomical view');
+      await open('Display');
       await vi.waitFor(() => expect(popover().offsetWidth).toBe(350));
       const box = popover().getBoundingClientRect();
       const stageTop = host().getBoundingClientRect().top;
@@ -613,11 +449,12 @@ describe('placement', () => {
       expect(box.left).toBeCloseTo(20, 0);
       expect(popover().scrollHeight).toBeGreaterThan(popover().clientHeight);
       // The last control is reachable: focus scrolls it into the part of the popover that shows.
-      control('button', 'Reset view').focus();
-      const reset = control('button', 'Reset view').getBoundingClientRect();
+      const last = control('checkbox', 'Show spinal cord');
+      last.focus();
+      const reached = last.getBoundingClientRect();
       const shown = popover().getBoundingClientRect();
-      expect(reset.top).toBeGreaterThanOrEqual(shown.top - 1);
-      expect(reset.bottom).toBeLessThanOrEqual(shown.bottom + 1);
+      expect(reached.top).toBeGreaterThanOrEqual(shown.top - 1);
+      expect(reached.bottom).toBeLessThanOrEqual(shown.bottom + 1);
     } finally {
       document.documentElement.style.fontSize = '';
     }
@@ -632,11 +469,13 @@ describe('size, reflow and media', () => {
       box: { width: node.offsetWidth, height: node.offsetHeight },
     }));
   const targets = async () => {
-    await open('Anatomical view');
-    const view = measure('.stage-tool, .popover button');
-    await userEvent.keyboard('{Escape}');
     await open('Display');
-    return [...view, ...measure('.popover [role="radio"], .popover label.check')];
+    const measured = [
+      ...measure('.stage-tool'),
+      ...measure('.popover [role="radio"], .popover label.check'),
+    ];
+    await userEvent.keyboard('{Escape}');
+    return measured;
   };
 
   test('every target is 24 px, and 44 px on a coarse pointer', async () => {
@@ -658,26 +497,21 @@ describe('size, reflow and media', () => {
     }
   });
 
-  test('presets, hemisphere buttons and tick boxes have the legacy sizes', async () => {
+  test('hemisphere buttons and tick boxes have the legacy sizes', async () => {
     await mount();
     const sizes = async () => {
-      await open('Anatomical view');
-      const presets = [...document.querySelectorAll<HTMLElement>('.views button')].map(
-        (node) => node.offsetHeight,
-      );
-      await userEvent.keyboard('{Escape}');
       await open('Display');
       const radios = [...document.querySelectorAll<HTMLElement>('.popover [role="radio"]')].map(
         (node) => node.offsetHeight,
       );
       await userEvent.keyboard('{Escape}');
-      return { presets, radios };
+      return radios;
     };
-    // stage.css:445, components.css:221.
-    expect(await sizes()).toEqual({ presets: Array(7).fill(32), radios: Array(3).fill(28) });
+    // components.css:221.
+    expect(await sizes()).toEqual(Array(3).fill(28));
     // stage.css:638: every choice in a phone popover is a full 44 px target.
     await page.viewport(390, 844);
-    expect(await sizes()).toEqual({ presets: Array(7).fill(44), radios: Array(3).fill(44) });
+    expect(await sizes()).toEqual(Array(3).fill(44));
     await page.viewport(1280, 800);
 
     const session = cdp();
@@ -706,7 +540,7 @@ describe('size, reflow and media', () => {
         const clipped = () =>
           [
             ...document.querySelectorAll<HTMLElement>(
-              '.stage-tool, .view-tool-label > [data-current], .popover button, .popover label, .popover p, .popover [role="radio"]',
+              '.stage-tool, .popover button, .popover label, .popover p, .popover [role="radio"]',
             ),
           ]
             .filter(
@@ -716,9 +550,7 @@ describe('size, reflow and media', () => {
             )
             .map((node) => node.textContent!.trim());
         expect(clipped(), 'the dock').toEqual([]);
-        for (const name of lang === 'en'
-          ? ['Anatomical view', 'Display']
-          : ['Vue anatomique', 'Affichage']) {
+        for (const name of lang === 'en' ? ['Display'] : ['Affichage']) {
           await open(name);
           expect(clipped(), name).toEqual([]);
           expect(popover().scrollWidth, name).toBeLessThanOrEqual(popover().clientWidth);
@@ -761,19 +593,9 @@ describe('size, reflow and media', () => {
     });
   });
 
-  test('increased contrast draws an edge round Reset view', async () => {
-    await mount();
-    await open('Anatomical view');
-    const reset = control('button', 'Reset view');
-    expect(getComputedStyle(reset).borderTopWidth).toBe('0px');
-    await withMedia([{ name: 'prefers-contrast', value: 'more' }], () => {
-      expect(getComputedStyle(reset).borderTopWidth).toBe('1px');
-    });
-  });
-
   test('reduced motion turns the chevron at once', async () => {
     await mount();
-    const chevron = viewTool().querySelector('.stage-tool-chevron')!;
+    const chevron = tool('Display').querySelector('.stage-tool-chevron')!;
     expect(parseFloat(getComputedStyle(chevron).transitionDuration)).toBeGreaterThan(0);
     await withMedia([{ name: 'prefers-reduced-motion', value: 'reduce' }], () => {
       expect(parseFloat(getComputedStyle(chevron).transitionDuration)).toBe(0);
@@ -786,8 +608,8 @@ describe('accessibility (axe)', () => {
     await mount({ lang });
     const names =
       lang === 'en'
-        ? ['Anatomical view', 'Section', 'Display']
-        : ['Vue anatomique', 'Coupe', 'Affichage'];
+        ? ['Section', 'Lesion', 'Coordinate', 'Display']
+        : ['Coupe', 'Lésion', 'Coordonnée', 'Affichage'];
     await expectAxeClean();
     for (const name of names) {
       await open(name);
@@ -797,38 +619,54 @@ describe('accessibility (axe)', () => {
   });
 });
 
-describe('placing a lesion from the Section popover', () => {
+describe('placing a lesion from the Lesion popover', () => {
   test('places only once chosen there: a press on the stage then keeps it open, and closing ends it', async () => {
     await mount();
-    await press('button', 'Section');
-    expect(tool('Section').getAttribute('aria-expanded')).toBe('true');
-    // Open for a cut, a click on the brain still selects: nothing is placed.
+    await press('button', 'Lesion');
+    expect(tool('Lesion').getAttribute('aria-expanded')).toBe('true');
+    // Open, a click on the brain still selects until the reader chooses to place.
     expect(placing.at(-1)).toBe(false);
     await press('button', 'Place');
     await vi.waitFor(() => expect(placing.at(-1)).toBe(true));
-    await userEvent.click(document.getElementById('stage-canvas')!);
-    expect(tool('Section').getAttribute('aria-expanded')).toBe('true');
+    await userEvent.click(canvas()!);
+    expect(tool('Lesion').getAttribute('aria-expanded')).toBe('true');
     expect(placing.at(-1)).toBe(true);
     await press('button', 'After');
-    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
+    await vi.waitFor(() => expect(tool('Lesion').getAttribute('aria-expanded')).toBe('false'));
     expect(placing.at(-1)).toBe(false);
     // Opened again, the popover starts back on selecting.
-    await press('button', 'Section');
+    await press('button', 'Lesion');
     expect(control('button', 'Place').getAttribute('aria-pressed')).toBe('false');
     expect(placing.at(-1)).toBe(false);
   });
 
+  test('another tool opened in its place ends placing', async () => {
+    await mount();
+    await press('button', 'Lesion');
+    await press('button', 'Place');
+    await vi.waitFor(() => expect(placing.at(-1)).toBe(true));
+    await press('button', 'Section');
+    await vi.waitFor(() => expect(placing.at(-1)).toBe(false));
+  });
+
   test('a press on the stage closes the popover while a click selects', async () => {
     await mount();
-    await press('button', 'Section');
-    await userEvent.click(document.getElementById('stage-canvas')!);
-    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
+    await press('button', 'Lesion');
+    await userEvent.click(canvas()!);
+    await vi.waitFor(() => expect(tool('Lesion').getAttribute('aria-expanded')).toBe('false'));
     expect(placing.every((on) => !on)).toBe(true);
+  });
+
+  test('a press on the stage closes the Section popover: only the Lesion popover holds it', async () => {
+    await mount();
+    await press('button', 'Section');
+    await userEvent.click(canvas()!);
+    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
   });
 
   test('is not offered over the tract reference, so nothing is placed there', async () => {
     await mount({ tractReference: true });
-    expect(page.getByRole('button', { name: 'Section' }).elements()).toHaveLength(0);
+    expect(page.getByRole('button', { name: 'Lesion' }).elements()).toHaveLength(0);
     expect(placing.at(-1)).toBe(false);
   });
 });

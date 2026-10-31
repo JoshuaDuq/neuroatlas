@@ -73,7 +73,7 @@ function build() {
     parts.link = createLink({
       engine,
       view: parts.view,
-      lesion: { sphere: null, mode: 'lesion', selectedTract: null },
+      lesion: { sphere: null, mode: 'lesion', selectedTract: null, coordinate: null },
       write: () => {
         parts.written += 1;
       },

@@ -24,6 +24,7 @@ from .layers import (
     cab_np,
     cerebellar_functions,
     comparison,
+    coordinate_spaces,
     functional_regions,
     learning,
     networks,
@@ -104,6 +105,12 @@ def require_layer_inputs(config):
             cerebellar_functions.volume_path(config),
             cerebellar_functions.lobules_path(config),
             cerebellar_functions.report_path(config),
+        ],
+        "coordinate_spaces": lambda: [
+            coordinate_spaces.DEFINITION,
+            coordinate_spaces.report_path(config),
+            *(coordinate_spaces.field_path(config, space)
+              for space in coordinate_spaces.read_definition()["spaces"]),
         ],
     }
     missing = [
@@ -621,6 +628,11 @@ def main():
             if cerebellar_functions.is_declared(config)
             else {}
         ),
+        **(
+            {"coordinate_spaces": coordinate_spaces.export(config, coordinate_spaces.read_definition())}
+            if coordinate_spaces.is_declared(config)
+            else {}
+        ),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
@@ -653,6 +665,8 @@ def main():
             *white_matter.limitations(config),
             *(arterial_territories.limitations() if arterial_territories.is_declared(config) else []),
             *(cerebellar_functions.limitations() if cerebellar_functions.is_declared(config) else []),
+            *(coordinate_spaces.limitations(coordinate_spaces.read_definition())
+              if coordinate_spaces.is_declared(config) else []),
         ],
         "provenance": provenance,
     }

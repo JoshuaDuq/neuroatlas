@@ -20,6 +20,7 @@
   import FunctionProfile from '../functions/FunctionProfile.svelte';
   import { t } from '../../lib/core/i18n/index.ts';
   import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
+  import CoordinateReport from '../lesion/CoordinateReport.svelte';
   import LesionReport from '../lesion/LesionReport.svelte';
   import { clinicalLayers } from '../../lib/core/state/clinical-navigation.ts';
   import type { FunctionExplorer } from '../functions/functions-explorer.svelte.ts';
@@ -79,6 +80,14 @@
       .map(({ id }) => ({ id, name: short[id] ?? id }));
   });
   const bundles = $derived(tractCatalog(manifest.anatomy.id).bundles);
+  // A coordinate's networks gather the parcels of the atlas the network layer assigns.
+  const coordinateNetworks = $derived.by(() => {
+    const layer = manifest.networks as
+      { id: string; parcellation: { annotation: string } } | undefined;
+    const atlas =
+      layer && manifest.atlases.find((entry) => entry.annotation === layer.parcellation.annotation);
+    return layer && atlas ? { id: layer.id, atlas: atlas.id } : null;
+  });
 
   // The lesion's functions are named and grouped as the Functions tab names them.
   const domainNames = $derived(new Map(domains!.domains.map((row) => [row.id, row])));
@@ -115,7 +124,20 @@
     <CircuitStatus model={circuits} />
     <FunctionProfile model={functions} />
     <DeficitProfile explorer={deficits} view={current} />
-    {#if lesionShown}
+    {#if lesionShown && lesion.coordinate}
+      <CoordinateReport
+        {lesion}
+        lang={current.lang}
+        spaces={manifest.coordinate_spaces!}
+        anatomy={manifest.anatomy.id}
+        atlases={lesionAtlases}
+        networks={coordinateNetworks}
+        territories={manifest.arterial_territories?.id ?? null}
+        label={(id) => catalog.label(id).name}
+        bundleName={(id) => bundles.find((bundle) => bundle.id === id)!.name[current.lang]}
+        networksOf={(id) => engine.model.regions.get(id)?.networks}
+      />
+    {:else if lesionShown}
       <LesionReport
         {lesion}
         lang={current.lang}

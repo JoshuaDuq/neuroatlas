@@ -25,6 +25,7 @@ const known: KnownLinkIds = {
   circuits: new Map([['visual', 4]]),
   spinalCord: true,
   // The left bundle while the sphere reaches the left of the midline.
+  coordinateSpaces: new Set(['mni152nlin2009casym', 'unstated']),
   lesionBundles: ({ centre: [x], radius }) => (x - radius < 0 ? ['af-left'] : []),
 };
 
@@ -117,4 +118,26 @@ test('a lesion’s colouring and drawn tract need the lesion, and the tract one 
   const orphan = check('lesionmode=functions&lesiontract=af-left');
   assert.deepEqual(orphan.rejected, ['lesionmode', 'lesiontract']);
   assert.deepEqual(orphan.state, {});
+});
+
+test('a coordinate needs a published space, and is never a lesion too', () => {
+  assert.deepEqual(check('coord=-42,22,6&space=unstated').rejected, []);
+  assert.deepEqual(check('coord=-42,22,6&space=mni152nlin2009casym').rejected, []);
+  const unknown = check('coord=-42,22,6&space=talairach');
+  assert.deepEqual(unknown.rejected, ['coord', 'space']);
+  assert.deepEqual(unknown.state, {});
+  assert.deepEqual(check('coord=-42,22,6').rejected, ['coord']);
+  assert.deepEqual(check('space=unstated').rejected, ['space']);
+  // An anatomy that publishes no spaces takes no coordinate.
+  assert.deepEqual(
+    checkLink(decodeState('coord=-42,22,6&space=unstated').state, {
+      ...known,
+      coordinateSpaces: new Set(),
+    }).rejected,
+    ['coord', 'space'],
+  );
+  // Both spheres at once: neither is guessed at, and the lesion's colouring goes with it.
+  const both = check('lesion=-30,0,10,8&lesionmode=functions&coord=-42,22,6&space=unstated');
+  assert.deepEqual(both.rejected, ['lesion', 'coord', 'space', 'lesionmode']);
+  assert.deepEqual(both.state, {});
 });

@@ -1,0 +1,192 @@
+{
+  "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+  "spaces": {
+    "mni152nlin2009casym": {
+      "checks": {
+        "hemisphere_agreement": 0.9977,
+        "subcortical_dice": {
+          "thalamus-left": 0.8868,
+          "thalamus-right": 0.9166,
+          "caudate-left": 0.8962,
+          "caudate-right": 0.8887,
+          "putamen-left": 0.9238,
+          "putamen-right": 0.9,
+          "pallidum-left": 0.9019,
+          "pallidum-right": 0.8778,
+          "hippocampus-left": 0.8769,
+          "hippocampus-right": 0.8783,
+          "amygdala-left": 0.8938,
+          "amygdala-right": 0.8872,
+          "lateral-ventricle-left": 0.8783,
+          "lateral-ventricle-right": 0.8799
+        },
+        "cortex_dice": 0.7373,
+        "round_trip_mm": {
+          "median": 0.0589,
+          "p95": 0.2345
+        }
+      },
+      "grid_error_mm": {
+        "median": 0.0151,
+        "p95": 0.0574,
+        "max": 0.1816
+      },
+      "field_sha256": "2c20d8cbcdc31bb41e2acb875fef6f11bb5fb402af3f6000a03d4baf4d9104db"
+    },
+    "spm12": {
+      "checks": {
+        "hemisphere_agreement": 0.9981,
+        "subcortical_dice": {
+          "thalamus-left": 0.8036,
+          "thalamus-right": 0.9024,
+          "caudate-left": 0.8747,
+          "caudate-right": 0.8806,
+          "putamen-left": 0.8839,
+          "putamen-right": 0.8775,
+          "pallidum-left": 0.8478,
+          "pallidum-right": 0.834,
+          "hippocampus-left": 0.8599,
+          "hippocampus-right": 0.8459,
+          "amygdala-left": 0.8345,
+          "amygdala-right": 0.8609,
+          "lateral-ventricle-left": 0.8818,
+          "lateral-ventricle-right": 0.8898
+        },
+        "cortex_dice": 0.7168,
+        "round_trip_mm": {
+          "median": 0.0497,
+          "p95": 0.1834
+        }
+      },
+      "grid_error_mm": {
+        "median": 0.0025,
+        "p95": 0.0044,
+        "max": 0.0071
+      },
+      "field_sha256": "2a57771bf6cd3b9d049210116e31e3bfb43952734ee6da5672cc1cfe6fdef33e"
+    }
+  },
+  "alternatives": {
+    "mni152nlin6asym": {
+      "checks": {
+        "hemisphere_agreement": 0.9982,
+        "subcortical_dice": {
+          "thalamus-left": 0.8915,
+          "thalamus-right": 0.926,
+          "caudate-left": 0.9046,
+          "caudate-right": 0.8979,
+          "putamen-left": 0.9177,
+          "putamen-right": 0.9104,
+          "pallidum-left": 0.8797,
+          "pallidum-right": 0.893,
+          "hippocampus-left": 0.8778,
+          "hippocampus-right": 0.8776,
+          "amygdala-left": 0.904,
+          "amygdala-right": 0.8989,
+          "lateral-ventricle-left": 0.9053,
+          "lateral-ventricle-right": 0.9095
+        },
+        "cortex_dice": 0.7375,
+        "round_trip_mm": {
+          "median": 0.0626,
+          "p95": 0.2462
+        }
+      },
+      "against": {
+        "mni152nlin2009casym": {
+          "cortex_offset_mm": {
+            "median": 1.5562,
+            "p95": 3.1959,
+            "max": 6.1358
+          },
+          "sphere_overlap": {
+            "median": 0.8961,
+            "p10": 0.7222
+          },
+          "subcortical_offset_mm": {
+            "median": 0.7072,
+            "p95": 1.2611,
+            "max": 2.3895
+          }
+        },
+        "spm12": {
+          "cortex_offset_mm": {
+            "median": 1.6148,
+            "p95": 3.395,
+            "max": 6.4359
+          },
+          "sphere_overlap": {
+            "median": 0.8942,
+            "p10": 0.7099
+          },
+          "subcortical_offset_mm": {
+            "median": 0.9914,
+            "p95": 1.903,
+            "max": 3.3584
+          }
+        }
+      }
+    },
+    "mni152lin": {
+      "checks": {
+        "hemisphere_agreement": 0.9977,
+        "subcortical_dice": {
+          "thalamus-left": 0.8769,
+          "thalamus-right": 0.9004,
+          "caudate-left": 0.9009,
+          "caudate-right": 0.8912,
+          "putamen-left": 0.9137,
+          "putamen-right": 0.9025,
+          "pallidum-left": 0.8759,
+          "pallidum-right": 0.8704,
+          "hippocampus-left": 0.8789,
+          "hippocampus-right": 0.8716,
+          "amygdala-left": 0.869,
+          "amygdala-right": 0.8956,
+          "lateral-ventricle-left": 0.8615,
+          "lateral-ventricle-right": 0.8571
+        },
+        "cortex_dice": 0.711,
+        "round_trip_mm": {
+          "median": 0.0483,
+          "p95": 0.1775
+        }
+      },
+      "against": {
+        "mni152nlin2009casym": {
+          "cortex_offset_mm": {
+            "median": 1.6971,
+            "p95": 3.1912,
+            "max": 6.763
+          },
+          "sphere_overlap": {
+            "median": 0.8901,
+            "p10": 0.7236
+          },
+          "subcortical_offset_mm": {
+            "median": 0.6494,
+            "p95": 1.0507,
+            "max": 1.4126
+          }
+        },
+        "spm12": {
+          "cortex_offset_mm": {
+            "median": 1.1415,
+            "p95": 2.5652,
+            "max": 5.6979
+          },
+          "sphere_overlap": {
+            "median": 0.9198,
+            "p10": 0.7883
+          },
+          "subcortical_offset_mm": {
+            "median": 0.805,
+            "p95": 1.5715,
+            "max": 3.1943
+          }
+        }
+      }
+    }
+  },
+  "method": "mri_synthmorph register -m joint (skull-stripped template \u2192 brain.mgz); SynthSeg --parc --robust reads the template, carried by apply -m nearest onto aseg's grid and scored against aseg. A published field samples the inverse warp every 1.5 mm over the template's brain dilated 4 mm. Offsets read the same numbers as each template at the first published template's own cortex and deep grey, with 5 mm sphere overlap of this brain's Schaefer-400 parcels."
+}

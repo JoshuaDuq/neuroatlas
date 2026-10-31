@@ -1,5 +1,7 @@
 import { ALL_DOMAINS } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
+import { UNSTATED } from '../core/coordinates/spaces.ts';
+import type { Coordinates } from '../core/coordinates/spaces.ts';
 import { linkNotice } from '../core/i18n/errors.ts';
 import type { CircuitCatalog, Landmark } from '../core/learning/catalog.ts';
 import { checkLink } from '../core/state/link-check.ts';
@@ -51,8 +53,17 @@ export interface LinksOptions {
   view: ViewStore;
   lesion: Pick<
     LesionStore,
-    'sphere' | 'mode' | 'selectedTract' | 'heldOpacity' | 'restore' | 'remove'
+    | 'sphere'
+    | 'mode'
+    | 'selectedTract'
+    | 'heldOpacity'
+    | 'restore'
+    | 'remove'
+    | 'coordinate'
+    | 'placeCoordinate'
   >;
+  /** The anatomy's published coordinate spaces, or null when it publishes none. */
+  coordinates: Pick<Coordinates, 'metadata' | 'map'> | null;
   /** The writer from `createLink`: hold, release, schedule and cancel. */
   link: Pick<LinkStore, 'hold' | 'release' | 'schedule' | 'cancel'>;
   commands: Pick<
@@ -85,6 +96,7 @@ export function createLinks({
   lesson,
   view,
   lesion,
+  coordinates,
   link,
   commands,
   clinical,
@@ -123,6 +135,9 @@ export function createLinks({
     deficits: new Set(clinical.search('', 'en').map((deficit) => deficit.id)),
     circuits: new Map(circuits.all.map((circuit) => [circuit.id, circuit.steps.length])),
     spinalCord: publishesSpinalCord(model.manifest),
+    coordinateSpaces: new Set(
+      coordinates ? [...coordinates.metadata.spaces.map(({ id }) => id), UNSTATED] : [],
+    ),
     lesionBundles: (sphere) => engine.lesion.tractBundles(sphere),
   };
 
@@ -158,9 +173,15 @@ export function createLinks({
       mriWindow: sections.mriWindowLink(),
       // The see-through cortex the drawn streamlines asked for comes back with them.
       cortexOpacity: lesion.heldOpacity ?? current.cortexOpacity,
-      lesion: lesion.sphere && { centre: [...lesion.sphere.centre], radius: lesion.sphere.radius },
+      // A coordinate's sphere travels as the coordinate; its landing is the field's to find again.
+      lesion:
+        lesion.sphere && !lesion.coordinate
+          ? { centre: [...lesion.sphere.centre], radius: lesion.sphere.radius }
+          : null,
       lesionMode: lesion.mode,
-      lesionTract: lesion.selectedTract,
+      lesionTract: lesion.coordinate ? null : lesion.selectedTract,
+      coordinate: lesion.coordinate && [...lesion.coordinate.entered],
+      coordinateSpace: lesion.coordinate?.space ?? null,
     };
   }
 
@@ -308,7 +329,21 @@ export function createLinks({
       const tract = explorer === 'anatomy' ? (valid.lesionTract ?? null) : null;
       if (valid.lesionTract && !tract) notApplied.push(PARAMS.lesionTract!);
       if (valid.lesion) lesion.restore(valid.lesion, valid.lesionMode ?? 'lesion', tract);
-      else if (lesion.sphere) lesion.remove();
+      else if (valid.coordinate) {
+        const placed = { entered: valid.coordinate, space: valid.coordinateSpace! };
+        let landing: Awaited<ReturnType<Coordinates['map']>> = null;
+        try {
+          landing = await coordinates!.map(placed.entered, placed.space);
+        } catch (error) {
+          console.error(error);
+        }
+        if (!current()) return null;
+        if (landing) lesion.placeCoordinate(placed, landing, coordinates!.metadata.radius_mm);
+        else {
+          notApplied.push(PARAMS.coordinate!, PARAMS.coordinateSpace!);
+          if (lesion.sphere) lesion.remove();
+        }
+      } else if (lesion.sphere) lesion.remove();
       // A lesson linked without its landmark opens on it, as choosing that step does; leaving it
       // returns to the rest of the link.
       if (explorer === 'circuits' && valid.circuit && !valid.selectedRegion) {
@@ -329,7 +364,7 @@ export function createLinks({
         (explorer === 'deficits' && selectedDeficit) ||
         (explorer === 'circuits' && valid.circuit) ||
         // The lesion's report is Anatomy's detail while no region is selected.
-        (explorer === 'anatomy' && valid.lesion && !valid.selectedRegion)
+        (explorer === 'anatomy' && (valid.lesion || lesion.coordinate) && !valid.selectedRegion)
       ) {
         hooks.showDetail();
       }

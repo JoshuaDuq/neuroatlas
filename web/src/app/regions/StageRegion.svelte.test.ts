@@ -83,7 +83,7 @@ afterEach(() => {
 });
 
 describe('what the stage region holds', () => {
-  test('one main landmark holds the overlay, the dock, the keys and the snippet it is given; no stage control is outside it', async () => {
+  test('one main landmark holds the overlay, the dock, the gizmo, the keys and the snippet it is given; no stage control is outside it', async () => {
     app = createApp();
     app.attach(composeWorld(app, engine, 'cdmd'));
     app.session.setStatus('ready');
@@ -96,9 +96,12 @@ describe('what the stage region holds', () => {
     expect(main.getAttribute('tabindex')).toBe('-1');
     expect(main.querySelector('.stage-overlay')).not.toBeNull();
     expect(main.querySelector('.stage-dock')).not.toBeNull();
+    expect(main.querySelector('.orientation-gizmo')).not.toBeNull();
     expect(main.querySelector('.stage-keys')).not.toBeNull();
     expect(main.querySelector('#stage-status-slot')).not.toBeNull();
-    for (const control of document.querySelectorAll('.stage-tool, .stage-keys')) {
+    for (const control of document.querySelectorAll(
+      '.stage-tool, .stage-keys, .orientation-gizmo',
+    )) {
       expect(main.contains(control)).toBe(true);
     }
   });
@@ -222,14 +225,17 @@ describe('the stage layout', () => {
     expect(document.getElementById('viewport')!.style.getPropertyValue('--vis-right')).toBe('0px');
   });
 
-  test('a full phone sheet hides the dock, the scale bar and the letters', async () => {
+  test('a full phone sheet hides the dock, the gizmo, the scale bar and the letters', async () => {
     boot();
     const dock = document.querySelector<HTMLElement>('.stage-dock')!;
+    const gizmo = document.querySelector<HTMLElement>('.orientation-gizmo')!;
     expect(getComputedStyle(dock).visibility).toBe('visible');
+    expect(getComputedStyle(gizmo).visibility).toBe('visible');
     app.stage.sheetFull = true;
     flushSync();
     expect(document.getElementById('viewport')!.dataset.sheetFull).toBe('true');
     expect(getComputedStyle(dock).visibility).toBe('hidden');
+    expect(getComputedStyle(gizmo).visibility).toBe('hidden');
     expect(getComputedStyle(document.getElementById('orientation')!).visibility).toBe('hidden');
     app.stage.sheetFull = false;
     flushSync();
@@ -408,16 +414,65 @@ describe('focus and the crosshair', () => {
 });
 
 describe('the dock and the keys', () => {
-  test('a view preset sets the session’s view and frames it; Reset view resets the model', async () => {
+  test('a gizmo letter sets the session’s view and frames it; Reset view resets the model', async () => {
     boot();
-    await userEvent.click(page.getByRole('button', { name: /^Anatomical view/ }));
-    await userEvent.click(page.getByRole('button', { name: 'Left', exact: true }));
-    expect(app.world!.view.current.view).toBe('left');
-    expect(call('camera', 'applyView').at(-1)?.args[0]).toBe('left');
-    await userEvent.click(page.getByRole('button', { name: /^Anatomical view/ }));
+    (
+      page.getByRole('button', { name: 'Superior view', exact: true }).element() as HTMLElement
+    ).click();
+    flushSync();
+    expect(app.world!.view.current.view).toBe('superior');
+    expect(call('camera', 'applyView').at(-1)?.args[0]).toBe('superior');
+    expect(
+      page
+        .getByRole('button', { name: 'Superior view', exact: true })
+        .element()
+        .getAttribute('aria-pressed'),
+    ).toBe('true');
     await userEvent.click(page.getByRole('button', { name: 'Reset view' }));
     expect(call('model', 'reset')).toHaveLength(1);
   });
+
+  test('the dock offers Coordinate because the anatomy publishes coordinate spaces, and its popover holds the form', async () => {
+    boot();
+    expect(app.world!.coordinates).not.toBeNull();
+    await userEvent.click(page.getByRole('button', { name: 'Coordinate', exact: true }));
+    const dialog = page.getByRole('dialog', { name: 'Coordinate', exact: true }).element();
+    expect(dialog.querySelector('input[type="text"]')).not.toBeNull();
+    expect(dialog.querySelector('select')).not.toBeNull();
+    await userEvent.click(page.getByRole('button', { name: 'Lesion', exact: true }));
+    const lesion = page.getByRole('dialog', { name: 'Lesion', exact: true }).element();
+    expect(lesion.querySelector('input[type="range"]')).not.toBeNull();
+    expect(lesion.querySelector('input[type="text"]')).toBeNull();
+  });
+
+  test.each([
+    [1280, 800],
+    [390, 844],
+  ])(
+    'at %i × %i the gizmo sits top right, clear of the top and right letters',
+    async (width, height) => {
+      await page.viewport(width, height);
+      boot();
+      const viewport = document.getElementById('viewport')!;
+      viewport.style.cssText = `width: ${width - 40}px; height: ${height - 100}px`;
+      flushSync();
+      const gizmo = document.querySelector('.orientation-gizmo')!.getBoundingClientRect();
+      const host = viewport.getBoundingClientRect();
+      expect(host.right - gizmo.right).toBeLessThan(40);
+      expect(gizmo.top - host.top).toBeLessThan(40);
+      for (const edge of ['top', 'right']) {
+        const letter = document
+          .querySelector(`#orientation [data-edge="${edge}"]`)!
+          .getBoundingClientRect();
+        const apart =
+          letter.right <= gizmo.left ||
+          letter.left >= gizmo.right ||
+          letter.bottom <= gizmo.top ||
+          letter.top >= gizmo.bottom;
+        expect(apart, edge).toBe(true);
+      }
+    },
+  );
 
   async function functionsPainted() {
     await engine.model.setAtlas(app.world!.engine.model.domains!.atlas);

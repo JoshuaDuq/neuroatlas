@@ -1,4 +1,6 @@
 import { flushSync } from 'svelte';
+import { ASSET_BASE } from '../../build/site.ts';
+import { createCoordinatePlacement } from '../lib/controller/coordinates.ts';
 import { createAnatomyCommands } from '../lib/controller/anatomy.ts';
 import type { AppContext } from '../lib/controller/context.ts';
 import { createExcursions } from '../lib/controller/excursion.svelte.ts';
@@ -7,6 +9,7 @@ import { createLinks } from '../lib/controller/links.ts';
 import type { Links } from '../lib/controller/links.ts';
 import { createCatalog } from '../lib/core/catalog/catalog.ts';
 import { loadClinicalCatalog } from '../lib/core/clinical/load.ts';
+import { createCoordinateSpaces } from '../lib/core/coordinates/spaces.ts';
 import { isIndependentTractReference } from '../lib/core/diffusion/presentation.ts';
 import { failureNotice } from '../lib/core/i18n/errors.ts';
 import { loadCircuitCatalog } from '../lib/core/learning/load.ts';
@@ -45,6 +48,14 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
   const regions = createCatalog(model.manifest, session.state.lang, model.cabNp);
   const clinical = loadClinicalCatalog(model.manifest, domains.units);
   const circuits = loadCircuitCatalog(model.manifest, clinical);
+  // Each space's field is published beside the manifest the engine opened (boot.ts).
+  const published = model.manifest.coordinate_spaces;
+  const coordinates = published
+    ? createCoordinateSpaces(
+        published,
+        new URL(`${ASSET_BASE}models/${model.manifest.anatomy.id}/`, globalThis.location.href),
+      )
+    : null;
 
   // The scene commands read the session through `assemble`, which the store replaces with `state`.
   const commands = createSceneCommands({
@@ -134,6 +145,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       lesson,
       view,
       lesion,
+      coordinates,
       link,
       commands,
       clinical,
@@ -176,6 +188,24 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       links,
       speech,
       lesion,
+      coordinates:
+        coordinates &&
+        createCoordinatePlacement({
+          coordinates,
+          lesion,
+          engine,
+          commands,
+          ui: {
+            showAnatomy() {
+              excursions.chooseExplorer('anatomy');
+              anatomy.selectRegion(null);
+            },
+            showDetail() {
+              flushSync();
+              ports.showDetailInPlace();
+            },
+          },
+        }),
     };
   });
   app.defer(stop);

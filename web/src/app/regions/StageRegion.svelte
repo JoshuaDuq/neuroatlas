@@ -15,12 +15,15 @@
   import { createSectionControls } from '../../features/sections/section-controls.svelte.ts';
   import SectionBar from '../../features/sections/SectionBar.svelte';
   import SectionPopover from '../../features/sections/SectionPopover.svelte';
+  import CoordinatePopover from '../../features/lesion/CoordinatePopover.svelte';
   import LesionPopover from '../../features/lesion/LesionPopover.svelte';
   import { saveSnapshot } from '../../features/snapshot/snapshot.ts';
   import Dock from '../../features/stage/Dock.svelte';
+  import type { DockCommands } from '../../features/stage/dock-commands.ts';
   import { createFullscreen } from '../../features/stage/fullscreen.ts';
   import type { Fullscreen } from '../../features/stage/fullscreen.ts';
   import type { HoverSources } from '../../features/stage/hover-text.ts';
+  import OrientationGizmo from '../../features/stage/OrientationGizmo.svelte';
   import type { ColoredNetworks } from '../../features/stage/stage-keys.ts';
   import StageKeys from '../../features/stage/StageKeys.svelte';
   import StageOverlay from '../../features/stage/StageOverlay.svelte';
@@ -202,6 +205,25 @@
     {@const current = world.view.current}
     {@const tractReference = isIndependentTractReference(current)}
     {@const { model } = world.engine}
+    {@const commands = {
+      reset: world.anatomy.reset,
+      setHemisphere: world.anatomy.setHemisphere,
+      setCortexVisible: world.anatomy.setCortexVisible,
+      setCortexOpacity: world.anatomy.setCortexOpacity,
+      setInternalVisible: world.anatomy.setInternalVisible,
+      setSpinalCordVisible: world.anatomy.setSpinalCordVisible,
+      chooseView(name) {
+        if (!app.session.setView(name)) throw new Error(`Unknown view: ${name}`);
+        world.engine.camera.applyView(name);
+      },
+    } satisfies DockCommands}
+    {@const showReport = (close: () => void) => {
+      world.excursions.chooseExplorer('anatomy');
+      world.anatomy.selectRegion(null);
+      app.ports.showDetail();
+      // The raised sheet leaves a phone's popover no stage to sit on.
+      if (app.media.phone) close();
+    }}
     <StageOverlay
       engine={world.engine}
       stage={app.stage}
@@ -213,8 +235,15 @@
       view={current}
       {sources}
     />
+    {#snippet coordinatePopover({ close }: { close: () => void })}
+      <CoordinatePopover
+        lesion={world.lesion}
+        placement={world.coordinates!}
+        lang={current.lang}
+        onReport={() => showReport(close)}
+      />
+    {/snippet}
     <Dock
-      engine={world.engine}
       stage={app.stage}
       media={app.media}
       lang={current.lang}
@@ -223,18 +252,8 @@
       view={current}
       hasSpinalCord={publishesSpinalCord(model.manifest)}
       onLesionPlacing={world.lesion.setPlacing}
-      commands={{
-        reset: world.anatomy.reset,
-        setHemisphere: world.anatomy.setHemisphere,
-        setCortexVisible: world.anatomy.setCortexVisible,
-        setCortexOpacity: world.anatomy.setCortexOpacity,
-        setInternalVisible: world.anatomy.setInternalVisible,
-        setSpinalCordVisible: world.anatomy.setSpinalCordVisible,
-        chooseView(name) {
-          if (!app.session.setView(name)) throw new Error(`Unknown view: ${name}`);
-          world.engine.camera.applyView(name);
-        },
-      }}
+      {commands}
+      coordinatePopover={world.coordinates ? coordinatePopover : undefined}
     >
       {#snippet sectionPopover({ close })}
         <SectionPopover
@@ -253,22 +272,24 @@
           {tractReference}
         />
       {/snippet}
-      {#snippet lesionControls({ close, placing, setPlacing })}
+      {#snippet lesionPopover({ close, placing, setPlacing })}
         <LesionPopover
           lesion={world.lesion}
           lang={current.lang}
           {placing}
           onPlacing={setPlacing}
-          onReport={() => {
-            world.excursions.chooseExplorer('anatomy');
-            world.anatomy.selectRegion(null);
-            app.ports.showDetail();
-            // The raised sheet leaves a phone's popover no stage to sit on.
-            if (app.media.phone) close();
-          }}
+          onReport={() => showReport(close)}
         />
       {/snippet}
     </Dock>
+    <OrientationGizmo
+      engine={world.engine}
+      stage={app.stage}
+      lang={current.lang}
+      ready={current.status === 'ready' || current.status === 'switching'}
+      viewName={current.view}
+      {commands}
+    />
     <StageKeys
       bind:this={keys}
       stage={app.stage}
@@ -394,6 +415,12 @@
         min-width: 44px;
       }
     }
+    :global(#viewport:fullscreen .orientation-gizmo) {
+      top: calc(
+        var(--vis-top) + var(--key-top) + var(--stage-gutter) + var(--lh-caption) + var(--space-2) +
+          var(--control-height) + var(--space-2)
+      );
+    }
     :global(#viewport:fullscreen .stage-keys) {
       top: calc(
         var(--vis-top) + var(--stage-gutter) + var(--lh-caption) + var(--space-2) +
@@ -405,7 +432,10 @@
       );
     }
     /* A raised phone sheet leaves the picture a strip: the tools and markings would collide in it (stage.css:720-721). */
-    :global(#viewport[data-sheet-full='true'] :is(.stage-dock, .scale-bar, .orientation)) {
+    :global(
+      #viewport[data-sheet-full='true']
+        :is(.stage-dock, .scale-bar, .orientation, .orientation-gizmo)
+    ) {
       visibility: hidden;
     }
     /* An open popover covers most of the picture; markings left at its edges would label nothing (stage.css:722-725). */

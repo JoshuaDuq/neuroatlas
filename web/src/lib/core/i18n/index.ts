@@ -7,6 +7,7 @@ import * as boundary from './areas/boundary.ts';
 import * as circuits from './areas/circuits.ts';
 import * as clinical from './areas/clinical.ts';
 import * as comparison from './areas/comparison.ts';
+import * as coordinate from './areas/coordinate.ts';
 import * as cuts from './areas/cuts.ts';
 import * as deficitKey from './areas/deficitKey.ts';
 import * as diffusion from './areas/diffusion.ts';
@@ -47,6 +48,7 @@ export const TRANSLATIONS = {
     circuits: circuits.en,
     clinical: clinical.en,
     comparison: comparison.en,
+    coordinate: coordinate.en,
     cuts: cuts.en,
     deficitKey: deficitKey.en,
     diffusion: diffusion.en,
@@ -86,6 +88,7 @@ export const TRANSLATIONS = {
     circuits: circuits.fr,
     clinical: clinical.fr,
     comparison: comparison.fr,
+    coordinate: coordinate.fr,
     cuts: cuts.fr,
     deficitKey: deficitKey.fr,
     diffusion: diffusion.fr,

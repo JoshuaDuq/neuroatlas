@@ -49,6 +49,8 @@ function build({ announce }: { announce: boolean }) {
         heldOpacity: null,
         restore() {},
         remove() {},
+        coordinate: null,
+        placeCoordinate() {},
       };
       parts.links = createLinks({
         engine,
@@ -56,6 +58,7 @@ function build({ announce }: { announce: boolean }) {
         lesson,
         view,
         lesion,
+        coordinates: null,
         link: createLink({ engine, view, lesion, write: () => {} }),
         commands: createSceneCommands({
           model: engine.model,

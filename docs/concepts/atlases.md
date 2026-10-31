@@ -149,3 +149,22 @@ Each of 70 functions is one Neurosynth abstract term, used by at least 100 studi
 - **Teaching set.** Its caudate, putamen, both pallidal segments, accumbens, thalamus, hippocampus and amygdala are drawn with the score of the aseg structure that holds most of each on this brain (at least half; 0.57 for the accumbens, 0.84 or more for the rest, checked by the build). The geniculate bodies lie in aseg's ventral diencephalon, so no unit takes that structure's one score (reward).
 - **Lesion check.** Each function names lesion associations from the Deficits evidence, and the build reports how much of each cited parcel its map covers. The check is reported, never tuned.
 - **Limits.** Healthy-group activation literature, not this brain and not a prediction of what damage impairs. Signal-dropout regions (orbitofrontal, anterior temporal) reach few functions. Neurosynth's MNI152 maps are sampled on `fsaverage`'s MNI305, a few millimetres apart. Subcortical scores are weaker evidence than cortical ones. Licensed ODbL 1.0.
+
+## Published coordinates
+
+A coordinate from a paper, given in millimetres of a named MNI template, is placed on CDMD with a 5 mm sphere. `scripts/register_coordinate_spaces.py` registers each template, skull-stripped, to CDMD's `brain.mgz` with SynthMorph (joint affine and deformable). SynthSeg reads the template's own anatomy, and the warp carries that reading onto aseg's grid to be scored against CDMD's segmentation. A published space ships its inverse warp, template millimetres to surface RAS, sampled every 1.5 mm over the template's brain plus 4 mm; the viewer interpolates it trilinearly and refuses a coordinate beyond that. The limits were set before any template was registered:
+
+| Check | Limit | MNI152NLin2009cAsym | SPM12 (TPM) |
+| :--- | :--- | :--- | :--- |
+| Lateralised tissue on its own side | ≥ 98% | 99.8% | 99.8% |
+| Deep grey and lateral ventricle Dice, each / median | ≥ 0.70 / ≥ 0.80 | 0.877–0.924 / 0.888 | 0.804–0.902 / 0.868 |
+| Cerebral cortex Dice | ≥ 0.65 | 0.74 | 0.72 |
+| Template → CDMD → template, median / p95 | ≤ 0.5 / ≤ 1 mm | 0.06 / 0.23 mm | 0.05 / 0.18 mm |
+| Shipped grid against the full field, p95 | ≤ 0.1 mm | 0.057 mm | 0.004 mm |
+
+SPM12's unified segmentation normalises to its tissue probability maps, not to a T1, so the script registers a T1-like image built from their grey, white and fluid classes. Its 1.5 mm grid falls on the maps' own voxels, which is why its grid error is only rounding.
+
+- **Template not stated.** An unstated "MNI" reads as MNI152NLin2009cAsym. FSL's MNI152NLin6Asym and the MNI152Lin of SPM96–SPM8 were registered the same way and passed every check. Read as either, the same numbers at 2009cAsym's cortex land a median 1.56 / 1.70 mm (p95 3.2 / 3.2 mm) from the 2009cAsym reading, and their 5 mm neighbourhoods share 0.90 / 0.89 of their Schaefer parcels; the report shows these offsets. SPM12 landed a median 2.35 mm away, past the 2 mm limit, so it is a space of its own. MNI152NLin6Asym's field is not published: TemplateFlow publishes no licence for it. Talairach and other spaces are refused.
+- **Neighbourhood, not a parcel.** At 2009cAsym's cortex, 28% of points land outside CDMD's cortical ribbon. Where they land in it, a single Schaefer-400 parcel agreed between an MNI-space lookup and CDMD's own projection 61% of the time (network 83%), and a miss lay a median 2.2 mm (90%: 5.9 mm) from the parcel it named. The report therefore gives each region's share of the 5 mm sphere, never one cortical parcel; it names a deep grey structure only when the landing point lies in it.
+- **No functions.** A published coordinate is usually an activation peak; the report attaches no functions, deficits or clinical findings to it.
+- **Limits.** A template location carried onto one brain, not where this person's own peak would be and not what this brain does there. Measured on CDMD only. MNI152NLin2009cAsym is distributed under the MNI template licence; SPM12's maps under GPL-2.0 or later, derived from IXI data (CC BY-SA 3.0).

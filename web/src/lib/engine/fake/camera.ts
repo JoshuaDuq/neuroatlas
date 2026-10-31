@@ -117,6 +117,7 @@ export function createFakeCamera({
         bottom: OPPOSITE[topLetter],
       },
       scale: size.height > 0 ? { millimetres: 10, pixels: 100 } : null,
+      basis: { right, up: top, back: forward.map((value) => -value) as Vector },
     };
   }
 

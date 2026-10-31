@@ -287,6 +287,70 @@
   },
   "correspondence": "Il s’agit d’une correspondance spatiale, sans équivalence fonctionnelle."
  },
+ "coordinate": {
+  "field": "Coordonnée MNI, mm",
+  "example": "−42, 22, 6",
+  "space": "Gabarit",
+  "unstated": "MNI, gabarit non précisé",
+  "place": "Placer",
+  "placing": "Placement…",
+  "note": "Coordonnées MNI152 seulement<NNBSP>; Talairach et les autres espaces ne sont pas acceptés.",
+  "unreadable": "Entrez trois nombres, x, y, z, en millimètres.",
+  "outside": "Cette coordonnée se trouve hors du cerveau du gabarit<NNBSP>; elle n’est pas placée.",
+  "failed": "La coordonnée n’a pas pu être placée.",
+  "reportTitle": "Coordonnée publiée",
+  "entered": [
+   "[\"Alpha\",\"\"] → \"Alpha dans \"",
+   "[\"\",\"Alpha\"] → \" dans Alpha\""
+  ],
+  "landed": [
+   "[\"Alpha\"] → \"Placée en Alpha sur ce cerveau (RAS de surface)\"",
+   "[\"\"] → \"Placée en  sur ce cerveau (RAS de surface)\""
+  ],
+  "at": "À ce point",
+  "readsAs": [
+   "[\"Alpha\"] → \"Gabarit non précisé<NNBSP>: lue dans Alpha.\"",
+   "[\"\"] → \"Gabarit non précisé<NNBSP>: lue dans .\""
+  ],
+  "alternativesNote": "Lus dans un autre gabarit, les mêmes nombres se placent ailleurs (écarts mesurés sur le cortex du gabarit)<NNBSP>:",
+  "alternative": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha se place à une médiane de  (95<NNBSP>%<NNBSP>: Alpha) sur ce cerveau\"",
+   "[\"\",\"Alpha\",\"\"] → \" se place à une médiane de Alpha (95<NNBSP>%<NNBSP>: ) sur ce cerveau\""
+  ],
+  "caveat": "Une position du gabarit reportée sur ce seul cerveau par recalage. Ce n’est pas l’endroit où serait le pic propre à cette personne, ni ce que fait ce cerveau à cet endroit.",
+  "failedMeasure": "Ce qui se trouve près de la coordonnée n’a pas pu être mesuré.",
+  "within": [
+   "[\"Alpha\"] → \"À moins de Alpha\"",
+   "[\"\"] → \"À moins de \""
+  ],
+  "shareNote": "Part de la sphère dans chaque région<NNBSP>; aucune région n’est à elle seule l’étiquette de la coordonnée",
+  "rest": "Dans aucune de ces régions",
+  "networks": "Réseaux de Yeo (7), d’après les parcelles de Schaefer",
+  "deep": "Gris profond (aseg)",
+  "territoryNote": "Territoires typiques (Liu et al. 2023, recalés sur ce cerveau)<NNBSP>; pas les propres vaisseaux de ce cerveau",
+  "download": "Télécharger CSV",
+  "restCsv": "(dans aucune de ces régions)",
+  "tracts": {
+   "tracts": [
+    "[\"Alpha\"] → \"Faisceaux passant à moins de Alpha\"",
+    "[\"\"] → \"Faisceaux passant à moins de \""
+   ],
+   "tractsNote": [
+    "[\"Alpha\"] → \"Trajectoires ayant un point à moins de Alpha\"",
+    "[\"\"] → \"Trajectoires ayant un point à moins de \""
+   ],
+   "tractsChoose": "Choisissez un faisceau pour n’afficher que ses trajectoires passant à proximité.",
+   "showTract": [
+    "[\"Alpha\",\"\"] → \"Afficher les  trajectoires de Alpha passant à proximité\"",
+    "[\"\",\"Alpha\"] → \"Afficher les Alpha trajectoires de  passant à proximité\""
+   ],
+   "tractShown": [
+    "[\"Alpha\"] → \"Alpha<NNBSP>: trajectoires passant à proximité affichées.\"",
+    "[\"\"] → \"<NNBSP>: trajectoires passant à proximité affichées.\""
+   ],
+   "tractsCaveat": "Trajectoires reconstruites à partir de l’IRM de diffusion de ce cerveau, pas des axones<NNBSP>; passer à proximité n’est pas une connexion à la coordonnée."
+  }
+ },
  "cuts": {
   "cuttingPlane": "Plan de coupe",
   "modes": {
@@ -1402,12 +1466,13 @@
   "navigationHintTractsTouch": "Glisser<NNBSP>: tourner · Pincer<NNBSP>: zoom",
   "keyboardHint": "Vue 3D · Flèches<NNBSP>: tourner · + −<NNBSP>: zoom",
   "viewAria": "Vue anatomique",
-  "viewToolAria": [
-   "[\"Alpha\"] → \"Vue anatomique<NNBSP>: alpha\"",
-   "[\"\"] → \"Vue anatomique<NNBSP>: \""
+  "namedView": [
+   "[\"Alpha\"] → \"Vue alpha\"",
+   "[\"\"] → \"Vue \""
   ],
-  "viewTool": "Vue",
   "sectionTool": "Coupe",
+  "lesionTool": "Lésion",
+  "coordinateTool": "Coordonnée",
   "displayTool": "Affichage",
   "dockLabel": "Outils du visualiseur 3D",
   "orbitGroup": "Faire pivoter le modèle",
@@ -1423,10 +1488,6 @@
   },
   "keyAbsent": "Absent de cette vue",
   "snapshot": "Enregistrer l’image (PNG)",
-  "snapshotView": [
-   "[\"Alpha\"] → \"Vue alpha\"",
-   "[\"\"] → \"Vue \""
-  ],
   "snapshotStatement": "Planum · Pas une anatomie clinique",
   "fullscreen": "Plein écran",
   "exitFullscreen": "Quitter le plein écran",

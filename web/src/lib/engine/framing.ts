@@ -26,7 +26,7 @@ import {
   withContext,
 } from './render/camera-views.ts';
 import { turnFromKeyboard } from './render/keyboard-orbit.ts';
-import { edgeLabels } from './render/orientation.ts';
+import { cameraBasis, edgeLabels } from './render/orientation.ts';
 import { scaleBar } from './render/scale-bar.ts';
 import { planFraming } from './render/scene.ts';
 import type { CameraPlan, EngineScene } from './render/scene.ts';
@@ -179,6 +179,7 @@ export function createFraming({
     return {
       edges: edgeLabels(camera, 'en', controls.target),
       scale: scaleBar(camera.fov, scene.distanceToTarget, scene.viewportHeight),
+      basis: cameraBasis(camera, controls.target),
     };
   }
 

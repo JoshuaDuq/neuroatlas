@@ -32,6 +32,8 @@ const measurement: LesionMeasurement = {
   tissue: { cortex: 100, white: 0, deep: 0, fluid: 0, outside: 0 },
   regions: new Map([['destrieux:left:34', { inside: 40, whole: 100 }]]),
   sizes: new Map([['destrieux:left:34', 100]]),
+  centre: { tissue: 'cortex', region: 'destrieux:left:34' },
+  tissueOf: new Map([['destrieux:left:34', 'cortex']]),
 };
 
 let stop = () => {};

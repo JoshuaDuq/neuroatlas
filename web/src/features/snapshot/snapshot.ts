@@ -84,7 +84,7 @@ export function snapshotCaption(
     }
     lines.push(line);
   } else if (view) {
-    lines.push([fact(t(lang, 'viewport').snapshotView(t(lang, 'views')[view]))]);
+    lines.push([fact(t(lang, 'viewport').namedView(t(lang, 'views')[view]))]);
   }
   return lines
     .map((line) => line.filter((runs) => runs.some((run) => run.text)))

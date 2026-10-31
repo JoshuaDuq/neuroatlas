@@ -105,7 +105,7 @@ describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
     }
   });
 
-  // The controls on the stage (DisplayPopover, ViewPopover, SectionPopover, the keys) read the panel names
+  // The controls on the stage (DisplayPopover, SectionPopover, the keys) read the panel names
   // through stage-vars.css; MprDialog's phone plane group through the imaging dialog's mapping.
   it.each([
     ['stage-vars.css', stageTokens],

@@ -17,6 +17,8 @@ const measurement = (regions: [string, number, number][]): LesionMeasurement => 
     ...regions.map(([id, , whole]) => [id, whole] as const),
     ['hcp-mmp:left:1', 200],
   ]),
+  centre: { tissue: 'cortex', region: null },
+  tissueOf: new Map(),
 });
 
 const domains = {
@@ -317,4 +319,40 @@ test('a link without a bundle clears the one drawn and counts nothing', () => {
   expect(clearTract).toHaveBeenCalledOnce();
   expect(store.selectedTract).toBe(null);
   expect(counts).toHaveLength(0);
+});
+
+test('a coordinate replaces the lesion at its own fixed radius, and a lesion replaces it', () => {
+  const { store, pending, shown } = build();
+  store.place([1, 2, 3]);
+  store.setMode('deficits');
+  const placed = { entered: [-42, 22, 6] as [number, number, number], space: 'unstated' };
+  store.placeCoordinate(placed, [-40.04, 20.06, 7.01], 5);
+  flushSync();
+  expect(store.kind).toBe('coordinate');
+  expect(store.coordinate).toBe(placed);
+  expect(store.mode).toBe('lesion');
+  expect(shown.at(-1)).toEqual({ centre: [-40, 20.1, 7], radius: 5 });
+  expect(pending.at(-1)!.sphere).toEqual({ centre: [-40, 20.1, 7], radius: 5 });
+  // The slider is the next lesion's: the coordinate's sphere neither redraws nor is measured again.
+  store.previewRadius(20);
+  store.commitRadius(20);
+  flushSync();
+  expect(shown.at(-1)).toEqual({ centre: [-40, 20.1, 7], radius: 5 });
+  expect(pending).toHaveLength(2);
+  store.place([0, 0, 0]);
+  flushSync();
+  expect(store.kind).toBe('lesion');
+  expect(store.coordinate).toBe(null);
+  expect(shown.at(-1)).toEqual({ centre: [0, 0, 0], radius: 20 });
+});
+
+test('a lesion link and removal both forget the coordinate', () => {
+  const { store } = build();
+  const placed = { entered: [-42, 22, 6] as [number, number, number], space: 'unstated' };
+  store.placeCoordinate(placed, [0, 0, 0], 5);
+  store.restore({ centre: [1, 1, 1], radius: 8 }, 'lesion', null);
+  expect(store.coordinate).toBe(null);
+  store.placeCoordinate(placed, [0, 0, 0], 5);
+  store.remove();
+  expect([store.coordinate, store.sphere]).toEqual([null, null]);
 });

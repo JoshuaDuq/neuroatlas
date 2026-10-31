@@ -1,3 +1,5 @@
+import type { Language } from '../../types/index.ts';
+import { decimal, withUnit } from '../format.ts';
 import { SLIGHT_SHARE } from './findings.ts';
 
 type Shares = ReadonlyMap<string, { inside: number; whole: number }>;
@@ -9,6 +11,10 @@ export interface RegionRow {
   whole: number;
   share: number;
 }
+
+/** A share as a percentage: whole above 10%, to a tenth below, where the small ones differ. */
+export const sharePercent = (fraction: number, lang: Language) =>
+  withUnit(decimal(fraction * 100, fraction < 0.1 ? 1 : 0, lang, { trim: true }), '%', lang);
 
 const atlasOf = (id: string) => id.slice(0, id.indexOf(':'));
 const sideOf = (id: string) => id.split(':')[1];

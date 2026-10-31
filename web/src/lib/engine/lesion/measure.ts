@@ -124,6 +124,16 @@ export function regionSizes(
   return sizes;
 }
 
+/** The tissue and labelled region at one point, by the label the stage draws there. */
+export function tissueAt(
+  volume: Volume,
+  labels: readonly MeasuredLabel[],
+  point: readonly [number, number, number],
+): { tissue: TissueClass; region: string | null } {
+  const label = labelOf(labels, volume.label(point));
+  return { tissue: tissueClass(label), region: label.region_id };
+}
+
 /** The mm³ of each tissue inside the sphere, on a volume of FreeSurfer labels. */
 export function tissueInSphere(
   volume: Volume,

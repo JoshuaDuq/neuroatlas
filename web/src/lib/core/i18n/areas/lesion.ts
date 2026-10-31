@@ -1,6 +1,6 @@
 export const en = {
   radius: 'Radius',
-  // What a click on the brain does while the Section popover is open.
+  // What a click on the brain does while the Lesion popover is open.
   click: 'A click on the brain',
   clicks: { select: 'Selects a region', place: 'Places the lesion' },
   placeHint: 'Click the brain or a cut face to place its centre.',
