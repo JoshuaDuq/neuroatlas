@@ -29,6 +29,7 @@ export const en = {
     overlap: 'Could not load the overlap outline.',
     restore: 'Could not restore the previous view.',
     fullscreen: 'Could not enter full screen.',
+    streamlines: 'Could not show this landmark’s streamlines.',
   },
 };
 
@@ -63,5 +64,6 @@ export const fr: typeof en = {
     overlap: 'Impossible de charger le contour du chevauchement.',
     restore: 'Impossible de rétablir la vue précédente.',
     fullscreen: 'Impossible de passer en plein écran.',
+    streamlines: 'Impossible d’afficher les trajectoires de ce repère.',
   },
 };

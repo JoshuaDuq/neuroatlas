@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { readRepoJson } from '../../../../test/repo.ts';
+import { readRepoJson, readRepoYaml } from '../../../../test/repo.ts';
+import type { CircuitData } from '../learning/catalog.ts';
 import type { Manifest } from '../../types/index.ts';
 import { checkLink, type KnownLinkIds } from './link-check.ts';
 import { decodeState } from './url-state.ts';
@@ -64,6 +65,25 @@ test('a lesson step must exist in its circuit', () => {
   assert.deepEqual(check('#circuit=visual&step=5').rejected, ['step']);
   assert.deepEqual(check('#step=2').rejected, ['step']);
   assert.equal(check('#circuit=visual&step=4').state.circuitStep, 3);
+});
+
+test('links to withdrawn tours reject only the circuit and step while retained pathway links still work', () => {
+  const active = readRepoYaml<CircuitData>('data/circuits.yaml');
+  const archived = readRepoYaml<CircuitData>('data/archived-circuit-tours.yaml');
+  const published = {
+    ...known,
+    circuits: new Map(active.circuits.map((circuit) => [circuit.id, circuit.steps.length])),
+  };
+  for (const circuit of archived.circuits) {
+    const link = decodeState(`#tab=circuits&circuit=${circuit.id}&step=1&lang=fr`).state;
+    const result = checkLink(link, published);
+    assert.deepEqual(result.rejected, ['circuit', 'step'], circuit.id);
+    assert.deepEqual(result.state, { explorer: 'circuits', lang: 'fr' });
+  }
+  for (const circuit of active.circuits) {
+    const link = decodeState(`#tab=circuits&circuit=${circuit.id}&step=1`).state;
+    assert.deepEqual(checkLink(link, published), { state: link, rejected: [] });
+  }
 });
 
 test('the cord field is not applied where the subject publishes no cord; hiding it always is', () => {

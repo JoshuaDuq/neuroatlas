@@ -589,7 +589,8 @@
    "comparison": "Could not load the atlas comparison.",
    "overlap": "Could not load the overlap outline.",
    "restore": "Could not restore the previous view.",
-   "fullscreen": "Could not enter full screen."
+   "fullscreen": "Could not enter full screen.",
+   "streamlines": "Could not show this landmark’s streamlines."
   }
  },
  "footer": {

@@ -31,6 +31,7 @@ interface Source {
 const { records } = readRepoJson<{ records: Record<string, Work> }>('data/reference-records.json');
 const clinical = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
 const circuits = readRepoYaml<CircuitData>('data/circuits.yaml');
+const archived = readRepoYaml<CircuitData>('data/archived-circuit-tours.yaml');
 const functional = readRepoYaml<{ sources: Record<string, Source> }>(
   'config/functional-regions.yaml',
 );
@@ -97,8 +98,8 @@ test('clinical references name the work their PMID and DOI identify, with its Pu
   }
 });
 
-test('circuit references name the article or Bookshelf chapter their identifiers resolve to', () => {
-  for (const reference of circuits.references) {
+test('active and archived circuit references name the works their identifiers resolve to', () => {
+  for (const reference of [...circuits.references, ...archived.references]) {
     const work = record(reference.nbk ? `nbk:${reference.nbk}` : `pmid:${reference.pmid}`);
     const url = reference.nbk
       ? `https://www.ncbi.nlm.nih.gov/books/${reference.nbk}/`
@@ -177,7 +178,7 @@ test('the bibliography names the work each PMID and DOI identify, with its issue
 test('the records file holds exactly the cited works', () => {
   const cited = new Set([
     ...clinical.references.map((reference) => `pmid:${reference.pmid}`),
-    ...circuits.references.map((reference) =>
+    ...[...circuits.references, ...archived.references].map((reference) =>
       reference.nbk ? `nbk:${reference.nbk}` : `pmid:${reference.pmid}`,
     ),
     ...Object.values(functional.sources).map((source) => `pmid:${source.pmid}`),

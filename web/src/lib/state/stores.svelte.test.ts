@@ -6,12 +6,18 @@ import { createCatalog as buildCatalog } from '../core/catalog/catalog.ts';
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import { findingPaint } from '../core/clinical/catalog.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
+import type { Circuit } from '../core/learning/catalog.ts';
 import { createFakeEngine } from '../engine/fake.ts';
 import type { FakeEngine } from '../engine/fake.ts';
 import type { Manifest } from '../types/index.ts';
 import { attachAnnouncer } from '../ui/announcer.svelte.ts';
 import { createCatalogStore } from './catalog.svelte.ts';
-import { createEngineSync, syncPaint, syncPresentation } from './engine-sync.svelte.ts';
+import {
+  createEngineSync,
+  syncLessonTract,
+  syncPaint,
+  syncPresentation,
+} from './engine-sync.svelte.ts';
 import { createLink } from './link.svelte.ts';
 import { createLessonStore, createSessionStore } from './session.svelte.ts';
 import { announceView, createView } from './view.svelte.ts';
@@ -214,6 +220,78 @@ describe('the presentation', () => {
     await engine.sections.setMode('off');
     flushSync();
     expect(engine.highlighted).toBe('pair');
+  });
+});
+
+describe('a lesson landmark’s tract', () => {
+  const circuits = {
+    get: () =>
+      ({ steps: [{ tract: 'cst-left' }, { tract: 'cst-left' }, {}] }) as unknown as Circuit,
+  };
+
+  function lessonWorld(showLandmarkTract = vi.fn(async (_id: string) => {})) {
+    const tracts = { showLandmarkTract, clearLandmarkTract: vi.fn() };
+    const fail = vi.fn();
+    const parts = {} as {
+      session: ReturnType<typeof createSessionStore>;
+      lesson: ReturnType<typeof createLessonStore>;
+    };
+    cleanup = $effect.root(() => {
+      parts.session = createSessionStore({ views: ['oblique'] });
+      parts.lesson = createLessonStore(circuits as never);
+      const view = createView({
+        engine: createEngineSync(engine),
+        session: parts.session,
+        lesson: parts.lesson,
+        anatomy: published.anatomy.id,
+        referenceAnatomy: engine.tracts.anatomy,
+      });
+      syncLessonTract(tracts, view, circuits, fail);
+    });
+    flushSync();
+    return { ...parts, tracts, fail };
+  }
+
+  test('is drawn only while Circuits shows its step, once per landmark, and taken away however the lesson ends', () => {
+    const { session, lesson, tracts } = lessonWorld();
+    const act = (change: () => void) => {
+      change();
+      flushSync();
+    };
+    act(() => lesson.start('corticospinal'));
+    expect(tracts.showLandmarkTract).not.toHaveBeenCalled();
+    act(() => session.setExplorer('circuits'));
+    expect(tracts.showLandmarkTract.mock.calls).toEqual([['cst-left']]);
+    act(() => lesson.go(1));
+    act(() => session.setLang('fr'));
+    expect(tracts.showLandmarkTract).toHaveBeenCalledTimes(1);
+    act(() => lesson.go(2));
+    expect(tracts.clearLandmarkTract).toHaveBeenCalledTimes(1);
+    act(() => lesson.go(0));
+    expect(tracts.showLandmarkTract).toHaveBeenCalledTimes(2);
+    act(() => session.setExplorer('deficits'));
+    expect(tracts.clearLandmarkTract).toHaveBeenCalledTimes(2);
+    act(() => session.setExplorer('circuits'));
+    act(() => lesson.close());
+    expect(tracts.showLandmarkTract).toHaveBeenCalledTimes(3);
+    expect(tracts.clearLandmarkTract).toHaveBeenCalledTimes(3);
+  });
+
+  test('a failed download is said once, and tried again on coming back to the landmark', async () => {
+    const error = new Error('offline');
+    const { session, lesson, fail, tracts } = lessonWorld(vi.fn(async () => Promise.reject(error)));
+    lesson.start('corticospinal');
+    session.setExplorer('circuits');
+    flushSync();
+    await vi.waitFor(() => expect(fail.mock.calls).toEqual([[error]]));
+    session.setLang('fr');
+    flushSync();
+    expect(tracts.showLandmarkTract).toHaveBeenCalledTimes(1);
+    lesson.go(2);
+    flushSync();
+    lesson.go(0);
+    flushSync();
+    expect(tracts.showLandmarkTract).toHaveBeenCalledTimes(2);
   });
 });
 

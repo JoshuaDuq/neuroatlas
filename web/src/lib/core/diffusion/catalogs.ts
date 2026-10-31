@@ -58,3 +58,9 @@ export const TRACT_CATALOGS: readonly TractCatalog[] = [cdmd];
 export function tractCatalog(anatomy: string): TractCatalog {
   return TRACT_CATALOGS.find((catalog) => catalog.anatomy === anatomy) ?? cdmd;
 }
+
+/** The ids of an anatomy's own tract bundles; none for an anatomy whose tracts are a reference. */
+export function ownTractIds(anatomy: string): string[] {
+  const catalog = tractCatalog(anatomy);
+  return catalog.anatomy === anatomy ? catalog.bundles.map((bundle) => bundle.id) : [];
+}

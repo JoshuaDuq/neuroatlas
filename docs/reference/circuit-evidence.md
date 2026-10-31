@@ -2,6 +2,8 @@
 
 Review date: 29 October 2026.
 
+This is the historical audit of the first 29 tours. Following the 31 October classification cleanup, the active catalogue contains five tours and 25 landmarks. The counts below retain their original audit scope.
+
 ## Scope and status
 
 This targeted audit covers all 29 guided circuits and their 101 authored landmarks. It checks citation identity, clinical-source traceability, anatomical naming, laterality and the distinction between circuit background and deficit evidence. It is not a systematic review, independent clinical sign-off or validation of patient-level diagnosis, prognosis or treatment decisions.

@@ -6,6 +6,21 @@ import type { Scene } from './excursion-test-support.ts';
 const firstCircuit = (scene: Scene) => scene.circuits.all[0]!;
 
 describe('opening a lesson', () => {
+  test('the corticospinal tour reveals the spinal cord before selecting its final right-sided landmark', async () => {
+    const scene = createScene();
+    const circuit = scene.circuits.get('corticospinal');
+    assert.equal(scene.engine.model.state.spinalCordVisible, false);
+    scene.session.setExplorer('circuits');
+    await scene.excursions.openCircuit(circuit.id);
+    for (let index = 1; index < circuit.steps.length; index++) {
+      await scene.excursions.openLessonStep(index);
+    }
+    assert.equal(scene.lesson.state.step, circuit.steps.length - 1);
+    assert.equal(scene.engine.model.state.spinalCordVisible, true);
+    assert.equal(scene.engine.model.state.hemisphere, 'right');
+    assert.equal(scene.engine.model.state.selectedRegion?.id, circuit.steps.at(-1)!.region);
+  });
+
   test('holds the scene, shows the detail, draws and frames the first landmark, then starts', async () => {
     const scene = createScene();
     const circuit = firstCircuit(scene);

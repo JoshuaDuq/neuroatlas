@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { t } from '../../lib/core/i18n/index.ts';
+import archivedTours from '../../../../data/archived-circuit-tours.yaml';
+import type { CircuitData } from '../../lib/core/learning/catalog.ts';
 import { currentItem } from '../../lib/core/workspace.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
@@ -82,6 +84,17 @@ function accessibleName(element: HTMLElement) {
 }
 
 describe('the list', () => {
+  test('offers only the retained pathways and no archived landmark or deferred circuit tours', () => {
+    mount();
+    expect(rows().map((row) => row.dataset.circuit)).toEqual([
+      'vision',
+      'memory',
+      'motor',
+      'cerebellar',
+      'corticospinal',
+    ]);
+  });
+
   test('is a labelled group of rows named with the landmark count, the count and chevron hidden', async () => {
     mount();
     const group = page.getByRole('group', { name: 'Guided learning', exact: true });
@@ -236,7 +249,7 @@ describe('opening a lesson', () => {
   });
 });
 
-describe('the added research-based tours', () => {
+describe('the retained pathway tours', () => {
   test.each(['en', 'fr'] as const)(
     'the clinical validation limit is visible before opening notes (%s)',
     async (lang) => {
@@ -277,10 +290,18 @@ describe('the added research-based tours', () => {
   );
 
   test.each(['en', 'fr'] as const)(
-    'the achromatopsia source shows its published correction (%s)',
+    'an archived corrected source still renders its published correction (%s)',
     async (lang) => {
       mount(lang);
-      await open('colour');
+      // Exercise the correction renderer with a real archived source, without publishing its tour.
+      const corrected = (archivedTours as CircuitData).references.find(
+        (reference) => reference.id === 'clinical-bouvier-2006',
+      )!;
+      const reference = world.explorer.reference;
+      vi.spyOn(world.explorer, 'reference').mockImplementation((id) =>
+        id === 'clinical-zhang-2006' ? corrected : reference(id),
+      );
+      await open('vision');
       await userEvent.click(summary(t(lang, 'circuits').evidence));
       await expect
         .element(page.getByRole('link', { name: /doi:10.1093\/cercor\/bhl065/ }))
@@ -298,20 +319,7 @@ describe('the added research-based tours', () => {
   );
 
   for (const lang of ['en', 'fr'] as const) {
-    for (const id of [
-      'speech-planning',
-      'writing',
-      'music',
-      'taste',
-      'olfaction',
-      'mentalizing',
-      'extinction',
-      'copying',
-      'cortical-hearing',
-      'oral-praxis',
-      'voices',
-      'pontine-motor',
-    ]) {
+    for (const id of ['vision', 'memory', 'motor', 'cerebellar', 'corticospinal']) {
       test(`${id} opens and visits every landmark in ${lang}`, async () => {
         mount(lang);
         await open(id);
@@ -345,25 +353,27 @@ describe('the stepper', () => {
 
   test('Next moves one landmark on and keeps focus on Next; at the end focus goes to Previous', async () => {
     mount();
-    await open('hearing');
-    const steps = world.circuits.get('hearing').steps;
+    await open('vision');
+    const steps = world.circuits.get('vision').steps;
     control('next').focus();
     await userEvent.keyboard('{Enter}');
     await expect.poll(() => title().textContent).toBe(steps[1]!.name.en);
     expect(document.activeElement).toBe(control('next'));
-    expect(progress()).toBe('Landmark 2 of 3');
+    expect(progress()).toBe('Landmark 2 of 4');
     await userEvent.keyboard('{Enter}');
     await expect.poll(() => title().textContent).toBe(steps[2]!.name.en);
+    await userEvent.keyboard('{Enter}');
+    await expect.poll(() => title().textContent).toBe(steps[3]!.name.en);
     expect(control('next').hidden).toBe(true);
     expect(document.activeElement).toBe(control('previous'));
     await userEvent.keyboard('{Enter}');
-    await expect.poll(() => title().textContent).toBe(steps[1]!.name.en);
+    await expect.poll(() => title().textContent).toBe(steps[2]!.name.en);
     expect(document.activeElement).toBe(control('previous'));
   });
 
   test('the view follows: the profile is back at its top and the landmark region is selected', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const detail = document.querySelector<HTMLElement>('.detail')!;
     detail.style.cssText = 'height: 120px; overflow-y: auto';
     detail.scrollTop = 40;
@@ -371,7 +381,7 @@ describe('the stepper', () => {
     await expect.poll(() => world.lesson.state.step).toBe(1);
     expect(detail.scrollTop).toBe(0);
     expect(world.view.current.selectedRegion?.id).toBe(
-      world.circuits.get('hearing').steps[1]!.region,
+      world.circuits.get('vision').steps[1]!.region,
     );
   });
 });
@@ -379,20 +389,25 @@ describe('the stepper', () => {
 describe('the landmark sequence', () => {
   test('lists every landmark in order, the current one aria-current="step", the seen ones named as seen', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const list = document.querySelector('ol')!;
     expect(list.getAttribute('role')).toBe('list');
     expect(list.getAttribute('aria-labelledby')).toBe(
       document.querySelector('.landmarks-heading')!.id,
     );
-    expect(stepRows().map((r) => r.dataset.progress)).toEqual(['current', 'upcoming', 'upcoming']);
+    expect(stepRows().map((r) => r.dataset.progress)).toEqual([
+      'current',
+      'upcoming',
+      'upcoming',
+      'upcoming',
+    ]);
     expect(stepRows().filter((r) => r.hasAttribute('aria-current'))).toEqual([stepRows()[0]]);
     expect(stepRows()[0]!.getAttribute('aria-current')).toBe('step');
     expect(stepRows()[0]!.querySelector('.circuit-step-number')!.textContent).toBe('1');
     await userEvent.click(control('next'));
     await expect
       .poll(() => stepRows().map((r) => r.dataset.progress))
-      .toEqual(['visited', 'current', 'upcoming']);
+      .toEqual(['visited', 'current', 'upcoming', 'upcoming']);
     expect(stepRows()[0]!.textContent).toMatch(/, seen$/);
     expect(stepRows()[1]!.textContent).not.toMatch(/seen/);
     expect(stepRows()[0]!.hasAttribute('aria-current')).toBe(false);
@@ -400,22 +415,22 @@ describe('the landmark sequence', () => {
 
   test('a landmark row opens that landmark and the title takes focus', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     stepRows()[2]!.focus();
     await userEvent.keyboard('{Enter}');
     await expect.poll(() => world.lesson.state.step).toBe(2);
     await expect.poll(() => document.activeElement).toBe(title());
-    expect(title().textContent).toBe(world.circuits.get('hearing').steps[2]!.name.en);
+    expect(title().textContent).toBe(world.circuits.get('vision').steps[2]!.name.en);
   });
 
   test('ArrowDown and ArrowUp walk the landmarks only, no further', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     stepRows()[0]!.focus();
     await userEvent.keyboard('{ArrowDown}');
     expect(document.activeElement).toBe(stepRows()[1]);
-    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
-    expect(document.activeElement).toBe(stepRows()[2]);
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
+    expect(document.activeElement).toBe(stepRows()[3]);
     stepRows()[0]!.focus();
     await userEvent.keyboard('{ArrowUp}');
     expect(document.activeElement).toBe(stepRows()[0]);
@@ -423,7 +438,7 @@ describe('the landmark sequence', () => {
 
   test('the notes are the sequence and four disclosures, with one command: Open deficit evidence', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const notes = document.querySelector('.circuit-notes')!;
     expect([...notes.querySelectorAll('summary')].map((s) => s.textContent)).toEqual([
       'Connections and scope',
@@ -437,17 +452,17 @@ describe('the landmark sequence', () => {
 
   test('Open deficit evidence goes to the circuit’s deficit through X2’s entry point', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     await userEvent.click(summary('Clinical context'));
     await userEvent.click(page.getByRole('button', { name: 'Open deficit evidence' }));
-    expect(world.openDeficit).toHaveBeenCalledExactlyOnceWith('word-deafness');
+    expect(world.openDeficit).toHaveBeenCalledExactlyOnceWith('hemianopia');
   });
 
   test('sources are links that open in a new tab, with the date the content was checked', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     await userEvent.click(summary('Sources'));
-    const circuit = world.circuits.get('hearing');
+    const circuit = world.circuits.get('vision');
     const links = [...document.querySelectorAll<HTMLAnchorElement>('.source a')];
     expect(links.map((a) => a.href)).toEqual(
       circuit.references.map((id) => world.explorer.reference(id).url),
@@ -463,9 +478,9 @@ describe('the landmark sequence', () => {
     'each source link says it opens a new tab, in its name and with the icon (%s)',
     async (lang) => {
       mount(lang);
-      await open('hearing');
+      await open('vision');
       await userEvent.click(summary(t(lang, 'circuits').evidence));
-      const circuit = world.circuits.get('hearing');
+      const circuit = world.circuits.get('vision');
       const links = [...document.querySelectorAll<HTMLAnchorElement>('.source a')];
       expect(links).toHaveLength(circuit.references.length);
       for (const [index, id] of circuit.references.entries()) {
@@ -483,14 +498,14 @@ describe('the landmark sequence', () => {
 
   test('a note the reader opened stays open as the lesson moves on, and closes with the next lesson', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     await userEvent.click(summary('Sources'));
     expect(summary('Sources').parentElement!.hasAttribute('open')).toBe(true);
     await userEvent.click(control('next'));
     await expect.poll(() => world.lesson.state.step).toBe(1);
     expect(summary('Sources').parentElement!.hasAttribute('open')).toBe(true);
-    await userEvent.click(rowOf('vision'));
-    await expect.poll(() => world.lesson.state.circuit).toBe('vision');
+    await userEvent.click(rowOf('memory'));
+    await expect.poll(() => world.lesson.state.circuit).toBe('memory');
     expect(summary('Sources').parentElement!.hasAttribute('open')).toBe(false);
   });
 });
@@ -546,7 +561,7 @@ describe('related circuits', () => {
 describe('a run in flight', () => {
   test('the status line says so, every control refuses and keeps focus, and a second press does nothing', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     await userEvent.click(summary('Clinical context'));
     const gate = deferred();
     world.hold.open = () => gate.promise;
@@ -566,7 +581,7 @@ describe('a run in flight', () => {
     expect(document.activeElement).toBe(control('next'));
     await userEvent.keyboard('{Enter}');
     stepRows()[0]!.click();
-    rowOf('vision').click();
+    rowOf('memory').click();
     document.querySelector<HTMLElement>('.command')!.click();
     expect(opened).toHaveBeenCalledTimes(1);
     expect(world.openDeficit).not.toHaveBeenCalled();
@@ -596,7 +611,7 @@ describe('a run in flight', () => {
 
   test('a busy stepper control has no hover fill', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const gate = deferred();
     world.hold.open = () => gate.promise;
     await userEvent.click(control('next'));
@@ -623,7 +638,7 @@ describe('a run in flight', () => {
 
   test('a failure is scrolled into view', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const detail = document.querySelector<HTMLElement>('.detail')!;
     detail.style.cssText = 'height: 120px; overflow-y: auto';
     expect(status().getBoundingClientRect().top).toBeGreaterThan(
@@ -641,7 +656,7 @@ describe('a run in flight', () => {
 
   test('a failure says the landmark could not be shown, keeps focus where it was and a newer deploy offers a reload', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     world.hold.open = () =>
       Promise.reject(Object.assign(new Error('moved'), { code: 'asset-updated' }));
@@ -664,7 +679,7 @@ describe('a run in flight', () => {
 
   test('a plain failure names the landmark', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     world.hold.open = () => Promise.reject(new Error('geometry'));
     await userEvent.click(control('next'));
@@ -684,7 +699,7 @@ describe('a run in flight', () => {
 
   test('a language switch replaces the line instead of rewriting it, so the failure is not said again', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     world.hold.open = () => Promise.reject(new Error('geometry'));
     await userEvent.click(control('next'));
@@ -702,16 +717,16 @@ describe('a run in flight', () => {
 describe('what the screen reader hears of a step', () => {
   test('a landmark on the region already selected is said, as its place and name', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     expect(announcer().textContent).toBe('');
     stepRows()[0]!.click();
-    const first = world.circuits.get('hearing').steps[0]!;
-    await expect.poll(() => announcer().textContent).toBe(`Landmark 1 of 3: ${first.name.en}`);
+    const first = world.circuits.get('vision').steps[0]!;
+    await expect.poll(() => announcer().textContent).toBe(`Landmark 1 of 4: ${first.name.en}`);
   });
 
   test('a landmark on another region is left to the selection sentence, which the view says', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     stepRows()[1]!.click();
     await expect.poll(() => world.lesson.state.step).toBe(1);
     await expect.poll(() => document.activeElement).toBe(title());
@@ -720,20 +735,20 @@ describe('what the screen reader hears of a step', () => {
 
   test('is French in French', async () => {
     mount('fr');
-    await open('hearing');
+    await open('vision');
     stepRows()[0]!.click();
-    const first = world.circuits.get('hearing').steps[0]!;
+    const first = world.circuits.get('vision').steps[0]!;
     await expect
       .poll(() => announcer().textContent)
-      .toBe(`Repère 1 sur 3 : ${first.name.fr}`.replace(' :', ':'));
+      .toBe(`Repère 1 sur 4 : ${first.name.fr}`.replace(' :', ':'));
   });
 });
 
 describe('the linked MRI', () => {
   test('a landmark’s Linked MRI opens the lesson’s prepared plane through the panel’s entry point', async () => {
     mount();
-    await open('hearing');
-    const step = world.circuits.get('hearing').steps[0]!;
+    await open('vision');
+    const step = world.circuits.get('vision').steps[0]!;
     world.excursions.openLinkedMri({ atRegion: true });
     await expect.poll(() => world.mri.openPreparedPlane.mock.calls.length).toBe(1);
     expect(world.mri.openPreparedPlane.mock.calls[0]![0]).toBe(step.plane);
@@ -742,7 +757,7 @@ describe('the linked MRI', () => {
 
   test('says it is opening, refuses a second run, and the controls refuse too', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const gate = deferred();
     world.mri.openPreparedPlane.mockImplementationOnce(() => gate.promise);
     const first = world.explorer.openMri();
@@ -756,7 +771,7 @@ describe('the linked MRI', () => {
 
   test('a failure says the linked MRI could not be opened', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     world.mri.openPreparedPlane.mockRejectedValueOnce(new Error('volume'));
     expect(await world.explorer.openMri()).toBe(false);
@@ -772,7 +787,7 @@ describe('accessibility', () => {
     async (lang) => {
       mount(lang);
       await expectAxeClean();
-      await open('hearing');
+      await open('vision');
       await userEvent.click(summary(t(lang, 'circuits').evidence));
       await expectAxeClean();
       await wander();
@@ -794,11 +809,11 @@ describe('accessibility', () => {
 
   test('forced colours keep the open circuit, the progress shapes and the focus ring visible; more contrast stays clean', async () => {
     mount();
-    await open('hearing');
+    await open('vision');
     await userEvent.click(control('next'));
     await expect.poll(() => world.lesson.state.step).toBe(1);
     await withMedia([{ name: 'forced-colors', value: 'active' }], async () => {
-      expect(getComputedStyle(rowOf('hearing')).outlineStyle).toBe('solid');
+      expect(getComputedStyle(rowOf('vision')).outlineStyle).toBe('solid');
       const [seen, current, ahead] = stepRows().map((r) =>
         r.querySelector<HTMLElement>('.circuit-step-number')!,
       );
@@ -839,7 +854,7 @@ describe('accessibility', () => {
         }
       };
       check('.circuit-choice');
-      await open('hearing');
+      await open('vision');
       world.session.setExplorer('anatomy');
       flushSync();
       check('.circuit-link');

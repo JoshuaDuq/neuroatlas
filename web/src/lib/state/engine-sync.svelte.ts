@@ -1,9 +1,11 @@
+import { untrack } from 'svelte';
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
 import { isIndependentTractReference } from '../core/diffusion/presentation.ts';
+import type { CircuitCatalog } from '../core/learning/catalog.ts';
 import { paintFor } from '../core/state/paint.ts';
 import type { LesionPaint } from '../core/state/paint.ts';
-import type { Engine, EngineModel, SectionsState } from '../engine/api.ts';
+import type { Engine, EngineModel, EngineTracts, SectionsState } from '../engine/api.ts';
 import type { ModelState } from '../types/index.ts';
 import type { ViewStore } from './view.svelte.ts';
 
@@ -68,5 +70,32 @@ export function syncPresentation(
     const referenceOnly = isIndependentTractReference(view.current);
     engine.present({ lang: view.current.lang, referenceOnly });
     engine.comparison.setVisible(engineState.sections.mode === 'off' && !referenceOnly);
+  });
+}
+
+/**
+ * Draws the open lesson landmark's own tract while the Circuits tab shows it, and takes it away
+ * however the lesson ends: a step without one, another tab, an excursion or a link. A failed
+ * download is said once; coming back to the landmark tries again.
+ */
+export function syncLessonTract(
+  tracts: Pick<EngineTracts, 'showLandmarkTract' | 'clearLandmarkTract'>,
+  view: ViewStore,
+  circuits: Pick<CircuitCatalog, 'get'>,
+  fail: (error: unknown) => void,
+) {
+  let shown: string | null = null;
+  $effect(() => {
+    const { explorer, lesson } = view.current;
+    const tract =
+      explorer === 'circuits' && lesson.circuit
+        ? (circuits.get(lesson.circuit).steps[lesson.step]!.tract ?? null)
+        : null;
+    if (tract === shown) return;
+    shown = tract;
+    untrack(() => {
+      if (tract) tracts.showLandmarkTract(tract).catch(fail);
+      else tracts.clearLandmarkTract();
+    });
   });
 }

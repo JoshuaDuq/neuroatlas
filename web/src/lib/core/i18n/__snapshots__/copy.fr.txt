@@ -589,7 +589,8 @@
    "comparison": "Impossible de charger la comparaison des atlas.",
    "overlap": "Impossible de charger le contour du chevauchement.",
    "restore": "Impossible de rétablir la vue précédente.",
-   "fullscreen": "Impossible de passer en plein écran."
+   "fullscreen": "Impossible de passer en plein écran.",
+   "streamlines": "Impossible d’afficher les trajectoires de ce repère."
   }
  },
  "footer": {

@@ -66,3 +66,25 @@ test('the tracts of their own anatomy overlay it; another anatomy gets the indep
 test('an unknown bundle is a RangeError', async () => {
   await assert.rejects(setup('cdmd').tracts.loadBundle('missing'), RangeError);
 });
+
+test('a landmark draws its own bundle before the Tracts tab loads; the lesion’s and its own clears are apart', async () => {
+  const own = setup('cdmd');
+  await own.tracts.showLandmarkTract('cst-left');
+  assert.equal(own.tracts.ready, false);
+  assert.equal(own.tracts.streamlinesVisible, true);
+  assert.deepEqual(own.emit.mock.calls.at(-1), ['tractsVisibility', undefined]);
+  own.tracts.own!.clearCrossing();
+  assert.equal(own.tracts.streamlinesVisible, true, 'the lesion’s clear leaves the landmark’s');
+  own.tracts.clearLandmarkTract();
+  assert.equal(own.tracts.streamlinesVisible, false);
+
+  await own.tracts.own!.showCrossing('cst-left', { centre: [0, 0, 0], radius: 100 });
+  own.tracts.clearLandmarkTract();
+  assert.equal(own.tracts.streamlinesVisible, true, 'the landmark’s clear leaves the lesion’s');
+
+  await assert.rejects(own.tracts.showLandmarkTract('missing'), RangeError);
+  await assert.rejects(
+    setup('another-anatomy').tracts.showLandmarkTract('cst-left'),
+    /own anatomy/,
+  );
+}, 60_000);

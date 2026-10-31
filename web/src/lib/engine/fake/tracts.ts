@@ -25,6 +25,8 @@ export interface FakeTracts extends EngineTracts {
   readonly referenceActive: boolean;
   /** The navigators opened so far, newest last. */
   readonly navigators: readonly FakeMriNavigator[];
+  /** The lesson landmark's bundle drawn alone. */
+  readonly landmarkTract: string | null;
 }
 
 export const DEFAULT_BUNDLES: FakeBundle[] = [
@@ -56,6 +58,7 @@ export function createFakeTracts({
   let referenceActive = false;
   let minimum = 1;
   let overlay = false;
+  let landmarkTract: string | null = null;
 
   const summary = (id: string): TractBundle => {
     const bundle = catalog.get(id)!;
@@ -92,8 +95,14 @@ export function createFakeTracts({
     },
     get streamlinesVisible() {
       return (
-        ready && (anatomy === tractAnatomy ? overlay : active) && [...loaded.values()].some(Boolean)
+        landmarkTract !== null ||
+        (ready &&
+          (anatomy === tractAnatomy ? overlay : active) &&
+          [...loaded.values()].some(Boolean))
       );
+    },
+    get landmarkTract() {
+      return landmarkTract;
     },
     defaultOpacity,
     get navigators() {
@@ -131,6 +140,18 @@ export function createFakeTracts({
     },
     setOverlay(visible) {
       overlay = visible;
+      emit('tractsVisibility', undefined);
+    },
+    async showLandmarkTract(id) {
+      if (anatomy !== tractAnatomy)
+        throw new Error('A landmark draws only its own anatomy’s tracts.');
+      if (!catalog.has(id)) throw new RangeError(`Unknown tract bundle: ${id}`);
+      landmarkTract = id;
+      emit('tractsVisibility', undefined);
+    },
+    clearLandmarkTract() {
+      if (landmarkTract === null) return;
+      landmarkTract = null;
       emit('tractsVisibility', undefined);
     },
     // The surface sits off the scanner, so a caller that skips the conversion is caught.

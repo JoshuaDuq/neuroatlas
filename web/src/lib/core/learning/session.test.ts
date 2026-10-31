@@ -3,6 +3,7 @@ import { test } from 'vitest';
 import { readRepoYaml } from '../../../../test/repo.ts';
 import { manifests } from '../clinical/test-support.ts';
 import type { ClinicalData } from '../clinical/types.ts';
+import { ownTractIds } from '../diffusion/catalogs.ts';
 import { createCircuitCatalog } from './catalog.ts';
 import type { CircuitData } from './catalog.ts';
 import { createCircuitSession } from './session.ts';
@@ -79,6 +80,7 @@ test('CAT-55 · going to a landmark before any start fails, and a failed start c
     readRepoYaml<CircuitData>('data/circuits.yaml'),
     manifests[0][1],
     readRepoYaml<ClinicalData>('data/neuropsychology.yaml').deficits.map((d) => d.id),
+    ownTractIds(manifests[0][1].anatomy.id),
   );
   assert.throws(() => createCircuitSession(published).go(0), {
     message: 'Unknown circuit: null',

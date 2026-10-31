@@ -3,10 +3,14 @@ import { describe, test } from 'vitest';
 import { readRepoYaml } from '../../../../test/repo.ts';
 import { manifests } from '../clinical/test-support.ts';
 import type { ClinicalData } from '../clinical/types.ts';
+import { ownTractIds } from '../diffusion/catalogs.ts';
 import { createCircuitCatalog } from './catalog.ts';
 import type { AuthoredCircuit, CircuitData } from './catalog.ts';
 
 const data = readRepoYaml<CircuitData>('data/circuits.yaml');
+const archived = readRepoYaml<CircuitData & { withheld_pending_rework: string[] }>(
+  'data/archived-circuit-tours.yaml',
+);
 const clinical = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
 const deficitIds = clinical.deficits.map((deficit) => deficit.id);
 const published = manifests.map(([, manifest]) => manifest);
@@ -18,58 +22,43 @@ const circuitOf = (
 ): AuthoredCircuit & Record<string, any> =>
   copy.circuits.find((circuit: AuthoredCircuit) => circuit.id === id);
 const create = (copy: object, manifest = published[0]) =>
-  createCircuitCatalog(copy as CircuitData, manifest, deficitIds);
+  createCircuitCatalog(copy as CircuitData, manifest, deficitIds, ownTractIds(manifest.anatomy.id));
 
-test('all thirty-five tours resolve exact source landmarks on every published anatomy', () => {
+test('withdrawn tours remain source-checkable in the archive and cannot be opened as active circuits', () => {
+  const activeIds = new Set(data.circuits.map((circuit) => circuit.id));
+  assert.equal(archived.circuits.length, 34);
+  assert.deepEqual(archived.withheld_pending_rework, ['hearing', 'touch', 'valuation']);
+  assert.equal(
+    [...data.circuits, ...archived.circuits].reduce(
+      (sum, circuit) => sum + circuit.steps.length,
+      0,
+    ),
+    128,
+  );
+  for (const manifest of published) {
+    const catalog = create(data, manifest);
+    const archive = create(archived, manifest);
+    for (const circuit of archive.all) {
+      assert.ok(!activeIds.has(circuit.id), circuit.id);
+      assert.throws(() => catalog.get(circuit.id), { message: `Unknown circuit: ${circuit.id}` });
+    }
+  }
+});
+
+test('only the five retained pathway tours resolve exact source landmarks on every published anatomy', () => {
   for (const manifest of published) {
     const catalog = create(data, manifest);
     assert.deepEqual(
       catalog.all.map((c) => c.id),
-      [
-        'vision',
-        'memory',
-        'motor',
-        'hearing',
-        'touch',
-        'language',
-        'attention',
-        'cerebellar',
-        'praxis',
-        'objects',
-        'reading',
-        'reaching',
-        'navigation',
-        'control',
-        'corticospinal',
-        'pain',
-        'emotion',
-        'valuation',
-        'spatial-hearing',
-        'motion',
-        'colour',
-        'number',
-        'gaze',
-        'speech-planning',
-        'writing',
-        'music',
-        'taste',
-        'olfaction',
-        'mentalizing',
-        'extinction',
-        'copying',
-        'cortical-hearing',
-        'oral-praxis',
-        'voices',
-        'pontine-motor',
-      ],
+      ['vision', 'memory', 'motor', 'cerebellar', 'corticospinal'],
     );
     assert.equal(
       catalog.all.reduce((count, circuit) => count + circuit.steps.length, 0),
-      115,
+      25,
     );
     assert.equal(catalog.contextMarginMm, 12);
     assert.equal(catalog.get('vision').steps.at(-1)!.region, 'hcp-mmp:left:1');
-    assert.equal(catalog.get('memory').steps.at(-1)!.source_name, 'Thalamus');
+    assert.equal(catalog.get('memory').steps.at(-1)!.region, 'nextbrain:left:220');
     for (const circuit of catalog.all) {
       for (const step of circuit.steps) assert.ok(catalog.step(circuit.id, step.id));
       assert.ok(catalog.reference(circuit.references[0]).url.startsWith('https://'));
@@ -77,15 +66,15 @@ test('all thirty-five tours resolve exact source landmarks on every published an
   }
 });
 
-test('hearing uses the dorsal geniculate label without substituting a ventral relay', () => {
+test('archived hearing uses the dorsal geniculate label without substituting a ventral relay', () => {
   for (const manifest of published) {
-    const hearing = create(data, manifest).get('hearing');
+    const hearing = create(archived, manifest).get('hearing');
     assert.equal(hearing.steps[1].source_name, 'Dorsal medial geniculate nucleus');
     assert.equal(hearing.steps.at(-1)!.region, 'hcp-mmp:left:24');
   }
 });
 
-test('cerebellar output changes to contralateral thalamus after the left peduncle', () => {
+test('cerebellar output crosses to the right red nucleus and thalamus after the left peduncle', () => {
   for (const manifest of published) {
     const regions = new Map(manifest.regions.map((region) => [region.id, region]));
     const circuit = create(data, manifest).get('cerebellar');
@@ -100,21 +89,29 @@ test('cerebellar output changes to contralateral thalamus after the left peduncl
       assert.equal(circuit.steps[0].region, 'learning:cerebellar-cortex-left');
       assert.deepEqual(circuit.steps[1].covering_regions, ['learning:cerebellar-cortex-left']);
     }
-    assert.deepEqual(circuit.steps[0].restores, circuit.steps[1].covering_regions);
+    assert.deepEqual(circuit.steps[0].restores, [
+      ...circuit.steps[1].covering_regions!,
+      ...circuit.steps[3].covering_regions!,
+    ]);
+    assert.deepEqual(circuit.steps[3].covering_regions, [
+      'learning:right:midbrain',
+      'learning:right:vta',
+    ]);
     assert.deepEqual(
       circuit.steps.map((step) => regions.get(step.region)!.hemisphere),
-      ['left', 'left', 'left', 'right', 'right'],
+      ['left', 'left', 'left', 'right', 'right', 'right'],
     );
     assert.equal(circuit.steps[2].source_name, 'Superior cerebellar peduncle');
-    assert.equal(circuit.steps[3].source_name, 'Thalamus');
-    assert.equal(circuit.steps[4].source_name, 'R_4_ROI');
+    assert.equal(circuit.steps[3].source_name, 'Red nucleus');
+    assert.equal(circuit.steps[4].source_name, 'Thalamus');
+    assert.equal(circuit.steps[5].source_name, 'R_4_ROI');
   }
 });
 
-test('praxis visits the Grasp system, then the Use system, on the left hemisphere only', () => {
+test('archived praxis visits the Grasp system, then the Use system, on the left hemisphere only', () => {
   for (const manifest of published) {
     const regions = new Map(manifest.regions.map((region) => [region.id, region]));
-    const circuit = create(data, manifest).get('praxis');
+    const circuit = create(archived, manifest).get('praxis');
     assert.equal(circuit.deficit, 'apraxia');
     assert.ok(circuit.steps.every((step) => regions.get(step.region)!.hemisphere === 'left'));
     assert.deepEqual(
@@ -122,6 +119,23 @@ test('praxis visits the Grasp system, then the Use system, on the left hemispher
       ['L_MIP_ROI', 'L_6a_ROI', 'L_MT_ROI', 'L_PFt_ROI', 'L_6v_ROI', 'G_temporal_middle'],
     );
   }
+});
+
+test('a landmark’s tract is one of the anatomy’s own bundles; corticospinal draws it down to the crossing', () => {
+  const unknown = clone();
+  circuitOf(unknown, 'corticospinal').steps[0].tract = 'no-such-bundle';
+  assert.throws(() => create(unknown), { message: 'Unknown tract bundle: no-such-bundle' });
+  assert.throws(
+    () => createCircuitCatalog(data, published[0], deficitIds, []),
+    { message: 'Unknown tract bundle: cst-left' },
+    'an anatomy whose tracts are another subject’s draws none',
+  );
+  assert.deepEqual(
+    create(data)
+      .get('corticospinal')
+      .steps.map((step) => step.tract ?? null),
+    ['cst-left', 'cst-left', 'cst-left', null],
+  );
 });
 
 test('covering geometry must be a different structure in the landmark’s atlas and hemisphere', () => {
@@ -223,8 +237,10 @@ test('clinical source roles must be declared and refer to distinct cited works',
 });
 
 test('every tour directly cites supporting evidence for its linked clinical deficit', () => {
-  const works = new Map(data.references.map((reference) => [reference.id, reference.pmid]));
-  for (const circuit of data.circuits) {
+  const works = new Map(
+    [...data.references, ...archived.references].map((reference) => [reference.id, reference.pmid]),
+  );
+  for (const circuit of [...data.circuits, ...archived.circuits]) {
     const sources = circuit.clinical_references;
     assert.ok(Array.isArray(sources) && sources.length, `${circuit.id}: no clinical references`);
     const pmids = new Set(sources.map((source) => works.get(source)));
@@ -524,21 +540,25 @@ describe('CAT-52 · a landmark resolves to one form and uncovers what others cov
     });
   });
 
-  test('CAT-52 · published cerebellar landmarks 1, 3, 4 and 5 restore what landmark 2 covers', () => {
+  test('CAT-52 · published cerebellar landmarks restore what landmarks 2 and 4 cover, except their own', () => {
     const circuit = create(data).get('cerebellar');
-    const covered = circuit.steps[1].covering_regions!;
+    const lobules = circuit.steps[1].covering_regions!;
+    const midbrain = circuit.steps[3].covering_regions!;
     assert.equal(circuit.steps[0].region, 'learning:lobule-v-left');
-    assert.equal(covered.length, 10);
-    for (const index of [0, 2, 3, 4]) assert.deepEqual(circuit.steps[index].restores, covered);
-    assert.deepEqual(circuit.steps[1].restores, []);
+    assert.equal(lobules.length, 10);
+    for (const index of [0, 2, 4, 5]) {
+      assert.deepEqual(circuit.steps[index].restores, [...lobules, ...midbrain]);
+    }
+    assert.deepEqual(circuit.steps[1].restores, midbrain);
+    assert.deepEqual(circuit.steps[3].restores, lobules);
   });
 });
 
-test('CAT-53 · the published circuits: revision, margin, 101 https references, thirty-five circuits with their deficits and landmark counts', () => {
+test('CAT-53 · the published pathways: revision, margin, 23 references, five tours with their deficits and landmark counts', () => {
   const catalog = create(data);
-  assert.equal(catalog.revised, '2026-10-29');
+  assert.equal(catalog.revised, '2026-10-31');
   assert.equal(catalog.contextMarginMm, 12);
-  assert.equal(data.references.length, 101);
+  assert.equal(data.references.length, 23);
   for (const reference of data.references) {
     assert.ok(catalog.reference(reference.id).url.startsWith('https://'), reference.id);
   }
@@ -548,47 +568,61 @@ test('CAT-53 · the published circuits: revision, margin, 101 https references, 
       ['vision', 4, 'hemianopia'],
       ['memory', 5, 'amnesia'],
       ['motor', 6, 'parkinsonism'],
-      ['hearing', 3, 'word-deafness'],
-      ['touch', 3, 'somatosensory'],
-      ['language', 4, 'aphasia'],
-      ['attention', 3, 'neglect'],
-      ['cerebellar', 5, 'ataxia'],
-      ['praxis', 6, 'apraxia'],
-      ['objects', 3, 'agnosia'],
-      ['reading', 4, 'alexia'],
-      ['reaching', 3, 'optic-ataxia'],
-      ['navigation', 3, 'topographical-disorientation'],
-      ['control', 4, 'executive'],
+      ['cerebellar', 6, 'ataxia'],
       ['corticospinal', 4, 'hemiparesis'],
-      ['pain', 3, 'pain-asymbolia'],
-      ['emotion', 4, 'emotion-recognition'],
-      ['valuation', 3, 'decision-making'],
-      ['spatial-hearing', 3, 'sound-localization'],
-      ['motion', 3, 'akinetopsia'],
-      ['colour', 3, 'achromatopsia'],
-      ['number', 3, 'acalculia'],
-      ['gaze', 3, 'oculomotor-apraxia'],
-      ['speech-planning', 3, 'speech-apraxia'],
-      ['writing', 3, 'agraphia'],
-      ['music', 4, 'amusia'],
-      ['taste', 2, 'taste-impairment'],
-      ['olfaction', 2, 'olfactory-recognition'],
-      ['mentalizing', 2, 'theory-of-mind'],
-      ['extinction', 4, 'visual-extinction'],
-      ['copying', 2, 'constructional-apraxia'],
-      ['cortical-hearing', 2, 'cortical-deafness'],
-      ['oral-praxis', 2, 'buccofacial-apraxia'],
-      ['voices', 2, 'phonagnosia'],
-      ['pontine-motor', 2, 'locked-in'],
     ],
   );
 });
 
-test('each added deficit tour cites patient lesion evidence supporting the same deficit and a visited region', () => {
+test('archived clinical landmarks trace to cited patient evidence; the occipital face landmark has a separate stimulation source', () => {
+  const references = new Map(clinical.references.map((reference) => [reference.id, reference]));
+  for (const id of [
+    'face-perception',
+    'swallowing',
+    'cerebellar-cognition',
+    'tactile-recognition',
+  ]) {
+    const circuit = archived.circuits.find((entry) => entry.id === id);
+    assert.ok(circuit, `${id}: missing tour`);
+    const clinicalPmids = new Set(
+      archived.references
+        .filter((reference) => circuit.clinical_references.includes(reference.id))
+        .map((reference) => reference.pmid),
+    );
+    for (const step of circuit.steps) {
+      // OFA perturbation in healthy observers is circuit evidence, not a prosopagnosia lesion.
+      if (id === 'face-perception' && step.id === 'occipital') {
+        const stimulation = archived.references.find((reference) => reference.pmid === '17764942');
+        assert.ok(stimulation && circuit.references.includes(stimulation.id));
+        assert.ok(!circuit.clinical_references.includes(stimulation.id));
+        assert.equal(step.region, 'destrieux:right:2');
+        continue;
+      }
+      assert.ok(
+        clinical.associations.some(
+          (association) =>
+            association.deficit === circuit.deficit &&
+            association.mappings.some((mapping) => mapping.region === step.region) &&
+            association.evidence.some((evidence) => {
+              const source = references.get(evidence.reference)!;
+              return (
+                evidence.role === 'supporting' &&
+                ['lesion-mapping', 'case-series', 'case-report'].includes(source.method) &&
+                clinicalPmids.has(source.pmid)
+              );
+            }),
+        ),
+        `${id}/${step.id}: no cited patient evidence maps this deficit and region`,
+      );
+    }
+  }
+});
+
+test('each archived deficit tour cites patient lesion evidence supporting the same deficit and a visited region', () => {
   for (const id of ['speech-planning', 'writing', 'music', 'taste', 'olfaction', 'mentalizing']) {
-    const circuit = data.circuits.find((entry) => entry.id === id)!;
+    const circuit = archived.circuits.find((entry) => entry.id === id)!;
     const cited = new Set(
-      data.references
+      archived.references
         .filter((reference) => circuit.references.includes(reference.id))
         .map((reference) => reference.pmid),
     );
@@ -611,7 +645,7 @@ test('each added deficit tour cites patient lesion evidence supporting the same 
   }
 });
 
-test('every landmark in the next six tours has cited full-text patient lesion provenance for its deficit', () => {
+test('every landmark in the six archived lesion tours has cited full-text patient lesion provenance for its deficit', () => {
   const references = new Map(clinical.references.map((reference) => [reference.id, reference]));
   for (const id of [
     'extinction',
@@ -621,10 +655,10 @@ test('every landmark in the next six tours has cited full-text patient lesion pr
     'voices',
     'pontine-motor',
   ]) {
-    const circuit = data.circuits.find((entry) => entry.id === id);
+    const circuit = archived.circuits.find((entry) => entry.id === id);
     assert.ok(circuit, `${id}: missing tour`);
     const cited = new Set(
-      data.references
+      archived.references
         .filter((reference) => circuit.clinical_references.includes(reference.id))
         .map((reference) => reference.pmid),
     );

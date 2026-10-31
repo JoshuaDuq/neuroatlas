@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { Group, Plane, Vector3 } from 'three';
+import { GreaterDepth, Group, Plane, Vector3 } from 'three';
 import type { Mesh, MeshStandardMaterial } from 'three';
 import { test, vi } from 'vitest';
 import { tractCatalog } from '../../core/diffusion/catalogs.ts';
@@ -69,7 +69,8 @@ test('a bundle requested twice while it downloads is added once', async () => {
     viewer.loadBundle(second),
   ]);
   assert.equal(loadTract.mock.calls.length, 2);
-  assert.equal(viewer.group.children.length, 2);
+  // Each bundle is its lines and their hidden pass.
+  assert.equal(viewer.group.children.length, 4);
   assert.equal(viewer.snapshot().length, 2);
   viewer.dispose();
 });
@@ -242,7 +243,7 @@ test('DIFF-24 the cut planes clip the bundles already loaded and those loaded la
   for (const lines of viewer.group.children as LineSegments[]) {
     assert.deepEqual((lines.material as { clippingPlanes: Plane[] }).clippingPlanes, [plane]);
   }
-  assert.equal(viewer.group.children.length, 2);
+  assert.equal(viewer.group.children.length, 4);
   viewer.dispose();
 });
 
@@ -347,7 +348,8 @@ test('a lesion shows exactly its counted lines through the scanner transform, th
     [0, 1, 1, 2],
   );
   assert.deepEqual(viewer.group.matrix.elements, transform.elements);
-  assert.equal(viewer.group.children.length, 2, 'does not load the outline or initial bundles');
+  assert.equal(viewer.group.children.length, 4, 'does not load the outline or initial bundles');
+  assert.equal(viewer.group.getObjectByName(`${first.id}-hidden`)!.visible, false);
   viewer.setMotion(true);
   assert.deepEqual(
     Array.from(lines.geometry.index!.array.slice(0, lines.geometry.drawRange.count)),
@@ -385,6 +387,63 @@ test('clearing or replacing a lesion selection prevents late bundles becoming vi
   assert.equal(viewer.group.getObjectByName(first.id)!.visible, false);
   assert.equal(viewer.group.getObjectByName(second.id)!.visible, true);
   viewer.clearLesionTract();
+  assert.equal(viewer.anyVisible, false);
+  viewer.dispose();
+});
+
+test('a landmark draws its whole bundle alone, faint where hidden, and gives the ordinary tracts back', async () => {
+  const viewer = createNativeTractViewer(
+    catalog,
+    () => {},
+    async () => decoded(),
+  );
+  await viewer.loadBundle(second);
+  viewer.setMinimum(20);
+  await viewer.showLandmarkTract(first);
+  const lines = viewer.group.getObjectByName(first.id) as LineSegments;
+  const hidden = viewer.group.getObjectByName(`${first.id}-hidden`) as LineSegments;
+  const other = viewer.group.getObjectByName(second.id) as LineSegments;
+  assert.deepEqual([lines.visible, hidden.visible, other.visible], [true, true, false]);
+  // Every streamline the length filter keeps; no lesion membership thins it.
+  assert.deepEqual(
+    Array.from(lines.geometry.index!.array.slice(0, lines.geometry.drawRange.count)),
+    [3, 4],
+  );
+  const material = hidden.material as import('three').LineBasicMaterial;
+  assert.equal(material.depthFunc, GreaterDepth);
+  assert.equal(material.depthWrite, false);
+  assert.ok(material.transparent && material.opacity > 0 && material.opacity < 1);
+  assert.equal(hidden.geometry, lines.geometry);
+  viewer.setMotion(true);
+  assert.equal(hidden.geometry, lines.geometry, 'the hidden pass follows the coarser lines');
+  viewer.setMotion(false);
+
+  viewer.clearLandmarkTract();
+  assert.deepEqual([lines.visible, hidden.visible, other.visible], [false, false, true]);
+
+  await viewer.showLesionTract(first, { centre: [0, 0, 0], radius: 100 });
+  viewer.clearLandmarkTract();
+  assert.equal(lines.visible, true, 'clearing a landmark leaves the lesion’s streamlines');
+  assert.equal(hidden.visible, false, 'the lesion’s streamlines have no hidden pass');
+  viewer.dispose();
+});
+
+test('a landmark cleared while its bundle downloads keeps the late bundle hidden', async () => {
+  let release!: (value: LoadedTract) => void;
+  const viewer = createNativeTractViewer(
+    catalog,
+    () => {},
+    () =>
+      new Promise((resolve) => {
+        release = resolve;
+      }),
+  );
+  const pending = viewer.showLandmarkTract(first);
+  await vi.waitFor(() => assert.ok(release));
+  viewer.clearLandmarkTract();
+  release(decoded());
+  await pending;
+  assert.equal(viewer.group.getObjectByName(first.id)!.visible, false);
   assert.equal(viewer.anyVisible, false);
   viewer.dispose();
 });

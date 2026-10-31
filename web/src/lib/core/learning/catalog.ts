@@ -8,6 +8,8 @@ export interface AuthoredStep {
   region: string;
   source_name: string;
   covering_regions?: readonly string[];
+  /** One of this anatomy's own tract bundles, drawn whole while the landmark is open. */
+  tract?: string;
   name: Translated;
   role: Translated;
   explanation: Translated;
@@ -107,7 +109,11 @@ function resolveStep(step: AuthoredStep, regions: ReadonlyMap<string, Region>) {
   return present[0];
 }
 
-function validateStep(step: Landmark, regions: ReadonlyMap<string, Region>) {
+function validateStep(
+  step: Landmark,
+  regions: ReadonlyMap<string, Region>,
+  tracts: ReadonlySet<string>,
+) {
   const region = requireRecord(regions, step.region, 'region');
   if (region.source_name !== step.source_name) throw new Error(`Source mismatch: ${step.region}`);
   if (!['cortex', 'structure'].includes(region.kind)) {
@@ -130,6 +136,9 @@ function validateStep(step: Landmark, regions: ReadonlyMap<string, Region>) {
       }
     }
   }
+  if (Object.hasOwn(step, 'tract') && !tracts.has(step.tract!)) {
+    throw new Error(`Unknown tract bundle: ${step.tract}`);
+  }
   for (const key of ['name', 'role', 'explanation', 'mapping'] as const) {
     requireTranslation(step[key], `${step.id}.${key}`);
   }
@@ -143,11 +152,12 @@ function validateStep(step: Landmark, regions: ReadonlyMap<string, Region>) {
 
 export type CircuitCatalog = ReturnType<typeof createCircuitCatalog>;
 
-/** Authored lessons must resolve to the exact source labels in this anatomy. */
+/** Authored lessons must resolve to the exact source labels and tract bundles of this anatomy. */
 export function createCircuitCatalog(
   data: CircuitData,
   manifest: Pick<Manifest, 'regions'>,
   deficitIds: Iterable<string>,
+  tractIds: Iterable<string>,
 ) {
   requireText(data.revised, 'revised');
   if (!Number.isFinite(data.context_margin_mm) || data.context_margin_mm <= 0) {
@@ -158,6 +168,7 @@ export function createCircuitCatalog(
   const references = indexRecords(data.references, 'reference');
   const regions = new Map(manifest.regions.map((region) => [region.id, region]));
   const deficits = new Set(deficitIds);
+  const tracts = new Set(tractIds);
   const steps = new Map<string, Map<string, Landmark>>();
   for (const reference of references.values()) {
     requireText(reference.title, `${reference.id}.title`);
@@ -210,7 +221,7 @@ export function createCircuitCatalog(
       })),
       `${circuit.id} landmark`,
     );
-    for (const step of landmarks.values()) validateStep(step, regions);
+    for (const step of landmarks.values()) validateStep(step, regions, tracts);
     steps.set(circuit.id, landmarks);
     circuits.set(circuit.id, { ...circuit, steps: [...landmarks.values()] });
   }

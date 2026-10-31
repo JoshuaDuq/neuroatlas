@@ -56,10 +56,11 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
   let ready = false;
   let loading: Promise<void> | null = null;
   let overlayVisible = false;
-  let crossingShown = false;
+  // The lesion's streamlines or a landmark's bundle, drawn alone whether or not the overlay is.
+  let isolated: 'lesion' | 'landmark' | null = null;
 
   function showGroup(): void {
-    engine.group.visible = matchingAnatomy ? overlayVisible || crossingShown : active;
+    engine.group.visible = matchingAnatomy ? overlayVisible || isolated !== null : active;
     scene.invalidate();
   }
 
@@ -125,8 +126,9 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
     get ready() {
       return ready;
     },
+    // A landmark's bundle can show before the Tracts tab ever loads the outline.
     get streamlinesVisible() {
-      return ready && engine.group.visible && engine.anyVisible;
+      return engine.group.visible && engine.anyVisible;
     },
     get bounds() {
       return engine.bounds;
@@ -137,12 +139,13 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
           bundles: catalog.bundles,
           crossing,
           async showCrossing(id, sphere) {
-            crossingShown = true;
+            isolated = 'lesion';
             showGroup();
             await engine.showLesionTract(bundleOf(id), sphere);
           },
           clearCrossing() {
-            crossingShown = false;
+            if (isolated !== 'lesion') return;
+            isolated = null;
             engine.clearLesionTract();
             showGroup();
           },
@@ -162,6 +165,21 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
         showGroup();
       }
       if (active && !ready) await load();
+    },
+    async showLandmarkTract(id) {
+      if (!matchingAnatomy) throw new Error('A landmark draws only its own anatomy’s tracts.');
+      const bundle = bundleOf(id);
+      isolated = 'landmark';
+      showGroup();
+      await engine.showLandmarkTract(bundle);
+      emit('tractsVisibility', undefined);
+    },
+    clearLandmarkTract() {
+      if (isolated !== 'landmark') return;
+      isolated = null;
+      engine.clearLandmarkTract();
+      showGroup();
+      emit('tractsVisibility', undefined);
     },
     async loadBundle(id) {
       await engine.loadBundle(bundleOf(id));

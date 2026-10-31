@@ -116,6 +116,7 @@ async function restore(engine: Engine, opening: Opening) {
   engine.present({ lang: 'en', referenceOnly: false });
   comparison.clear();
   comparison.setVisible(true);
+  tracts.clearLandmarkTract();
   if (tracts.ready) await tracts.setActive(false);
   assert.deepEqual(
     modelOf(engine),
@@ -1362,6 +1363,27 @@ export function defineEngineContract(
         assert.throws(() => tracts.setOutlineOpacity(2), RangeError);
         tracts.setOutlineOpacity(0.5);
         tracts.setOverlay(true);
+      });
+
+      it('draws a landmark’s own bundle alone without the overlay, then takes it away', async () => {
+        const { engine } = world();
+        const { tracts } = engine;
+        await tracts.setActive(true);
+        const [first] = tracts.snapshot();
+        await tracts.setActive(false);
+        if (engine.model.manifest.anatomy.id !== tracts.anatomy) {
+          await assert.rejects(tracts.showLandmarkTract(first!.id));
+          return;
+        }
+        tracts.setOverlay(false);
+        assert.equal(tracts.streamlinesVisible, false);
+        const visibility = collect(engine, 'tractsVisibility');
+        await tracts.showLandmarkTract(first!.id);
+        assert.equal(tracts.streamlinesVisible, true);
+        assert.equal(visibility.length, 1);
+        tracts.clearLandmarkTract();
+        assert.equal(tracts.streamlinesVisible, false);
+        await assert.rejects(tracts.showLandmarkTract('no-such-bundle'), RangeError);
       });
 
       it('converts a point between the scan and the surface, both ways', () => {

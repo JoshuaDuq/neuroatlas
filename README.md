@@ -66,7 +66,7 @@ Seventy profiles of acquired adult deficits, from aphasia and amnesia to neglect
 
 [![The memory circuit tour on its first landmark, the left hippocampal formation, outlined among its neighbours](.github/assets/readme/circuits.webp)](https://planumatlas.com/#anatomy=cdmd&lang=en&detail=learning&atlas=destrieux&cuts=destrieux&tab=circuits&circuit=memory&step=1)
 
-Thirty-five tours step through sensory, motor and cognitive systems, from vision and hearing to speech apraxia, music perception, visual extinction, voice recognition and locked-in syndrome. Each landmark opens the right atlas, reveals the hidden anatomy around it and frames it, with notes on what the tour simplifies.
+Five tours follow established anatomical pathways and loop branches: vision, a hippocampal–diencephalic memory branch, basal ganglia motor loops, cerebellar output and corticospinal descent. Their 25 landmarks open the relevant atlas and frame the anatomy, with explicit notes on omitted relays and coarse boundaries.
 
 ### Ask what a lesion would reach
 

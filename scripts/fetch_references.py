@@ -1,6 +1,7 @@
 """Fetch identity metadata for every cited reference into data/reference-records.json.
 
 The identifiers come from data/neuropsychology.yaml, data/circuits.yaml,
+data/archived-circuit-tours.yaml,
 config/functional-regions.yaml, config/neuropsych-domains.yaml,
 config/receptor-fingerprints.yaml, config/arterial-territories.yaml,
 config/cerebellar-functions.yaml and docs/reference/references.md. PubMed gives each
@@ -81,12 +82,13 @@ def cited_identifiers():
     for reference in clinical["references"]:
         pmids.add(reference["pmid"])
         dois[reference["pmid"]] = reference["doi"]
-    circuits = yaml.safe_load((ROOT / "data/circuits.yaml").read_text())
-    for reference in circuits["references"]:
-        if "nbk" in reference:
-            books.add(reference["nbk"])
-        else:
-            pmids.add(reference["pmid"])
+    for catalogue in ("circuits", "archived-circuit-tours"):
+        circuits = yaml.safe_load((ROOT / f"data/{catalogue}.yaml").read_text())
+        for reference in circuits["references"]:
+            if "nbk" in reference:
+                books.add(reference["nbk"])
+            else:
+                pmids.add(reference["pmid"])
     for config in ("functional-regions", "neuropsych-domains", "receptor-fingerprints"):
         sources = yaml.safe_load((ROOT / f"config/{config}.yaml").read_text())["sources"]
         for source in sources.values():

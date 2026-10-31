@@ -14,7 +14,12 @@ import type { ReaderState } from '../lib/core/state/reader-state.ts';
 import { createSceneCommands } from '../lib/core/state/scene-commands.ts';
 import type { Engine } from '../lib/engine/api.ts';
 import { createCatalogStore } from '../lib/state/catalog.svelte.ts';
-import { createEngineSync, syncPaint, syncPresentation } from '../lib/state/engine-sync.svelte.ts';
+import {
+  createEngineSync,
+  syncLessonTract,
+  syncPaint,
+  syncPresentation,
+} from '../lib/state/engine-sync.svelte.ts';
 import { createLesionStore } from '../lib/state/lesion.svelte.ts';
 import { createLink } from '../lib/state/link.svelte.ts';
 import { createLessonStore } from '../lib/state/session.svelte.ts';
@@ -84,6 +89,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
     });
     syncPaint(model, view, { domains, clinical, lesion });
     syncPresentation(engine, view, engineState);
+    syncLessonTract(engine.tracts, view, circuits, (error) => commands.fail('streamlines', error));
     const catalog = createCatalogStore(regions, view);
     // Before the first restore: a link that loads hidden regions then says their count once.
     const speech = announceView(view, (region, current) => regions.label(region.id, current).name);

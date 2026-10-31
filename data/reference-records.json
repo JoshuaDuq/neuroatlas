@@ -1,5 +1,7 @@
 {
  "fetched": "2026-10-29",
+ "updated": "2026-10-31",
+ "update_scope": "Added PubMed/Crossref records for PMIDs 10200226, 15009154, 17764942 and 27812503 on 2026-10-30, and for PMID 18193279 on 2026-10-31; existing records unchanged.",
  "sources": "PubMed efetch, Bookshelf esummary and Crossref; no abstracts",
  "year": "PubMed's journal-issue publication year (PubDate, or the first year of a MedlineDate range), not the online-first year; for a Bookshelf chapter, the book's publication year",
  "records": {
@@ -651,6 +653,28 @@
    "pages": "271-82",
    "corrections": []
   },
+  "pmid:10200226": {
+   "pmid": "10200226",
+   "pmcid": null,
+   "doi": "10.1152/jn.1999.81.4.1917",
+   "doi_source": "pubmed",
+   "title": "Identification of the cerebral loci processing human swallowing with H2(15)O PET activation",
+   "authors": [
+    "Hamdy S",
+    "Rothwell JC",
+    "Brooks DJ",
+    "Bailey D",
+    "Aziz Q",
+    "Thompson DG"
+   ],
+   "year": 1999,
+   "pubdate": "1999 Apr",
+   "journal": "J Neurophysiol",
+   "volume": "81",
+   "issue": "4",
+   "pages": "1917-26",
+   "corrections": []
+  },
   "pmid:10404203": {
    "pmid": "10404203",
    "pmcid": null,
@@ -1204,6 +1228,30 @@
    "pages": "63-7",
    "corrections": []
   },
+  "pmid:15009154": {
+   "pmid": "15009154",
+   "pmcid": null,
+   "doi": "10.1111/j.0953-816x.2004.03185.x",
+   "doi_source": "pubmed",
+   "title": "Left and right superior parietal lobule in tactile object discrimination",
+   "authors": [
+    "Stoeckel MC",
+    "Weder B",
+    "Binkofski F",
+    "Choi HJ",
+    "Amunts K",
+    "Pieperhoff P",
+    "Shah NJ",
+    "Seitz RJ"
+   ],
+   "year": 2004,
+   "pubdate": "2004 Feb",
+   "journal": "Eur J Neurosci",
+   "volume": "19",
+   "issue": "4",
+   "pages": "1067-72",
+   "corrections": []
+  },
   "pmid:15037129": {
    "pmid": "15037129",
    "pmcid": null,
@@ -1697,6 +1745,46 @@
    "volume": "45",
    "issue": "13",
    "pages": "3054-67",
+   "corrections": []
+  },
+  "pmid:17764942": {
+   "pmid": "17764942",
+   "pmcid": null,
+   "doi": "10.1016/j.cub.2007.07.063",
+   "doi_source": "pubmed",
+   "title": "TMS evidence for the involvement of the right occipital face area in early face processing",
+   "authors": [
+    "Pitcher D",
+    "Walsh V",
+    "Yovel G",
+    "Duchaine B"
+   ],
+   "year": 2007,
+   "pubdate": "2007 Sep 18",
+   "journal": "Curr Biol",
+   "volume": "17",
+   "issue": "18",
+   "pages": "1568-73",
+   "corrections": []
+  },
+  "pmid:18193279": {
+   "pmid": "18193279",
+   "pmcid": "PMC2494572",
+   "doi": "10.1007/s00429-007-0170-0",
+   "doi_source": "pubmed",
+   "title": "Human pallidothalamic and cerebellothalamic tracts: anatomical basis for functional stereotactic neurosurgery",
+   "authors": [
+    "Gallay MN",
+    "Jeanmonod D",
+    "Liu J",
+    "Morel A"
+   ],
+   "year": 2008,
+   "pubdate": "2008 Aug",
+   "journal": "Brain Struct Funct",
+   "volume": "212",
+   "issue": "6",
+   "pages": "443-63",
    "corrections": []
   },
   "pmid:18636551": {
@@ -3102,6 +3190,27 @@
    "volume": "222",
    "issue": "5",
    "pages": "2059-2070",
+   "corrections": []
+  },
+  "pmid:27812503": {
+   "pmid": "27812503",
+   "pmcid": "PMC5079414",
+   "doi": "10.1016/j.nicl.2016.10.013",
+   "doi_source": "pubmed",
+   "title": "Location of lesion determines motor vs. cognitive consequences in patients with cerebellar stroke",
+   "authors": [
+    "Stoodley CJ",
+    "MacMore JP",
+    "Makris N",
+    "Sherman JC",
+    "Schmahmann JD"
+   ],
+   "year": 2016,
+   "pubdate": "2016",
+   "journal": "Neuroimage Clin",
+   "volume": "12",
+   "issue": null,
+   "pages": "765-775",
    "corrections": []
   },
   "pmid:27815400": {

@@ -573,6 +573,15 @@ export interface EngineTracts {
   setOutlineOpacity(opacity: number): void;
   /** Draw the streamlines over the anatomy's own brain (native-ui.js:256-261). */
   setOverlay(visible: boolean): void;
+  /**
+   * Draw one of the anatomy's own bundles whole and alone over its brain, whether or not the overlay
+   * is, faint where a surface in front hides it: a lesson landmark's tract. A later call replaces it;
+   * it replaces the lesion's streamlines. Rejects with a `RangeError` for an unknown bundle, and
+   * with an error on an anatomy whose tracts are another subject's.
+   */
+  showLandmarkTract(id: string): Promise<void>;
+  /** Take a landmark's bundle away; the lesion's streamlines are left alone. */
+  clearLandmarkTract(): void;
   /** A point of the scan, in scanner RAS mm, where the sections' crosshair puts it (native-ui.js:109). */
   scannerToSurface(point: Vec3): Vec3;
   /** The sections' crosshair as a point of the scan, in scanner RAS mm (native-ui.js:107). */

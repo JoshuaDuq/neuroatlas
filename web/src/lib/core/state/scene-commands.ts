@@ -189,6 +189,9 @@ export function createSceneCommands({
 
   async function openRegion(id: string, current: () => boolean) {
     if (!(await revealRegions([id], current))) return false;
+    if (model.regions.get(id)!.atlas === 'pam50' && !(await showSpinalCord(true, current))) {
+      return false;
+    }
     model.select(id);
     return true;
   }
