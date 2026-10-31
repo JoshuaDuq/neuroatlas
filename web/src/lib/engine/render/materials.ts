@@ -34,8 +34,8 @@ export interface Appearance {
   folds: {
     low: number;
     high: number;
-    concavity_low: number;
-    concavity_high: number;
+    openness_low: number;
+    openness_high: number;
     direct_strength: number;
     indirect_strength: number;
   };
@@ -106,21 +106,21 @@ function addFoldShading(
     if (withNetworks) shader.uniforms.networkMix = networkMix;
     if (withTerritories) shader.uniforms.territoryMix = territoryMix;
     shader.uniforms.sulcDecode = { value: fieldDecode(ranges, '_SULC') };
-    shader.uniforms.concavityDecode = { value: fieldDecode(ranges, '_CONCAVITY') };
+    shader.uniforms.opennessDecode = { value: fieldDecode(ranges, '_OPENNESS') };
     shader.uniforms.t1Decode = { value: fieldDecode(ranges, '_T1') };
     shader.uniforms.t1Range = { value: [intensity.low, intensity.high] };
-    shader.uniforms.concavityRange = { value: [folds.concavity_low, folds.concavity_high] };
+    shader.uniforms.opennessRange = { value: [folds.openness_low, folds.openness_high] };
     shader.uniforms.foldRange = { value: [folds.low, folds.high] };
     shader.uniforms.foldStrength = {
       value: [folds.direct_strength, folds.indirect_strength],
     };
     shader.vertexShader = `attribute float _sulc;
-attribute float _concavity;
+attribute float _openness;
 attribute float _t1;
 uniform vec2 sulcDecode;
-uniform vec2 concavityDecode;
+uniform vec2 opennessDecode;
 uniform vec2 t1Decode;
-varying float vConcavity;
+varying float vOpenness;
 varying float vT1;
 varying float vSulcalDepth;
 ${withNetworks ? 'attribute vec4 _networkColor;\nvarying vec4 vNetworkColor;' : ''}
@@ -129,15 +129,15 @@ ${shader.vertexShader}`.replace(
       '#include <begin_vertex>',
       `#include <begin_vertex>
 vSulcalDepth = _sulc * sulcDecode.y + sulcDecode.x;
-vConcavity = _concavity * concavityDecode.y + concavityDecode.x;
+vOpenness = _openness * opennessDecode.y + opennessDecode.x;
 vT1 = _t1 * t1Decode.y + t1Decode.x;
 ${withNetworks ? 'vNetworkColor = _networkColor;' : ''}
 ${withTerritories ? 'vTerritoryColor = _territoryColor;' : ''}`,
     );
     shader.fragmentShader = `varying float vSulcalDepth;
-varying float vConcavity;
+varying float vOpenness;
 varying float vT1;
-uniform vec2 concavityRange;
+uniform vec2 opennessRange;
 uniform vec2 t1Range;
 uniform float tissueVariation;
 uniform vec2 foldRange;
@@ -172,15 +172,15 @@ ${shader.fragmentShader}`
         '#include <lights_fragment_end>',
         `#include <lights_fragment_end>
       float depth = smoothstep(foldRange.x, foldRange.y, vSulcalDepth);
-      float bank = smoothstep(concavityRange.x, concavityRange.y, vConcavity);
-      float fold = mix(bank, depth, 0.25);
+      float shut = 1.0 - smoothstep(opennessRange.x, opennessRange.y, vOpenness);
+      float fold = mix(shut, depth, 0.25);
       reflectedLight.directDiffuse *= 1.0 - foldStrength.x * fold;
       reflectedLight.indirectDiffuse *= 1.0 - foldStrength.y * fold;
       reflectedLight.indirectSpecular *= 1.0 - foldStrength.y * fold;`,
       );
   };
   material.customProgramCacheKey = () =>
-    `source-tissue-relief-v4${withNetworks ? '-network' : ''}${withTerritories ? '-territory' : ''}`;
+    `source-tissue-relief-v5${withNetworks ? '-network' : ''}${withTerritories ? '-territory' : ''}`;
 }
 
 export function createAnatomicalMaterial(
@@ -199,7 +199,7 @@ export function createAnatomicalMaterial(
   material.specularIntensity = appearance.tissue.specular_intensity;
   const cortical = region.kind === 'cortex' || region.kind === 'non-region';
   if (cortical) {
-    for (const name of ['_sulc', '_concavity', '_t1']) {
+    for (const name of ['_sulc', '_openness', '_t1']) {
       const attribute = mesh.geometry.getAttribute(name);
       if (
         !attribute ||

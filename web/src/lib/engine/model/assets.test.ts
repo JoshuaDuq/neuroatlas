@@ -46,7 +46,7 @@ for (const { id: published } of anatomies.anatomies) {
         for (const mesh of atlas.visibleMeshes) {
           assert.ok(mesh.geometry.getAttribute('normal'));
           if (['cortex', 'non-region'].includes(mesh.userData['kind'])) {
-            for (const name of ['_sulc', '_concavity', '_t1']) {
+            for (const name of ['_sulc', '_openness', '_t1']) {
               const field = mesh.geometry.getAttribute(name);
               assert.equal(field.count, mesh.geometry.attributes['position']!.count);
               assert.ok((field.array as Float32Array).every(Number.isFinite));

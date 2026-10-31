@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.12, <3.14"
 
 [[package]]
@@ -50,6 +50,7 @@ name = "brain-model"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "embreex" },
     { name = "nibabel" },
     { name = "numpy" },
     { name = "pyyaml" },
@@ -74,6 +75,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "embreex", specifier = ">=4.4,<5" },
     { name = "nibabel", specifier = ">=5.3,<6" },
     { name = "numpy", specifier = ">=2.2,<2.5" },
     { name = "pyyaml", specifier = ">=6,<7" },
@@ -183,6 +185,24 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ae/b6/03bb70946330e88ffec97aefd3ea75ba575cb2e762061e0e62a213befee8/docutils-0.22.4.tar.gz", hash = "sha256:4db53b1fde9abecbb74d91230d32ab626d94f6badfc575d6db9194a49df29968", size = 2291750, upload-time = "2025-12-18T19:00:26.443Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/02/10/5da547df7a391dcde17f59520a231527b8571e6f46fc8efb02ccb370ab12/docutils-0.22.4-py3-none-any.whl", hash = "sha256:d0013f540772d1420576855455d050a2180186c91c15779301ac2ccb3eeb68de", size = 633196, upload-time = "2025-12-18T19:00:18.077Z" },
+]
+
+[[package]]
+name = "embreex"
+version = "4.4.0.post1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/48/8e/4099a0c88a36207c4a18a9b800b4bc6d03ef1c266cad6724a2e130ff982f/embreex-4.4.0.post1-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:a902809f99ac7a8bf1267a4a207d415a7a7e95a8d2b5e9d443a2cc291b9c1482", size = 5052543, upload-time = "2026-10-21T22:48:32.056Z" },
+    { url = "https://files.pythonhosted.org/packages/35/33/ac598c648dd66f783fa54c43272e6469e922787f471a7a6557e5c2022233/embreex-4.4.0.post1-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:1704af3c2e80fc6be4c1637402748ca20fd217980bd641dd3f228f7e09b0a461", size = 13224525, upload-time = "2026-10-21T22:48:34.347Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/fe/49e8e481cb0f460a7949617847d4afbd573f5c5e1cb3a8c4df509e3a4e8a/embreex-4.4.0.post1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9ee31b8b40a129620e40e06ae5c0af088b12e5f52c583e43428b87a02786d6bb", size = 14593360, upload-time = "2026-10-21T22:48:37.281Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/3e/218cb6cdd12e361320c0c27c47ce284500e43322bdab9ed19ad76ab92474/embreex-4.4.0.post1-cp312-cp312-win_amd64.whl", hash = "sha256:6286204fdcd75465cc458e610319c19dcf898292211755cca13da7248db172ab", size = 13124419, upload-time = "2026-10-21T22:48:40.056Z" },
+    { url = "https://files.pythonhosted.org/packages/27/b0/1ff1ed093a271ded7be0504c25252913d8ba9f1f6868191d3c7865594267/embreex-4.4.0.post1-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:8e0ec6325caab812cb428da4cecb8905b40c6d5bda386ffb73d44bbf2aa7af56", size = 5049816, upload-time = "2026-10-21T22:48:42.618Z" },
+    { url = "https://files.pythonhosted.org/packages/54/cc/895674c5495c275a265361dc5e6cbc0f10fb17df287a6c8c2dd94135ee82/embreex-4.4.0.post1-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:b8bd326b36151373adaad23268b60b39d20ec8a371eb1bae309a31e4ab78ac71", size = 13222545, upload-time = "2026-10-21T22:48:44.92Z" },
+    { url = "https://files.pythonhosted.org/packages/62/06/105609b3d692deab8738acf34d622589127f30dcd3fd512afd37ad862b7d/embreex-4.4.0.post1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:83165d2bb0436ab9b07d8e7236a0f2509c7868b3a85f2fbd8c41b4d023e88e38", size = 14549745, upload-time = "2026-10-21T22:48:47.974Z" },
+    { url = "https://files.pythonhosted.org/packages/23/e7/0b445ff1c11859373bd71fae849dd206d942678a5597106b38027d26476f/embreex-4.4.0.post1-cp313-cp313-win_amd64.whl", hash = "sha256:506009885b72923661f2b5cd3decd593b9340e3ef06ddb70763303fc5982253e", size = 13122025, upload-time = "2026-10-21T22:48:51.025Z" },
 ]
 
 [[package]]

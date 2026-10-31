@@ -13202,13 +13202,13 @@
     {
       "atlas": "julich",
       "file": "cortex-julich.glb",
-      "sha256": "8c0afb809ee7b8beb1fd9be8242c87b443e6411d541de9bc7fe9a69840e5966a",
+      "sha256": "d91ff5e7fddb17767aa7a25cbcbffe18c513cdafdf82404415bcb7c23d6bc253",
       "citation": "https://doi.org/10.1126/science.abb4588"
     },
     {
       "atlas": "schaefer",
       "file": "cortex-schaefer.glb",
-      "sha256": "dd3b508056a90a6cb09f0a6b42b11abbe6c8ed2ca95d95b2d04c6fe647f8b2de",
+      "sha256": "d096da1a6ac419c227122259fd5a1ec25099d5b1d71c862795487132c6e9cc09",
       "citation": "https://doi.org/10.1093/cercor/bhx179"
     }
   ],

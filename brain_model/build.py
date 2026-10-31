@@ -49,7 +49,7 @@ from .surfaces.geometry import (
     smooth_display,
 )
 from .surfaces.ribbons import export_ribbon_labels
-from .surfaces.shading import cortical_concavity, ribbon_intensity
+from .surfaces.shading import cortical_openness, ribbon_intensity
 from .surfaces.solids import export_solid_envelopes
 
 
@@ -162,8 +162,9 @@ def build_cortex(config, atlas, field_ranges=None):
         sulcal_depth = partition_vertex_field(
             faces, labels, read_morph_data(source / "surf" / f"{prefix}.sulc")
         )
-        concavity = partition_vertex_field(faces, labels, cortical_concavity(
-            trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+        openness = partition_vertex_field(faces, labels, cortical_openness(
+            trimesh.Trimesh(vertices=vertices, faces=faces, process=False),
+            **config["appearance"]["occlusion"],
         ))
         intensity = partition_vertex_field(faces, labels, ribbon_intensity(
             np.asarray(mri.dataobj), mri.header.get_vox2ras_tkr(), vertices, white
@@ -195,7 +196,7 @@ def build_cortex(config, atlas, field_ranges=None):
             mesh = add_region(scene, *geometry, region, color)
             indices = np.unique(partition.faces[partition.labels == label])
             mesh.vertex_attributes["_SULC"] = sulcal_depth[indices].astype(np.float32)
-            mesh.vertex_attributes["_CONCAVITY"] = concavity[indices].astype(np.float32)
+            mesh.vertex_attributes["_OPENNESS"] = openness[indices].astype(np.float32)
             mesh.vertex_attributes["_T1"] = intensity[indices].astype(np.float32)
             if network_field is not None:
                 mesh.vertex_attributes["_NETWORK"] = (
@@ -241,7 +242,7 @@ def build_cortex(config, atlas, field_ranges=None):
             "source": "FreeSurfer lh.sulc / rh.sulc",
             "interpolation": "Linear on barycentric atlas partitions",
             "meaning": "Sulcal-depth morphometry; positive values mark sulci",
-            "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+            "openness": "_OPENNESS: cosine-weighted share of rays from each pial vertex that clear the intact pial hemisphere, a hit at d counting d / radius_mm open (appearance.occlusion)",
             "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo",
         },
     }, regions

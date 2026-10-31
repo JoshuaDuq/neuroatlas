@@ -40,7 +40,7 @@ Every request carries `?v=` and the first 16 hex digits of the file's SHA-256, r
 | :--- | :--- | :--- |
 | `POSITION` | `float32` | Rounding only, < $2 \times 10^{-5}$ mm |
 | `NORMAL` | `int16` normalised, `KHR_mesh_quantization` | ≤ $1.54 \times 10^{-5}$ |
-| `_SULC`, `_CONCAVITY`, `_T1` | `uint16` normalised, one range per file | ≤ ½ step |
+| `_SULC`, `_OPENNESS`, `_T1` | `uint16` normalised, one range per file | ≤ ½ step |
 | `_NETWORK` | `uint8` | None (Yeo 1–7, 0 unassigned) |
 | Indices | `uint16` | None |
 

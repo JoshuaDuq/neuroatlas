@@ -8,7 +8,7 @@ import numpy as np
 # Fields quantized against one range per file, so a parcel's values stay
 # comparable with every other parcel's. Per-primitive ranges would make the
 # same sulcal depth decode differently either side of a region boundary.
-QUANTIZED_FIELDS = ("_SULC", "_CONCAVITY", "_T1")
+QUANTIZED_FIELDS = ("_SULC", "_OPENNESS", "_T1")
 
 FLOAT32 = 5126
 UINT32 = 5125

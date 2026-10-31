@@ -83,7 +83,7 @@ test('SHADER-03 a cortex without a one-value-per-vertex shading field is refused
     '_sulc',
   );
   const bare = corticalMesh(false);
-  for (const name of ['_sulc', '_concavity', '_t1']) bare.geometry.deleteAttribute(name);
+  for (const name of ['_sulc', '_openness', '_t1']) bare.geometry.deleteAttribute(name);
   const structure = createAnatomicalMaterial(
     bare as never,
     region({ id: 's', kind: 'structure' }),
@@ -124,7 +124,7 @@ test('SHADER-04 the shading fields are decoded over the manifest span, and read 
       unranged,
     ),
   );
-  for (const name of ['sulcDecode', 'concavityDecode', 't1Decode']) {
+  for (const name of ['sulcDecode', 'opennessDecode', 't1Decode']) {
     assert.deepEqual(raw[name]!.value, [0, 1]);
   }
 });
@@ -170,7 +170,7 @@ test('SHADER-06 the surface hands the shader the manifest fold ranges and streng
     appearance,
   );
   const uniforms = compile(material);
-  assert.deepEqual(uniforms['concavityRange']!.value, [-0.08, 0.04]);
+  assert.deepEqual(uniforms['opennessRange']!.value, [0.5, 0.95]);
   assert.deepEqual(uniforms['foldRange']!.value, [-0.5, 1.8]);
   assert.deepEqual(uniforms['foldStrength']!.value, [0.48, 0.78]);
 });

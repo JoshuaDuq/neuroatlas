@@ -236,8 +236,8 @@ appearance:
   folds:
     low: -0.5
     high: 1.8
-    concavity_low: -0.08
-    concavity_high: 0.04
+    openness_low: 0.5
+    openness_high: 0.95
     direct_strength: 0.48
     indirect_strength: 0.78
   lighting:
@@ -246,11 +246,11 @@ appearance:
     key: 1.8
     fill: 0.5
     rim: 0.7
+  # Baked per pial vertex at build time (_OPENNESS), so it costs the viewer
+  # nothing per frame. Folds closer than radius_mm occlude in proportion.
   occlusion:
-    radius: 0.012
-    thickness: 0.025
-    samples: 32
-    intensity: 0.9
+    radius_mm: 10
+    direction_count: 256
 atlas_comparison:
   enabled_anatomies: [cdmd]
   atlases: [destrieux, hcp-mmp, julich, schaefer]
@@ -329,6 +329,12 @@ structures:
 validation:
   coordinate_tolerance_mm: 0.00002
   relative_area_tolerance: 0.000001
+  # Re-cast cortical openness against the published field. Float-level jitter
+  # (3e-5 mm) moved 0.16% of CDMD vertices past the tolerance; a 5% radius
+  # error moves 78%, one direction fewer 23%.
+  openness:
+    tolerance: 0.001
+    maximum_outlier_share: 0.005
   # NextBrain against the same brain's aseg: Dice of each named NextBrain
   # learning unit (config/learning-anatomy.yaml) with the aseg label of the same
   # structure on that side, aseg resampled onto the NextBrain grid by nearest

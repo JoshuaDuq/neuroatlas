@@ -178,7 +178,7 @@ function fixture(
           new BoxGeometry(0.01, 0.01, 0.01),
           new MeshStandardMaterial({ side: DoubleSide }),
         );
-        for (const name of ['_sulc', '_concavity', '_t1']) {
+        for (const name of ['_sulc', '_openness', '_t1']) {
           mesh.geometry.setAttribute(
             name,
             new Float32BufferAttribute(

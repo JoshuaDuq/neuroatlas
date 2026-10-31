@@ -27,19 +27,35 @@ def test_partitioned_scalar_field_rejects_invalid_source_data(values):
         partition_vertex_field(np.array([[0, 1, 2]]), np.array([1, 2, 3]), values)
 
 
-def test_cortical_concavity_is_scale_invariant_and_leaves_geometry_unchanged():
+def test_cortical_openness_is_full_on_a_bare_surface_and_leaves_geometry_unchanged():
     import trimesh
 
-    from brain_model.surfaces.shading import cortical_concavity
+    from brain_model.surfaces.shading import cortical_openness
 
-    mesh = trimesh.creation.icosphere(subdivisions=2)
+    mesh = trimesh.creation.icosphere(subdivisions=2, radius=20)
     vertices, faces = mesh.vertices.copy(), mesh.faces.copy()
-    values = cortical_concavity(mesh)
-    assert np.all(values < 0), "Convex crowns must have negative concavity"
-    scaled = trimesh.Trimesh(vertices=vertices * 1000, faces=faces, process=False)
-    np.testing.assert_allclose(cortical_concavity(scaled), values, atol=1e-10)
+    np.testing.assert_allclose(cortical_openness(mesh, 10, 64), 1)
     np.testing.assert_array_equal(mesh.vertices, vertices)
     np.testing.assert_array_equal(mesh.faces, faces)
+    with pytest.raises(ValueError, match="outward"):
+        cortical_openness(trimesh.Trimesh(vertices, faces[:, ::-1], process=False), 10, 64)
+
+
+def test_cortical_openness_falls_with_a_nearer_fold_and_ignores_folds_past_the_radius():
+    import trimesh
+
+    from brain_model.surfaces.shading import cortical_openness
+
+    def facing(gap):
+        left = trimesh.creation.icosphere(subdivisions=3, radius=5)
+        right = left.copy()
+        right.apply_translation([10 + gap, 0, 0])
+        both = trimesh.util.concatenate([left, right])
+        return cortical_openness(both, 4, 256)[np.argmax(left.vertices[:, 0])]
+
+    near, far, beyond = facing(0.5), facing(2), facing(4.5)
+    assert near < far < 1
+    assert beyond == pytest.approx(1, abs=1e-12)
 
 
 def test_ribbon_intensity_samples_corresponding_surfaces_in_surface_ras():

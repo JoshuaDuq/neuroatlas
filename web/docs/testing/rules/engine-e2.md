@@ -19,7 +19,7 @@ Values below come from the published CDMD manifest (`public/models/cdmd/manifest
 tissue cortex `#c4a897`, gray `#a68d80`, white `#e5dbc5`, fluid `#67777c`, unlabelled `#c4a897`;
 roughness 0.62, clearcoat 0.08, clearcoat roughness 0.45, ior 1.38, specular intensity 0.55;
 intensity low 85, high 180, surface strength 0.28, cut strength 0.5, solid relief 1.2 mm; folds
-low −0.5, high 1.8, concavity −0.08 to 0.04, direct 0.48, indirect 0.78; lighting hemisphere 0.28,
+low −0.5, high 1.8, openness 0.5 to 0.95, direct 0.48, indirect 0.78; lighting hemisphere 0.28,
 key 1.8, fill 0.5, rim 0.7. Colours named "linear" are sRGB bytes / 255 decoded to linear RGB.
 A rule about shader output is stated as the colour a fragment gets; it needs a real GL context
 (Vitest browser mode, SwiftShader) to prove, and its uniform half can be checked in unit tests.
@@ -49,7 +49,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 
 ### SHADER-03 · A cortical surface without its shading fields is refused
 
-- **Rule:** A cortex or non-region mesh must carry `_sulc`, `_concavity` and `_t1`, one value per vertex. Anything else is an error naming the field and the region, not an unshaded surface. Structures and tissue regions take no fold shading and need no fields.
+- **Rule:** A cortex or non-region mesh must carry `_sulc`, `_openness` and `_t1`, one value per vertex. Anything else is an error naming the field and the region, not an unshaded surface. Structures and tissue regions take no fold shading and need no fields.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/render/materials.js:114-125`
@@ -62,7 +62,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Kind:** scientific
 - **Level:** unit (the decode uniforms); browser for the per-fragment result
 - **Source:** `viewer/render/materials.js:15-26, 43-45`
-- **Expected:** CDMD `_SULC` [−14.0466, 17.3979] → decode (−14.0466, 31.4445), stored 0.5 → 1.6756 mm ± 1e-4; `_T1` [38.9863, 203.2353] → decode (38.9863, 164.2490), stored 0.5 → 121.1108 ± 1e-4; `_CONCAVITY` [−0.6106, 0.5810]. Without `field_ranges` every decode is (0, 1).
+- **Expected:** CDMD `_SULC` [−14.0466, 17.3979] → decode (−14.0466, 31.4445), stored 0.5 → 1.6756 mm ± 1e-4; `_T1` [38.9863, 203.2353] → decode (38.9863, 164.2490), stored 0.5 → 121.1108 ± 1e-4; `_OPENNESS` spans the measured 0..1 openness. Without `field_ranges` every decode is (0, 1).
 - **Covered by:** `src/lib/engine/render/materials.test.ts` (R)
 
 ### SHADER-05 · The T1 signal varies the surface colour by up to the surface strength
@@ -76,11 +76,11 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 
 ### SHADER-06 · Folds darken the light that reaches the sulci
 
-- **Rule:** A fold amount mixes sulcal concavity (three quarters) and sulcal depth (one quarter), each through a smoothstep over the manifest's range. Direct diffuse light is scaled by (1 − direct·fold); indirect diffuse and specular light by (1 − indirect·fold). Colour is not touched, only light.
+- **Rule:** A fold amount mixes occlusion, 1 − smoothstep of the baked `_OPENNESS` (three quarters), with sulcal depth (one quarter), each over the manifest's range. Direct diffuse light is scaled by (1 − direct·fold); indirect diffuse and specular light by (1 − indirect·fold). Colour is not touched, only light.
 - **Kind:** scientific
 - **Level:** browser — real WebGL
 - **Source:** `viewer/render/materials.js:92-97`
-- **Expected:** a gyral crown (concavity ≤ −0.08, depth ≤ −0.5) → fold 0, light unchanged. A fundus (concavity ≥ 0.04, depth ≥ 1.8) → fold 1: direct diffuse × 0.52, indirect diffuse and specular × 0.22. Concavity ≥ 0.04 with depth ≤ −0.5 → fold 0.75: direct × 0.64.
+- **Expected:** a gyral crown (openness ≥ 0.95, depth ≤ −0.5) → fold 0, light unchanged. A fundus (openness ≤ 0.5, depth ≥ 1.8) → fold 1: direct diffuse × 0.52, indirect diffuse and specular × 0.22. Openness ≤ 0.5 with depth ≤ −0.5 → fold 0.75: direct × 0.64.
 - **Covered by:** `src/lib/engine/render/materials.test.ts` (R, the fold uniforms); the drawn darkening is uncovered (needs a browser pixel test)
 
 ### SHADER-07 · Network colours blend over the region colour, never on the medial wall

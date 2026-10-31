@@ -49,7 +49,7 @@ from .surfaces.geometry import (
     to_gltf,
 )
 from .surfaces.ribbons import validate_ribbon_labels
-from .surfaces.shading import cortical_concavity
+from .surfaces.shading import cortical_openness
 from .surfaces.solids import validate_solid_envelopes
 from .validate_placement import validate_placements
 from .validate_segmentation import (
@@ -258,7 +258,9 @@ def validate_atlas(config, atlas, records):
     max_error = 0.0
     normal_error = 0.0
     sulcal_error = 0.0
-    concavity_error = 0.0
+    openness_error = 0.0
+    openness_outliers = 0
+    openness_count = 0
     intensity_error = 0.0
     mri = nib.load(config["source_directory"] / "mri/orig.mgz")
     mri_data = np.asarray(mri.dataobj).astype(float)
@@ -283,8 +285,9 @@ def validate_atlas(config, atlas, records):
             faces, labels,
             read_morph_data(config["source_directory"] / "surf" / f"{prefix}.sulc"),
         )
-        concavity = partition_vertex_field(faces, labels, cortical_concavity(
-            trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+        openness = partition_vertex_field(faces, labels, cortical_openness(
+            trimesh.Trimesh(vertices=vertices, faces=faces, process=False),
+            **config["appearance"]["occlusion"],
         ))
         white, _ = read_geometry(config["source_directory"] / "surf" / f"{prefix}.white")
         coordinates = nib.affines.apply_affine(
@@ -304,7 +307,7 @@ def validate_atlas(config, atlas, records):
             actual = meshes[region_id]
             points, triangles, normals = compact_region(partition, label)
             indices = np.unique(partition.faces[partition.labels == label])
-            for attribute in ("_CONCAVITY", "_T1"):
+            for attribute in ("_OPENNESS", "_T1"):
                 field = actual.vertex_attributes.get(attribute)
                 if field is None or field.size != len(points) or not np.isfinite(field).all():
                     raise ValueError(f"Missing or invalid {attribute}: {region_id}")
@@ -312,12 +315,17 @@ def validate_atlas(config, atlas, records):
                 decode_field(actual.vertex_attributes["_T1"].ravel(), ranges["_T1"])
                 - intensity[indices]
             ).max()))
-            concavity_error = max(concavity_error, float(np.abs(
+            openness_difference = np.abs(
                 decode_field(
-                    actual.vertex_attributes["_CONCAVITY"].ravel(), ranges["_CONCAVITY"]
+                    actual.vertex_attributes["_OPENNESS"].ravel(), ranges["_OPENNESS"]
                 )
-                - concavity[indices]
-            ).max()))
+                - openness[indices]
+            )
+            openness_error = max(openness_error, float(openness_difference.max()))
+            openness_outliers += int(np.count_nonzero(
+                openness_difference > config["validation"]["openness"]["tolerance"]
+            ))
+            openness_count += openness_difference.size
             if network_field is not None:
                 carried = actual.vertex_attributes.get("_NETWORK")
                 if carried is None or carried.size != len(points):
@@ -381,8 +389,15 @@ def validate_atlas(config, atlas, records):
             ("coordinate_mm", max_error, config["validation"]["coordinate_tolerance_mm"]),
             ("normal_component", normal_error, normal_tolerance()),
             ("sulcal_depth", sulcal_error, field_tolerance(ranges["_SULC"])),
-            ("concavity", concavity_error, field_tolerance(ranges["_CONCAVITY"])),
             ("ribbon_T1", intensity_error, field_tolerance(ranges["_T1"])),
+            # Openness is re-cast in float32 on whatever CPU validates it. Where
+            # the pial surface touches itself a ray can start on either side
+            # of the contact, so a few vertices flip; every other vertex holds.
+            (
+                "openness_outlier_share",
+                openness_outliers / openness_count,
+                config["validation"]["openness"]["maximum_outlier_share"],
+            ),
         )
         if measured > bound
     }
@@ -401,7 +416,8 @@ def validate_atlas(config, atlas, records):
         "maximum_glb_coordinate_error_mm": max_error,
         "maximum_normal_component_error": normal_error,
         "maximum_sulcal_depth_error": sulcal_error,
-        "maximum_concavity_error": concavity_error,
+        "maximum_openness_error": openness_error,
+        "openness_outlier_share": openness_outliers / openness_count,
         "maximum_ribbon_T1_error": intensity_error,
     }
 
@@ -757,7 +773,7 @@ def validate_manifest(config, manifest, nextbrain_source):
                 "source": "FreeSurfer lh.sulc / rh.sulc",
                 "interpolation": "Linear on barycentric atlas partitions",
                 "meaning": "Sulcal-depth morphometry; positive values mark sulci",
-                "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+                "openness": "_OPENNESS: cosine-weighted share of rays from each pial vertex that clear the intact pial hemisphere, a hit at d counting d / radius_mm open (appearance.occlusion)",
                 "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo",
             },
         }

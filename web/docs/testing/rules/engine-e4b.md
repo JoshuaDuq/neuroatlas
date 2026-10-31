@@ -57,7 +57,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:364-430`
-- **Expected:** A mesh with an unknown `region_id` → "Mesh has no manifest region: <name>"; a field mismatch → "Mesh metadata mismatch: <id>.<field>"; a cortex mesh without `_sulc` → rejects `/_sulc/`; an empty layer → "Empty brain model layer: <id>". After loading, positions and indices equal the file's byte for byte, every mesh has position [0, 0, 0] and scale [1, 1, 1], every mesh has normals, and on cortex and non-region meshes `_sulc`, `_concavity` and `_t1` have one finite value per vertex. A failed layer releases its geometry and materials.
+- **Expected:** A mesh with an unknown `region_id` → "Mesh has no manifest region: <name>"; a field mismatch → "Mesh metadata mismatch: <id>.<field>"; a cortex mesh without `_sulc` → rejects `/_sulc/`; an empty layer → "Empty brain model layer: <id>". After loading, positions and indices equal the file's byte for byte, every mesh has position [0, 0, 0] and scale [1, 1, 1], every mesh has normals, and on cortex and non-region meshes `_sulc`, `_openness` and `_t1` have one finite value per vertex. A failed layer releases its geometry and materials.
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `_sulc`, unchanged positions and indices); `src/lib/engine/model/assets.test.ts` (S, CDMD); the mismatch, unknown-region and empty-layer errors are uncovered
 
 ### ATLAS-07 · The published CDMD model has the counts its manifest declares

@@ -5,7 +5,7 @@
   "atlases": [
     {
       "file": "cortex-destrieux.glb",
-      "sha256": "4ac5f1efe9c63506663dab5bea8c8b1f41d97cd3efcc50853ad428b2545b2404",
+      "sha256": "96aa4835041b37a7ba8e50ba2f0b5d70a73407ced6835355aab97eb1661ed129",
       "mesh_count": 150,
       "hemispheres": {
         "left": {
@@ -34,9 +34,9 @@
           -14.046584129333496,
           17.397871017456055
         ],
-        "_CONCAVITY": [
-          -0.610621988773346,
-          0.5810176730155945
+        "_OPENNESS": [
+          2.5676470613689162e-05,
+          1.0
         ],
         "_T1": [
           38.98631286621094,
@@ -46,12 +46,13 @@
       "maximum_glb_coordinate_error_mm": 5.038289517018546e-06,
       "maximum_normal_component_error": 1.5287834975175052e-05,
       "maximum_sulcal_depth_error": 0.0002399056183541859,
-      "maximum_concavity_error": 9.098729212675405e-06,
+      "maximum_openness_error": 7.658483616723721e-06,
+      "openness_outlier_share": 0.0,
       "maximum_ribbon_T1_error": 0.001259474325507881
     },
     {
       "file": "cortex-hcp-mmp.glb",
-      "sha256": "8b4174c46806dc7c044b280a15430fae2112611b7a9526ddd9cac008859e532b",
+      "sha256": "2ff3450135cbcc755dc8f95886588ffec2318fa67f8f2922fd06da1f779a391b",
       "mesh_count": 362,
       "hemispheres": {
         "left": {
@@ -80,9 +81,9 @@
           -14.046584129333496,
           17.397871017456055
         ],
-        "_CONCAVITY": [
-          -0.610621988773346,
-          0.5810176730155945
+        "_OPENNESS": [
+          2.5676470613689162e-05,
+          1.0
         ],
         "_T1": [
           38.98631286621094,
@@ -92,12 +93,13 @@
       "maximum_glb_coordinate_error_mm": 5.038289517018546e-06,
       "maximum_normal_component_error": 1.5287834975175052e-05,
       "maximum_sulcal_depth_error": 0.0002399056183541859,
-      "maximum_concavity_error": 9.09767266191186e-06,
+      "maximum_openness_error": 7.658483616723721e-06,
+      "openness_outlier_share": 0.0,
       "maximum_ribbon_T1_error": 0.0012588847168046868
     },
     {
       "file": "cortex-julich.glb",
-      "sha256": "8c0afb809ee7b8beb1fd9be8242c87b443e6411d541de9bc7fe9a69840e5966a",
+      "sha256": "d91ff5e7fddb17767aa7a25cbcbffe18c513cdafdf82404415bcb7c23d6bc253",
       "mesh_count": 296,
       "hemispheres": {
         "left": {
@@ -126,9 +128,9 @@
           -14.046584129333496,
           17.397871017456055
         ],
-        "_CONCAVITY": [
-          -0.610621988773346,
-          0.5810176730155945
+        "_OPENNESS": [
+          2.5676470613689162e-05,
+          1.0
         ],
         "_T1": [
           38.98631286621094,
@@ -138,12 +140,13 @@
       "maximum_glb_coordinate_error_mm": 5.038289517018546e-06,
       "maximum_normal_component_error": 1.5287834975175052e-05,
       "maximum_sulcal_depth_error": 0.0002399056183541859,
-      "maximum_concavity_error": 9.097095416077394e-06,
+      "maximum_openness_error": 7.658483616723721e-06,
+      "openness_outlier_share": 0.0,
       "maximum_ribbon_T1_error": 0.0012587347925716585
     },
     {
       "file": "cortex-schaefer.glb",
-      "sha256": "dd3b508056a90a6cb09f0a6b42b11abbe6c8ed2ca95d95b2d04c6fe647f8b2de",
+      "sha256": "d096da1a6ac419c227122259fd5a1ec25099d5b1d71c862795487132c6e9cc09",
       "mesh_count": 402,
       "hemispheres": {
         "left": {
@@ -172,9 +175,9 @@
           -14.046584129333496,
           17.397871017456055
         ],
-        "_CONCAVITY": [
-          -0.610621988773346,
-          0.5810176730155945
+        "_OPENNESS": [
+          2.5676470613689162e-05,
+          1.0
         ],
         "_T1": [
           38.98631286621094,
@@ -184,7 +187,8 @@
       "maximum_glb_coordinate_error_mm": 5.038289517018546e-06,
       "maximum_normal_component_error": 1.5287834975175052e-05,
       "maximum_sulcal_depth_error": 0.0002399056183541859,
-      "maximum_concavity_error": 9.098729212675405e-06,
+      "maximum_openness_error": 7.658483616723721e-06,
+      "openness_outlier_share": 0.0,
       "maximum_ribbon_T1_error": 0.0012587347925716585
     }
   ],

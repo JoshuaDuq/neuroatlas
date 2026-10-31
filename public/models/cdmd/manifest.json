@@ -109,8 +109,8 @@
     "folds": {
       "low": -0.5,
       "high": 1.8,
-      "concavity_low": -0.08,
-      "concavity_high": 0.04,
+      "openness_low": 0.5,
+      "openness_high": 0.95,
       "direct_strength": 0.48,
       "indirect_strength": 0.78
     },
@@ -122,19 +122,17 @@
       "rim": 0.7
     },
     "occlusion": {
-      "radius": 0.012,
-      "thickness": 0.025,
-      "samples": 32,
-      "intensity": 0.9
+      "radius_mm": 10,
+      "direction_count": 256
     },
     "field_ranges": {
       "_SULC": [
         -14.046584129333496,
         17.397871017456055
       ],
-      "_CONCAVITY": [
-        -0.610621988773346,
-        0.5810176730155945
+      "_OPENNESS": [
+        2.5676470613689162e-05,
+        1.0
       ],
       "_T1": [
         38.98631286621094,
@@ -198,7 +196,7 @@
         "source": "FreeSurfer lh.sulc / rh.sulc",
         "interpolation": "Linear on barycentric atlas partitions",
         "meaning": "Sulcal-depth morphometry; positive values mark sulci",
-        "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+        "openness": "_OPENNESS: cosine-weighted share of rays from each pial vertex that clear the intact pial hemisphere, a hit at d counting d / radius_mm open (appearance.occlusion)",
         "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo"
       },
       "ribbon_labels": {
@@ -376,7 +374,7 @@
         "source": "FreeSurfer lh.sulc / rh.sulc",
         "interpolation": "Linear on barycentric atlas partitions",
         "meaning": "Sulcal-depth morphometry; positive values mark sulci",
-        "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+        "openness": "_OPENNESS: cosine-weighted share of rays from each pial vertex that clear the intact pial hemisphere, a hit at d counting d / radius_mm open (appearance.occlusion)",
         "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo"
       },
       "ribbon_labels": {
@@ -766,7 +764,7 @@
         "source": "FreeSurfer lh.sulc / rh.sulc",
         "interpolation": "Linear on barycentric atlas partitions",
         "meaning": "Sulcal-depth morphometry; positive values mark sulci",
-        "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+        "openness": "_OPENNESS: cosine-weighted share of rays from each pial vertex that clear the intact pial hemisphere, a hit at d counting d / radius_mm open (appearance.occlusion)",
         "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo"
       },
       "ribbon_labels": {
@@ -1090,7 +1088,7 @@
         "source": "FreeSurfer lh.sulc / rh.sulc",
         "interpolation": "Linear on barycentric atlas partitions",
         "meaning": "Sulcal-depth morphometry; positive values mark sulci",
-        "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+        "openness": "_OPENNESS: cosine-weighted share of rays from each pial vertex that clear the intact pial hemisphere, a hit at d counting d / radius_mm open (appearance.occlusion)",
         "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo"
       },
       "ribbon_labels": {
@@ -94368,7 +94366,7 @@
         "hcp-mmp"
       ],
       "file": "atlas-comparison.json",
-      "sha256": "f8d56b394d5a0d5b410f44773ce460b33c2838aeebe2e5ea30d5940f26d5ec6b"
+      "sha256": "1b74b1f11d0472e96e65833d64eff2a54a759cd5eb204f2c8ba0801d226e18a3"
     },
     {
       "atlases": [
@@ -94376,7 +94374,7 @@
         "julich"
       ],
       "file": "atlas-comparison-destrieux-julich.json",
-      "sha256": "ae02c0221bb1abbba9a479e26ca655ff0c0ff6959480c97478544fe4f94fd27f"
+      "sha256": "2c71400e0e931705074971a144ba415bab1c75b3326dc739916c016dd211dd90"
     },
     {
       "atlases": [
@@ -94384,7 +94382,7 @@
         "schaefer"
       ],
       "file": "atlas-comparison-destrieux-schaefer.json",
-      "sha256": "bf6d31ce6d4504283d0f2a5e053c4ebdc1cc79a29da15e0fb3a6076c45a08d27"
+      "sha256": "c5678f08afe8a439cacfe8c11b6e3f8c86a9db65c2d41cc30012c5e19798c8ef"
     },
     {
       "atlases": [
@@ -94392,7 +94390,7 @@
         "julich"
       ],
       "file": "atlas-comparison-hcp-mmp-julich.json",
-      "sha256": "f4066805f2683a9a5699a565aadc675a0c238e8c0af44002effbc9f940ab4fdb"
+      "sha256": "b47236b2afb2dc09cfc76b6a1c616eceedfa5ed6c6760402491114183869e35a"
     },
     {
       "atlases": [
@@ -94400,7 +94398,7 @@
         "schaefer"
       ],
       "file": "atlas-comparison-hcp-mmp-schaefer.json",
-      "sha256": "312239c0310fc859439002b6cd1e73293ee7deb91c0dbd85706bfa8f09bb78e9"
+      "sha256": "e90f355c1b5f80d765d89f5633773f467cecbc84b9fb0fd0b656169bd9255b1d"
     },
     {
       "atlases": [
@@ -94408,11 +94406,11 @@
         "schaefer"
       ],
       "file": "atlas-comparison-julich-schaefer.json",
-      "sha256": "c4ac907b82296da15096d94e3b448299ee4375b298bed396816cc3f715f059c6"
+      "sha256": "fa94f98cafe196538ce180c360ffc9d51754d8786e6607575712efa1664689d7"
     }
   ],
   "atlas_comparison": {
     "file": "atlas-comparison.json",
-    "sha256": "f8d56b394d5a0d5b410f44773ce460b33c2838aeebe2e5ea30d5940f26d5ec6b"
+    "sha256": "1b74b1f11d0472e96e65833d64eff2a54a759cd5eb204f2c8ba0801d226e18a3"
   }
 }

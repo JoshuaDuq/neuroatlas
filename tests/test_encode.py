@@ -46,7 +46,7 @@ def cortical_scene(parcels=3, vertices_per=40, seed=0):
         }
         mesh = add_region(scene, points, faces, normals, region, [10, 20, 30])
         mesh.vertex_attributes["_SULC"] = rng.normal(size=vertices_per).astype(np.float32)
-        mesh.vertex_attributes["_CONCAVITY"] = rng.normal(
+        mesh.vertex_attributes["_OPENNESS"] = rng.normal(
             scale=0.3, size=vertices_per
         ).astype(np.float32)
         mesh.vertex_attributes["_T1"] = rng.uniform(
@@ -186,7 +186,7 @@ def test_a_shared_range_is_used_rather_than_the_files_own():
 
 
 def test_a_value_outside_a_given_range_is_refused_rather_than_clamped():
-    ranges = {"_SULC": [0.0, 0.1], "_CONCAVITY": [-1.0, 1.0], "_T1": [0.0, 255.0]}
+    ranges = {"_SULC": [0.0, 0.1], "_OPENNESS": [-1.0, 1.0], "_T1": [0.0, 255.0]}
     with pytest.raises(ValueError, match="outside the given range"):
         reencode(exported(cortical_scene(seed=2)), ranges=ranges)
 
@@ -196,7 +196,7 @@ def test_a_field_the_given_ranges_omit_is_refused_rather_than_left_unquantized()
     with pytest.raises(ValueError, match="_T1"):
         reencode(
             exported(cortical_scene()),
-            ranges={"_SULC": [-5.0, 5.0], "_CONCAVITY": [-2.0, 2.0]},
+            ranges={"_SULC": [-5.0, 5.0], "_OPENNESS": [-2.0, 2.0]},
         )
 
 

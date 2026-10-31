@@ -34,7 +34,7 @@ export const appearance = published as unknown as Appearance;
 export function corticalMesh(withNetworks: boolean, count = 5) {
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new Float32BufferAttribute(new Float32Array(count * 3), 3));
-  for (const name of ['_sulc', '_concavity', '_t1']) {
+  for (const name of ['_sulc', '_openness', '_t1']) {
     geometry.setAttribute(name, new Float32BufferAttribute(new Float32Array(count).fill(0.5), 1));
   }
   if (withNetworks) {

@@ -98,7 +98,7 @@ Shown from a region's **Segmentation agreement** section, the sections ink one s
 ```{figure} ../../.github/assets/readme/linked-mri.webp
 :alt: Linked MRI: sagittal, coronal and axial T1 sections around a shared crosshair, with the voxel's label and the window and level controls
 
-Linked MRI at the coronal cut above: the subject's T1 in three planes, with the label under the crosshair.
+Linked MRI opened from the selected left hippocampal formation: the subject's T1 in three planes around its centroid, with the label under the crosshair.
 ```
 
 ## Status bar
